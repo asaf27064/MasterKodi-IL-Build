@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- MasterKodi IL - skin picker with a LARGE live preview.
+     The list (right, RTL) drives the big preview image (left) via ListItem art.
+     Uses only generic fonts (font12/font13) + our own white.png texture so it
+     renders the same under Estuary / Nimbus / Arctic Fuse. -->
+<window type="dialog" id="3100">
+    <defaultcontrol always="true">100</defaultcontrol>
+    <controls>
+        <!-- dim everything behind -->
+        <control type="image">
+            <left>0</left>
+            <top>0</top>
+            <width>1920</width>
+            <height>1080</height>
+            <texture colordiffuse="E6000000">white.png</texture>
+        </control>
+        <!-- panel -->
+        <control type="image">
+            <left>85</left>
+            <top>90</top>
+            <width>1750</width>
+            <height>900</height>
+            <texture colordiffuse="FF16181D">white.png</texture>
+        </control>
+        <!-- title -->
+        <control type="label">
+            <left>85</left>
+            <top>110</top>
+            <width>1750</width>
+            <height>60</height>
+            <align>center</align>
+            <font>font13</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <label>$INFO[Window.Property(heading)]</label>
+        </control>
+        <!-- BIG preview (left) driven by the focused list item -->
+        <control type="image">
+            <left>120</left>
+            <top>200</top>
+            <width>1120</width>
+            <height>630</height>
+            <aspectratio>keep</aspectratio>
+            <texture background="true">$INFO[Container(100).ListItem.Icon]</texture>
+        </control>
+        <!-- subtle frame under the preview caption -->
+        <control type="label">
+            <left>120</left>
+            <top>840</top>
+            <width>1120</width>
+            <height>50</height>
+            <align>center</align>
+            <font>font12</font>
+            <textcolor>FFB0B0B0</textcolor>
+            <label>$INFO[Container(100).ListItem.Label2]</label>
+        </control>
+        <!-- skin list (right column, RTL) -->
+        <control type="list" id="100">
+            <left>1280</left>
+            <top>210</top>
+            <width>520</width>
+            <height>620</height>
+            <onleft>100</onleft>
+            <onright>100</onright>
+            <onup>100</onup>
+            <ondown>100</ondown>
+            <pagecontrol>-</pagecontrol>
+            <scrolltime>200</scrolltime>
+            <orientation>vertical</orientation>
+            <itemlayout height="150" width="520">
+                <control type="image">
+                    <left>0</left>
+                    <top>8</top>
+                    <width>520</width>
+                    <height>134</height>
+                    <texture colordiffuse="FF23262E">white.png</texture>
+                </control>
+                <control type="label">
+                    <left>25</left>
+                    <top>20</top>
+                    <width>470</width>
+                    <height>50</height>
+                    <align>right</align>
+                    <font>font13</font>
+                    <textcolor>FFE8E8E8</textcolor>
+                    <label>$INFO[ListItem.Label]</label>
+                </control>
+                <control type="textbox">
+                    <left>25</left>
+                    <top>70</top>
+                    <width>470</width>
+                    <height>60</height>
+                    <align>right</align>
+                    <font>font12</font>
+                    <textcolor>FF9A9A9A</textcolor>
+                    <label>$INFO[ListItem.Label2]</label>
+                </control>
+            </itemlayout>
+            <focusedlayout height="150" width="520">
+                <control type="image">
+                    <left>0</left>
+                    <top>8</top>
+                    <width>520</width>
+                    <height>134</height>
+                    <texture colordiffuse="FF2E5A8E">white.png</texture>
+                </control>
+                <control type="label">
+                    <left>25</left>
+                    <top>20</top>
+                    <width>470</width>
+                    <height>50</height>
+                    <align>right</align>
+                    <font>font13</font>
+                    <textcolor>FFFFD700</textcolor>
+                    <label>$INFO[ListItem.Label]</label>
+                </control>
+                <control type="textbox">
+                    <left>25</left>
+                    <top>70</top>
+                    <width>470</width>
+                    <height>60</height>
+                    <align>right</align>
+                    <font>font12</font>
+                    <textcolor>FFE0E0E0</textcolor>
+                    <label>$INFO[ListItem.Label2]</label>
+                </control>
+            </focusedlayout>
+        </control>
+        <!-- hint -->
+        <control type="label">
+            <left>1280</left>
+            <top>850</top>
+            <width>520</width>
+            <height>40</height>
+            <align>center</align>
+            <font>font12</font>
+            <textcolor>FF808080</textcolor>
+            <label>OK לבחירה · Back לביטול</label>
+        </control>
+    </controls>
+</window>

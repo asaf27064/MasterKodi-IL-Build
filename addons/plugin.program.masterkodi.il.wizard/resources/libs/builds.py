@@ -36,6 +36,52 @@ def log(msg, level=xbmc.LOGINFO):
     xbmc.log(f'[{ADDON_ID}] Builds: {msg}', level)
 
 
+class SkinPickerDialog(xbmcgui.WindowXMLDialog):
+    """Skin picker with a LARGE live preview (skin-picker.xml).
+
+    dialog.select's useDetails thumbnails are tiny; this shows a ~1120x630
+    preview of the focused skin beside the list. Returns the selected index
+    via .selection (-1 = cancelled)."""
+
+    def __init__(self, *args, **kwargs):
+        self.items = kwargs.pop('items', [])       # [(name, desc, image_path)]
+        self.heading = kwargs.pop('heading', '')
+        self.selection = -1
+        super().__init__(*args)
+
+    @staticmethod
+    def pick(heading, items):
+        """items: [(name, desc, image_path)] -> selected index or -1."""
+        d = SkinPickerDialog('skin-picker.xml',
+                             xbmcvfs.translatePath(ADDON.getAddonInfo('path')),
+                             'Default', '1080i',
+                             items=items, heading=heading)
+        d.doModal()
+        sel = d.selection
+        del d
+        return sel
+
+    def onInit(self):
+        self.setProperty('heading', self.heading)
+        lst = self.getControl(100)
+        lst.reset()
+        for name, desc, img in self.items:
+            li = xbmcgui.ListItem(name, desc)
+            li.setArt({'icon': img, 'thumb': img})
+            lst.addItem(li)
+        self.setFocusId(100)
+
+    def onClick(self, control_id):
+        if control_id == 100:
+            self.selection = self.getControl(100).getSelectedPosition()
+            self.close()
+
+    def onAction(self, action):
+        if action.getId() in (9, 10, 92):  # BACK / PREVIOUS_MENU / NAV_BACK
+            self.selection = -1
+            self.close()
+
+
 class BuildManager:
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
@@ -1122,17 +1168,22 @@ def builds_menu():
             if selected_build.get('nimbus_skin_url'):
                 skin_options.append(('nimbus', 'Nimbus', 'מהיר ויפה יותר מהרגיל · מתאים גם למכשירים חלשים', 'nimbus.jpg'))
 
-            # Show image previews (useDetails) so the user sees each skin before choosing.
+            # Custom picker window with a LARGE live preview of the focused skin.
+            # Falls back to the old useDetails select if the window fails.
             preview_dir = os.path.join(xbmcvfs.translatePath(ADDON.getAddonInfo('path')),
                                        'resources', 'media', 'skin_previews')
-            li_list = []
-            for _choice, _name, _desc, _img in skin_options:
-                li = xbmcgui.ListItem(_name, _desc)
-                _p = os.path.join(preview_dir, _img)
-                li.setArt({'thumb': _p, 'icon': _p, 'poster': _p})
-                li_list.append(li)
-
-            skin_sel = dialog.select(f"[B]בחר סקין עבור {build_name}[/B]", li_list, useDetails=True)
+            picker_items = [(_name, _desc, os.path.join(preview_dir, _img))
+                            for _choice, _name, _desc, _img in skin_options]
+            try:
+                skin_sel = SkinPickerDialog.pick(f"בחר סקין עבור {build_name}", picker_items)
+            except Exception as e:
+                log(f"SkinPickerDialog failed ({e}), falling back to select")
+                li_list = []
+                for _name, _desc, _p in picker_items:
+                    li = xbmcgui.ListItem(_name, _desc)
+                    li.setArt({'thumb': _p, 'icon': _p, 'poster': _p})
+                    li_list.append(li)
+                skin_sel = dialog.select(f"[B]בחר סקין עבור {build_name}[/B]", li_list, useDetails=True)
 
             if skin_sel < 0:
                 continue
