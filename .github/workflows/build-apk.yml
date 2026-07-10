@@ -52,6 +52,9 @@ jobs:
       - name: Install build-tools 34.0.0
         run: sdkmanager "build-tools;34.0.0"
 
+      - name: Install Pillow (icon resizing)
+        run: python -m pip install --quiet pillow
+
       - name: Build addon zips (wizard/firstrun/repo + deps)
         run: python tools/build_addons.py --repo-root . --out dist
 
