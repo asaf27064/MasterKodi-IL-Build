@@ -1,0 +1,5 @@
+<settings version="2">
+    <setting id="autocomplete_provider" default="true">TMDb</setting>
+    <setting id="autocomplete_lang" default="true">he</setting>
+    <setting id="autocomplete_lang_local" default="true">en</setting>
+</settings>

@@ -1,0 +1,1047 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<includes>
+
+    <include name="Hub_Onload_Window">
+        <param name="defaultname">$LOCALIZE[636]</param>
+        <definition>
+            <onload condition="String.IsEmpty(Window($PARAM[window]).Property(TMDbHelper.WidgetContainer)) + !String.IsEmpty(Skin.String(HomeSwitcher.$PARAM[window].Spotlight.Target))">SetProperty(TMDbHelper.WidgetContainer,301,$PARAM[window])</onload>
+            <onload condition="String.IsEmpty(Window($PARAM[window]).Property(TMDbHelper.WidgetContainer)) + String.IsEmpty(Skin.String(HomeSwitcher.$PARAM[window].Spotlight.Target))">SetProperty(TMDbHelper.WidgetContainer,501,$PARAM[window])</onload>
+            <onload condition="String.IsEmpty(Skin.String(HomeSwitcher.$PARAM[window].Name))">Skin.SetString(HomeSwitcher.$PARAM[window].Name,$PARAM[defaultname])</onload>
+        </definition>
+    </include>
+
+    <include name="Hub_Onload">
+        <definition>
+
+            <include>Action_Blur_Onload</include>
+
+            <include content="Hub_Onload_Window">
+                <param name="window">Home</param>
+                <param name="defaultname">$LOCALIZE[10000]</param>
+            </include>
+            <include content="Hub_Onload_Window">
+                <param name="window">1101</param>
+            </include>
+            <include content="Hub_Onload_Window">
+                <param name="window">1102</param>
+            </include>
+            <include content="Hub_Onload_Window">
+                <param name="window">1103</param>
+            </include>
+            <include content="Hub_Onload_Window">
+                <param name="window">1104</param>
+            </include>
+
+            <onload condition="String.IsEmpty(Window(1105).Property(TMDbHelper.WidgetContainer))">SetProperty(TMDbHelper.WidgetContainer,501,1105)</onload>
+            <onload condition="String.IsEmpty(Window(1106).Property(TMDbHelper.WidgetContainer))">SetProperty(TMDbHelper.WidgetContainer,501,1106)</onload>
+            <onload condition="String.IsEmpty(Window(1107).Property(TMDbHelper.WidgetContainer))">SetProperty(TMDbHelper.WidgetContainer,501,1107)</onload>
+            <onload condition="String.IsEmpty(Window(1108).Property(TMDbHelper.WidgetContainer))">SetProperty(TMDbHelper.WidgetContainer,501,1108)</onload>
+
+            <menucontrol>300</menucontrol>
+
+            <include content="Object_DefaultControl" condition="!String.IsEmpty(Skin.String(HomeSwitcher.$PARAM[window_id].Toggle))">
+                <param name="defaultcontrol">300</param>
+                <param name="always">false</param>
+            </include>
+            <include content="Object_DefaultControl" condition="String.IsEmpty(Skin.String(HomeSwitcher.$PARAM[window_id].Toggle))">
+                <param name="defaultcontrol">400</param>
+                <param name="always">false</param>
+            </include>
+
+        </definition>
+    </include>
+
+    <include name="Hub_Standard_Widget">
+        <param name="include">List_Landscape_Row</param>
+        <param name="dynamic">false</param>
+        <definition>
+            <include content="Widget_Row">
+                <param name="id">5$PARAM[id]</param>
+                <param name="groupid">7$PARAM[id]</param>
+                <param name="label">$PARAM[label]</param>
+                <param name="include">$PARAM[include]</param>
+                <param name="altvisible">$PARAM[altvisible]</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widget_hideartwork">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <param name="grouplistid">500</param>
+                <param name="refocus">SetFocus(302)</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <include content="Object_ContentDynamic" condition="$PARAM[dynamic]">
+                    <param name="content">$PARAM[content]</param>
+                    <param name="sortby">$PARAM[sortby]</param>
+                    <param name="sortorder">$PARAM[sortorder]</param>
+                    <param name="target">$PARAM[target]</param>
+                </include>
+                <nested />
+            </include>
+        </definition>
+    </include>
+
+    <include name="Hub_Wall_Widget">
+        <param name="target">videos</param>
+        <param name="include">List_Poster_Row</param>
+        <param name="visible">true</param>
+        <param name="allowhiddenfocus">true</param>
+        <param name="home_switcher">false</param>
+        <param name="include_action">Object_Null</param>
+        <definition>
+            <control type="group">
+                <height>1080</height>
+                <visible allowhiddenfocus="$PARAM[allowhiddenfocus]">$PARAM[visible]</visible>
+                <include content="$PARAM[include]">
+                    <param name="id">$PARAM[id]</param>
+                    <param name="control">panel</param>
+                    <param name="orientation">vertical</param>
+                    <param name="offset_y">40</param>
+                    <preloaditems>0</preloaditems>
+                    <top>290</top>
+                    <bottom>-40</bottom>
+                    <onup>601</onup>
+                    <include>$PARAM[include_action]</include>
+                    <include>Hub_Grouplist_OnLeftRight</include>
+                    <onback condition="$EXP[Exp_Navigation_OnParent] + !Player.HasMedia">SetFocus($PARAM[id],0,absolute)</onback>
+                    <include content="Action_Widget_OnBack">
+                        <param name="id">$PARAM[id]</param>
+                        <param name="grouplistid">500</param>
+                        <param name="refocus">SetFocus(601)</param>
+                        <param name="enable">!Player.HasMedia</param>
+                    </include>
+
+                    <onback condition="Player.HasMedia">SetProperty(FullscreenRefocus,SetFocus($PARAM[id]))</onback>
+                    <onback condition="Player.HasMedia">309</onback>
+
+                    <ondown>ActivateWindow(1180)</ondown>
+                    <onfocus>SetProperty(TMDbHelper.WidgetContainer,$PARAM[id])</onfocus>
+                    <onfocus>SetProperty(Background.ShowOverlay,True,Home)</onfocus>
+                    <onfocus condition="![$PARAM[home_switcher]]">ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                    <onfocus condition="$PARAM[home_switcher]">SetProperty(HomeSwitcher.IsVisible,True,Home)</onfocus>
+                    <onfocus>SetProperty(InfoPanel.FullSwitch,Wall,Home)</onfocus>
+                    <content sortby="$PARAM[sortby]" sortorder="$PARAM[sortorder]" target="$PARAM[target]" limit="$PARAM[limit]" browse="$VAR[Defs_BrowseLimitedLists]">$PARAM[content]</content>
+                </include>
+                <include content="Widget_Busy">
+                    <param name="visible">Container($PARAM[id]).IsUpdating + Integer.IsEqual(Container($PARAM[id]).NumItems)</param>
+                    <param name="include">$PARAM[include]</param>
+                    <top>250</top>
+                    <left>view_pad</left>
+                </include>
+                <include content="Widget_Busy">
+                    <param name="visible">Container($PARAM[id]).IsUpdating + Integer.IsEqual(Container($PARAM[id]).NumItems)</param>
+                    <param name="include">$PARAM[include]</param>
+                    <top>600</top>
+                    <left>view_pad</left>
+                </include>
+            </control>
+        </definition>
+    </include>
+
+    <include name="Hub_Combined_Widget">
+        <param name="target">videos</param>
+        <param name="include">List_Poster_Row</param>
+        <param name="visible">true</param>
+        <param name="allowhiddenfocus">false</param>
+        <param name="autoscroll">false</param>
+        <definition>
+            <include content="$PARAM[include]">
+                <param name="id">$PARAM[id]</param>
+                <top>510</top>
+                <bottom>-40</bottom>
+                <onup>601</onup>
+                <include content="Action_Widget_OnBack">
+                    <param name="id">$PARAM[id]</param>
+                    <param name="grouplistid">500</param>
+                    <param name="refocus">SetFocus(601)</param>
+                    <param name="enable">!Player.HasMedia</param>
+                </include>
+                <onback condition="Player.HasMedia">SetProperty(FullscreenRefocus,SetFocus($PARAM[id]))</onback>
+                <onback condition="Player.HasMedia">309</onback>
+
+                <include>Hub_Grouplist_OnLeftRight</include>
+                <ondown>ActivateWindow(1180)</ondown>
+                <onfocus>SetProperty(TMDbHelper.WidgetContainer,$PARAM[id])</onfocus>
+                <onfocus>ClearProperty(Background.ShowOverlay,Home)</onfocus>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <content sortby="$PARAM[sortby]" sortorder="$PARAM[sortorder]" target="$PARAM[target]" limit="$PARAM[limit]" browse="$VAR[Defs_BrowseLimitedLists]">$PARAM[content]</content>
+                <visible allowhiddenfocus="$PARAM[allowhiddenfocus]">$PARAM[visible]</visible>
+
+                <include content="Defs_AutoScroll" condition="$PARAM[autoscroll]">
+                    <param name="condition">[!Control.HasFocus($PARAM[id]) | System.IdleTime(3)]</param>
+                </include>
+
+            </include>
+            <include content="Widget_Busy">
+                <param name="visible">Container($PARAM[id]).IsUpdating + Integer.IsEqual(Container($PARAM[id]).NumItems)</param>
+                <param name="include">$PARAM[include]</param>
+                <top>510</top>
+                <left>view_pad</left>
+                <visible>$PARAM[visible]</visible>
+            </include>
+        </definition>
+    </include>
+
+    <include name="Hub_Spotlight_Content_Slide">
+        <animation effect="slide" start="0" end="0,260" time="400" tween="quadratic" reversible="false" condition="$EXP[Exp_Hubs_Spotlight_SlideDown]">Conditional</animation>
+        <animation effect="slide" start="0,260" end="0" time="400" tween="quadratic" reversible="false" condition="![$EXP[Exp_Hubs_Spotlight_SlideDown]]">Conditional</animation>
+    </include>
+
+    <include name="Hub_Widget_Switcher">
+        <param name="target">videos</param>
+        <param name="wall">true</param>
+        <param name="top">260</param>
+        <param name="onup">300</param>
+        <param name="home_switcher">false</param>
+        <definition>
+            <control type="group">
+                <top>$PARAM[top]</top>
+                <height>40</height>
+                <include condition="$PARAM[wall]">Hub_Spotlight_Content_Slide</include>
+                <control type="group">
+                    <left>view_pad</left>
+                    <include>View_Line_Divider</include>
+                </control>
+                <include content="Categories_Selector">
+                    <param name="id">601</param>
+                    <param name="detailed">true</param>
+                    <param name="hidden_button">List_ButtonMenu_Row_HiddenButton_ERow</param>
+                    <param name="hidden_button_enabled">true</param>
+                    <param name="extended">$PARAM[extended]</param>
+                    <onup condition="!Control.IsVisible(301) + Skin.HasSetting(HomeSwitcher.Vertical)">SetProperty(Bumper.Direction,Up,Home)</onup>
+                    <onup condition="!Control.IsVisible(301) + Skin.HasSetting(HomeSwitcher.Vertical)">ActivateWindow(1180)</onup>
+                    <onup condition="!Control.IsVisible(301) + !Skin.HasSetting(HomeSwitcher.Vertical)">$PARAM[onup]</onup>
+                    <onup condition="Control.IsVisible(301)">301</onup>
+                    <onback condition="!Control.IsVisible(301) + !Player.HasMedia">$PARAM[onup]</onback>
+                    <onback condition="Control.IsVisible(301) + !Player.HasMedia">301</onback>
+                    <onback condition="Player.HasMedia">SetProperty(FullscreenRefocus,SetFocus(601))</onback>
+                    <onback condition="Player.HasMedia">309</onback>
+                    <ondown>SetFocus($INFO[Container(601).ListItem.Property(widget_id)])</ondown>
+                    <onfocus condition="$PARAM[wall]">SetProperty(InfoPanel.FullSwitch,Wall,Home)</onfocus>
+                    <onfocus condition="![$PARAM[wall]]">ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                    <onfocus condition="![$PARAM[home_switcher]]">ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                    <onfocus condition="$PARAM[home_switcher]">SetProperty(HomeSwitcher.IsVisible,True,Home)</onfocus>
+                    <centertop>0</centertop>
+                    <height>80</height>
+                    <left>40</left>
+                    <include>Hub_Grouplist_OnLeftRight</include>
+                    <content>
+                        <include>$PARAM[include_content]</include>
+                    </content>
+                </include>
+            </control>
+        </definition>
+    </include>
+
+    <expression name="Hub_Spotlight_Visible_Expression">[Integer.IsEqual(Window.Property(TMDBHelper.WidgetContainer),301) + [!Integer.IsEqual(Container(301).NumItems,0) | Container(301).IsUpdating]]</expression>
+
+    <include name="Hub_Wall_Info">
+        <control type="group">
+            <animation effect="fade" start="0" end="100" delay="399" time="1" condition="!$EXP[Hub_Spotlight_Visible_Expression]">Conditional</animation>
+            <animation effect="fade" start="100" end="0" condition="$EXP[Hub_Spotlight_Visible_Expression]">Conditional</animation>
+            <visible>!$EXP[Exp_Hubs_SlideInfo]</visible>
+            <include>Home_Info_Animation</include>
+            <include>Info_Panel_Dimensions</include>
+            <include content="Info_Panel">
+                <param name="visible">[!$EXP[Exp_InfoDialogs] + Integer.IsEqual(Window.Property(TMDBHelper.WidgetContainer),$PARAM[id])]</param>
+                <param name="visible_line">false</param>
+                <param name="visible_plot">false</param>
+                <param name="visible_meta">false</param>
+                <param name="container">Container($PARAM[id]).</param>
+            </include>
+        </control>
+    </include>
+
+    <include name="Hub_Combined_Info">
+        <control type="group">
+            <animation effect="fade" start="0" end="100" delay="399" time="1" condition="!$EXP[Hub_Spotlight_Visible_Expression]">Conditional</animation>
+            <animation effect="fade" start="100" end="0" condition="$EXP[Hub_Spotlight_Visible_Expression]">Conditional</animation>
+            <control type="group">
+                <include>Home_Slide_Animation</include>
+                <include>Info_Panel_Dimensions</include>
+                <control type="group">
+                    <top>200</top>
+                    <include content="Info_Panel">
+                        <param name="visible">[!$EXP[Exp_InfoDialogs] + Integer.IsEqual(Window.Property(TMDBHelper.WidgetContainer),$PARAM[id])]</param>
+                        <param name="visible_line">false</param>
+                        <param name="visible_plot">false</param>
+                        <param name="visible_meta">false</param>
+                        <param name="include_details">false</param>
+                        <param name="container">Container($PARAM[id]).</param>
+                    </include>
+                </control>
+            </control>
+            <control type="group">
+                <visible>!$EXP[Exp_Hubs_SlideInfo]</visible>
+                <include>Info_Panel_Dimensions</include>
+                <include>Home_Info_Animation</include>
+                <include content="Info_Panel">
+                    <param name="visible">[!$EXP[Exp_InfoDialogs] + Integer.IsEqual(Window.Property(TMDBHelper.WidgetContainer),$PARAM[id])]</param>
+                    <param name="visible_line">true</param>
+                    <param name="visible_plot">true</param>
+                    <param name="visible_meta">true</param>
+                    <param name="include_title">false</param>
+                    <param name="container">Container($PARAM[id]).</param>
+                </include>
+            </control>
+        </control>
+    </include>
+
+
+    <include name="Hub_Grouplist_OnLeft">
+        <onleft condition="Skin.HasSetting(HomeSwitcher.Vertical)">SetFocus(300)</onleft>
+    </include>
+    <include name="Hub_Grouplist_OnLeftRight">
+        <include>Hub_Grouplist_OnLeft</include>
+        <onright condition="Skin.HasSetting(HomeSwitcher.Vertical)">SetProperty(Bumper.Direction,Right,Home)</onright>
+        <onright condition="Skin.HasSetting(HomeSwitcher.Vertical)">ActivateWindow(1180)</onright>
+    </include>
+
+    <include name="Hub_Widgets_Grouplist">
+        <control type="grouplist" id="602">
+            <animation effect="slide" start="0" end="0,-440" condition="true">Conditional</animation>
+
+            <onup condition="!Control.IsVisible(301) + Skin.HasSetting(HomeSwitcher.Vertical)">SetProperty(Bumper.Direction,Up,Home)</onup>
+            <onup condition="!Control.IsVisible(301) + Skin.HasSetting(HomeSwitcher.Vertical)">ActivateWindow(1180)</onup>
+            <onup condition="!Control.IsVisible(301) + !Skin.HasSetting(HomeSwitcher.Vertical)">302</onup>
+            <onup condition="Control.IsVisible(301)">301</onup>
+            <ondown>ActivateWindow(1180)</ondown>
+            <include>Hub_Grouplist_OnLeftRight</include>
+            <orientation>vertical</orientation>
+            <control type="group" id="599">
+                <height>widget_tbump_h_detailed</height>
+            </control>
+            <top>widget_grouplist_t_detailed</top>
+            <bottom>widget_grouplist_b_detailed</bottom>
+            <nested />
+        </control>
+    </include>
+
+    <include name="Hub_Combined_Widgets_Grouplist">
+        <control type="grouplist" id="602">
+            <onup condition="!Control.IsVisible(301) + Skin.HasSetting(HomeSwitcher.Vertical)">SetProperty(Bumper.Direction,Up,Home)</onup>
+            <onup condition="!Control.IsVisible(301) + Skin.HasSetting(HomeSwitcher.Vertical)">ActivateWindow(1180)</onup>
+            <onup condition="!Control.IsVisible(301) + !Skin.HasSetting(HomeSwitcher.Vertical)">302</onup>
+            <onup condition="Control.IsVisible(301)">301</onup>
+            <ondown>ActivateWindow(1180)</ondown>
+            <orientation>vertical</orientation>
+            <nested />
+        </control>
+    </include>
+
+    <include name="Hub_Spotlight_Info">
+        <control type="group">
+            <top>280</top>
+            <visible>!$EXP[Exp_InfoDialogs]</visible>
+            <visible>$EXP[Hub_Spotlight_Visible_Expression]</visible>
+            <animation effect="slide" end="0" start="0,-200" time="400" tween="cubic" easing="out" reversible="false" condition="!Control.HasFocus(300)">Visible</animation>
+            <animation effect="slide" start="0" end="0,-200" time="400" tween="cubic" easing="out" reversible="false">Hidden</animation>
+            <include>Info_Panel_Dimensions</include>
+            <include content="Info_Panel">
+                <param name="container">Container(301).</param>
+                <param name="visible_line">String.IsEmpty(Window(Home).Property(Background.ShowOverlay))</param>
+                <param name="visible_plot">String.IsEmpty(Window(Home).Property(Background.ShowOverlay))</param>
+                <param name="visible_meta">String.IsEmpty(Window(Home).Property(Background.ShowOverlay))</param>
+            </include>
+        </control>
+    </include>
+
+    <include name="Hub_Spotlight_Button">
+        <!-- <onfocus>SetProperty(HomeSwitcher.IsVisible,True,Home)</onfocus> -->
+        <onfocus>SetProperty(TMDbHelper.WidgetContainer,301,$PARAM[window])</onfocus>
+        <onfocus>ClearProperty(Background.ShowOverlay,Home)</onfocus>
+        <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+        <!-- <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus> -->
+        <onfocus>SetProperty(InfoPanel.FullSwitch,Spotlight,Home)</onfocus>
+
+        <oninfo>SetFocus(301)</oninfo>
+        <oninfo>Action(Info)</oninfo>
+        <oninfo>SetFocus($PARAM[id])</oninfo>
+
+        <onback condition="!Player.HasMedia">300</onback>
+        <onback condition="Player.HasMedia">SetProperty(FullscreenRefocus,SetFocus($PARAM[id]))</onback>
+        <onback condition="Player.HasMedia">309</onback>
+    </include>
+
+    <include name="Hub_Spotlight_Button_Circle">
+        <param name="id">311</param>
+        <param name="groupid">321</param>
+        <param name="label">$VAR[Label_FullscreenWidget_PlayButton]</param>
+        <param name="image">$VAR[Image_FullscreenWidget_PlayButton]</param>
+        <param name="bordersize">20</param>
+        <param name="size">120</param>
+        <param name="left">0</param>
+        <param name="width">auto</param>
+        <definition>
+            <control type="group" id="$PARAM[groupid]">
+                <left>$PARAM[left]</left>
+                <width>$PARAM[size]</width>
+                <height>$PARAM[size]</height>
+                <centertop>50%</centertop>
+                <control type="group">
+                    <visible>!Control.HasFocus($PARAM[id])</visible>
+                    <control type="image">
+                        <texture colordiffuse="main_fg_100">diffuse/circle/circle_120.png</texture>
+                    </control>
+                    <control type="image">
+                        <bordersize>$PARAM[bordersize]</bordersize>
+                        <texture background="true" colordiffuse="main_bg_90">$PARAM[image]</texture>
+                    </control>
+                </control>
+                <control type="group">
+                    <visible>Control.HasFocus($PARAM[id])</visible>
+                    <control type="image">
+                        <texture colordiffuse="$VAR[ColorHighlight]">diffuse/circle/circle_120.png</texture>
+                    </control>
+                    <control type="image">
+                        <bordersize>$PARAM[bordersize]</bordersize>
+                        <texture background="true" colordiffuse="$VAR[ColorSelected]">$PARAM[image]</texture>
+                    </control>
+                </control>
+            </control>
+            <control type="button" id="$PARAM[id]">
+                <width>$PARAM[width]</width>
+                <height>80</height>
+                <centertop>50%</centertop>
+                <textoffsetx>0</textoffsetx>
+                <include>Texture_Highlight_Underline_H</include>
+                <font>font_main_bold</font>
+                <textcolor>main_fg_90</textcolor>
+                <focusedcolor>main_fg_100</focusedcolor>
+                <label>$PARAM[label]</label>
+                <nested />
+                <left>20</left>
+            </control>
+        </definition>
+    </include>
+
+    <include name="Hub_Spotlight_OnLeft">
+        <include>Hub_Grouplist_OnLeft</include>
+        <onleft condition="$EXP[Exp_Hubs_Spotlight_HasItems] + !Skin.HasSetting(HomeSwitcher.Vertical)">Control.Move(301,-1)</onleft>
+    </include>
+
+    <include name="Hub_Spotlight">
+        <param name="window">Home</param>
+        <param name="visible">True</param>
+        <definition>
+
+            <animation effect="slide" start="0" end="0,440" time="400" tween="quadratic" reversible="false" condition="$EXP[Exp_Hubs_Spotlight_SlideDown]">Conditional</animation>
+            <animation effect="slide" end="0" start="0,440" time="400" tween="quadratic" reversible="false" condition="![$EXP[Exp_Hubs_Spotlight_SlideDown]]">Conditional</animation>
+
+            <control type="group">
+                <top>260</top>
+                <height>hub_spotlight_h</height>
+                <visible>$EXP[Hub_Spotlight_Visible_Expression]</visible>
+                <include>Home_Info_Animation</include>
+                <control type="group">
+                    <animation effect="fade" start="100" end="30" time="200" condition="!ControlGroup(310).HasFocus() + !String.IsEmpty(Window(Home).Property(HomeSwitcher.IsVisible)) + Skin.HasSetting(Spotlight.EnableSlide)">Conditional</animation>
+                    <include content="View_Line">
+                        <param name="use_spinner">true</param>
+                        <param name="run_spinner">[Container(301).IsUpdating]</param>
+                        <param name="label">$INFO[Skin.String(HomeSwitcher.$PARAM[window].Spotlight.Label),, ]</param>
+                        <param name="top">20</param>
+                    </include>
+                </control>
+
+                <control type="grouplist" id="310">
+
+                    <include content="Animation_Fade_Out">
+                        <param name="condition">!ControlGroup(310).HasFocus() + !String.IsEmpty(Window(Home).Property(HomeSwitcher.IsVisible)) + Skin.HasSetting(Spotlight.EnableSlide)</param>
+                    </include>
+                    <include content="Animation_Fade_In">
+                        <param name="condition">![!ControlGroup(310).HasFocus() + !String.IsEmpty(Window(Home).Property(HomeSwitcher.IsVisible)) + Skin.HasSetting(Spotlight.EnableSlide)]</param>
+                    </include>
+
+                    <orientation>horizontal</orientation>
+                    <include>Hub_Spotlight_OnLeft</include>
+                    <onright>noop</onright>
+                    <onright condition="$EXP[Exp_Hubs_Spotlight_HasItems]">Control.Move(301,1)</onright>
+
+                    <onup condition="Skin.HasSetting(HomeSwitcher.Vertical)">SetProperty(Bumper.Direction,Up,Home)</onup>
+                    <onup condition="Skin.HasSetting(HomeSwitcher.Vertical)">ActivateWindow(1180)</onup>
+                    <onup condition="!Skin.HasSetting(HomeSwitcher.Vertical)">300</onup>
+                    <ondown>$VAR[Hub_Action_Widgets]</ondown>
+
+                    <centertop>140</centertop>
+                    <left>40</left>
+                    <height>160</height>
+
+                    <control type="image" id="314">
+                        <width>40</width>
+                        <height>40</height>
+                        <centertop>50%</centertop>
+                        <texture colordiffuse="main_fg_30">special://skin/extras/icons/angle-left.png</texture>
+                        <include content="Animation_Fade_Out">
+                            <param name="condition">!ControlGroup(310).HasFocus() | Skin.HasSetting(HomeSwitcher.Vertical)</param>
+                        </include>
+                        <include content="Animation_Fade_In">
+                            <param name="condition">ControlGroup(310).HasFocus() + !Skin.HasSetting(HomeSwitcher.Vertical)</param>
+                        </include>
+                    </control>
+
+                    <control type="group" id="316">
+                        <width>240</width>
+                        <orientation>horizontal</orientation>
+
+                        <include content="Hub_Spotlight_Button_Circle">
+                            <param name="id">311</param>
+                            <param name="groupid">321</param>
+                            <param name="label">$VAR[Label_FullscreenWidget_PlayButton]</param>
+                            <param name="image">$VAR[Image_FullscreenWidget_PlayButton]</param>
+                            <onclick>SetFocus(301)</onclick>
+                            <onclick condition="!String.StartsWith(Container(301).ListItem.FolderPath,videodb://)">Action(select)</onclick>
+                            <onclick condition="String.StartsWith(Container(301).ListItem.FolderPath,videodb://)">Action(play)</onclick>
+                            <onclick>SetFocus(311)</onclick>
+                            <include content="Hub_Spotlight_Button">
+                                <param name="id">311</param>
+                                <param name="window">$PARAM[window]</param>
+                            </include>
+                            <include>Hub_Spotlight_OnLeft</include>
+                            <onright>312</onright>
+                            <left>140</left>
+                            <onup condition="Skin.HasSetting(HomeSwitcher.Vertical)">SetProperty(Bumper.Direction,Up,Home)</onup>
+                            <onup condition="Skin.HasSetting(HomeSwitcher.Vertical)">ActivateWindow(1180)</onup>
+                            <onup condition="!Skin.HasSetting(HomeSwitcher.Vertical)">300</onup>
+                            <ondown>$VAR[Hub_Action_Widgets]</ondown>
+                        </include>
+                    </control>
+
+                    <include content="Hub_Spotlight_Button_Circle">
+                        <param name="id">312</param>
+                        <param name="groupid">322</param>
+                        <param name="label">$VAR[Label_FullscreenWidget_InfoButton]</param>
+                        <param name="image">$VAR[Image_FullscreenWidget_InfoButton]</param>
+                        <param name="size">60</param>
+                        <param name="bordersize">0</param>
+                        <param name="left">80</param>
+                        <onclick>SetFocus(301)</onclick>
+                        <onclick>$VAR[Action_FullscreenWidget_InfoButton]</onclick>
+                        <onclick>SetFocus(312)</onclick>
+                        <include content="Hub_Spotlight_Button">
+                            <param name="id">311</param>
+                            <param name="window">$PARAM[window]</param>
+                        </include>
+                    </include>
+
+                    <control type="image" id="315">
+                        <left>20</left>
+                        <width>40</width>
+                        <height>40</height>
+                        <centertop>50%</centertop>
+                        <texture colordiffuse="main_fg_30">special://skin/extras/icons/angle-right.png</texture>
+                        <include content="Animation_Fade_Out">
+                            <param name="condition">!ControlGroup(310).HasFocus()</param>
+                        </include>
+                        <include content="Animation_Fade_In">
+                            <param name="condition">ControlGroup(310).HasFocus()</param>
+                        </include>
+                    </control>
+
+                </control>
+            </control>
+        </definition>
+    </include>
+
+    <variable name="Hub_Action_Down">
+        <value condition="Control.IsVisible(301)">SetFocus(310)</value>
+        <value condition="Control.IsVisible(601)">SetFocus(601)</value>
+        <value condition="Control.IsVisible(602)">SetFocus(602)</value>
+    </variable>
+    <variable name="Hub_Action_Reset">
+        <value condition="Control.IsVisible(501)">SetFocus(501)</value>
+        <value condition="Control.IsVisible(502)">SetFocus(502)</value>
+        <value condition="Control.IsVisible(503)">SetFocus(503)</value>
+        <value condition="Control.IsVisible(504)">SetFocus(504)</value>
+        <value condition="Control.IsVisible(505)">SetFocus(505)</value>
+        <value condition="Control.IsVisible(506)">SetFocus(506)</value>
+        <value condition="Control.IsVisible(507)">SetFocus(507)</value>
+        <value condition="Control.IsVisible(508)">SetFocus(508)</value>
+        <value condition="Control.IsVisible(509)">SetFocus(509)</value>
+        <value condition="Control.IsVisible(510)">SetFocus(510)</value>
+    </variable>
+    <variable name="Hub_Action_Widgets">
+        <value condition="Control.IsVisible(601)">SetFocus(601)</value>
+        <value condition="Control.IsVisible(501)">SetFocus(501)</value>
+        <value condition="Control.IsVisible(502)">SetFocus(502)</value>
+        <value condition="Control.IsVisible(503)">SetFocus(503)</value>
+        <value condition="Control.IsVisible(504)">SetFocus(504)</value>
+        <value condition="Control.IsVisible(505)">SetFocus(505)</value>
+        <value condition="Control.IsVisible(506)">SetFocus(506)</value>
+        <value condition="Control.IsVisible(507)">SetFocus(507)</value>
+        <value condition="Control.IsVisible(508)">SetFocus(508)</value>
+        <value condition="Control.IsVisible(509)">SetFocus(509)</value>
+        <value condition="Control.IsVisible(510)">SetFocus(510)</value>
+    </variable>
+
+    <include name="Hub_Spotlight_List">
+        <param name="window">Home</param>
+        <definition>
+            <control type="wraplist" id="301">
+                <preloaditems>2</preloaditems>
+                <onfocus>SetProperty(TMDbHelper.WidgetContainer,301,$PARAM[window])</onfocus>
+                <onfocus>ClearProperty(Background.ShowOverlay,Home)</onfocus>
+
+                <onfocus condition="Integer.IsEqual(Container(301).NumItems,0)">SetFocus(300)</onfocus>
+                <onfocus condition="!Integer.IsEqual(Container(301).NumItems,0)">SetFocus(311)</onfocus>
+
+                <visible>$EXP[Exp_Hubs_Spotlight_HasItems]</visible>
+
+                <orientation>horizontal</orientation>
+                <scrolltime tween="quadratic">400</scrolltime>
+                <hitrect x="0" y="0" w="0" h="0" />
+
+                <width>1</width>
+                <height>1</height>
+                <left>-1920</left>
+
+                <include content="Defs_AutoScroll">
+                    <param name="condition">[!ControlGroup(310).HasFocus() | System.IdleTime(3)]</param>
+                </include>
+
+                <itemlayout />
+                <focusedlayout />
+
+                <include content="Object_ContentDynamic">
+                    <param name="sortby">$PARAM[sortby]</param>
+                    <param name="sortorder">$PARAM[sortorder]</param>
+                    <param name="target">$PARAM[target]</param>
+                    <param name="limit">$PARAM[limit]</param>
+                    <param name="browse">never</param>
+                    <param name="content">$PARAM[content]</param>
+                </include>
+
+                <nested />
+
+            </control>
+        </definition>
+    </include>
+
+    <include name="Hub_Window_Side_Slide_Animation">
+        <param name="visible">true</param>
+        <param name="windowclose">true</param>
+        <param name="windowopen">true</param>
+        <definition>
+            <animation effect="slide" tween="cubic" start="0" end="100" time="400" condition="[$PARAM[visible]]" reversible="false">Conditional</animation>
+            <animation effect="slide" tween="cubic" start="100" end="0" time="400" condition="![$PARAM[visible]]" reversible="false">Conditional</animation>
+
+            <animation type="WindowClose" condition="[$PARAM[visible]] + $PARAM[windowclose]" reversible="false">
+                <effect type="slide" tween="cubic" start="0" end="-100" time="400" />
+            </animation>
+            <animation type="WindowOpen" condition="[$PARAM[visible]] + $PARAM[windowopen]" reversible="false">
+                <effect type="slide" tween="cubic" start="-100" end="0" time="400" />
+            </animation>
+
+        </definition>
+    </include>
+
+    <include name="Hub_Window_Side_Slide">
+        <include content="Hub_Window_Side_Slide_Animation" condition="Skin.HasSetting(HomeSwitcher.Vertical)">
+            <param name="visible">!String.IsEmpty(Window(Home).Property(HomeSwitcher.IsVisible))</param>
+            <param name="windowclose">false</param>
+            <param name="windowopen">false</param>
+        </include>
+    </include>
+
+    <include name="Hub_Submenu_Fade">
+        <param name="visible">[Skin.HasSetting(HomeSwitcher.Vertical) + !String.IsEmpty(Window(Home).Property(HomeSwitcher.IsVisible))]</param>
+        <definition>
+            <control type="group">
+
+                <visible>$PARAM[visible]</visible>
+
+                <include content="Hub_Window_Side_Slide">
+                    <param name="visible">$PARAM[visible]</param>
+                </include>
+
+                <include content="Animation_Fade_In">
+                    <param name="type">Visible</param>
+                    <param name="time">200</param>
+                </include>
+                <include content="Animation_Fade_Out">
+                    <param name="type">Hidden</param>
+                </include>
+                <control type="image">
+                    <left>40</left>
+                    <width>1080</width>
+                    <height>1080</height>
+                    <texture colordiffuse="$VAR[ColorBackground]">special://skin/extras/backgrounds/overlay/combined_sidemenu.png</texture>
+                </control>
+            </control>
+        </definition>
+    </include>
+
+    <include name="Hub_Window_Refocus_Buttons">
+        <include content="Object_Hidden_Button">
+            <param name="id">302</param>
+            <onfocus>$VAR[Hub_Action_Reset]</onfocus>
+            <onfocus condition="!Control.IsVisible(301)">SetFocus(300)</onfocus>
+            <onfocus condition="Control.IsVisible(301)">SetFocus(301)</onfocus>
+        </include>
+
+        <include content="Object_Hidden_Button">
+            <param name="id">303</param>
+            <onfocus>$VAR[Hub_Action_Reset]</onfocus>
+            <onfocus>SetFocus(300)</onfocus>
+            <onfocus>ActivateWindow(1170)</onfocus>
+        </include>
+
+        <include content="Object_Hidden_Button">
+            <param name="id">304</param>
+            <onfocus>$VAR[Hub_Action_Reset]</onfocus>
+            <onfocus condition="Control.IsVisible(301)">SetFocus(301)</onfocus>
+            <onfocus>AlarmClock(refocus_300,SetFocus(300),00:00,silent)</onfocus>
+        </include>
+
+        <include content="Object_Hidden_Button">
+            <param name="id">309</param>
+            <onfocus>$INFO[Window.Property(FullscreenRefocus)]</onfocus>
+            <onfocus>ClearProperty(FullscreenRefocus)</onfocus>
+            <onfocus>Action(Fullscreen)</onfocus>
+        </include>
+    </include>
+
+    <include name="Hub_Window_Slide_OnSpotlight">
+        <animation effect="slide" start="0" end="0,240" time="400" tween="quadratic" reversible="false" condition="!ControlGroup(310).HasFocus() + !String.IsEmpty(Window(Home).Property(HomeSwitcher.IsVisible)) + Integer.IsEqual(Window.Property(TMDbHelper.WidgetContainer),301)">Conditional</animation>
+        <animation effect="slide" end="0" start="0,240" time="400" tween="quadratic" reversible="false" condition="![!ControlGroup(310).HasFocus() + !String.IsEmpty(Window(Home).Property(HomeSwitcher.IsVisible)) + Integer.IsEqual(Window.Property(TMDbHelper.WidgetContainer),301)]">Conditional</animation>
+    </include>
+
+    <include name="Hub_Window_Background">
+        <include>Hub_Window_Refocus_Buttons</include>
+        <include>Background</include>
+        <include condition="Skin.HasSetting(HomeSwitcher.Vertical)">Hub_Submenu_Fade</include>
+    </include>
+    <include name="Hub_Window">
+        <param name="overlay">true</param>
+        <param name="spotlight">true</param>
+        <definition>
+
+            <include>Hub_Window_Background</include>
+
+            <!-- Spotlight List -->
+            <include content="Hub_Spotlight_List" condition="!String.IsEmpty(Skin.String(HomeSwitcher.$PARAM[window].Spotlight.Target)) + $PARAM[spotlight]">
+                <param name="window">$PARAM[window]</param>
+                <param name="content">$INFO[Skin.String(HomeSwitcher.$PARAM[window].Spotlight.Path)]</param>
+                <param name="sortby">$INFO[Skin.String(HomeSwitcher.$PARAM[window].Spotlight.SortMethod)]</param>
+                <param name="sortorder">$INFO[Skin.String(HomeSwitcher.$PARAM[window].Spotlight.SortOrder)]</param>
+                <param name="target">$INFO[Skin.String(HomeSwitcher.$PARAM[window].Spotlight.Target)]</param>
+                <param name="limit">$INFO[Skin.String(HomeSwitcher.$PARAM[window].Spotlight.Limit)]</param>
+            </include>
+
+            <include content="Home_Control">
+                <param name="window">$PARAM[window]</param>
+                <param name="overlay">[String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Wall) + String.IsEmpty(Skin.String(HomeSwitcher.$PARAM[window].Spotlight.Target))]</param>
+            </include>
+
+            <control type="group">
+                <include>Animation_Group_Bumper</include>
+
+                <control type="group">
+
+                    <include condition="Skin.HasSetting(HomeSwitcher.Vertical)">Hub_Window_Side_Slide</include>
+
+                    <control type="group">
+
+                        <include condition="Skin.HasSetting(Spotlight.EnableSlide) + $PARAM[spotlight]">Hub_Window_Slide_OnSpotlight</include>
+
+
+                        <!-- Content -->
+                        <control type="group" id="400">
+                            <include>Animation_View_WindowChange</include>
+
+                            <!-- Spotlight -->
+                            <include content="Hub_Spotlight" condition="$PARAM[spotlight]">
+                                <param name="window">$PARAM[window]</param>
+                            </include>
+
+                            <!-- Widgets Groups -->
+                            <control type="group" id="500">
+                                <include content="Hub_Combined_Widgets_Grouplist" condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Wall)">
+                                    <include condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Wall)">skinvariables-$PARAM[window]widgets-wall</include>
+                                </include>
+                                <include condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Combined)">skinvariables-$PARAM[window]widgets-combined</include>
+                                <include condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Standard)">skinvariables-$PARAM[window]widgets-standard</include>
+                            </control>
+
+                            <!-- Switching Groups -->
+                            <control type="group" id="600">
+                                <include content="Hub_Widget_Switcher" condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Wall)">
+                                    <param name="include_content">skinvariables-$PARAM[window]widgets-wall-selector</param>
+                                </include>
+                                <include content="Hub_Widget_Switcher" condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Combined)">
+                                    <param name="include_content">skinvariables-$PARAM[window]widgets-combined-selector</param>
+                                    <param name="top">520</param>
+                                    <param name="wall">false</param>
+                                </include>
+                            </control>
+                        </control>
+
+                        <!-- Info Panels -->
+                        <include condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Wall)">skinvariables-$PARAM[window]widgets-wall-info</include>
+                        <include condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Combined) | String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Standard)">skinvariables-$PARAM[window]widgets-combined-info</include>
+                        <include condition="!String.IsEmpty(Skin.String(HomeSwitcher.$PARAM[window].Spotlight.Target))">Hub_Spotlight_Info</include>
+                    </control>
+                    <include content="Hub_VertMenu" condition="Skin.HasSetting(HomeSwitcher.Vertical)">
+                        <param name="window">$PARAM[window]</param>
+                    </include>
+                </control>
+
+                <control type="group">
+                    <include>Furniture_Reposition</include>
+                    <visible>!$EXP[Exp_InfoDialogs]</visible>
+                    <include>Furniture_Footer_Right</include>
+                </control>
+            </control>
+
+        </definition>
+    </include>
+
+
+
+    <include name="Hub_Prefab_Window">
+        <param name="overlay">true</param>
+        <definition>
+            <include>Hub_Window_Background</include>
+
+            <include content="Home_Control" condition="!String.IsEmpty(Skin.String(HomeSwitcher.$PARAM[window].Toggle))">
+                <param name="window">$PARAM[window]</param>
+                <param name="overlay">[String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Wall)]</param>
+
+                <onclick condition="Window.IsVisible(1106) + Skin.String(HomeSwitcher.1106.UpNextMode,library_nextaired)">Skin.SetString(HomeSwitcher.1106.UpNextMode,trakt_calendar)</onclick>
+                <onclick condition="Window.IsVisible(1106) + Skin.String(HomeSwitcher.1106.UpNextMode,trakt_calendar)">Skin.SetString(HomeSwitcher.1106.UpNextMode,library_nextaired)</onclick>
+                <onclick condition="Window.IsVisible(1106)">SetProperty(ReloadWidgets,1)</onclick>
+                <onclick condition="Window.IsVisible(1106)">AlarmClock(resetproperty,ClearProperty(ReloadWidgets),00:00,silent)</onclick>
+
+            </include>
+
+            <control type="group">
+                <include>Animation_Group_Bumper</include>
+
+                <control type="group">
+                    <include condition="Skin.HasSetting(HomeSwitcher.Vertical)">Hub_Window_Side_Slide</include>
+
+                    <!-- Content -->
+                    <control type="group" id="400">
+                        <include>Animation_View_WindowChange</include>
+                        <!-- Widgets Groups -->
+                        <control type="group" id="500">
+                            <include content="Hub_Combined_Widgets_Grouplist" condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Wall)">
+                                <include condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Wall)">$PARAM[widgets_wall]</include>
+                            </include>
+                            <include condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Combined)">$PARAM[widgets_combined]</include>
+                            <include condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Standard)">$PARAM[widgets_standard]</include>
+                        </control>
+
+                        <!-- Switching Groups -->
+                        <control type="group" id="600">
+                            <include content="Hub_Widget_Switcher" condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Wall)">
+                                <param name="include_content">$PARAM[switcher_content]</param>
+                            </include>
+                            <include content="Hub_Widget_Switcher" condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Combined)">
+                                <param name="include_content">$PARAM[switcher_content]</param>
+                                <param name="top">520</param>
+                                <param name="wall">false</param>
+                            </include>
+                        </control>
+                    </control>
+
+                    <!-- Info Panels -->
+                    <include condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Wall)">$PARAM[info_wall]</include>
+                    <include condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Combined) | String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window].Mode),Standard)">$PARAM[info_combined]</include>
+                    <include content="Hub_VertMenu" condition="Skin.HasSetting(HomeSwitcher.Vertical)">
+                        <param name="window">$PARAM[window]</param>
+                    </include>
+                </control>
+
+
+                <control type="group">
+                    <include>Furniture_Reposition</include>
+                    <visible>!$EXP[Exp_InfoDialogs]</visible>
+                    <include>Furniture_Footer_Right</include>
+                </control>
+            </control>
+
+        </definition>
+    </include>
+
+    <include name="Hub_SideMenu_Overlay">
+        <include content="Animation_Fade_In">
+            <param name="type">Visible</param>
+            <param name="time">200</param>
+        </include>
+        <include content="Animation_Fade_Out">
+            <param name="type">Hidden</param>
+        </include>
+        <control type="image">
+            <left>-200</left>
+            <width>240</width>
+            <height>1080</height>
+            <texture colordiffuse="$VAR[ColorBackground]">common/white.png</texture>
+        </control>
+    </include>
+
+    <include name="Hub_VertMenu">
+        <control type="group">
+            <visible>!String.IsEmpty(Window(Home).Property(HomeSwitcher.IsVisible))</visible>
+            <include>Hub_SideMenu_Overlay</include>
+        </control>
+    </include>
+
+    <include name="Hub_Weather_Widget">
+        <control type="group">
+            <top>0</top>
+            <right>40</right>
+            <left>80</left>
+            <top>320</top>
+            <bottom>90</bottom>
+            <visible>String.IsEqual(Container(601).ListItem.Property(guid),weather)</visible>
+            <control type="group">
+                <left>0%</left>
+                <height>660</height>
+                <bottom>0</bottom>
+                <width>20%</width>
+                <control type="group">
+                    <right>40</right>
+                    <include content="Weather_Details_HighLow">
+                        <param name="diffuse">diffuse/tall_w320_h720.png</param>
+                        <param name="day">Day0</param>
+                    </include>
+                </control>
+            </control>
+            <control type="group">
+                <left>20%</left>
+                <height>660</height>
+                <bottom>0</bottom>
+                <width>20%</width>
+                <control type="group">
+                    <right>40</right>
+                    <include content="Weather_Details_HighLow">
+                        <param name="diffuse">diffuse/tall_w320_h720.png</param>
+                        <param name="day">Day1</param>
+                    </include>
+                </control>
+            </control>
+            <control type="group">
+                <left>40%</left>
+                <height>660</height>
+                <bottom>0</bottom>
+                <width>20%</width>
+                <control type="group">
+                    <right>40</right>
+                    <include content="Weather_Details_HighLow">
+                        <param name="diffuse">diffuse/tall_w320_h720.png</param>
+                        <param name="day">Day2</param>
+                    </include>
+                </control>
+            </control>
+            <control type="group">
+                <left>60%</left>
+                <height>660</height>
+                <bottom>0</bottom>
+                <width>20%</width>
+                <control type="group">
+                    <right>40</right>
+                    <include content="Weather_Details_HighLow">
+                        <param name="diffuse">diffuse/tall_w320_h720.png</param>
+                        <param name="day">Day3</param>
+                    </include>
+                </control>
+            </control>
+            <control type="group">
+                <left>80%</left>
+                <height>660</height>
+                <bottom>0</bottom>
+                <width>20%</width>
+                <control type="group">
+                    <right>40</right>
+                    <include content="Weather_Details_HighLow">
+                        <param name="diffuse">diffuse/tall_w320_h720.png</param>
+                        <param name="day">Day4</param>
+                    </include>
+                </control>
+            </control>
+        </control>
+    </include>
+
+    <include name="Hub_Settings_Items">
+        <item>
+            <label>$LOCALIZE[400]</label>
+            <property name="guid">weather</property>
+            <property name="widget_id">$NUMBER[501]</property>
+            <property name="show_overlay">true</property>
+            <onclick>ActivateWindow(1161)</onclick>
+            <visible>!Integer.IsEqual(Container(501).NumItems,0) | Container(501).IsUpdating</visible>
+        </item>
+        <item>
+            <label>$LOCALIZE[1036]</label>
+            <property name="guid">favourites</property>
+            <property name="widget_id">$NUMBER[502]</property>
+            <property name="show_overlay">true</property>
+            <onclick>ActivateWindow(1160)</onclick>
+            <visible>!Integer.IsEqual(Container(502).NumItems,0) | Container(502).IsUpdating</visible>
+        </item>
+        <item>
+            <label>$LOCALIZE[5]</label>
+            <property name="guid">settings</property>
+            <property name="widget_id">$NUMBER[503]</property>
+            <property name="show_overlay">true</property>
+            <onclick>ActivateWindow(settings)</onclick>
+            <visible>!Integer.IsEqual(Container(503).NumItems,0) | Container(503).IsUpdating</visible>
+        </item>
+    </include>
+
+    <include name="Hub_Settings_Favourites_Onclick">
+        <onclick>RunScript(script.skinvariables,run_executebuiltin=special://skin/shortcuts/builtins/skinvariables-openfavourite.json,use_rules,close_dialog=false,folderpath=$INFO[Container(502).ListItem.FolderPath])</onclick>
+    </include>
+
+    <include name="Hub_Settings_Widgets">
+        <include content="Hub_Wall_Widget">
+            <param name="id">502</param>
+            <param name="content">favourites://</param>
+            <param name="include">List_Square_Row</param>
+            <param name="sortby">lastused</param>
+            <param name="sortorder">descending</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),favourites)</param>
+            <param name="home_switcher">true</param>
+            <param name="include_action">Hub_Settings_Favourites_Onclick</param>
+        </include>
+    </include>
+
+    <include name="Hub_Widget_Overlay">
+        <include content="Object_Property" condition="String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window_id].Mode),Wall)">
+            <param name="name">show_overlay</param>
+            <param name="property">true</param>
+        </include>
+        <include content="Object_Property" condition="!String.IsEqual(Skin.String(HomeSwitcher.$PARAM[window_id].Mode),Wall)">
+            <param name="name">hide_overlay</param>
+            <param name="property">true</param>
+        </include>
+    </include>
+
+    <include name="Hub_Widget_Splash">
+        <param name="condition">false</param>
+        <param name="label">$LOCALIZE[31427] [LOWERCASE]$LOCALIZE[31103][/LOWERCASE]</param>
+        <param name="busyspinner">true</param>
+        <definition>
+            <control type="group">
+                <visible>$PARAM[condition]</visible>
+                <include>Background_StartUp</include>
+                <include>Object_StartUp_Logo</include>
+                <control type="label">
+                    <centertop>610</centertop>
+                    <height>40</height>
+                    <aligny>center</aligny>
+                    <align>center</align>
+                    <textcolor>main_logo</textcolor>
+                    <label>$PARAM[label]...</label>
+                </control>
+                <include content="Furniture_Busy" condition="$PARAM[busyspinner]">
+                    <param name="hasspinner">true</param>
+                    <param name="spinspinner">true</param>
+                    <param name="spinnervisible">[!Window.IsActive(DialogVolumeBar.xml) | Player.Muted]</param>
+                    <param name="icon">special://skin/extras/icons/kodi.png</param>
+                    <param name="haslabel">false</param>
+                </include>
+            </control>
+        </definition>
+    </include>
+
+</includes>

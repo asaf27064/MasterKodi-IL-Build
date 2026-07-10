@@ -1,0 +1,15 @@
+<advancedsettings>
+  <!-- MasterKodi IL: anti-buffering / smooth streaming (added 2026-07-09).
+       Box has 16 GB RAM, so a big forward buffer is safe. Kodi shipped with NO
+       advancedsettings.xml, so it used a tiny default cache and stalled on every
+       dip in the source (52 "stream stalled" events in one The Agency episode). -->
+  <cache>
+    <buffermode>1</buffermode>          <!-- buffer ALL internet-backed streams -->
+    <memorysize>209715200</memorysize>  <!-- 200 MB forward buffer (~3-5 min at 1080p) -->
+    <readfactor>20</readfactor>         <!-- read up to 20x playback rate to refill fast -->
+  </cache>
+  <network>
+    <curlclienttimeout>30</curlclienttimeout>
+    <curllowspeedtime>20</curllowspeedtime>  <!-- tolerate 20s of slowness before dropping a source -->
+  </network>
+</advancedsettings>

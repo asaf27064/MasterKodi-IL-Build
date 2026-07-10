@@ -1,0 +1,32 @@
+<settings version="2">
+    <setting id="filter.undesirables" default="true">true</setting>
+    <setting id="undesirables.settings2" default="true" />
+    <setting id="undesirables.settings3" default="true" />
+    <setting id="undesirables.settings4" default="true" />
+    <setting id="filter.foreign.single.audio" default="true">true</setting>
+    <setting id="provider.1337x" default="true">false</setting>
+    <setting id="provider.bitsearch" default="true">true</setting>
+    <setting id="provider.comet">true</setting>
+    <setting id="provider.eztv" default="true">true</setting>
+    <setting id="provider.kickass2" default="true">false</setting>
+    <setting id="provider.knaben" default="true">false</setting>
+    <setting id="provider.limetorrents" default="true">false</setting>
+    <setting id="provider.mediafusion">true</setting>
+    <setting id="mediafusion.usecustomurl" default="true">false</setting>
+    <setting id="mediafusion.customurl" default="true" />
+    <setting id="mediafusion.userdata" default="true" />
+    <setting id="provider.nyaa" default="true">false</setting>
+    <setting id="provider.piratebay" default="true">false</setting>
+    <setting id="provider.prowlarr" default="true">false</setting>
+    <setting id="prowlarr.url" default="true" />
+    <setting id="prowlarr.token" default="true" />
+    <setting id="provider.torrentdownload" default="true">true</setting>
+    <setting id="provider.torrentgalaxy" default="true">false</setting>
+    <setting id="provider.torrentio" default="true">true</setting>
+    <setting id="torrentio.bypass_filter" default="true">false</setting>
+    <setting id="provider.torrentproject2" default="true">false</setting>
+    <setting id="provider.ytsmx" default="true">false</setting>
+    <setting id="debug.enabled" default="true">false</setting>
+    <setting id="debug.location" default="true">1</setting>
+    <setting id="debug.reversed" default="true">false</setting>
+</settings>

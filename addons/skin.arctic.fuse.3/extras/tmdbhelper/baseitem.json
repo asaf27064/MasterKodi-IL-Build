@@ -1,0 +1,12 @@
+{
+    "tvshowtitle": {"infolabels": ["tvshowtitle"]},
+    "year": {"infolabels": ["year"]},
+    "plot": {"infolabels": ["plot", "Property(artist_description)", "Property(album_description)", "addondescription", "Property(biography)"]},
+    "poster": {"infolabels": ["Art(poster)", "Art(season.poster)", "Art(tvshow.poster)"]},
+    "clearlogo": {"infolabels": ["Art(clearlogo)", "Art(season.clearlogo)", "Art(tvshow.clearlogo)", "Art(artist.clearlogo)"]},
+    "tmdb_id": {"infolabels": ["uniqueid(tmdb)"]},
+    "imdb_id": {"infolabels": ["uniqueid(imdb)"]},
+    "tvdb_id": {"infolabels": ["uniqueid(tvdb)"]}
+}
+
+

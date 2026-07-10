@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+
+    <defaultcontrol>3</defaultcontrol>
+    <controls>
+
+        <include condition="!Window.IsActive(selectvideoversion) + !String.IsEmpty(Window(Home).Property(SkinViewtypes.DialogIsActive)) + ![Window.IsVisible(gamevideofilter) | Window.IsVisible(gamestretchmode) | Window.IsVisible(gamesaves) | Window.IsVisible(gamevideorotation) | Window.IsVisible(ingamesaves)]">DialogSelect_Viewtype</include>
+        <include condition="!Window.IsActive(selectvideoversion) + String.IsEmpty(Window(Home).Property(SkinViewtypes.DialogIsActive)) + ![Window.IsVisible(gamevideofilter) | Window.IsVisible(gamestretchmode) | Window.IsVisible(gamesaves) | Window.IsVisible(gamevideorotation) | Window.IsVisible(ingamesaves)]">DialogSelect_Standard</include>
+        <include condition="Window.IsActive(selectvideoversion)">DialogSelect_Versions</include>
+        <include condition="[Window.IsVisible(gamevideofilter) | Window.IsVisible(gamestretchmode) | Window.IsVisible(gamesaves) | Window.IsVisible(gamevideorotation) | Window.IsVisible(ingamesaves)]">DialogSelect_GameFilters</include>
+
+        <!-- Hidden Buttons -->
+        <include content="Object_Hidden_Button">
+            <param name="id">5</param>
+            <onfocus>SetFocus(9001)</onfocus>
+        </include>
+        <include content="Object_Hidden_Button">
+            <param name="id">7</param>
+            <onfocus>SetFocus(9002)</onfocus>
+        </include>
+        <include content="Object_Hidden_Button">
+            <param name="id">8</param>
+            <onfocus>SetFocus(9003)</onfocus>
+        </include>
+    </controls>
+</window>

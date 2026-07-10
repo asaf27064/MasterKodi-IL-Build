@@ -51,8 +51,14 @@ def _rebuild_config_zip(config_root, out_path):
     entries = []
     for root, dirs, files in os.walk(config_root):
         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
+        # never ship runtime databases in the config (regenerated on-device;
+        # they also carry per-user tokens like trakt.secret) -> defaults come
+        # from each addon's baked settings instead.
+        dirs[:] = [d for d in dirs if d.lower() != 'database']
         for fn in sorted(files):
             if fn in EXCLUDE_NAMES or os.path.splitext(fn)[1] in EXCLUDE_EXTS:
+                continue
+            if fn.lower().endswith('.db'):
                 continue
             abspath = os.path.join(root, fn)
             arc = os.path.relpath(abspath, config_root).replace(os.sep, '/')

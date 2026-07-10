@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<includes>
+  <include name="TVShowsMainMenu">
+    <item>
+      <label>סדרות</label>
+      <onclick>ActivateWindow(Videos,plugin://plugin.video.gears/?name=TV+Shows&amp;mode=navigator.main&amp;action=TVShowList&amp;iconImage=tv,return)</onclick>
+      <property name="menu_id">$NUMBER[22000]</property>
+      <property name="id">tvshows</property>
+      <visible>!Skin.HasSetting(HomeMenuNoTVShowButton)</visible>
+    </item>
+  </include>
+</includes>

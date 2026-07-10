@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window type="dialog" id="1113">
+
+    <defaultcontrol always="true">61</defaultcontrol>
+    <onload>SetProperty(TMDbHelper.ContextMenu,True)</onload>
+    <controls>
+
+        <include>DialogPlot</include>
+
+    </controls>
+</window>

@@ -1,0 +1,38 @@
+<contents>
+    <rules name="parts_onclick">
+        <rule>
+            <condition>{item_target}!=</condition>
+            <value>
+                <![CDATA[
+                <onclick>ActivateWindow({item_target},{item_path},return)</onclick>
+                ]]>
+            </value>
+        </rule>
+        <rule>
+            <condition>{item_path}==RebootToAndroid</condition>
+            <value>
+                <![CDATA[
+                <onclick>System.ExecWait("/usr/sbin/rebootfromnand")</onclick>
+                <onclick>Reboot()</onclick>
+                ]]>
+            </value>
+        </rule>
+        <rule>
+            <condition>{item_path}==Custom_Submenu</condition>
+            <value>
+                <![CDATA[
+                <onclick condition="!String.IsEqual(Window(Home).Property(SubGroup.IsVisible),{item_guid})">SetProperty(SubGroup.IsVisible,{item_guid},Home)</onclick>
+                <onclick condition="String.IsEqual(Window(Home).Property(SubGroup.IsVisible),{item_guid})">ClearProperty(SubGroup.IsVisible,Home)</onclick>
+                ]]>
+            </value>
+        </rule>
+        <rule>
+            <condition>True</condition>
+            <value>
+                <![CDATA[
+                <onclick>{item_path}</onclick>
+                ]]>
+            </value>
+        </rule>
+    </rules>
+</contents>

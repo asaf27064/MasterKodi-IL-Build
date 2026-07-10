@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<includes>
+  <include name="Custom1Widgets">
+
+    <include content="WidgetListCategory">
+      <param name="content_path" value="plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder"/>
+      <param name="widget_header" value="שירותי TorBox"/>
+      <param name="widget_target" value="videos"/>
+      <param name="list_id" value="23011"/>
+    </include>
+
+  </include>
+</includes>

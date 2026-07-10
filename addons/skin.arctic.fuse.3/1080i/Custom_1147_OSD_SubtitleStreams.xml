@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window type="dialog" id="1147">
+
+    <defaultcontrol always="true">6009</defaultcontrol>
+
+    <controls>
+
+        <control type="group">
+            <include>OSD_HideControls</include>
+            <left>view_pad</left>
+            <right>view_pad</right>
+
+            <visible>!Window.IsActive(DialogPlayerProcessInfo.xml)</visible>
+            <visible>!Window.IsVisible(DialogSlider.xml)</visible>
+
+            <!-- Subtitle Stream Selector Panel -->
+            <control type="group">
+                <visible>!Window.IsVisible(DialogSettings.xml)</visible>
+                <include content="Animation_SlideIn_Dialog">
+                    <param name="posy">48</param>
+                </include>
+
+                <animation effect="fade" start="100" end="0" condition="Integer.IsEqual(Container(6207).NumItems,0)">Conditional</animation>
+                <right>-40</right>
+                <width>640</width>
+                <bottom>220</bottom>
+                <height>760</height>
+                
+                <control type="group">
+                    <animation effect="slide" start="0" end="0,80" condition="Integer.IsEqual(Container(6207).NumItems,6)">Conditional</animation>
+                    <animation effect="slide" start="0" end="0,160" condition="Integer.IsEqual(Container(6207).NumItems,5)">Conditional</animation>
+                    <animation effect="slide" start="0" end="0,240" condition="Integer.IsEqual(Container(6207).NumItems,4)">Conditional</animation>
+                    <animation effect="slide" start="0" end="0,320" condition="Integer.IsEqual(Container(6207).NumItems,3)">Conditional</animation>
+                    <animation effect="slide" start="0" end="0,400" condition="Integer.IsEqual(Container(6207).NumItems,2)">Conditional</animation>
+                    <animation effect="slide" start="0" end="0,480" condition="Integer.IsLess(Container(6207).NumItems,2)">Conditional</animation>
+                    
+                    <include content="OSD_Stream_Selector_BackgroundResizer">
+                        <param name="id">6207</param>
+                        <param name="diffuse_w">640</param>
+                    </include>
+                    
+                    <!-- Header -->
+                    <include content="Object_MenuHeader">
+                        <param name="label">$LOCALIZE[287]</param>
+                        <param name="icon">special://skin/extras/icons/quote.png</param>
+                    </include>
+
+                    <!-- DarkSubs Button - First Row -->
+                    <control type="group">
+                        <left>20</left>
+                        <right>20</right>
+                        <top>140</top>
+                        <height>80</height>
+                        
+                        <!-- Highlight background when focused - same as other items -->
+                        <control type="image">
+                            <visible>Control.HasFocus(6009)</visible>
+                            <include>Texture_Menu_Highlight_H</include>
+                        </control>
+                        
+                        <control type="group">
+                            <left>40</left>
+                            <right>20</right>
+                            
+                            <control type="button" id="6009">
+                                <texturefocus>-</texturefocus>
+                                <texturenofocus>-</texturenofocus>
+                                <label> </label>
+                                <ondown>6207</ondown>
+                                <onup>6007</onup>
+                                <onclick>RunScript(service.subtitles.All_Subs,sub_window)</onclick>
+                            </control>
+                            
+                            <!-- Label - not focused -->
+                            <control type="label">
+                                <label>בחירת כתוביות (DarkSubs)</label>
+                                <textcolor>dialog_fg_90</textcolor>
+                                <visible>!Control.HasFocus(6009)</visible>
+                            </control>
+                            
+                            <!-- Label - focused -->
+                            <control type="label">
+                                <label>בחירת כתוביות (DarkSubs)</label>
+                                <textcolor>$VAR[ColorSelected]</textcolor>
+                                <visible>Control.HasFocus(6009)</visible>
+                            </control>
+                            
+                            <!-- Icon - not focused -->
+                            <control type="image">
+                                <right>0</right>
+                                <width>80</width>
+                                <bordersize>18</bordersize>
+                                <aspectratio align="right">keep</aspectratio>
+                                <texture colordiffuse="dialog_fg_90">special://skin/extras/icons/quote.png</texture>
+                                <visible>!Control.HasFocus(6009)</visible>
+                            </control>
+                            
+                            <!-- Icon - focused -->
+                            <control type="image">
+                                <right>0</right>
+                                <width>80</width>
+                                <bordersize>18</bordersize>
+                                <aspectratio align="right">keep</aspectratio>
+                                <texture colordiffuse="$VAR[ColorSelected]">special://skin/extras/icons/quote.png</texture>
+                                <visible>Control.HasFocus(6009)</visible>
+                            </control>
+                        </control>
+                    </control>
+
+                    <!-- Embedded Subtitles List - shifted down by 80 -->
+                    <control type="panel" id="6207">
+                        <top>220</top>
+                        <bottom>40</bottom>
+                        <ondown>6007</ondown>
+                        <onleft>6007</onleft>
+                        <onright>6307</onright>
+                        <onup>6009</onup>
+                        <pagecontrol>6307</pagecontrol>
+                        <orientation>vertical</orientation>
+                        <itemlayout height="80">
+                            <include content="OSD_Stream_Selector_Layout">
+                                <param name="enabled">VideoPlayer.SubtitlesEnabled</param>
+                            </include>
+                        </itemlayout>
+                        <focusedlayout height="80">
+                            <include content="OSD_Stream_Selector_Layout">
+                                <param name="selected">true</param>
+                                <param name="color_fg">$VAR[ColorSelected]</param>
+                                <param name="enabled">VideoPlayer.SubtitlesEnabled</param>
+                            </include>
+                        </focusedlayout>
+                        <content>plugin://script.skinvariables?info=get_player_streams&amp;stream_type=subtitle&amp;reload=$INFO[Window.Property(UID)]</content>
+                        <onclick condition="true + !String.IsEmpty(ListItem.Property(iscurrent))">Action(ShowSubtitles)</onclick>
+                        <onclick condition="![true + !String.IsEmpty(ListItem.Property(iscurrent))]">Runscript(script.skinvariables,set_player_subtitle=$INFO[ListItem.Property(index)],reload_property=UID)</onclick>
+                    </control>
+                </control>
+
+                <include content="Part_Scrollbar_Max">
+                    <param name="id">6307</param>
+                    <top>120</top>
+                    <bottom>40</bottom>
+                    <onleft>6207</onleft>
+                    <onright>6007</onright>
+                </include>
+
+            </control>
+
+            <!-- Bottom buttons -->
+            <include content="OSD_CustomDialog_GroupList">
+                <param name="onclick">ActivateWindow(osdsubtitlesettings)</param>
+                <param name="onup">SetFocus(6207)</param>
+                <param name="icon">special://skin/extras/icons/quote.png</param>
+                <param name="label">$VAR[Label_OSD_SubtitlesLanguage]</param>
+                <param name="iconoffset_condition">[VideoPlayer.SubtitlesEnabled + !String.IsEmpty(VideoPlayer.SubtitlesLanguage)]</param>
+                <param name="button_7">true</param>
+            </include>
+        </control>
+
+    </controls>
+</window>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window type="dialog" id="1181">
+    <defaultcontrol always="true">0</defaultcontrol>
+    <onload condition="Window.IsVisible(home)">SetFocus(7000)</onload>
+    <onload condition="Window.IsVisible(1101)">SetFocus(7001)</onload>
+    <onload condition="Window.IsVisible(1102)">SetFocus(7002)</onload>
+    <onload condition="Window.IsVisible(1103)">SetFocus(7003)</onload>
+    <onload condition="Window.IsVisible(1104)">SetFocus(7004)</onload>
+    <onload condition="![Window.IsVisible(home) | Window.IsVisible(1101) | Window.IsVisible(1102) | Window.IsVisible(1103) | Window.IsVisible(1104)]">PreviousMenu</onload>
+    <onload condition="![Window.IsVisible(home) | Window.IsVisible(1101) | Window.IsVisible(1102) | Window.IsVisible(1103) | Window.IsVisible(1104)]">ActivateWindow(1180)</onload>
+    <onunload>ClearProperty(SubGroup.IsVisible,Home)</onunload>
+    <controls>
+        <include condition="!Skin.HasSetting(HomeSwitcher.Vertical)">Home_Horz_Submenu</include>
+        <include condition="Skin.HasSetting(HomeSwitcher.Vertical)">Home_Vert_Submenu</include>
+    </controls>
+</window>
