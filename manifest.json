@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-10T17:13:23Z",
+  "generated_utc": "2026-07-10T17:18:17Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -462,8 +462,8 @@
       "version": "4.0.0",
       "channel": "core",
       "zip": "skin.estuary-4.0.0.zip",
-      "sha256": "d5adb12d88ebb682b77839b60d7e44474879b06d5a8f368936d74e45299d50d5",
-      "size": 5426266,
+      "sha256": "d97b585087f006de7206aea819dff1af4bdc52e75ecdddfde7aa03aae7e38ee1",
+      "size": 5426549,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.estuary-4.0.0.zip"
     },
     {
