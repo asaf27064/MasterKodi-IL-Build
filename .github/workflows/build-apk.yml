@@ -55,12 +55,14 @@ jobs:
       - name: Build addon zips (wizard/firstrun/repo + deps)
         run: python tools/build_addons.py --repo-root . --out dist
 
-      - name: Fetch base Kodi APK + apktool
+      - name: Fetch base Kodi APK + apktool (from our build-inputs release)
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -e
           ARCH="${{ matrix.arch }}"
-          curl -fL "https://mirrors.kodi.tv/releases/android/${ARCH}/kodi-${KODI_VER}-${ARCH}.apk" -o base.apk
-          curl -fL "https://github.com/iBotPeaches/Apktool/releases/download/v${APKTOOL_VER}/apktool_${APKTOOL_VER}.jar" -o apktool.jar
+          gh release download build-inputs --pattern "kodi-${KODI_VER}-${ARCH}.apk" --output base.apk --clobber
+          gh release download build-inputs --pattern "apktool_${APKTOOL_VER}.jar" --output apktool.jar --clobber
           ls -la base.apk apktool.jar
 
       - name: Decode keystore
