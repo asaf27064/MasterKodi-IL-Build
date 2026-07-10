@@ -167,22 +167,6 @@
                             <param name="iconoffset_condition">[VideoPlayer.SubtitlesEnabled + !String.IsEmpty(VideoPlayer.SubtitlesLanguage)]</param>
                         </include>
 
-                        <!-- KODIRDIL - Button 7.5: standalone Hebrew subtitles (gearsai sub_window), like Estuary's -->
-                        <control type="button" id="6010">
-                            <include>Defs_OSD_Button</include>
-                            <label>[COLOR gold]עברית[/COLOR]</label>
-                            <onfocus>ActivateWindow(1147)</onfocus>
-                            <onclick>CancelAlarm(osd_timeout,true)</onclick>
-                            <onclick>RunScript(service.subtitles.gearsai,sub_window)</onclick>
-                        </control>
-                        <include content="OSD_Button_Icon_Overlay">
-                            <param name="icon">special://skin/extras/icons/closed-captioning.png</param>
-                            <param name="id">6010</param>
-                            <param name="groupid">6110</param>
-                            <param name="itemgap">osd_itemgap</param>
-                            <param name="iconoffset_condition">true</param>
-                        </include>
-
                         <!-- Button 8 -->
                         <control type="button" id="6008">
                             <include>Defs_OSD_Button</include>
