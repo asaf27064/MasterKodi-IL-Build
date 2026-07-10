@@ -91,10 +91,12 @@ jobs:
         run: |
           git config user.name "masterkodi-ci"
           git config user.email "ci@masterkodi.local"
-          if ! git diff --quiet -- manifest.json; then
-            git add manifest.json
-            git commit -m "ci: refresh manifest [skip ci]"
-            git push
-          else
+          git add manifest.json
+          # --cached so this also detects a brand-new (untracked) manifest
+          if git diff --cached --quiet; then
             echo "manifest unchanged"
+          else
+            git commit -m "ci: refresh manifest [skip ci]"
+            # explicit HEAD:main so it works under workflow_dispatch too
+            git push origin HEAD:main
           fi
