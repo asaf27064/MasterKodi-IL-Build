@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-10T14:26:51Z",
+  "generated_utc": "2026-07-10T14:56:40Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -89,6 +89,15 @@
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.gears-2.3.1.zip"
     },
     {
+      "id": "plugin.video.themoviedb.helper",
+      "version": "6.15.0",
+      "channel": "core",
+      "zip": "plugin.video.themoviedb.helper-6.15.0.zip",
+      "sha256": "d4822f5e9308efd82839a497c0062068148d04940e7e91cf7f3b6f3a844bfd88",
+      "size": 5047887,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.15.0.zip"
+    },
+    {
       "id": "repository.KodiRealDebridIsrael",
       "version": "1.0.1",
       "channel": "core",
@@ -161,6 +170,33 @@
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/repository.peno64-1.5.zip"
     },
     {
+      "id": "resource.font.robotocjksc",
+      "version": "0.0.3",
+      "channel": "core",
+      "zip": "resource.font.robotocjksc-0.0.3.zip",
+      "sha256": "4a1bfb10f1e078fb8a2c7b5099710e37cd943ebf630ccb57b91f62015f20f943",
+      "size": 51599444,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.font.robotocjksc-0.0.3.zip"
+    },
+    {
+      "id": "resource.images.studios.coloured",
+      "version": "0.0.23",
+      "channel": "core",
+      "zip": "resource.images.studios.coloured-0.0.23.zip",
+      "sha256": "5b2aae5c8ed5570e0e1f3a722d4b91caad76c336a23b051fd8f2e220aa9c3c1b",
+      "size": 58229865,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.images.studios.coloured-0.0.23.zip"
+    },
+    {
+      "id": "resource.images.weathericons.white",
+      "version": "0.0.6",
+      "channel": "core",
+      "zip": "resource.images.weathericons.white-0.0.6.zip",
+      "sha256": "ad0d547794dc7ecceaf8fbafe9f0c5529c88d2930704a43b687525483002d006",
+      "size": 71550,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.images.weathericons.white-0.0.6.zip"
+    },
+    {
       "id": "resource.language.he_il",
       "version": "11.0.79",
       "channel": "core",
@@ -177,6 +213,15 @@
       "sha256": "e60377e1e2d143218aa4e9c5d4380f93c93fef68e346f37c9ded26e6b0f17b42",
       "size": 82910,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.common.plugin.cache-3.0.0.zip"
+    },
+    {
+      "id": "script.module.addon.signals",
+      "version": "0.0.6+matrix.1",
+      "channel": "core",
+      "zip": "script.module.addon.signals-0.0.6+matrix.1.zip",
+      "sha256": "fbd5905f633e66f1af341c6fc9d798d8d7c74fb29e144b467d14c7edd813b959",
+      "size": 19835,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.addon.signals-0.0.6+matrix.1.zip"
     },
     {
       "id": "script.module.autocompletion",
@@ -242,6 +287,24 @@
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.idna-3.10.0.zip"
     },
     {
+      "id": "script.module.infotagger",
+      "version": "0.0.8",
+      "channel": "core",
+      "zip": "script.module.infotagger-0.0.8.zip",
+      "sha256": "4218922806284fc0a50daf8cca292176f5a9b9b2a3876b8e0ba1f68440883579",
+      "size": 22750,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.infotagger-0.0.8.zip"
+    },
+    {
+      "id": "script.module.jurialmunkey",
+      "version": "0.2.31",
+      "channel": "core",
+      "zip": "script.module.jurialmunkey-0.2.31.zip",
+      "sha256": "4dae7152e53c32a5ece378f1495ac3f0051d8e278e59e6b7c518672a909e0e88",
+      "size": 55641,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.jurialmunkey-0.2.31.zip"
+    },
+    {
       "id": "script.module.magneto",
       "version": "6.07.02",
       "channel": "core",
@@ -260,6 +323,15 @@
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.pysubs2-1.5.0+matrix.1.zip"
     },
     {
+      "id": "script.module.qrcode",
+      "version": "6.1.0+matrix.3",
+      "channel": "core",
+      "zip": "script.module.qrcode-6.1.0+matrix.3.zip",
+      "sha256": "a7b755b8b387a1ab01f9ca190e61fe9be2975735ae220f9efdfe2618652fdf23",
+      "size": 32990,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.qrcode-6.1.0+matrix.3.zip"
+    },
+    {
       "id": "script.module.requests",
       "version": "2.31.0",
       "channel": "core",
@@ -267,6 +339,15 @@
       "sha256": "0be3fbdf1fb15aa875cb24f996de685ec3d4c5c330de34b1bc702394a9401442",
       "size": 67576,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.requests-2.31.0.zip"
+    },
+    {
+      "id": "script.module.six",
+      "version": "1.16.0+matrix.1",
+      "channel": "core",
+      "zip": "script.module.six-1.16.0+matrix.1.zip",
+      "sha256": "bf825f39557da5c458c253caa2ca2ce47d7cbbd86bff091d14aa78449e440a3f",
+      "size": 16999,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.six-1.16.0+matrix.1.zip"
     },
     {
       "id": "script.module.soupsieve",
@@ -285,6 +366,33 @@
       "sha256": "83407bc7340e9fd73521f389994c0677bc41eead53a3076834a8aeae6ac9f6bd",
       "size": 130842,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.urllib3-2.2.3.zip"
+    },
+    {
+      "id": "script.nimbus.helper",
+      "version": "0.0.52",
+      "channel": "core",
+      "zip": "script.nimbus.helper-0.0.52.zip",
+      "sha256": "8ed463948b6f6c4a903948d86b35f82ebe5664b59c52ed8a86542da81387c3e0",
+      "size": 35866,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.nimbus.helper-0.0.52.zip"
+    },
+    {
+      "id": "script.skinvariables",
+      "version": "2.1.35",
+      "channel": "core",
+      "zip": "script.skinvariables-2.1.35.zip",
+      "sha256": "78163c2c36b2f1d8e0aff1e961ff46b09dd126819f179c430e0ff42b522b3020",
+      "size": 215584,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.skinvariables-2.1.35.zip"
+    },
+    {
+      "id": "script.texturemaker",
+      "version": "0.2.11",
+      "channel": "core",
+      "zip": "script.texturemaker-0.2.11.zip",
+      "sha256": "a4b8cfe14e15ddc174bcf778c3979b1ed85106edd938428d7510b17955bc134d",
+      "size": 171850,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.texturemaker-0.2.11.zip"
     },
     {
       "id": "service.kodi.il.firstrun",
@@ -350,6 +458,15 @@
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/service.xbmc.versioncheck-0.5.30+matrix.1.zip"
     },
     {
+      "id": "skin.arctic.fuse.3",
+      "version": "3.2.9",
+      "channel": "optional",
+      "zip": "skin.arctic.fuse.3-3.2.9.zip",
+      "sha256": "2e90b5672bb3c45c5bc1d5aa9933401ddcc303076c3092776438a819ed068fdd",
+      "size": 53241950,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.fuse.3-3.2.9.zip"
+    },
+    {
       "id": "skin.estuary",
       "version": "4.0.0",
       "channel": "core",
@@ -357,6 +474,22 @@
       "sha256": "d5adb12d88ebb682b77839b60d7e44474879b06d5a8f368936d74e45299d50d5",
       "size": 5426266,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.estuary-4.0.0.zip"
+    },
+    {
+      "id": "skin.nimbus",
+      "version": "0.1.43",
+      "channel": "optional",
+      "zip": "skin.nimbus-0.1.43.zip",
+      "sha256": "bedc76b8f7ade43c53587f649c2d5f2dc470d47aaaaaf4e18601a7cf15368947",
+      "size": 10494204,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.nimbus-0.1.43.zip"
     }
-  ]
+  ],
+  "config": {
+    "version": "1",
+    "zip": "config-1.zip",
+    "sha256": "6e0621cb78094c524c0d72465f9a3cbf45c6481690032c877b9bcc302be681d6",
+    "size": 11596,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-1.zip"
+  }
 }
