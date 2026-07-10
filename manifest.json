@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-10T17:18:17Z",
+  "generated_utc": "2026-07-10T17:31:13Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -471,16 +471,16 @@
       "version": "0.1.43",
       "channel": "optional",
       "zip": "skin.nimbus-0.1.43.zip",
-      "sha256": "a2eae43d7dbdbcdd997805e10dcc3605aacbd21a9de925e4de74267c48ac3da3",
-      "size": 10494350,
+      "sha256": "bd6bf030764cdbb67d0b849c965b18d02d2f5d9ea763da9053da198ee655a52b",
+      "size": 10494337,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.nimbus-0.1.43.zip"
     }
   ],
   "config": {
     "version": "1",
     "zip": "config-1.zip",
-    "sha256": "f94061a03548d1a2b3a1c97f1b7fbf80ccbb8cb94bcf6325a3a56efa0832cd95",
-    "size": 23648,
+    "sha256": "8ab379d52b4b1a2d577988024d0061a2812d85a27b6cefb03701829d5a97bc26",
+    "size": 23301,
     "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-1.zip"
   }
 }
