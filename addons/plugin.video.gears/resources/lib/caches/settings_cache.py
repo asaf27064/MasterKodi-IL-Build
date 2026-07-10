@@ -333,7 +333,7 @@ def default_settings():
 {'setting_id': 'tmdb.token', 'setting_type': 'string', 'setting_default': 'empty_setting'},
 {'setting_id': 'tmdb.account_id', 'setting_type': 'string', 'setting_default': 'empty_setting'},
 #==================== OMDb
-{'setting_id': 'omdb_api', 'setting_type': 'string', 'setting_default': 'empty_setting'},
+{'setting_id': 'omdb_api', 'setting_type': 'string', 'setting_default': '459c898b'}, ########### KODIRDIL - bake OMDb key so ratings work out-of-box (was empty_setting; key previously supplied via config settings.db) ###########
 #==================== RPDb
 {'setting_id': 'rpdb_api', 'setting_type': 'string', 'setting_default': 'empty_setting'},
 #==================== Google API
