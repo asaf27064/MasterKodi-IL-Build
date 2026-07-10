@@ -100,8 +100,15 @@ class POVHebrewService(xbmc.Monitor):
                     break
             return
 
-        log("Service started, waiting for Kodi to settle...")
-        xbmc.sleep(5000)
+        # Wait for Kodi to settle before touching the network (configurable).
+        try:
+            delay = int(ADDON.getSetting('update_check_delay') or '15')
+        except Exception:
+            delay = 15
+        delay = max(5, min(delay, 60))
+        log("Service started, settling for %ss..." % delay)
+        if self.waitForAbort(delay):
+            return
 
         # Sweep stale '<addon>_old_<timestamp>' backup dirs from past updates.
         _cleanup_old_addon_dirs()

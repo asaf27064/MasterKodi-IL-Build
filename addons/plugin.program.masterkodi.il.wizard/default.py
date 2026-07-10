@@ -43,57 +43,89 @@ def bold(text):
 
 
 def menu_item(label, label2='', icon='DefaultAddon.png'):
-    """A rich ListItem (icon + title + subtitle) for useDetails=True selects.
-    Icons are standard Kodi default textures, so they render on any skin."""
-    li = xbmcgui.ListItem(label)
-    li.setLabel2(label2)
-    li.setArt({'icon': icon, 'thumb': icon})
-    return li
+    """A menu row as a (label, label2, icon) tuple. Consumed by wizard_select
+    (custom window) or converted to a ListItem for the fallback select."""
+    return (label, label2, icon)
+
+
+_WIZ_PATH = xbmcvfs.translatePath(ADDON.getAddonInfo('path'))
+
+
+def _strip_markup(s):
+    """Drop Kodi [COLOR]/[B]/[I] tags for the big detail panel + fallbacks."""
+    import re
+    return re.sub(r'\[/?(COLOR[^\]]*|B|I|UPPERCASE|LOWERCASE)\]', '', s or '')
+
+
+class WizardMenu(xbmcgui.WindowXMLDialog):
+    """Unified MasterKodi menu: RTL list on the right, a big branded detail
+    panel (icon + title + description) on the left. Returns the chosen index
+    via .selection (-1 = cancelled)."""
+
+    def __init__(self, *args, **kwargs):
+        self.rows = kwargs.pop('rows', [])       # [(label, label2, icon), ...]
+        self.heading = kwargs.pop('heading', '')
+        self.selection = -1
+        super().__init__(*args)
+
+    @staticmethod
+    def pick(heading, rows):
+        d = WizardMenu('wizard-menu.xml', _WIZ_PATH, 'Default', '1080i',
+                       rows=rows, heading=heading)
+        d.doModal()
+        sel = d.selection
+        del d
+        return sel
+
+    def onInit(self):
+        self.setProperty('heading', self.heading)
+        lst = self.getControl(100)
+        lst.reset()
+        for label, label2, icon in self.rows:
+            li = xbmcgui.ListItem(label)
+            li.setLabel2(label2)
+            li.setArt({'icon': icon, 'thumb': icon})
+            lst.addItem(li)
+        self.setFocusId(100)
+
+    def onClick(self, control_id):
+        if control_id == 100:
+            self.selection = self.getControl(100).getSelectedPosition()
+            self.close()
+
+    def onAction(self, action):
+        if action.getId() in (9, 10, 92):  # BACK / PREVIOUS_MENU / NAV_BACK
+            self.selection = -1
+            self.close()
+
+
+def wizard_select(header, rows):
+    """Show a menu via the custom WizardMenu window. `rows` may be
+    (label, label2, icon) tuples (from menu_item) or plain strings. Falls back
+    to a useDetails dialog.select if the window can't load."""
+    norm = []
+    for r in rows:
+        if isinstance(r, (tuple, list)):
+            label, label2, icon = (list(r) + ['', 'DefaultAddon.png'])[:3]
+        else:
+            label, label2, icon = _strip_markup(r), '', 'DefaultAddon.png'
+        norm.append((_strip_markup(label), _strip_markup(label2), icon))
+    try:
+        return WizardMenu.pick(_strip_markup(header), norm)
+    except Exception as e:
+        log(f"WizardMenu failed ({e}); using fallback select", xbmc.LOGWARNING)
+        li_list = []
+        for label, label2, icon in norm:
+            li = xbmcgui.ListItem(label)
+            li.setLabel2(label2)
+            li.setArt({'icon': icon, 'thumb': icon})
+            li_list.append(li)
+        return xbmcgui.Dialog().select(_strip_markup(header), li_list, useDetails=True)
 
 
 # ============================================
 # STATUS HELPERS
 # ============================================
-def get_pov_status():
-    """Get POV Hebrew installation status"""
-    try:
-        from resources.libs.installer import POVHebrewInstaller
-        installer = POVHebrewInstaller()
-        
-        if not installer.is_pov_installed():
-            return {'addon': False, 'hebrew': False, 'version': None}
-        
-        hebrew_installed = installer.is_installed()
-        version = installer.get_installed_version() if hebrew_installed else None
-        
-        return {'addon': True, 'hebrew': hebrew_installed, 'version': version}
-    except Exception as e:
-        log(f"Error getting POV status: {e}")
-        return {'addon': False, 'hebrew': False, 'version': None}
-
-
-def get_gears_status():
-    """Gears base + Hebrew overlay status (this build's main video add-on)."""
-    try:
-        from resources.libs.installer import GearsHebrewInstaller
-        g = GearsHebrewInstaller()
-        if not g.is_gears_installed():
-            return {'addon': False, 'hebrew': False, 'version': None, 'base': None}
-        base = None
-        try:
-            base = xbmcaddon.Addon('plugin.video.gears').getAddonInfo('version')
-        except Exception:
-            pass
-        hebrew = g.is_installed()
-        version = g.get_installed_version() if hebrew else None
-        if version in ('0', ''):
-            version = None
-        return {'addon': True, 'hebrew': hebrew, 'version': version, 'base': base}
-    except Exception as e:
-        log(f"Error getting Gears status: {e}")
-        return {'addon': False, 'hebrew': False, 'version': None, 'base': None}
-
-
 def get_gearsai_status():
     """AI Subs (service.subtitles.gearsai) install status."""
     try:
@@ -105,24 +137,6 @@ def get_gearsai_status():
         return {'addon': True, 'hebrew': True, 'version': (None if v in ('0', '') else v)}
     except Exception as e:
         log(f"Error getting AI Subs status: {e}")
-        return {'addon': False, 'hebrew': False, 'version': None}
-
-
-def get_skin_status():
-    """Get Skin Hebrew installation status"""
-    try:
-        from resources.libs.installer import ArcticFuseHebrewInstaller
-        installer = ArcticFuseHebrewInstaller()
-        
-        if not installer.is_skin_installed():
-            return {'addon': False, 'hebrew': False, 'version': None}
-        
-        hebrew_installed = installer.is_installed()
-        version = installer.get_installed_version() if hebrew_installed else None
-        
-        return {'addon': True, 'hebrew': hebrew_installed, 'version': version}
-    except Exception as e:
-        log(f"Error getting Skin status: {e}")
         return {'addon': False, 'hebrew': False, 'version': None}
 
 
@@ -140,6 +154,52 @@ def format_status(status):
             return color('מותקן', COLOR_SUCCESS)
 
 
+def build_status_menu():
+    """Show every installed addon + its version, checked against the manifest.
+    A read-only view of the build's actual state (a new capability of the
+    manifest model)."""
+    import os, re
+    dialog = xbmcgui.Dialog()
+    addons_path = xbmcvfs.translatePath('special://home/addons/')
+
+    def _ver(aid):
+        try:
+            with open(os.path.join(addons_path, aid, 'addon.xml'), encoding='utf-8', errors='replace') as fh:
+                m = re.search(r'<addon[^>]*version="([^"]+)"', fh.read())
+            return m.group(1) if m else '?'
+        except Exception:
+            return None
+
+    try:
+        from resources.libs import modular_update
+        manifest = modular_update.fetch_manifest()
+        m_addons = manifest.get('addons', [])
+    except Exception as e:
+        dialog.ok(ADDON_NAME, f"{color('לא ניתן לטעון מאניפסט:', COLOR_ERROR)}\n{e}")
+        return
+
+    rows = []
+    n_ok = n_missing = n_old = 0
+    for a in sorted(m_addons, key=lambda x: (x.get('channel', 'core'), x['id'])):
+        installed = _ver(a['id'])
+        if installed is None:
+            if a.get('channel') == 'optional':
+                continue  # optional not installed -> not relevant here
+            state = color('חסר', COLOR_ERROR); n_missing += 1
+        elif installed == a['version']:
+            state = color('מעודכן', COLOR_SUCCESS); n_ok += 1
+        else:
+            state = color(f'{installed} → {a["version"]}', COLOR_WARNING); n_old += 1
+        tag = ' [Skin]' if a.get('channel') == 'optional' else ''
+        rows.append(menu_item(f"{a['id']}{tag}", f"v{a.get('version','?')}  ·  {state}", 'DefaultAddonInfoProvider.png'))
+
+    header = (f"{color('סטטוס הבילד', COLOR_GOLD)}  ·  "
+              f"{color(str(n_ok)+' מעודכנים', COLOR_SUCCESS)}"
+              + (f" · {color(str(n_old)+' לעדכון', COLOR_WARNING)}" if n_old else '')
+              + (f" · {color(str(n_missing)+' חסרים', COLOR_ERROR)}" if n_missing else ''))
+    wizard_select(header, rows)
+
+
 # ============================================
 # MAIN MENU
 # ============================================
@@ -148,38 +208,30 @@ def main_menu():
     dialog = xbmcgui.Dialog()
     
     while True:
-        gears_status = get_gears_status()
         gearsai_status = get_gearsai_status()
-        skin_status = get_skin_status()
-        pov_status = get_pov_status()
 
-        # Build rows + a parallel handler list, so optional rows (POV only when
-        # actually installed) never desync the click indices.
-        gears_sub = (f"Gears {gears_status['base']}" if gears_status.get('base') else '') + \
-                    f"  ·  {format_status(gears_status)}"
+        # Menu reflects the manifest model: everything (Gears + Hebrew, skins,
+        # AI subs) is pre-merged and delivered/updated by "בדוק עדכונים". The old
+        # per-addon "reinstall Hebrew overlay" flows (Gears/Skin/POV) are gone --
+        # they downloaded the legacy overlay zips and no longer apply.
         items, handlers = [], []
-        items.append(menu_item('Gears + עברית', gears_sub.strip(' ·'), 'DefaultAddonSubtitles.png'))
-        handlers.append(gears_menu)
+        items.append(menu_item('בדוק עדכונים', 'עדכון כל הבילד · אימות SHA256 · רק מה שהשתנה', 'DefaultAddonsUpdates.png'))
+        handlers.append(check_updates_now)
+        items.append(menu_item('התקנה / החלפת בילד', 'התקן בילד · בחר סקין (Estuary · Nimbus · Arctic Fuse)', 'DefaultAddonProgram.png'))
+        handlers.append(build_menu)
+        items.append(menu_item('סטטוס הבילד', 'מה מותקן וגרסאות · מהמאניפסט', 'DefaultAddonInfoProvider.png'))
+        handlers.append(build_status_menu)
         items.append(menu_item('כתוביות AI (Gemini)', format_status(gearsai_status), 'DefaultAddonSubtitles.png'))
         handlers.append(gearsai_menu)
-        items.append(menu_item('עברית לסקין (Arctic Fuse)', format_status(skin_status), 'DefaultAddonSkin.png'))
-        handlers.append(skin_menu)
-        if pov_status['addon']:  # legacy POV — only shown when it's actually installed
-            items.append(menu_item('POV עברית', format_status(pov_status), 'DefaultAddonSubtitles.png'))
-            handlers.append(pov_menu)
-        items.append(menu_item('התקנת בילד', 'התקנה ועדכון בילד', 'DefaultAddonProgram.png'))
-        handlers.append(build_menu)
         items.append(menu_item('תחזוקה', 'ניקוי מטמון · חבילות · תמונות · OLED', 'DefaultAddonService.png'))
         handlers.append(maintenance_menu)
         items.append(menu_item('גיבוי ושחזור', 'מפתח Gemini · דבריד · הגדרות', 'DefaultHardDisk.png'))
         handlers.append(backup_menu)
-        items.append(menu_item('בדוק עדכונים עכשיו', 'Gears · כתוביות AI · סקין', 'DefaultAddonsUpdates.png'))
-        handlers.append(check_updates_now)
-        items.append(menu_item('הגדרות', 'הגדרות האשף', 'DefaultAddonProgram.png'))
+        items.append(menu_item('הגדרות האשף', 'עדכון אוטומטי · השהיות · אפשרויות', 'DefaultAddonProgram.png'))
         handlers.append(lambda: ADDON.openSettings())
 
         header = f"{color('MasterKodi IL Wizard', COLOR_GOLD)} v{ADDON_VERSION}"
-        selection = dialog.select(header, items, useDetails=True)
+        selection = wizard_select(header, items)
         if selection == -1:
             break
         handlers[selection]()
@@ -188,226 +240,15 @@ def main_menu():
 # ============================================
 # POV MENU
 # ============================================
-def pov_menu():
-    """POV Hebrew submenu"""
-    dialog = xbmcgui.Dialog()
-    
-    while True:
-        status = get_pov_status()
-        
-        if not status['addon']:
-            dialog.ok(
-                'POV',
-                f"{color('POV לא מותקן!', COLOR_ERROR)}\n\n"
-                "יש להתקין את POV לפני התקנת קבצי העברית."
-            )
-            return
-        
-        menu_items = []
-        
-        if status['hebrew']:
-            ver_text = f" (v{status['version']})" if status['version'] and status['version'] != 'installed' else ''
-            menu_items = [
-                f"{bold('עדכון קבצי עברית')}",
-                f"{bold('הסרת קבצי עברית')}",
-                f"{bold('מידע')}{ver_text}",
-            ]
-        else:
-            menu_items = [
-                f"{bold('התקנת קבצי עברית')}",
-            ]
-        
-        menu_items.append(f"{color('חזרה', COLOR_GRAY)}")
-        
-        selection = dialog.select(
-            f"{color('POV Hebrew', COLOR_HEADER)} - {format_status(status)}",
-            menu_items
-        )
-        
-        if selection == -1 or menu_items[selection].startswith('[COLOR'):
-            return
-        
-        if status['hebrew']:
-            if selection == 0:  # Update
-                install_pov_hebrew()
-            elif selection == 1:  # Uninstall
-                uninstall_pov_hebrew()
-            elif selection == 2:  # Info
-                show_pov_info()
-        else:
-            if selection == 0:  # Install
-                install_pov_hebrew()
 
 
-def install_pov_hebrew():
-    """Install POV Hebrew files"""
-    dialog = xbmcgui.Dialog()
-    
-    if not dialog.yesno(
-        'התקנת עברית ל-POV',
-        f"{bold('האם להתקין את קבצי העברית?')}\n\n"
-        "הקבצים יורדו מ-GitHub ויותקנו אוטומטית."
-    ):
-        return
-    
-    progress = xbmcgui.DialogProgress()
-    progress.create('התקנת עברית ל-POV', 'מתחיל...')
-    
-    try:
-        from resources.libs.installer import POVHebrewInstaller
-        installer = POVHebrewInstaller()
-        
-        def update_progress(msg, pct):
-            progress.update(pct, msg)
-        
-        success = installer.install(progress_callback=update_progress)
-        progress.close()
-        
-        if success:
-            dialog.ok(
-                'הצלחה!',
-                f"{color('קבצי העברית הותקנו בהצלחה!', COLOR_SUCCESS)}\n\n"
-                "מומלץ להפעיל מחדש את Kodi."
-            )
-            
-            if dialog.yesno('הפעלה מחדש', 'האם להפעיל מחדש את Kodi עכשיו?'):
-                xbmc.executebuiltin('Quit')
-        else:
-            dialog.ok('שגיאה', color('ההתקנה נכשלה!', COLOR_ERROR))
-            
-    except Exception as e:
-        progress.close()
-        dialog.ok('שגיאה', f"{color('שגיאה:', COLOR_ERROR)}\n{str(e)}")
 
 
-def uninstall_pov_hebrew():
-    """Uninstall POV Hebrew files"""
-    dialog = xbmcgui.Dialog()
-    
-    if not dialog.yesno(
-        'הסרת עברית מ-POV',
-        f"{color('האם להסיר את קבצי העברית?', COLOR_WARNING)}\n\n"
-        "הקבצים המקוריים ישוחזרו מהגיבוי."
-    ):
-        return
-    
-    try:
-        from resources.libs.installer import POVHebrewInstaller
-        installer = POVHebrewInstaller()
-        
-        success = installer.uninstall()
-        
-        if success:
-            dialog.ok('הצלחה', color('קבצי העברית הוסרו!', COLOR_SUCCESS))
-        else:
-            dialog.ok('שגיאה', color('ההסרה נכשלה!', COLOR_ERROR))
-            
-    except Exception as e:
-        dialog.ok('שגיאה', f"{color('שגיאה:', COLOR_ERROR)}\n{str(e)}")
-
-
-def show_pov_info():
-    """Show POV info"""
-    dialog = xbmcgui.Dialog()
-    status = get_pov_status()
-    
-    try:
-        pov_addon = xbmcaddon.Addon('plugin.video.pov')
-        pov_version = pov_addon.getAddonInfo('version')
-    except:
-        pov_version = 'לא ידוע'
-    
-    hebrew_ver = status['version'] if status['version'] and status['version'] != 'installed' else 'לא ידוע'
-    
-    dialog.textviewer(
-        'POV - מידע',
-        f"[B]גירסת POV:[/B] {pov_version}\n"
-        f"[B]גירסת עברית:[/B] {hebrew_ver}\n"
-        f"[B]סטטוס:[/B] {'מותקן' if status['hebrew'] else 'לא מותקן'}\n\n"
-        "[B]קבצי עברית כוללים:[/B]\n"
-        "- תמיכה בכתוביות עבריות אוטומטיות\n"
-        "- התאמה לשירותי כתוביות ישראליים\n"
-        "- Ktuvit, Wizdom, OpenSubtitles"
-    )
 
 
 # ============================================
 # GEARS + AI SUBS MENUS
 # ============================================
-def gears_menu():
-    """Gears (this build's main add-on) Hebrew submenu."""
-    dialog = xbmcgui.Dialog()
-    while True:
-        status = get_gears_status()
-        if not status['addon']:
-            dialog.ok('Gears',
-                      f"{color('Gears לא מותקן!', COLOR_ERROR)}\n\n"
-                      "התקן את הבילד (Build Installation) תחילה.")
-            return
-        base = status.get('base') or '?'
-        if status['hebrew']:
-            ver = f" (v{status['version']})" if status['version'] else ''
-            items = [
-                menu_item('עדכון/התקנה מחדש של עברית', 'מחיל את ה-overlay העברי על Gears', 'DefaultAddonsUpdates.png'),
-                menu_item(f'מידע{ver}', f'Gears בסיס v{base}', 'DefaultAddonInfoProvider.png'),
-                menu_item('חזרה', '', 'DefaultFolderBack.png'),
-            ]
-            sel = dialog.select(f"{color('Gears + עברית', COLOR_HEADER)} - {format_status(status)}", items, useDetails=True)
-            if sel in (-1, 2):
-                return
-            elif sel == 0:
-                install_gears_hebrew()
-            elif sel == 1:
-                show_gears_info()
-        else:
-            items = [
-                menu_item('התקנת קבצי עברית ל-Gears', f'Gears בסיס v{base} מותקן', 'DefaultAddonService.png'),
-                menu_item('חזרה', '', 'DefaultFolderBack.png'),
-            ]
-            sel = dialog.select(f"{color('Gears', COLOR_HEADER)} - {format_status(status)}", items, useDetails=True)
-            if sel in (-1, 1):
-                return
-            elif sel == 0:
-                install_gears_hebrew()
-
-
-def install_gears_hebrew():
-    """Apply / update the Gears Hebrew overlay."""
-    dialog = xbmcgui.Dialog()
-    if not dialog.yesno('עברית ל-Gears',
-                        f"{bold('להתקין/לעדכן את קבצי העברית ל-Gears?')}\n\n"
-                        "הקבצים יורדו מ-GitHub ויוחלו על Gears."):
-        return
-    progress = xbmcgui.DialogProgress()
-    progress.create('עברית ל-Gears', 'מתחיל...')
-    try:
-        from resources.libs.installer import GearsHebrewInstaller
-        ok = GearsHebrewInstaller().install_hebrew_files(progress_callback=lambda m, p: progress.update(p, m))
-        progress.close()
-        if ok:
-            if dialog.yesno('הצלחה!', f"{color('קבצי העברית הותקנו!', COLOR_SUCCESS)}\n\nלהפעיל מחדש את Kodi עכשיו?"):
-                xbmc.executebuiltin('Quit')
-        else:
-            dialog.ok('שגיאה', color('ההתקנה נכשלה!', COLOR_ERROR))
-    except Exception as e:
-        progress.close()
-        dialog.ok('שגיאה', f"{color('שגיאה:', COLOR_ERROR)}\n{str(e)}")
-
-
-def show_gears_info():
-    """Show Gears + AI Subs versions."""
-    status = get_gears_status()
-    ai = get_gearsai_status()
-    xbmcgui.Dialog().textviewer(
-        'Gears - מידע',
-        f"[B]Gears (בסיס):[/B] {status.get('base') or 'לא ידוע'}\n"
-        f"[B]עברית (overlay):[/B] {status['version'] or 'לא מותקן'}\n"
-        f"[B]כתוביות AI (gearsai):[/B] {ai['version'] or 'לא מותקן'}\n\n"
-        "[B]כולל:[/B]\n"
-        "- כתוביות עברית אוטומטיות (Ktuvit / Wizdom / OpenSubtitles)\n"
-        "- תרגום AI לעברית עם Gemini\n"
-        "- תקצירים ודירוגים בעברית"
-    )
 
 
 def gearsai_menu():
@@ -424,14 +265,17 @@ def gearsai_menu():
         menu_item('מידע', f"v{status['version']}", 'DefaultAddonInfoProvider.png'),
         menu_item('חזרה', '', 'DefaultFolderBack.png'),
     ]
-    sel = dialog.select(f"{color('כתוביות AI (Gemini)', COLOR_HEADER)} - {format_status(status)}", items, useDetails=True)
+    sel = wizard_select(f"{color('כתוביות AI (Gemini)', COLOR_HEADER)} - {format_status(status)}", items)
     if sel == 0:
         try:
             xbmcaddon.Addon('service.subtitles.gearsai').openSettings()
         except Exception as e:
             dialog.ok('שגיאה', str(e))
     elif sel == 1:
-        show_gears_info()
+        dialog.textviewer('כתוביות AI - מידע',
+                          f"[B]גרסה:[/B] {status['version']}\n\n"
+                          "כתוביות עברית אוטומטיות עם תרגום AI (Gemini) ומאגר קהילתי.\n"
+                          "מפתח Gemini ומודל נקבעים ב'הגדרות כתוביות AI'.")
 
 
 def install_gearsai():
@@ -453,142 +297,10 @@ def install_gearsai():
 # ============================================
 # SKIN MENU
 # ============================================
-def skin_menu():
-    """Skin Hebrew submenu"""
-    dialog = xbmcgui.Dialog()
-    
-    while True:
-        status = get_skin_status()
-        
-        if not status['addon']:
-            dialog.ok(
-                'Arctic Fuse Skin',
-                f"{color('הסקין לא מותקן!', COLOR_ERROR)}\n\n"
-                "יש להתקין את Arctic Fuse 3 לפני התקנת קבצי העברית."
-            )
-            return
-        
-        menu_items = []
-        
-        if status['hebrew']:
-            ver_text = f" (v{status['version']})" if status['version'] and status['version'] != 'installed' else ''
-            menu_items = [
-                f"{bold('עדכון קבצי עברית')}",
-                f"{bold('הסרת קבצי עברית')}",
-                f"{bold('מידע')}{ver_text}",
-            ]
-        else:
-            menu_items = [
-                f"{bold('התקנת קבצי עברית')}",
-            ]
-        
-        menu_items.append(f"{color('חזרה', COLOR_GRAY)}")
-        
-        selection = dialog.select(
-            f"{color('Arctic Fuse Skin Hebrew', COLOR_HEADER)} - {format_status(status)}",
-            menu_items
-        )
-        
-        if selection == -1 or menu_items[selection].startswith('[COLOR FFA0A0A0'):
-            return
-        
-        if status['hebrew']:
-            if selection == 0:  # Update
-                install_skin_hebrew()
-            elif selection == 1:  # Uninstall
-                uninstall_skin_hebrew()
-            elif selection == 2:  # Info
-                show_skin_info()
-        else:
-            if selection == 0:  # Install
-                install_skin_hebrew()
 
 
-def install_skin_hebrew():
-    """Install Skin Hebrew files"""
-    dialog = xbmcgui.Dialog()
-    
-    if not dialog.yesno(
-        'התקנת עברית לסקין',
-        f"{bold('האם להתקין את קבצי העברית?')}\n\n"
-        "הקבצים יורדו מ-GitHub ויותקנו אוטומטית.\n"
-        "כולל: פונטים עבריים ותרגום ממשק."
-    ):
-        return
-    
-    progress = xbmcgui.DialogProgress()
-    progress.create('התקנת עברית לסקין', 'מתחיל...')
-    
-    try:
-        from resources.libs.installer import ArcticFuseHebrewInstaller
-        installer = ArcticFuseHebrewInstaller()
-        
-        def update_progress(msg, pct):
-            progress.update(pct, msg)
-        
-        success = installer.install(progress_callback=update_progress)
-        progress.close()
-        
-        if success:
-            dialog.ok(
-                'הצלחה!',
-                f"{color('קבצי העברית הותקנו בהצלחה!', COLOR_SUCCESS)}\n\n"
-                "יש להפעיל מחדש את Kodi כדי לראות את השינויים."
-            )
-            
-            if dialog.yesno('הפעלה מחדש', 'האם להפעיל מחדש את Kodi עכשיו?'):
-                xbmc.executebuiltin('Quit')
-        else:
-            dialog.ok('שגיאה', color('ההתקנה נכשלה!', COLOR_ERROR))
-            
-    except Exception as e:
-        progress.close()
-        dialog.ok('שגיאה', f"{color('שגיאה:', COLOR_ERROR)}\n{str(e)}")
 
 
-def uninstall_skin_hebrew():
-    """Uninstall Skin Hebrew files"""
-    dialog = xbmcgui.Dialog()
-    
-    if not dialog.yesno(
-        'הסרת עברית מהסקין',
-        f"{color('האם להסיר את קבצי העברית?', COLOR_WARNING)}\n\n"
-        "הקבצים המקוריים ישוחזרו מהגיבוי."
-    ):
-        return
-    
-    try:
-        from resources.libs.installer import ArcticFuseHebrewInstaller
-        installer = ArcticFuseHebrewInstaller()
-        
-        success = installer.uninstall()
-        
-        if success:
-            dialog.ok('הצלחה', color('קבצי העברית הוסרו!', COLOR_SUCCESS))
-        else:
-            dialog.ok('שגיאה', color('ההסרה נכשלה!', COLOR_ERROR))
-            
-    except Exception as e:
-        dialog.ok('שגיאה', f"{color('שגיאה:', COLOR_ERROR)}\n{str(e)}")
-
-
-def show_skin_info():
-    """Show Skin info"""
-    dialog = xbmcgui.Dialog()
-    status = get_skin_status()
-    
-    hebrew_ver = status['version'] if status['version'] and status['version'] != 'installed' else 'לא ידוע'
-    
-    dialog.textviewer(
-        'Arctic Fuse Skin - מידע',
-        f"[B]סקין:[/B] Arctic Fuse 3\n"
-        f"[B]גירסת עברית:[/B] {hebrew_ver}\n"
-        f"[B]סטטוס:[/B] {'מותקן' if status['hebrew'] else 'לא מותקן'}\n\n"
-        "[B]קבצי עברית כוללים:[/B]\n"
-        "- פונט Rubik לתמיכה בעברית\n"
-        "- תרגום ממשק לעברית\n"
-        "- התאמות RTL"
-    )
 
 
 # ============================================
@@ -600,18 +312,14 @@ def build_menu():
     
     while True:
         items = [
-            menu_item('התקנת בילד', 'התקן בילד חדש', 'DefaultAddonProgram.png'),
-            menu_item('עדכון בילד', 'עדכן בילד נוכחי', 'DefaultAddonsUpdates.png'),
-            menu_item('מידע על בילד נוכחי', '', 'DefaultAddonInfoProvider.png'),
-            menu_item('חזרה', '', 'DefaultFolderBack.png'),
+            menu_item('התקנת בילד', 'התקנה נקייה · בחירת סקין (Estuary · Nimbus · Arctic Fuse) · מוחק את הקיים', 'DefaultAddonProgram.png'),
+            menu_item('עדכון בילד', 'משדרג את הבילד הנוכחי בלי למחוק הגדרות ומפתחות', 'DefaultAddonsUpdates.png'),
+            menu_item('מידע על בילד נוכחי', 'שם · גרסה · סקין מותקן', 'DefaultAddonInfoProvider.png'),
         ]
 
-        selection = dialog.select(
-            color('Build Installation', COLOR_HEADER),
-            items, useDetails=True
-        )
+        selection = wizard_select(color('התקנה / עדכון בילד', COLOR_HEADER), items)
 
-        if selection == -1 or selection == 3:
+        if selection == -1:
             return
         elif selection == 0:
             install_build()
@@ -731,22 +439,17 @@ def maintenance_menu():
     
     while True:
         menu_items = [
-            f"{bold('ניקוי Cache')}",
-            f"{bold('ניקוי Packages')}",
-            f"{bold('ניקוי Thumbnails')}",
-            f"{bold('ניקוי הכל')}",
-            f"{bold('Force Close Kodi')}",
-            f"{color('─────────────────────────────────', COLOR_GRAY)}",
-            f"{bold('הגדרות OLED')}",
-            f"{color('חזרה', COLOR_GRAY)}",
+            menu_item('ניקוי Cache', 'מחיקת מטמון זמני להאצת Kodi ופינוי מקום', 'DefaultAddonService.png'),
+            menu_item('ניקוי Packages', 'מחיקת קובצי התקנה שמורים (packages)', 'DefaultAddonService.png'),
+            menu_item('ניקוי Thumbnails', 'מחיקת תמונות ממוזערות שמורות', 'DefaultAddonService.png'),
+            menu_item('ניקוי הכל', 'Cache · Packages · Thumbnails יחד', 'DefaultAddonService.png'),
+            menu_item('סגירת Kodi', 'סגירה מלאה (לרענון אחרי שינויים)', 'DefaultAddonService.png'),
+            menu_item('הגדרות OLED', 'חיסכון בשחיקת מסך · בהירות · הגנת פיקסלים', 'DefaultAddonPVRClient.png'),
         ]
-        
-        selection = dialog.select(
-            color('Maintenance', COLOR_HEADER),
-            menu_items
-        )
-        
-        if selection == -1 or selection == 7:
+
+        selection = wizard_select(color('תחזוקה', COLOR_HEADER), menu_items)
+
+        if selection == -1:
             return
         elif selection == 0:
             clear_cache()
@@ -758,9 +461,7 @@ def maintenance_menu():
             clear_all()
         elif selection == 4:
             force_close()
-        elif selection == 5:  # Separator
-            continue
-        elif selection == 6:
+        elif selection == 5:
             oled_menu()
 
 
@@ -869,18 +570,14 @@ def backup_menu():
     
     while True:
         items = [
-            menu_item('יצירת גיבוי', 'מהיר (הגדרות+מפתחות) או מלא', 'DefaultAddonService.png'),
-            menu_item('שחזור מגיבוי', 'שחזר הגדרות ומפתחות', 'DefaultAddonsUpdates.png'),
-            menu_item('מחיקת גיבויים', '', 'DefaultAddonService.png'),
-            menu_item('חזרה', '', 'DefaultFolderBack.png'),
+            menu_item('יצירת גיבוי', 'מהיר (מפתח Gemini · טוקני דבריד · הגדרות · מועדפים) או מלא', 'DefaultAddonService.png'),
+            menu_item('שחזור מגיבוי', 'שחזר מפתחות והגדרות אחרי התקנה מחדש', 'DefaultAddonsUpdates.png'),
+            menu_item('מחיקת גיבויים', 'ניקוי גיבויים ישנים ופינוי מקום', 'DefaultAddonService.png'),
         ]
 
-        selection = dialog.select(
-            color('Backup & Restore', COLOR_HEADER),
-            items, useDetails=True
-        )
+        selection = wizard_select(color('גיבוי ושחזור', COLOR_HEADER), items)
 
-        if selection == -1 or selection == 3:
+        if selection == -1:
             return
         elif selection == 0:
             create_backup()
@@ -984,20 +681,16 @@ if __name__ == '__main__':
     if mode == 'builds':
         log("Opening Build Installation directly")
         build_menu()
-    elif mode == 'gears':
-        gears_menu()
     elif mode == 'gearsai':
         gearsai_menu()
-    elif mode == 'pov':
-        pov_menu()
-    elif mode == 'skin':
-        skin_menu()
     elif mode == 'maintenance':
         maintenance_menu()
     elif mode == 'backup':
         backup_menu()
     elif mode == 'check_updates':
         check_updates_now()
+    elif mode == 'status':
+        build_status_menu()
     else:
         main_menu()
     

@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-    <category label="הגדרות עדכונים">
+    <category label="עדכונים">
         <setting id="auto_update_check" type="bool" label="בדוק עדכונים בהפעלת Kodi" default="true" />
         <setting id="update_check_delay" type="slider" label="השהייה לפני בדיקת עדכונים (שניות)" default="15" range="5,5,60" option="int" />
-        <setting type="sep" />
-        <setting type="lsep" label="התקנה מחדש אוטומטית אחרי עדכונים" />
-        <setting id="auto_reinstall_gears" type="bool" label="עדכן Gears + עברית אוטומטית" default="true" />
-        <setting id="auto_reinstall_skin" type="bool" label="התקן מחדש עברית אחרי עדכון Arctic Fuse" default="true" />
-        <setting id="auto_reinstall_pov" type="bool" label="התקן מחדש עברית אחרי עדכון POV (legacy)" default="true" />
-        <setting id="auto_install_gearsai" type="bool" label="התקן/עדכן כתוביות AI אוטומטית" default="true" />
-        <setting id="safe_update_mode" type="bool" label="מצב עדכון בטוח (עדכן רק כשעברית תואמת)" default="true" />
+        <setting type="lsep" label="כל הבילד מתעדכן אוטומטית מהמאניפסט (אימות SHA256, רק מה שהשתנה). אין צורך בהתקנות עברית נפרדות." />
         <setting type="sep" />
         <setting id="check_updates_now" type="action" label="בדוק עדכונים עכשיו" action="RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=check_updates)" option="close" />
     </category>
@@ -17,19 +11,12 @@
         <setting id="backup_location" type="folder" label="מיקום גיבויים (מומלץ אחסון חיצוני כדי לשרוד התקנה מחדש)" default="" />
         <setting type="lsep" label="גיבוי שומר: מפתח Gemini, טוקנים של דבריד, הגדרות, מועדפים ומקורות" />
     </category>
-    <category label="הגדרות בילד">
-        <setting id="buildname" type="text" label="שם הבילד המותקן" default="" visible="true" enable="false" />
+    <category label="הבילד המותקן">
+        <setting id="buildname" type="text" label="שם הבילד" default="" visible="true" enable="false" />
         <setting id="buildversion" type="text" label="גרסת הבילד" default="" visible="true" enable="false" />
         <setting id="installed_skin" type="text" label="סקין מותקן" default="" visible="true" enable="false" />
     </category>
-    <category label="מידע גרסאות (מוסתר)">
-        <setting id="last_pov_version" type="text" label="Last POV version" default="" visible="false" />
-        <setting id="last_skin_version" type="text" label="Last Skin version" default="" visible="false" />
-        <setting id="pov_hebrew_version" type="text" label="POV Hebrew version" default="0" visible="false" />
-        <setting id="skin_hebrew_version" type="text" label="Skin Hebrew version" default="0" visible="false" />
-        <setting id="gears_hebrew_version" type="text" label="Gears Hebrew version" default="0" visible="false" />
-        <setting id="gearsai_version" type="text" label="AI Subs version" default="0" visible="false" />
-        <setting id="last_gears_version" type="text" label="Last Gears version" default="" visible="false" />
+    <category label="פנימי (מוסתר)">
         <setting id="skip_update_check" type="text" label="Skip next update check" default="false" visible="false" />
     </category>
 </settings>
