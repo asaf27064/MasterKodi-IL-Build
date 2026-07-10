@@ -504,7 +504,7 @@ def default_settings():
 {'setting_id': 'autoplay_default_action', 'setting_type': 'action', 'setting_default': '0', 'settings_options': {'0': 'Play', '1': 'Cancel', '2': 'Pause & Wait'}},
 {'setting_id': 'autoplay_next_window_percentage', 'setting_type': 'action', 'setting_default': '95', 'min_value': '75', 'max_value': '99'},
 {'setting_id': 'autoplay_use_chapters', 'setting_type': 'boolean', 'setting_default': 'true'},
-{'setting_id': 'autoscrape_next_episode', 'setting_type': 'boolean', 'setting_default': 'false'},
+{'setting_id': 'autoscrape_next_episode', 'setting_type': 'boolean', 'setting_default': 'true'}, ########### KODIRDIL - pre-scrape next episode for instant playback ###########
 {'setting_id': 'autoscrape_next_window_percentage', 'setting_type': 'action', 'setting_default': '95', 'min_value': '75', 'max_value': '99'},
 {'setting_id': 'autoscrape_use_chapters', 'setting_type': 'boolean', 'setting_default': 'true'},
 {'setting_id': 'auto_resume_episode', 'setting_type': 'action', 'setting_default': '0', 'settings_options': {'0': 'Never', '1': 'Always', '2': 'Autoplay Only'}},
@@ -584,6 +584,7 @@ def default_settings():
 {'setting_id': 'hebrew_subtitles.enable_matching', 'setting_type': 'boolean', 'setting_default': 'true'},
 {'setting_id': 'hebrew_subtitles.minimum_sync_percent', 'setting_type': 'string', 'setting_default': '70'},
 {'setting_id': 'hebrew_subtitles.match_embedded', 'setting_type': 'boolean', 'setting_default': 'true'},
+{'setting_id': 'hebrew_subtitles.match_wait', 'setting_type': 'string', 'setting_default': '4'}, ########### KODIRDIL - max seconds the source window waits for Hebrew matching (was hardcoded 30) ###########
 {'setting_id': 'hebrew_subtitles.match_ktuvit', 'setting_type': 'boolean', 'setting_default': 'true'},
 {'setting_id': 'hebrew_subtitles.match_wizdom', 'setting_type': 'boolean', 'setting_default': 'true'},
 {'setting_id': 'hebrew_subtitles.match_opensubtitles', 'setting_type': 'boolean', 'setting_default': 'true'},

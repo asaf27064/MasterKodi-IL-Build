@@ -33,9 +33,12 @@ def create_search_hebrew_subtitles_thread(media_type, title, season, episode, ye
     
     try:
         search_hebrew_subtitles_thread = Thread(
-            target=hebrew_subtitles_search_utils.search_hebrew_subtitles_for_selected_media, 
+            target=hebrew_subtitles_search_utils.search_hebrew_subtitles_for_selected_media,
             args=hebrew_subtitles_search_arguments
         )
+        # daemon: a slow subtitle site never delays Kodi shutdown nor keeps the
+        # source window waiting past the brief match_wait cap
+        search_hebrew_subtitles_thread.daemon = True
         return search_hebrew_subtitles_thread
         
     except Exception as e:

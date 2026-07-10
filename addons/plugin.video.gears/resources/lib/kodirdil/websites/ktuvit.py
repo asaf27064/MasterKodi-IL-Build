@@ -16,7 +16,7 @@ LOGIN_URL = f"{KTUVIT_URL}/Services/MembershipService.svc/Login"
 SEARCH_URL = f"{KTUVIT_URL}/Services/ContentProvider.svc/SearchPage_search"
 MOVIE_INFO_URL = f"{KTUVIT_URL}/MovieInfo.aspx"
 EPISODE_INFO_URL = f"{KTUVIT_URL}/Services/GetModuleAjax.ashx?"
-DEFAULT_REQUEST_TIMEOUT = 10
+DEFAULT_REQUEST_TIMEOUT = 6
 
 
 def search_for_subtitles(media_metadata):

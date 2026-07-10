@@ -150,15 +150,23 @@ class Sources():
 			if not self.orig_results and not self.active_external: self._kill_progress_dialog()
 			results = self.process_results(self.orig_results)
 
-		########### KODIRDIL - Wait for Hebrew subtitles thread ###########
+		########### KODIRDIL - Wait BRIEFLY for Hebrew subtitles thread ###########
+		# The thread already ran concurrently with the whole scrape, so by the time
+		# we get here it is usually done. We cap the extra wait at a few seconds so a
+		# slow/hanging subtitle site (Wizdom read-timeouts are common) can never stall
+		# the source window for up to 30s. Whatever matched by then paints the sync
+		# badges; the rest keeps filling in the background (thread is a daemon).
 		if enable_hebrew_subtitles and search_hebrew_subtitles_thread is not None:
 			try:
-				kodi_utils.logger("Gears-HEBSUBS", "Waiting for Hebrew subtitles thread to complete...")
-				search_hebrew_subtitles_thread.join(timeout=30)
+				hebrew_wait = get_setting('gears.hebrew_subtitles.match_wait', '4')
+				try: hebrew_wait = float(hebrew_wait)
+				except Exception: hebrew_wait = 4.0
+				kodi_utils.logger("Gears-HEBSUBS", "Waiting up to %ss for Hebrew subtitles thread..." % hebrew_wait)
+				search_hebrew_subtitles_thread.join(timeout=hebrew_wait)
 				if search_hebrew_subtitles_thread.is_alive():
-					kodi_utils.logger("Gears-HEBSUBS", "Hebrew subtitles thread still running, will continue in background")
+					kodi_utils.logger("Gears-HEBSUBS", "Hebrew subtitles thread still running, continuing in background")
 				else:
-					kodi_utils.logger("Gears-HEBSUBS", "Hebrew subtitles thread completed successfully")
+					kodi_utils.logger("Gears-HEBSUBS", "Hebrew subtitles thread completed")
 			except Exception as e:
 				kodi_utils.logger("Gears-HEBSUBS", f"Error waiting for Hebrew subtitles thread: {str(e)}")
 		#######################################################################

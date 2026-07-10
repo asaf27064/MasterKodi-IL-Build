@@ -243,24 +243,154 @@ def run_update(silent=False, notify=None):
 
 
 def _maybe_apply_config(manifest, state):
+    """Apply the shipped build-config using config_policy.json (if present).
+
+    Instead of blindly extracting the whole config zip over userdata/ (which
+    clobbers the user's own settings and logins), a declarative policy decides
+    per file HOW to apply it: replace / seed_if_absent / merge_id (per <setting
+    id> - build value wins, other user settings kept) / merge_name (per
+    <source><name>). exclude_ids protect every credential so a config update
+    never wipes Real-Debrid/TorBox/Trakt/Gemini logins.
+
+    Our extension over the upstream idea: a `gears_settings` block enforces
+    critical Gears values that live in a binary settings.db (not an XML) - this
+    is what makes a settings change (e.g. faster search defaults) actually reach
+    an existing device, and fixes a fresh install seeding stale values.
+    """
     cfg = manifest.get('config')
     if not cfg:
         return
     key = 'config:%s' % cfg['version']
+    fresh = '__config__' not in state          # first ever config apply on this device
     if state.get('__config__') == key:
-        return  # already applied this config version
+        return
     try:
         data = _download(cfg['url'])
         if hashlib.sha256(data).hexdigest() != cfg['sha256']:
             log('config sha mismatch, skipping', xbmc.LOGWARNING)
             return
-        home = xbmcvfs.translatePath('special://home/')
+    except Exception as e:
+        log('config download failed: %s' % e, xbmc.LOGWARNING)
+        return
+
+    home = xbmcvfs.translatePath('special://home/')
+    try:
         with zipfile.ZipFile(io.BytesIO(data)) as z:
-            z.extractall(home)
+            names = z.namelist()
+            policy = None
+            if 'config_policy.json' in names:
+                try:
+                    policy = json.loads(z.read('config_policy.json').decode('utf-8-sig'))
+                except Exception as e:
+                    log('bad config_policy.json: %s' % e, xbmc.LOGWARNING)
+            if policy:
+                _apply_policy(z, policy, home, fresh)
+            else:
+                z.extractall(home)   # no policy -> legacy behaviour
+                log('applied config %s (no policy, full extract)' % cfg['version'])
         state['__config__'] = key
-        log('applied config %s' % cfg['version'])
     except Exception as e:
         log('config apply failed: %s' % e, xbmc.LOGWARNING)
+
+
+def _apply_policy(zf, policy, home, fresh):
+    import tempfile, shutil
+    mode_key = 'fresh' if fresh else 'update'
+    applied = []
+    for entry in policy.get('files', []):
+        src = entry.get('src'); dest_rel = entry.get('dest')
+        if not src or not dest_rel:
+            continue
+        mode = entry.get(mode_key, 'replace')
+        if mode in (None, '', 'skip'):
+            continue
+        try:
+            src_bytes = zf.read(src)
+        except KeyError:
+            continue
+        dest = os.path.join(home, dest_rel.replace('/', os.sep))
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        exclude = set(entry.get('exclude_ids', []))
+        if mode == 'replace':
+            with open(dest, 'wb') as fh:
+                fh.write(src_bytes)
+        elif mode == 'seed_if_absent':
+            if not os.path.exists(dest):
+                with open(dest, 'wb') as fh:
+                    fh.write(src_bytes)
+        elif mode == 'merge_id':
+            _merge_settings_xml(src_bytes, dest, exclude)
+        elif mode == 'merge_name':
+            _merge_named_xml(src_bytes, dest)
+        applied.append('%s(%s)' % (dest_rel, mode))
+    # Gears settings.db enforcement (our extension)
+    gs = policy.get('gears_settings')
+    if gs:
+        _enforce_gears_settings(home, gs, set(policy.get('gears_settings_exclude', [])))
+    log('config policy applied: %d files%s' % (len(applied), ' + gears_settings' if gs else ''))
+
+
+def _merge_settings_xml(src_bytes, dest, exclude_ids):
+    """Per <setting id=X>: build value wins, other user settings untouched."""
+    import re
+    src_txt = src_bytes.decode('utf-8', 'replace')
+    build_vals = dict(re.findall(r'<setting id="([^"]+)"[^>]*>([^<]*)</setting>', src_txt))
+    if not os.path.exists(dest):
+        with open(dest, 'wb') as fh:
+            fh.write(src_bytes)
+        return
+    with open(dest, 'r', encoding='utf-8', errors='replace') as fh:
+        dst_txt = fh.read()
+    dst_ids = set(re.findall(r'<setting id="([^"]+)"', dst_txt))
+    for sid, val in build_vals.items():
+        if sid in exclude_ids:
+            continue
+        if sid in dst_ids:
+            dst_txt = re.sub(r'(<setting id="%s"[^>]*>)[^<]*(</setting>)' % re.escape(sid),
+                             lambda m: m.group(1) + val + m.group(2), dst_txt, count=1)
+        else:
+            dst_txt = dst_txt.replace('</settings>', '    <setting id="%s">%s</setting>\n</settings>' % (sid, val), 1)
+    with open(dest, 'w', encoding='utf-8') as fh:
+        fh.write(dst_txt)
+
+
+def _merge_named_xml(src_bytes, dest):
+    """sources.xml style: add build's <source> entries the user doesn't have."""
+    import re
+    if not os.path.exists(dest):
+        with open(dest, 'wb') as fh:
+            fh.write(src_bytes)
+        return
+    src_txt = src_bytes.decode('utf-8', 'replace')
+    with open(dest, 'r', encoding='utf-8', errors='replace') as fh:
+        dst_txt = fh.read()
+    have = set(re.findall(r'<name>([^<]+)</name>', dst_txt))
+    add = [m for m in re.findall(r'<source>.*?</source>', src_txt, re.S)
+           if (re.search(r'<name>([^<]+)</name>', m) or [None]) and
+              re.search(r'<name>([^<]+)</name>', m).group(1) not in have]
+    if add and '</video>' in dst_txt:
+        dst_txt = dst_txt.replace('</video>', '\n'.join(add) + '\n    </video>', 1)
+        with open(dest, 'w', encoding='utf-8') as fh:
+            fh.write(dst_txt)
+
+
+def _enforce_gears_settings(home, gears_settings, exclude):
+    """Write critical Gears values into its settings.db without touching creds."""
+    import sqlite3
+    db = os.path.join(home, 'userdata', 'addon_data', 'plugin.video.gears',
+                      'databases', 'settings.db')
+    if not os.path.isfile(db):
+        return
+    try:
+        c = sqlite3.connect(db)
+        for sid, val in gears_settings.items():
+            if sid in exclude:
+                continue
+            c.execute('UPDATE settings SET setting_value=? WHERE setting_id=?', (str(val), sid))
+        c.commit(); c.close()
+        log('enforced %d gears settings' % len(gears_settings))
+    except Exception as e:
+        log('gears settings enforce failed: %s' % e, xbmc.LOGWARNING)
 
 
 # --------------------------------------------------------------------------- #

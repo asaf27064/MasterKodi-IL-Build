@@ -13,7 +13,7 @@ MOVIES_TAGLINES_FILE_URL = "https://masterkodi-subpool.asaf27064.workers.dev/v1/
 TV_SHOWS_TAGLINES_FILE_URL = "https://masterkodi-subpool.asaf27064.workers.dev/v1/taglines?type=tv"
 TAGLINES_POST_URL = "https://masterkodi-subpool.asaf27064.workers.dev/v1/taglines"
 TAGLINES_HEADERS = {"User-Agent": "MasterKodiGears/1.0", "X-Gears-Key": "mk-76ed711408c449eda0c5a2d868720b0438e36309"}
-DEFAULT_REQUEST_TIMEOUT = 10
+DEFAULT_REQUEST_TIMEOUT = 6
 CACHE_DURATION_HOURS = 0.5   # refresh often so newly-reported embedded taglines appear
 
 # In-memory cache

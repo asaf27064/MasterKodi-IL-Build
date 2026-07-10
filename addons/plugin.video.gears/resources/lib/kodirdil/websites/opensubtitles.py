@@ -15,7 +15,7 @@ def is_opensubtitles_enabled():
 # out of the box. requests follows the API's canonical-order 301 redirect
 # automatically.
 OPENSUBTITLES_API_URL = "https://api.opensubtitles.com/api/v1/subtitles"
-DEFAULT_REQUEST_TIMEOUT = 12
+DEFAULT_REQUEST_TIMEOUT = 6
 USER_AGENT = "MasterKodiGears v1.0"
 BAKED_KEYS = [
     '9bOXkEUkqg5fHTWCrOQ6pYLBlHtRd9fM',

@@ -10,7 +10,7 @@ def is_wizdom_enabled():
 
 ########### Constants ###################
 WIZDOM_API_SEARCH_URL = "https://wizdom.xyz/api/search"
-DEFAULT_REQUEST_TIMEOUT = 10
+DEFAULT_REQUEST_TIMEOUT = 5
 
 
 def search_for_subtitles(media_metadata):
