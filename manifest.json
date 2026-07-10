@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-10T14:56:40Z",
+  "generated_utc": "2026-07-10T15:05:04Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -459,12 +459,12 @@
     },
     {
       "id": "skin.arctic.fuse.3",
-      "version": "3.2.9",
+      "version": "3.2.13",
       "channel": "optional",
-      "zip": "skin.arctic.fuse.3-3.2.9.zip",
-      "sha256": "2e90b5672bb3c45c5bc1d5aa9933401ddcc303076c3092776438a819ed068fdd",
-      "size": 53241950,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.fuse.3-3.2.9.zip"
+      "zip": "skin.arctic.fuse.3-3.2.13.zip",
+      "sha256": "ec1ae9eb2390d9ba765ffca27481c2f1e1f4dfaf2c81ea459a35a406d64d7641",
+      "size": 54447002,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.fuse.3-3.2.13.zip"
     },
     {
       "id": "skin.estuary",
@@ -488,8 +488,8 @@
   "config": {
     "version": "1",
     "zip": "config-1.zip",
-    "sha256": "6e0621cb78094c524c0d72465f9a3cbf45c6481690032c877b9bcc302be681d6",
-    "size": 11596,
+    "sha256": "702f1a63c58e160115d067427e30c4c5d5e60e7b0a4d20b6f7e0e9a0bac6a993",
+    "size": 7872185,
     "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-1.zip"
   }
 }
