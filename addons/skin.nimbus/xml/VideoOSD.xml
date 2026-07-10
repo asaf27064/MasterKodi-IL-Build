@@ -127,7 +127,7 @@
             <onclick condition="String.IsEqual(Skin.String(OSDSubtitleButtonSetting),0)">NextSubtitle</onclick>
             <onclick condition="String.IsEqual(Skin.String(OSDSubtitleButtonSetting),1)">RunScript(service.subtitles.gearsai,sub_window)</onclick>
             <onleft>708</onleft>
-            <onright>710</onright>
+            <onright>730</onright>
           </control>
           <control type="label">
             <top>0</top>
@@ -137,6 +137,25 @@
             <font>Font22</font>
             <align>center</align>
             <label>[CAPITALIZE]$VAR[VideoPlayerSubtitleLanguage][/CAPITALIZE]</label>
+          </control>
+        </control>
+        <!-- KODIRDIL - standalone Hebrew subtitles button (gearsai sub_window), Estuary-style -->
+        <control type="grouplist">
+          <orientation>vertical</orientation>
+          <align>center</align>
+          <itemgap>-3</itemgap>
+          <visible>VideoPlayer.Content(movies) | VideoPlayer.Content(episodes)</visible>
+          <control type="button" id="730">
+            <width>240</width>
+            <height>55</height>
+            <font>Font22</font>
+            <align>center</align>
+            <label>[COLOR gold]כתוביות עברית[/COLOR]</label>
+            <texturefocus colordiffuse="button_focus">osd/fullscreen/buttons/button-fo.png</texturefocus>
+            <texturenofocus colordiffuse="4da0a0a0">osd/fullscreen/buttons/button-fo.png</texturenofocus>
+            <onclick>RunScript(service.subtitles.gearsai,sub_window)</onclick>
+            <onleft>709</onleft>
+            <onright>710</onright>
           </control>
         </control>
         <control type="grouplist">
@@ -150,7 +169,7 @@
             <include>PlayerButton</include>
             <label>&#xf448;</label>
             <onclick>$VAR[OSDStyleToggleVar]</onclick>
-            <onleft>709</onleft>
+            <onleft>730</onleft>
             <onright>711</onright>
           </control>
           <control type="label">
@@ -465,7 +484,7 @@
             <onclick condition="String.IsEqual(Skin.String(OSDSubtitleButtonSetting),0)">NextSubtitle</onclick>
             <onclick condition="String.IsEqual(Skin.String(OSDSubtitleButtonSetting),1)">RunScript(service.subtitles.gearsai,sub_window)</onclick>
             <onleft>708</onleft>
-            <onright>710</onright>
+            <onright>730</onright>
           </control>
           <control type="label">
             <top>0</top>
@@ -475,6 +494,26 @@
             <font>Font12</font>
             <align>center</align>
             <label>[CAPITALIZE]$VAR[VideoPlayerSubtitleLanguage][/CAPITALIZE]</label>
+          </control>
+        </control>
+        <!-- KODIRDIL - standalone Hebrew subtitles button (gearsai sub_window), Estuary-style -->
+        <control type="grouplist">
+          <orientation>vertical</orientation>
+          <align>center</align>
+          <itemgap>12</itemgap>
+          <width>240</width>
+          <visible>VideoPlayer.Content(movies) | VideoPlayer.Content(episodes)</visible>
+          <control type="button" id="730">
+            <width>240</width>
+            <height>62</height>
+            <font>Font12</font>
+            <align>center</align>
+            <label>[COLOR gold]כתוביות עברית[/COLOR]</label>
+            <texturefocus colordiffuse="button_focus">osd/fullscreen/buttons/button-fo.png</texturefocus>
+            <texturenofocus colordiffuse="4da0a0a0">osd/fullscreen/buttons/button-fo.png</texturenofocus>
+            <onclick>RunScript(service.subtitles.gearsai,sub_window)</onclick>
+            <onleft>709</onleft>
+            <onright>710</onright>
           </control>
         </control>
         <control type="grouplist">
@@ -489,7 +528,7 @@
             <onclick>$VAR[OSDStyleToggleVar]</onclick>
             <!-- <onclick condition="!Skin.HasSetting(Enable.DetailedOSD)">Notification(OSD, Detailed OSD enabled, 1000)</onclick>
             <onclick condition="Skin.HasSetting(Enable.DetailedOSD)">Notification(OSD, Detailed OSD disabled, 1000)</onclick> -->
-            <onleft>709</onleft>
+            <onleft>730</onleft>
             <onright>711</onright>
           </control>
           <control type="label">
