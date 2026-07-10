@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-10T15:33:28Z",
+  "generated_utc": "2026-07-10T16:45:58Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -91,7 +91,7 @@
     {
       "id": "plugin.video.themoviedb.helper",
       "version": "6.15.0",
-      "channel": "core",
+      "channel": "optional",
       "zip": "plugin.video.themoviedb.helper-6.15.0.zip",
       "sha256": "d4822f5e9308efd82839a497c0062068148d04940e7e91cf7f3b6f3a844bfd88",
       "size": 5047887,
@@ -172,7 +172,7 @@
     {
       "id": "resource.font.robotocjksc",
       "version": "0.0.3",
-      "channel": "core",
+      "channel": "optional",
       "zip": "resource.font.robotocjksc-0.0.3.zip",
       "sha256": "4a1bfb10f1e078fb8a2c7b5099710e37cd943ebf630ccb57b91f62015f20f943",
       "size": 51599444,
@@ -181,7 +181,7 @@
     {
       "id": "resource.images.studios.coloured",
       "version": "0.0.23",
-      "channel": "core",
+      "channel": "optional",
       "zip": "resource.images.studios.coloured-0.0.23.zip",
       "sha256": "5b2aae5c8ed5570e0e1f3a722d4b91caad76c336a23b051fd8f2e220aa9c3c1b",
       "size": 58229865,
@@ -190,7 +190,7 @@
     {
       "id": "resource.images.weathericons.white",
       "version": "0.0.6",
-      "channel": "core",
+      "channel": "optional",
       "zip": "resource.images.weathericons.white-0.0.6.zip",
       "sha256": "ad0d547794dc7ecceaf8fbafe9f0c5529c88d2930704a43b687525483002d006",
       "size": 71550,
@@ -217,7 +217,7 @@
     {
       "id": "script.module.addon.signals",
       "version": "0.0.6+matrix.1",
-      "channel": "core",
+      "channel": "optional",
       "zip": "script.module.addon.signals-0.0.6+matrix.1.zip",
       "sha256": "fbd5905f633e66f1af341c6fc9d798d8d7c74fb29e144b467d14c7edd813b959",
       "size": 19835,
@@ -289,7 +289,7 @@
     {
       "id": "script.module.infotagger",
       "version": "0.0.8",
-      "channel": "core",
+      "channel": "optional",
       "zip": "script.module.infotagger-0.0.8.zip",
       "sha256": "4218922806284fc0a50daf8cca292176f5a9b9b2a3876b8e0ba1f68440883579",
       "size": 22750,
@@ -298,7 +298,7 @@
     {
       "id": "script.module.jurialmunkey",
       "version": "0.2.31",
-      "channel": "core",
+      "channel": "optional",
       "zip": "script.module.jurialmunkey-0.2.31.zip",
       "sha256": "4dae7152e53c32a5ece378f1495ac3f0051d8e278e59e6b7c518672a909e0e88",
       "size": 55641,
@@ -325,7 +325,7 @@
     {
       "id": "script.module.qrcode",
       "version": "6.1.0+matrix.3",
-      "channel": "core",
+      "channel": "optional",
       "zip": "script.module.qrcode-6.1.0+matrix.3.zip",
       "sha256": "a7b755b8b387a1ab01f9ca190e61fe9be2975735ae220f9efdfe2618652fdf23",
       "size": 32990,
@@ -343,7 +343,7 @@
     {
       "id": "script.module.six",
       "version": "1.16.0+matrix.1",
-      "channel": "core",
+      "channel": "optional",
       "zip": "script.module.six-1.16.0+matrix.1.zip",
       "sha256": "bf825f39557da5c458c253caa2ca2ce47d7cbbd86bff091d14aa78449e440a3f",
       "size": 16999,
@@ -370,7 +370,7 @@
     {
       "id": "script.nimbus.helper",
       "version": "0.0.52",
-      "channel": "core",
+      "channel": "optional",
       "zip": "script.nimbus.helper-0.0.52.zip",
       "sha256": "8ed463948b6f6c4a903948d86b35f82ebe5664b59c52ed8a86542da81387c3e0",
       "size": 35866,
@@ -379,7 +379,7 @@
     {
       "id": "script.skinvariables",
       "version": "2.1.35",
-      "channel": "core",
+      "channel": "optional",
       "zip": "script.skinvariables-2.1.35.zip",
       "sha256": "78163c2c36b2f1d8e0aff1e961ff46b09dd126819f179c430e0ff42b522b3020",
       "size": 215584,
@@ -388,7 +388,7 @@
     {
       "id": "script.texturemaker",
       "version": "0.2.11",
-      "channel": "core",
+      "channel": "optional",
       "zip": "script.texturemaker-0.2.11.zip",
       "sha256": "a4b8cfe14e15ddc174bcf778c3979b1ed85106edd938428d7510b17955bc134d",
       "size": 171850,
@@ -397,7 +397,7 @@
     {
       "id": "service.kodi.il.firstrun",
       "version": "2.1.2",
-      "channel": "core",
+      "channel": "optional",
       "zip": "service.kodi.il.firstrun-2.1.2.zip",
       "sha256": "a469f521e26b32df876fd985e5d318b9004860acde50133ed8d21426408eee13",
       "size": 3033,
