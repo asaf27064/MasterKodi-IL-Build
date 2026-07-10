@@ -87,56 +87,122 @@ class BuildManager:
         self.dialog = xbmcgui.Dialog()
         self.builds = []
         
-    def fetch_builds_list(self):
-        """Fetch list of available builds from build.txt"""
+    def _fetch_build_txt(self):
+        """Fetch build.txt text. Tries requests, then falls back to plain urllib.
+        Kodi's embedded Python + urllib3 2.x can fail SSL where urllib works, so
+        the urllib path (same one the manifest updater uses reliably) is the
+        safety net -- a network hiccup should never leave the build list empty."""
+        # 1) requests (fast path)
+        if requests is not None:
+            try:
+                log(f"Fetching builds (requests) from: {BUILD_TXT_URL}")
+                r = requests.get(BUILD_TXT_URL, headers={'user-agent': USER_AGENT}, timeout=10)
+                r.raise_for_status()
+                if r.text.strip():
+                    return r.text
+                log("requests returned empty build.txt", xbmc.LOGWARNING)
+            except Exception as e:
+                log(f"requests fetch failed ({e}), trying urllib", xbmc.LOGWARNING)
+        # 2) urllib fallback (proven to work in this Kodi runtime)
         try:
-            if requests is None:
-                log("requests module not available", xbmc.LOGERROR)
-                return []
-            
-            log(f"Fetching builds from: {BUILD_TXT_URL}")
-            response = requests.get(BUILD_TXT_URL, headers={'user-agent': USER_AGENT}, timeout=10)
-            response.raise_for_status()
-            
-            builds = []
-            for line in response.text.strip().split('\n'):
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
-                
-                build_info = {}
-                parts = line.split('" ')
-                for part in parts:
-                    if '="' in part:
-                        key, value = part.split('="', 1)
-                        build_info[key.strip()] = value.rstrip('"').strip()
-                
-                if 'name' in build_info and 'url' in build_info:
-                    builds.append(build_info)
-            
-            self.builds = builds
-            log(f"Fetched {len(builds)} builds")
-            return builds
-            
+            import ssl
+            try:
+                from urllib.request import urlopen, Request
+            except ImportError:
+                from urllib2 import urlopen, Request
+            log(f"Fetching builds (urllib) from: {BUILD_TXT_URL}")
+            req = Request(BUILD_TXT_URL, headers={'User-Agent': USER_AGENT})
+            try:
+                data = urlopen(req, timeout=15).read()
+            except Exception:
+                # last resort: unverified SSL context (old embedded OpenSSL)
+                ctx = ssl.create_default_context()
+                ctx.check_hostname = False
+                ctx.verify_mode = ssl.CERT_NONE
+                data = urlopen(req, timeout=15, context=ctx).read()
+            return data.decode('utf-8', 'replace')
         except Exception as e:
-            log(f"Error fetching builds: {e}", xbmc.LOGERROR)
-            return []
+            log(f"urllib fetch failed too: {e}", xbmc.LOGERROR)
+            return ''
+
+    def fetch_builds_list(self):
+        """Fetch list of available builds from build.txt (requests -> urllib)."""
+        text = self._fetch_build_txt()
+        builds = []
+        for line in (text or '').strip().split('\n'):
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            build_info = {}
+            for part in line.split('" '):
+                if '="' in part:
+                    key, value = part.split('="', 1)
+                    build_info[key.strip()] = value.rstrip('"').strip()
+            if 'name' in build_info and 'url' in build_info:
+                builds.append(build_info)
+        self.builds = builds
+        log(f"Fetched {len(builds)} builds")
+        return builds
+
+    def _urllib_download(self, url, dest, progress_dialog, title):
+        """urllib download with progress (fallback when requests SSL fails)."""
+        import ssl
+        try:
+            from urllib.request import urlopen, Request
+        except ImportError:
+            from urllib2 import urlopen, Request
+        req = Request(url, headers={'User-Agent': USER_AGENT})
+        try:
+            resp = urlopen(req, timeout=30)
+        except Exception:
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            resp = urlopen(req, timeout=30, context=ctx)
+        total = int(resp.headers.get('content-length') or 0)
+        mb = 1024 * 1024
+        downloaded = 0
+        start_time = time.time()
+        with open(dest, 'wb') as f:
+            while True:
+                chunk = resp.read(max(mb, (total // 512) if total else mb))
+                if not chunk:
+                    break
+                f.write(chunk)
+                downloaded += len(chunk)
+                if total:
+                    done = int(100 * downloaded / total)
+                    try:
+                        spd = downloaded / (time.time() - start_time) / 1024
+                    except Exception:
+                        spd = 0
+                    unit = 'KB'
+                    if spd >= 1024:
+                        spd /= 1024; unit = 'MB'
+                    msg = (f'{title}\n[COLOR yellow][B]גודל:[/B] [COLOR lime]{downloaded/mb:.2f}[/COLOR] MB '
+                           f'מתוך [COLOR lime]{total/mb:.2f}[/COLOR] MB[/COLOR]\n'
+                           f'[COLOR yellow][B]מהירות:[/B] [COLOR cyan]{spd:.2f}[/COLOR] {unit}/s[/COLOR]')
+                    progress_dialog.update(done, msg)
+        log(f"Downloaded (urllib): {dest}")
+        return True
 
     def download_file(self, url, dest, progress_dialog, title="מוריד..."):
-        """Download file - exact KodiIL style"""
+        """Download file - requests with a urllib fallback for Kodi SSL quirks."""
         try:
-            if requests is None:
-                return False
-            
             path = os.path.split(dest)[0]
             if not os.path.exists(path):
                 os.makedirs(path)
-            
+
             log(f"Downloading: {url}")
-            
-            with open(dest, 'wb') as f:
+            if requests is None:
+                return self._urllib_download(url, dest, progress_dialog, title)
+            try:
                 response = requests.get(url, headers={'user-agent': USER_AGENT}, timeout=10, stream=True)
-                
+            except Exception as e:
+                log(f"requests download failed ({e}), using urllib", xbmc.LOGWARNING)
+                return self._urllib_download(url, dest, progress_dialog, title)
+
+            with open(dest, 'wb') as f:
                 if not response:
                     return False
                 
