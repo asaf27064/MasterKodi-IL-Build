@@ -92,6 +92,13 @@ def main():
     ap.add_argument('--sevenzip', default='7z', help='7z executable')
     args = ap.parse_args()
 
+    # normalise to absolute paths - several steps run with cwd=KodiFiles, so any
+    # relative path (esp. package.7z) would otherwise resolve against the wrong dir
+    args.kodifiles = os.path.abspath(args.kodifiles)
+    args.portable = os.path.abspath(args.portable)
+    args.dist = os.path.abspath(args.dist)
+    args.assets = os.path.abspath(args.assets)
+
     addons = os.path.join(args.portable, 'addons')
     os.makedirs(addons, exist_ok=True)
 
