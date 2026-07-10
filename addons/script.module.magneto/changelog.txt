@@ -1,3 +1,15 @@
+[COLOR red][B]Version 6.07[/B][/COLOR]
+- Changed dmm, reduced to fetch one page, multiple pages get rate limited.
+- Fixed bitsearch.
+- Removed torrendownload.
+
+[COLOR red][B]Version 6.05[/B][/COLOR]
+- Fix for format change in meteor results.
+- Removed TorBox Torznab due to api change.
+
+[COLOR red][B]Version 6.05[/B][/COLOR]
+- Fix for format change in mediafusion results, next time will just remove it.
+
 [COLOR red][B]Version 6.04[/B][/COLOR]
 - Fix for goofy mediafusion sometimes ignoring 'encoded_user_data' header.
 - Added debrid and cached status tag to Magneto Player results.

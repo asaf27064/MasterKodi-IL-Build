@@ -391,7 +391,7 @@ def load_fanarttv_art(show_info):
                 if lang == '' or lang == '00':
                     lang = None
                 filepath = ''
-                if lang is None or lang == source_settings["LANG_DETAILS"][0:2] or lang == 'en':
+                if lang is None or lang == source_settings["LANG_IMAGES"][0:2] or lang == 'en':
                     filepath = item.get('url')
                 if filepath:
                     if tmdb_type.startswith('season'):
@@ -478,9 +478,32 @@ def _sort_image_types(imagelist):
     :param imagelist:
     :return: imagelist
     """
+    source_settings = settings.getSourceSettings()
+    new_imagelist = {}
     for image_type, images in imagelist.items():
-        imagelist[image_type] = _image_sort(images, image_type)
-    return imagelist
+        if image_type == "backdrops":
+            backdrops = []
+            landscape = []
+            for image in images:
+                if (image.get('iso_639_1') is not None and image.get('iso_639_1').lower() != 'xx') and source_settings["CATLANDSCAPE"]:
+                    landscape.append(image)
+                else:
+                    backdrops.append(image)
+            new_imagelist['landscape'] = _image_sort(landscape, 'landscape')
+            new_imagelist['backdrops'] = _image_sort(backdrops, 'backdrops')
+        elif image_type == 'posters':
+            posters = []
+            keyart = []
+            for image in images:
+                if (image.get('iso_639_1') is None or image.get('iso_639_1').lower() == 'xx') and source_settings["CATKEYART"]:
+                    keyart.append(image)
+                else:
+                    posters.append(image)
+            new_imagelist['posters'] = _image_sort(posters, 'posters')
+            new_imagelist['keyart'] = _image_sort(keyart, 'keyart')
+        else:
+            new_imagelist[image_type] = _image_sort(images, image_type)
+    return new_imagelist
 
 
 def _image_sort(images, image_type):
@@ -499,7 +522,7 @@ def _image_sort(images, image_type):
     firstimage = True
     for image in images:
         image_lang = image.get('iso_639_1')
-        if image_lang == source_settings["LANG_DETAILS"][0:2]:
+        if image_lang == source_settings["LANG_IMAGES"][0:2]:
             lang_pref.append(image)
         elif image_lang == 'en':
             lang_en.append(image)

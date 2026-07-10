@@ -28,7 +28,7 @@ def scraping_settings():
 	return {'highlight_type': 1, '4k': highlight, '1080p': highlight, '720p': highlight, 'sd': highlight}
 
 def scraping_timeout():
-	return int(get_setting('scraping_timeout', '30'))
+	return int(get_setting('scraping_timeout', '10'))
 
 def skin_location(skin_xml):
 	return addon_path

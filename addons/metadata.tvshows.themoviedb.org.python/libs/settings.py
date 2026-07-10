@@ -36,7 +36,7 @@ FANARTTV_MAPPING = {'showbackground': 'backdrops',
                     'clearlogo': 'clearlogo',
                     'hdclearart': 'clearart',
                     'clearart': 'clearart',
-                    'tvthumb': 'landscape',
+                    'tvthumb': 'backdrops',
                     'characterart': 'characterart',
                     'seasonposter': 'seasonposters',
                     'seasonbanner': 'seasonbanner',
@@ -84,6 +84,7 @@ def getSourceSettings():
     settings["KEEPTITLE"] = source_settings.get(
         'keeporiginaltitle', addon.getSettingBool('keeporiginaltitle'))
     settings["CATLANDSCAPE"] = source_settings.get('cat_landscape', True)
+    settings["CATKEYART"] = source_settings.get('cat_keyart', True)
     settings["STUDIOCOUNTRY"] = source_settings.get('studio_country', False)
     settings["ENABTRAILER"] = source_settings.get(
         'enab_trailer', addon.getSettingBool('enab_trailer'))
