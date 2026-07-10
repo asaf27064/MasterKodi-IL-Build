@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-10T16:45:58Z",
+  "generated_utc": "2026-07-10T16:53:21Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -105,15 +105,6 @@
       "sha256": "d79d8756fdcef3eedd266b4f4c76e7576a24d92e106869bda937b68b77c6dd6c",
       "size": 210246,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/repository.KodiRealDebridIsrael-1.0.1.zip"
-    },
-    {
-      "id": "repository.burekasKodi",
-      "version": "1.0.2",
-      "channel": "core",
-      "zip": "repository.burekasKodi-1.0.2.zip",
-      "sha256": "b1443efa6a88982f09abfb2fd3a0aa665a14ed10827ef5924dc114efba8fadb3",
-      "size": 228561,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/repository.burekasKodi-1.0.2.zip"
     },
     {
       "id": "repository.chainsrepo",
