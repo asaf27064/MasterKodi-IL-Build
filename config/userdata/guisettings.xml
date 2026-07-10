@@ -200,8 +200,8 @@
     <setting id="subtitles.custompath" default="true" />
     <setting id="subtitles.pauseonsearch" default="true">true</setting>
     <setting id="subtitles.downloadfirst" default="true">false</setting>
-    <setting id="subtitles.tv">service.subtitles.All_Subs</setting>
-    <setting id="subtitles.movie">service.subtitles.All_Subs</setting>
+    <setting id="subtitles.tv">service.subtitles.gearsai</setting>
+    <setting id="subtitles.movie">service.subtitles.gearsai</setting>
     <setting id="pvrmanager.backendchannelgroupsorder" default="true">true</setting>
     <setting id="pvrmanager.backendchannelorder" default="true">true</setting>
     <setting id="pvrmanager.usebackendchannelnumbersalways" default="true">false</setting>

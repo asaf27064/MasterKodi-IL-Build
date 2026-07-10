@@ -169,6 +169,55 @@ def _apply_one(entry):
     return True
 
 
+# never uninstall these even if a glitched manifest omits them
+NEVER_REMOVE = {
+    'plugin.program.masterkodi.il.wizard', 'service.kodi.il.firstrun',
+    'repository.masterkodi.il', 'xbmc.python',
+}
+
+
+def _apply_removals(manifest, state):
+    """Uninstall addons WE previously installed that are no longer in the build.
+
+    Only touches ids present in our state (so user-installed addons are never
+    removed), that are absent from the current manifest, and not protected.
+    Deletes the folder + its Addons33.db rows and drops it from state.
+    """
+    manifest_ids = {a['id'] for a in manifest.get('addons', [])}
+    tracked = [k for k in list(state.keys()) if not k.startswith('__')]
+    removed = []
+    for aid in tracked:
+        if aid in manifest_ids or aid in NEVER_REMOVE:
+            continue
+        folder = os.path.join(ADDONS_PATH, aid)
+        try:
+            if os.path.isdir(folder):
+                import shutil
+                shutil.rmtree(folder, ignore_errors=True)
+            _db_remove_addon(aid)
+            state.pop(aid, None)
+            removed.append(aid)
+            log('removed addon (dropped from build): %s' % aid)
+        except Exception as e:
+            log('failed to remove %s: %s' % (aid, e), xbmc.LOGWARNING)
+    return removed
+
+
+def _db_remove_addon(aid):
+    import sqlite3
+    dbdir = xbmcvfs.translatePath('special://database/')
+    try:
+        for f in os.listdir(dbdir):
+            if f.startswith('Addons') and f.endswith('.db'):
+                c = sqlite3.connect(os.path.join(dbdir, f))
+                for t in ('installed', 'addons', 'repo'):
+                    try: c.execute('DELETE FROM %s WHERE addonID=?' % t, (aid,))
+                    except Exception: pass
+                c.commit(); c.close()
+    except Exception:
+        pass
+
+
 def run_update(silent=False, notify=None):
     """Check + apply. Returns dict summary.
 
@@ -185,13 +234,25 @@ def run_update(silent=False, notify=None):
         log('manifest fetch failed: %s' % e, xbmc.LOGERROR)
         return {'ok': False, 'error': str(e), 'applied': [], 'failed': []}
 
+    state = _load_state()
+    # Uninstall addons we previously installed that are no longer in the build
+    # (e.g. DarkSubs removed) - runs even when everything else is up to date.
+    removed = _apply_removals(manifest, state)
+    if removed:
+        _save_state(state)
+        xbmc.executebuiltin('UpdateLocalAddons')
+
     updates = compute_updates(manifest)
     if not updates:
-        _say('הבילד מעודכן')
-        return {'ok': True, 'applied': [], 'failed': [], 'up_to_date': True,
+        if not removed:
+            _say('הבילד מעודכן')
+        # still apply config on a version bump even if no addon changed
+        _maybe_apply_config(manifest, state)
+        _save_state(state)
+        return {'ok': True, 'applied': [], 'failed': [], 'removed': removed,
+                'up_to_date': not removed,
                 'manifest_generated': manifest.get('generated_utc')}
 
-    state = _load_state()
     applied, failed = [], []
     wizard_changed = False
 

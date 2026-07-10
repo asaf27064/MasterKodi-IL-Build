@@ -1,21 +1,94 @@
 {
-  "config_version": 2,
+  "config_version": 3,
   "_comment": "Declarative policy for how the wizard applies the shipped build-config onto a device. Bump build.json config_version whenever ANY file under config/ changes. Modes: replace (overwrite whole file), seed_if_absent (write only if missing), merge_id (per <setting id>, build value wins, other user settings kept), merge_name (per <source><name>, add build's, keep user's). exclude_ids protect user credentials on merge. gears_settings enforces critical values in Gears' binary settings.db (fixes fresh-seed staleness + delivers setting changes to existing devices).",
   "files": [
-    { "src": "userdata/advancedsettings.xml", "dest": "userdata/advancedsettings.xml", "fresh": "replace", "update": "replace" },
-    { "src": "userdata/favourites.xml", "dest": "userdata/favourites.xml", "fresh": "replace", "update": "replace" },
-    { "src": "userdata/sources.xml", "dest": "userdata/sources.xml", "fresh": "replace", "update": "merge_name" },
-    { "src": "userdata/guisettings.xml", "dest": "userdata/guisettings.xml", "fresh": "merge_id", "update": "merge_id",
-      "exclude_ids": ["services.devicename", "services.deviceuuid", "videoscreen.resolution", "videoscreen.screen", "audiooutput.audiodevice", "locale.timezone"] },
-    { "src": "userdata/addon_data/skin.estuary/settings.xml", "dest": "userdata/addon_data/skin.estuary/settings.xml", "fresh": "replace", "update": "merge_id" },
-    { "src": "userdata/addon_data/skin.nimbus/settings.xml", "dest": "userdata/addon_data/skin.nimbus/settings.xml", "fresh": "replace", "update": "merge_id",
-      "exclude_ids": ["mdblist_api_key", "valid_api_key"] },
-    { "src": "userdata/addon_data/skin.arctic.fuse.3/settings.xml", "dest": "userdata/addon_data/skin.arctic.fuse.3/settings.xml", "fresh": "replace", "update": "merge_id" },
-    { "src": "userdata/addon_data/script.skinvariables/skinvariables-nodes.json", "dest": "userdata/addon_data/script.skinvariables/skinvariables-nodes.json", "fresh": "seed_if_absent", "update": "skip" },
-    { "src": "userdata/addon_data/plugin.video.themoviedb.helper/settings.xml", "dest": "userdata/addon_data/plugin.video.themoviedb.helper/settings.xml", "fresh": "replace", "update": "merge_id",
-      "exclude_ids": ["trakt.token", "trakt.refreshtoken", "trakt.usertoken", "tmdb.username", "tmdb.sessionid", "mdblist.apikey", "omdb_apikey"] },
-    { "src": "userdata/addon_data/script.nimbus.helper/cpath_cache.db", "dest": "userdata/addon_data/script.nimbus.helper/cpath_cache.db", "fresh": "seed_if_absent", "update": "skip" },
-    { "src": "userdata/addon_data/script.module.magneto/settings.xml", "dest": "userdata/addon_data/script.module.magneto/settings.xml", "fresh": "replace", "update": "merge_id" }
+    {
+      "src": "userdata/advancedsettings.xml",
+      "dest": "userdata/advancedsettings.xml",
+      "fresh": "replace",
+      "update": "replace"
+    },
+    {
+      "src": "userdata/favourites.xml",
+      "dest": "userdata/favourites.xml",
+      "fresh": "replace",
+      "update": "replace"
+    },
+    {
+      "src": "userdata/sources.xml",
+      "dest": "userdata/sources.xml",
+      "fresh": "replace",
+      "update": "merge_name"
+    },
+    {
+      "src": "userdata/guisettings.xml",
+      "dest": "userdata/guisettings.xml",
+      "fresh": "merge_id",
+      "update": "merge_id",
+      "exclude_ids": [
+        "services.devicename",
+        "services.deviceuuid",
+        "videoscreen.resolution",
+        "videoscreen.screen",
+        "audiooutput.audiodevice",
+        "locale.timezone"
+      ]
+    },
+    {
+      "src": "userdata/addon_data/skin.estuary/settings.xml",
+      "dest": "userdata/addon_data/skin.estuary/settings.xml",
+      "fresh": "replace",
+      "update": "merge_id"
+    },
+    {
+      "src": "userdata/addon_data/skin.nimbus/settings.xml",
+      "dest": "userdata/addon_data/skin.nimbus/settings.xml",
+      "fresh": "replace",
+      "update": "merge_id",
+      "exclude_ids": [
+        "mdblist_api_key",
+        "valid_api_key"
+      ]
+    },
+    {
+      "src": "userdata/addon_data/skin.arctic.fuse.3/settings.xml",
+      "dest": "userdata/addon_data/skin.arctic.fuse.3/settings.xml",
+      "fresh": "replace",
+      "update": "merge_id"
+    },
+    {
+      "src": "userdata/addon_data/script.skinvariables/skinvariables-nodes.json",
+      "dest": "userdata/addon_data/script.skinvariables/skinvariables-nodes.json",
+      "fresh": "seed_if_absent",
+      "update": "skip"
+    },
+    {
+      "src": "userdata/addon_data/plugin.video.themoviedb.helper/settings.xml",
+      "dest": "userdata/addon_data/plugin.video.themoviedb.helper/settings.xml",
+      "fresh": "replace",
+      "update": "merge_id",
+      "exclude_ids": [
+        "trakt.token",
+        "trakt.refreshtoken",
+        "trakt.usertoken",
+        "tmdb.username",
+        "tmdb.sessionid",
+        "mdblist.apikey",
+        "omdb_apikey"
+      ]
+    },
+    {
+      "src": "userdata/addon_data/script.nimbus.helper/cpath_cache.db",
+      "dest": "userdata/addon_data/script.nimbus.helper/cpath_cache.db",
+      "fresh": "seed_if_absent",
+      "update": "skip"
+    },
+    {
+      "src": "userdata/addon_data/script.module.magneto/settings.xml",
+      "dest": "userdata/addon_data/script.module.magneto/settings.xml",
+      "fresh": "replace",
+      "update": "merge_id"
+    }
   ],
   "gears_settings": {
     "external.cache_check": "true",
@@ -27,8 +100,15 @@
     "meta_language": "he"
   },
   "gears_settings_exclude": [
-    "rd.token", "rd.client_id", "rd.secret", "rd.refresh",
-    "torbox.api_key", "premiumize.token", "alldebrid.token",
-    "trakt.token", "trakt.secret", "trakt.user"
+    "rd.token",
+    "rd.client_id",
+    "rd.secret",
+    "rd.refresh",
+    "torbox.api_key",
+    "premiumize.token",
+    "alldebrid.token",
+    "trakt.token",
+    "trakt.secret",
+    "trakt.user"
   ]
 }
