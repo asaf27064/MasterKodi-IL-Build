@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-10T18:42:20Z",
+  "generated_utc": "2026-07-10T19:56:31Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -72,20 +72,20 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.2",
+      "version": "2.4.3",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.2.zip",
-      "sha256": "d58d715c073eb8bd64252f6edec14d1d27872e38f5f56c7ecdee21860f395453",
-      "size": 1452919,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.2.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.3.zip",
+      "sha256": "c884125f2388cb0efa509fb3f9c1a72f45252cbe34d9adf5a0f2c5082faf10b8",
+      "size": 1454579,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.3.zip"
     },
     {
       "id": "plugin.video.gears",
       "version": "2.3.1",
       "channel": "core",
       "zip": "plugin.video.gears-2.3.1.zip",
-      "sha256": "86d7bd160064a682c4583b0e2b9871505378c98e9a946ad4780d206cf031fbae",
-      "size": 9104205,
+      "sha256": "b2bfb98cda8a3395e646df331294a383a3ebb8d04797d25e5e57c130752baad3",
+      "size": 9104640,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.gears-2.3.1.zip"
     },
     {
@@ -477,10 +477,10 @@
     }
   ],
   "config": {
-    "version": "1",
-    "zip": "config-1.zip",
-    "sha256": "8ab379d52b4b1a2d577988024d0061a2812d85a27b6cefb03701829d5a97bc26",
-    "size": 23301,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-1.zip"
+    "version": "2",
+    "zip": "config-2.zip",
+    "sha256": "4d3a79ac5e51d1db360a785730dbe9784b6657397fc26dd4f130cd35f8d6d111",
+    "size": 24394,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-2.zip"
   }
 }
