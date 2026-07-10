@@ -53,12 +53,17 @@ def _rebuild_config_zip(config_root, out_path):
         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
         # never ship runtime databases in the config (regenerated on-device;
         # they also carry per-user tokens like trakt.secret) -> defaults come
-        # from each addon's baked settings instead.
-        dirs[:] = [d for d in dirs if d.lower() != 'database']
+        # from each addon's baked settings instead. EXCEPTION: a small whitelist
+        # of pure-config DBs that hold build arrangement, not secrets.
+        CONFIG_DB_WHITELIST = {'cpath_cache.db'}  # nimbus widget arrangement (helper)
+        # drop runtime cache dirs (image blur/crop caches, per-addon databases)
+        _cache_dir = lambda d: d.lower() == 'database' or d.lower().startswith(
+            ('blur', 'crop', 'cache', 'database_')) or d.lower().endswith('_cache')
+        dirs[:] = [d for d in dirs if not _cache_dir(d)]
         for fn in sorted(files):
             if fn in EXCLUDE_NAMES or os.path.splitext(fn)[1] in EXCLUDE_EXTS:
                 continue
-            if fn.lower().endswith('.db'):
+            if fn.lower().endswith('.db') and fn not in CONFIG_DB_WHITELIST:
                 continue
             abspath = os.path.join(root, fn)
             arc = os.path.relpath(abspath, config_root).replace(os.sep, '/')
