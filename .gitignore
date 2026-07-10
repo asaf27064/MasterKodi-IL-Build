@@ -23,3 +23,8 @@ Thumbs.db
 desktop.ini
 .idea/
 .vscode/
+
+# Cloudflare Worker source (deployed separately; carries account/db ids) - never ship or commit
+**/service.subtitles.gearsai/cloudflare/
+**/.wrangler/
+wrangler.toml
