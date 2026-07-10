@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<!-- General -->
+	<category label="General">
+		<setting label="gears uses it's own settings window." type="text" enable="false" />
+		<setting label="Open gears Settings..." type="action" option="close" action="RunPlugin(plugin://plugin.video.gears/?mode=open_settings)" />
+	</category>
+</settings>

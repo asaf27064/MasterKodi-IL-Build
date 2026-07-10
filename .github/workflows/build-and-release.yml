@@ -1,0 +1,100 @@
+name: build-and-release
+
+# Push an addon change -> CI rebuilds only what changed, ships it to the rolling
+# 'addons-latest' release with a sha256 manifest, prunes dead assets, and commits
+# the manifest. You never touch releases by hand.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'addons/**'
+      - 'config/**'
+      - 'build.json'
+      - 'tools/**'
+      - '.github/workflows/build-and-release.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-and-release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with committed manifest)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build addon zips (reproducible)
+        run: python tools/build_addons.py --repo-root . --out dist
+
+      - name: Build config zip
+        run: python tools/build_config.py --repo-root . --out dist
+
+      - name: Generate manifest + diff
+        run: python tools/gen_manifest.py --repo-root . --dist dist
+
+      - name: Ensure rolling release exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view addons-latest >/dev/null 2>&1; then
+            gh release create addons-latest \
+              --title "MasterKodi IL - Addons (rolling)" \
+              --notes "Rolling release. Assets are managed automatically by CI. See manifest.json on main." \
+              --latest=false
+          fi
+
+      - name: Upload changed assets (clobber)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # manifest is always refreshed on the release for clients that prefer it there
+          gh release upload addons-latest manifest.json --clobber
+          if [ -s dist/changed.txt ]; then
+            while IFS= read -r z; do
+              [ -z "$z" ] && continue
+              echo "uploading $z"
+              gh release upload addons-latest "dist/$z" --clobber
+            done < dist/changed.txt
+          else
+            echo "no changed assets to upload"
+          fi
+
+      - name: Prune orphan release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # delete any release asset not referenced by the current manifest
+          # (keep manifest.json itself)
+          keep=$(cat dist/valid_assets.txt)
+          gh release view addons-latest --json assets -q '.assets[].name' | while IFS= read -r name; do
+            [ "$name" = "manifest.json" ] && continue
+            if ! grep -qxF "$name" dist/valid_assets.txt; then
+              echo "pruning orphan asset: $name"
+              gh release delete-asset addons-latest "$name" -y || true
+            fi
+          done
+
+      - name: Commit manifest.json
+        run: |
+          git config user.name "masterkodi-ci"
+          git config user.email "ci@masterkodi.local"
+          if ! git diff --quiet -- manifest.json; then
+            git add manifest.json
+            git commit -m "ci: refresh manifest [skip ci]"
+            git push
+          else
+            echo "manifest unchanged"
+          fi

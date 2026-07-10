@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window type="dialog" id="14000">
+    <defaultcontrol always="true">3001</defaultcontrol>
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+    <controls>
+        <control type="group">
+            <posx>1020</posx>
+            <posy>584</posy>
+            <width>230</width>
+            <height>44</height>
+
+            <animation effect="zoom" start="84" end="100" center="115,22" time="240" tween="cubic" easing="out">WindowOpen</animation>
+            <animation effect="fade" start="0" end="100" time="240">WindowOpen</animation>
+            <animation effect="zoom" start="100" end="84" center="115,22" time="180" tween="cubic" easing="in">WindowClose</animation>
+            <animation effect="fade" start="100" end="0" time="180">WindowClose</animation>
+
+            <!-- drop shadow -->
+            <control type="image" id="3003">
+                <posx>2</posx>
+                <posy>3</posy>
+                <width>226</width>
+                <height>40</height>
+                <aspectratio>stretch</aspectratio>
+                <texture colordiffuse="66000000" border="12">rounded_rect.png</texture>
+            </control>
+
+            <!-- the pill button (base + focus textures) -->
+            <control type="button" id="3001">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>226</width>
+                <height>40</height>
+                <align>center</align>
+                <aligny>center</aligny>
+                <textoffsetx>14</textoffsetx>
+                <font>font13</font>
+                <textcolor>FFFFFFFF</textcolor>
+                <focusedcolor>FFFFFFFF</focusedcolor>
+                <texturefocus colordiffuse="FF00C6D4" border="12">rounded_rect.png</texturefocus>
+                <texturenofocus colordiffuse="FF00A0AA" border="12">rounded_rect.png</texturenofocus>
+                <label>דלג על הפתיח</label>
+            </control>
+
+            <!-- skip-next icon (left) -->
+            <control type="image" id="3006">
+                <posx>13</posx>
+                <posy>11</posy>
+                <width>19</width>
+                <height>19</height>
+                <aspectratio>keep</aspectratio>
+                <texture colordiffuse="FFFFFFFF">skip_next.png</texture>
+            </control>
+
+            <!-- countdown: faint track -->
+            <control type="image" id="3007">
+                <posx>12</posx>
+                <posy>34</posy>
+                <width>202</width>
+                <height>3</height>
+                <aspectratio>stretch</aspectratio>
+                <texture colordiffuse="40FFFFFF" border="2">rounded_rect.png</texture>
+            </control>
+
+            <!-- countdown: draining fill (width driven from overlay.py) -->
+            <control type="image" id="3008">
+                <posx>12</posx>
+                <posy>34</posy>
+                <width>202</width>
+                <height>3</height>
+                <aspectratio>stretch</aspectratio>
+                <texture colordiffuse="FFFFFFFF" border="2">rounded_rect.png</texture>
+            </control>
+        </control>
+    </controls>
+</window>

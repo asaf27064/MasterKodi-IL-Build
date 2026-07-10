@@ -1,0 +1,25 @@
+# build output
+dist/
+*.pyc
+__pycache__/
+
+# secrets - NEVER commit (public repo)
+.secrets/
+*.keystore
+*.jks
+*.pem
+*.key
+secrets.json
+**/tokens.json
+
+# live/runtime databases that carry per-user state or credentials
+**/addon_data/**/settings.db
+**/addon_data/**/*token*
+**/addon_data/**/*.session
+
+# editor/OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/

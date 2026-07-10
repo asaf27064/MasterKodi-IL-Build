@@ -1,0 +1,56 @@
+name: check-upstream-gears
+
+# Watches upstream The Gears every 6h. If a newer version ships, opens (or updates)
+# a tracking issue so we can re-apply the Hebrew overlay. Non-destructive.
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare upstream Gears vs ours
+        id: cmp
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          UP=$(curl -fsSL "https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/addons.xml" \
+                | grep -oE 'id="plugin.video.gears"[^>]*version="[^"]+"' \
+                | grep -oE 'version="[^"]+"' | head -1 | sed -E 's/version="([^"]+)"/\1/')
+          OURS=$(grep -oE '<addon[^>]*id="plugin.video.gears"[^>]*version="[^"]+"' \
+                addons/plugin.video.gears/addon.xml 2>/dev/null \
+                | grep -oE 'version="[^"]+"' | head -1 | sed -E 's/version="([^"]+)"/\1/')
+          echo "upstream=$UP" >> "$GITHUB_OUTPUT"
+          echo "ours=$OURS" >> "$GITHUB_OUTPUT"
+          echo "Upstream Gears: $UP | Ours: $OURS"
+
+      - name: Open/refresh tracking issue if newer
+        if: steps.cmp.outputs.upstream != '' && steps.cmp.outputs.upstream != steps.cmp.outputs.ours
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          UP="${{ steps.cmp.outputs.upstream }}"
+          OURS="${{ steps.cmp.outputs.ours }}"
+          TITLE="Upstream Gears $UP available (we ship $OURS)"
+          EXISTING=$(gh issue list --state open --search "Upstream Gears in:title" --json number,title -q '.[0].number')
+          BODY="Upstream **The Gears** is now **$UP**; our consolidated addon is **$OURS**.
+
+          Re-apply the Hebrew overlay onto $UP, bump versions, and push. CI will ship it.
+
+          - Upstream: https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/plugin.video.gears/plugin.video.gears-$UP.zip"
+          if [ -n "$EXISTING" ]; then
+            gh issue edit "$EXISTING" --title "$TITLE" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --label upstream || \
+            gh issue create --title "$TITLE" --body "$BODY"
+          fi

@@ -1,0 +1,16 @@
+{
+  "build_name": "MasterKodi IL",
+  "brand": "MasterKodi",
+  "maintainer": "asaf27064",
+  "repo": "asaf27064/MasterKodi-IL-Build",
+  "release_tag": "addons-latest",
+  "manifest_schema": 1,
+  "config_version": 1,
+  "channels": {
+    "optional": [
+      "skin.arctic.fuse.3",
+      "skin.nimbus"
+    ]
+  },
+  "notes": "Addons listed under channels.optional are heavy on-demand skins: shipped in the manifest but only updated by the client if the user already has them installed. Everything else is 'core' and auto-updates."
+}
