@@ -1,0 +1,50 @@
+[
+    {
+        "label": "\u05d4\u05de\u05e9\u05da \u05e6\u05e4\u05d9\u05d9\u05d4",
+        "path": "plugin://plugin.video.gears/?name=Continue Watching&mode=build_movie_list&action=in_progress_movies&random_support=true&iconImage=inprogress",
+        "icon": "inprogress",
+        "target": "videos",
+        "guid": "guid-cw000001",
+        "widget_style": "Card"
+    },
+    {
+        "label": "\u05d7\u05dd \u05e2\u05db\u05e9\u05d9\u05d5",
+        "path": "plugin://plugin.video.gears/?name=Trending&mode=build_movie_list&action=trakt_movies_trending&random_support=true&iconImage=trending",
+        "icon": "trending",
+        "target": "videos",
+        "guid": "guid-ac32a429",
+        "widget_style": "Card"
+    },
+    {
+        "label": "\u05d1\u05e7\u05d5\u05dc\u05e0\u05d5\u05e2",
+        "path": "plugin://plugin.video.gears/?name=In+Theaters&mode=build_movie_list&action=tmdb_movies_in_theaters&random_support=true&iconImage=intheatres",
+        "icon": "intheatres",
+        "target": "videos",
+        "guid": "guid-0954018f",
+        "widget_style": "Card"
+    },
+    {
+        "label": "\u05e9\u05d5\u05d1\u05e8\u05d9 \u05e7\u05d5\u05e4\u05d5\u05ea",
+        "path": "plugin://plugin.video.gears/?name=Blockbusters&mode=build_movie_list&action=tmdb_movies_blockbusters&random_support=true&iconImage=most_voted",
+        "icon": "most_voted",
+        "target": "videos",
+        "guid": "guid-10da678b",
+        "widget_style": "Card"
+    },
+    {
+        "label": "\u05d6\u05d5\u05db\u05d9 \u05d0\u05d5\u05e1\u05e7\u05e8",
+        "path": "plugin://plugin.video.gears/?name=Oscar+Winners&mode=build_movie_list&action=tmdb_movies_oscar_winners&random_support=true&iconImage=oscar_winners",
+        "icon": "oscar_winners",
+        "target": "videos",
+        "guid": "guid-3e057afc",
+        "widget_style": "Card"
+    },
+    {
+        "label": "\u05d6'\u05d0\u05e0\u05e8\u05d9\u05dd",
+        "path": "plugin://plugin.video.gears/?name=Genres&mode=navigator.genres&menu_type=movie&random_support=true&iconImage=genres",
+        "icon": "genres",
+        "target": "videos",
+        "guid": "guid-62e5febd",
+        "widget_style": "Square"
+    }
+]

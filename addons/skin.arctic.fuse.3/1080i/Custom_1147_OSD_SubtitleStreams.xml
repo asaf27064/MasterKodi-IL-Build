@@ -45,7 +45,7 @@
                         <param name="icon">special://skin/extras/icons/quote.png</param>
                     </include>
 
-                    <!-- DarkSubs Button - First Row -->
+                    <!-- MasterKodi Button - First Row -->
                     <control type="group">
                         <left>20</left>
                         <right>20</right>
@@ -68,19 +68,19 @@
                                 <label> </label>
                                 <ondown>6207</ondown>
                                 <onup>6007</onup>
-                                <onclick>RunScript(service.subtitles.All_Subs,sub_window)</onclick>
+                                <onclick>RunScript(service.subtitles.gearsai,sub_window)</onclick>
                             </control>
                             
                             <!-- Label - not focused -->
                             <control type="label">
-                                <label>בחירת כתוביות (DarkSubs)</label>
+                                <label>בחירת כתוביות (MasterKodi)</label>
                                 <textcolor>dialog_fg_90</textcolor>
                                 <visible>!Control.HasFocus(6009)</visible>
                             </control>
                             
                             <!-- Label - focused -->
                             <control type="label">
-                                <label>בחירת כתוביות (DarkSubs)</label>
+                                <label>בחירת כתוביות (MasterKodi)</label>
                                 <textcolor>$VAR[ColorSelected]</textcolor>
                                 <visible>Control.HasFocus(6009)</visible>
                             </control>

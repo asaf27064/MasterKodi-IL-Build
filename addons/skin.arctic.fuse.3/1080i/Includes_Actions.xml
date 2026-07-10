@@ -203,38 +203,18 @@
         </definition>
     </include>
 
-    <!-- KODIRDIL - OSD auto-close interval (used by Action_OSD_SuspendAutoClose + Action_OSD_Button below).
-         Returns the user's OSD_Timeout setting as plain seconds, with sensible fallbacks:
-           - empty string  -> "5"  (default 5s; settings.xml ships 5 OOB, this is a backstop)
-           - "0"           -> "5"  (Skin.SetNumeric saves "" for 0, so this rarely fires — but if it does,
-                                    treat 0 as "use default" rather than "fire immediately" which would
-                                    close the OSD even while the user is hovering it with the mouse)
-           - anything else -> the value as-is (Kodi accepts plain seconds in AlarmClock)
-         Stock skin built $INFO[Skin.String(OSD_Timeout),00:,] producing malformed "00:5" (single-digit
-         seconds aren't padded) and "00:0" (never fires). Plain seconds + a variable is the clean fix. -->
-    <variable name="OSD_Timeout_Seconds">
-        <value condition="String.IsEmpty(Skin.String(OSD_Timeout))">5</value>
-        <value condition="Skin.String(OSD_Timeout,0)">5</value>
-        <value>$INFO[Skin.String(OSD_Timeout)]</value>
-    </variable>
-
     <include name="Action_OSD_SuspendAutoClose">
         <onload condition="System.HasAlarm(osd_timeout)">SetProperty(osd_timeout_$PARAM[window],true,home)</onload>
         <onload condition="System.HasAlarm(osd_timeout)">CancelAlarm(osd_timeout,true)</onload>
-        <onunload condition="!String.IsEmpty(Window(Home).Property(osd_timeout_$PARAM[window]))">AlarmClock(osd_timeout,RunScript(script.skinvariables,run_executebuiltin=special://skin/shortcuts/builtins/skinvariables-closeosd.json,use_rules=True),$VAR[OSD_Timeout_Seconds],silent)</onunload>
+        <onunload condition="!String.IsEmpty(Window(Home).Property(osd_timeout_$PARAM[window]))">AlarmClock(osd_timeout,RunScript(script.skinvariables,run_executebuiltin=special://skin/shortcuts/builtins/skinvariables-closeosd.json,use_rules=True),$INFO[Skin.String(OSD_Timeout),00:,],silent)</onunload>
         <onunload condition="!String.IsEmpty(Window(Home).Property(osd_timeout_$PARAM[window]))">ClearProperty(osd_timeout_$PARAM[window],home)</onunload>
     </include>
 
     <include name="Action_OSD_Button">
-        <!-- KODIRDIL: gate is just "OSD window is visible" — the !String.IsEmpty(OSD_Timeout) gate
-             from upstream broke the OOB experience because the wizard preserves an empty user
-             settings.xml across reinstalls, so users who never explicitly set OSD_Timeout never
-             got an auto-close timer. $VAR[OSD_Timeout_Seconds] gives us a 5s fallback when empty.
-             Power users who want infinite OSD can set OSD_Timeout to a very large value (86400). -->
-        <onfocus condition="[Window.IsVisible(videoosd) | Window.IsVisible(musicosd)]">AlarmClock(osd_timeout,RunScript(script.skinvariables,run_executebuiltin=special://skin/shortcuts/builtins/skinvariables-closeosd.json,use_rules=True),$VAR[OSD_Timeout_Seconds],silent)</onfocus>
+        <onfocus condition="!String.IsEmpty(Skin.String(OSD_Timeout)) + [Window.IsVisible(videoosd) | Window.IsVisible(musicosd)]">AlarmClock(osd_timeout,RunScript(script.skinvariables,run_executebuiltin=special://skin/shortcuts/builtins/skinvariables-closeosd.json,use_rules=True),$INFO[Skin.String(OSD_Timeout),00:,],silent)</onfocus>
         <onunfocus>CancelAlarm(osd_timeout,true)</onunfocus>
 
-        <onclick condition="[Window.IsVisible(videoosd) | Window.IsVisible(musicosd)]">AlarmClock(osd_timeout,RunScript(script.skinvariables,run_executebuiltin=special://skin/shortcuts/builtins/skinvariables-closeosd.json,use_rules=True),$VAR[OSD_Timeout_Seconds],silent)</onclick>
+        <onclick condition="!String.IsEmpty(Skin.String(OSD_Timeout)) + [Window.IsVisible(videoosd) | Window.IsVisible(musicosd)]">AlarmClock(osd_timeout,RunScript(script.skinvariables,run_executebuiltin=special://skin/shortcuts/builtins/skinvariables-closeosd.json,use_rules=True),$INFO[Skin.String(OSD_Timeout),00:,],silent)</onclick>
     </include>
 
     <variable name="Action_OSD_WikiInfo">

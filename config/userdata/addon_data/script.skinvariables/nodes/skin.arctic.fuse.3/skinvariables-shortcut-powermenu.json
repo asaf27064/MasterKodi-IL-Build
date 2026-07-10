@@ -1,0 +1,23 @@
+[
+    {
+        "label": "\u05d8\u05e2\u05df \u05e1\u05e7\u05d9\u05df \u05de\u05d7\u05d3\u05e9",
+        "path": "ReloadSkin",
+        "icon": "special://skin/extras/icons/rotate.png",
+        "target": "",
+        "guid": "guid-75a00b71"
+    },
+    {
+        "icon": "special://skin/extras/icons/favourites2.png",
+        "label": "$LOCALIZE[1036]",
+        "path": "ActivateWindow(1160)",
+        "target": "",
+        "guid": "guid-9c93481b"
+    },
+    {
+        "icon": "special://skin/extras/icons/power.png",
+        "label": "$LOCALIZE[13009]",
+        "path": "Quit()",
+        "target": "",
+        "guid": "guid-b214139d"
+    }
+]

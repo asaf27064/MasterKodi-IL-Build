@@ -1,0 +1,18 @@
+[
+    {
+        "label": "\u05e1\u05e8\u05d8\u05d9\u05dd",
+        "icon": "special://skin/extras/icons/film.png",
+        "path": "plugin://plugin.video.gears/?mode=build_movie_list&action=tmdb_movies_search&query=",
+        "target": "videos",
+        "widget_style": "Poster",
+        "guid": "guid-5eb7a3e0"
+    },
+    {
+        "label": "\u05e1\u05d3\u05e8\u05d5\u05ea",
+        "icon": "special://skin/extras/icons/tv.png",
+        "path": "plugin://plugin.video.gears/?mode=build_tvshow_list&action=tmdb_tv_search&query=",
+        "target": "videos",
+        "widget_style": "Poster",
+        "guid": "guid-644b1a13"
+    }
+]

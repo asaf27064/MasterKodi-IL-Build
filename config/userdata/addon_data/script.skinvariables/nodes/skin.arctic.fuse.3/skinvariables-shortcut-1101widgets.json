@@ -1,0 +1,50 @@
+[
+    {
+        "label": "\u05d4\u05de\u05e9\u05da \u05e6\u05e4\u05d9\u05d9\u05d4",
+        "path": "plugin://plugin.video.gears/?name=Continue Watching&mode=build_in_progress_episode&random_support=true&iconImage=inprogress",
+        "icon": "inprogress",
+        "target": "videos",
+        "guid": "guid-cw000002",
+        "widget_style": "Card"
+    },
+    {
+        "label": "\u05d7\u05dd \u05e2\u05db\u05e9\u05d9\u05d5",
+        "path": "plugin://plugin.video.gears/?name=Trending&mode=build_tvshow_list&action=trakt_tv_trending&random_support=true&iconImage=trending",
+        "icon": "trending",
+        "target": "videos",
+        "guid": "guid-59620028",
+        "widget_style": "Card"
+    },
+    {
+        "label": "\u05e8\u05e9\u05ea\u05d5\u05ea \u05e1\u05d8\u05e8\u05d9\u05de\u05d9\u05e0\u05d2",
+        "path": "plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&name=SELECTED+NETWROKS&iconImage=folder",
+        "icon": "folder",
+        "target": "videos",
+        "guid": "guid-c70ce9e9",
+        "widget_style": "Square"
+    },
+    {
+        "label": "\u05e9\u05d9\u05d3\u05d5\u05e8 \u05d1\u05db\u05d5\u05e8\u05d4",
+        "path": "plugin://plugin.video.gears/?name=Premieres&mode=build_tvshow_list&action=tmdb_tv_premieres&random_support=true&iconImage=fresh",
+        "icon": "fresh",
+        "target": "videos",
+        "guid": "guid-adc61fcf",
+        "widget_style": "Card"
+    },
+    {
+        "label": "\u05d1\u05e7\u05e8\u05d5\u05d1",
+        "path": "plugin://plugin.video.gears/?name=Up+Coming&mode=build_tvshow_list&action=tmdb_tv_upcoming&random_support=true&iconImage=lists",
+        "icon": "lists",
+        "target": "videos",
+        "guid": "guid-2779e3e5",
+        "widget_style": "Card"
+    },
+    {
+        "label": "\u05d6'\u05d0\u05e0\u05e8\u05d9\u05dd",
+        "path": "plugin://plugin.video.gears/?name=Genres&mode=navigator.genres&menu_type=tvshow&random_support=true&iconImage=genres",
+        "icon": "genres",
+        "target": "videos",
+        "guid": "guid-26bcc095",
+        "widget_style": "Square"
+    }
+]

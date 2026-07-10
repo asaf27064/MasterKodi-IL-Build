@@ -6,12 +6,6 @@
     <animation effect="fade" end="0" start="100" time="300">WindowClose</animation>
     <onload>SetProperty(UID,$ESCINFO[Player.Title]$INFO[Player.Time(ss)],1146)</onload>
     <onload>SetProperty(UID,$ESCINFO[Player.Title]$INFO[Player.Time(ss)],1147)</onload>
-    <!-- KODIRDIL: self-destruct timer fires regardless of how the OSD was opened.
-         Covers the case where the initial default-control focus doesn't trigger onfocus
-         (Enter / center-button-to-open) — without this the bar lingered indefinitely.
-         Guard with !System.HasAlarm so we don't stomp on an alarm that an onfocus event
-         already set just before/after the window loaded. -->
-    <onload condition="!System.HasAlarm(osd_timeout)">AlarmClock(osd_timeout,RunScript(script.skinvariables,run_executebuiltin=special://skin/shortcuts/builtins/skinvariables-closeosd.json,use_rules=True),$VAR[OSD_Timeout_Seconds],silent)</onload>
     <onunload>CancelAlarm(osd_timeout,true)</onunload>
     <controls>
 
