@@ -29,6 +29,21 @@ tools/                  build + manifest pipeline
 `check-upstream-gears.yml` watches upstream The Gears every 6h and opens a
 tracking issue when a new version appears.
 
+### Installer CI (EXE + APK)
+
+The native bootstrap installers are also built automatically:
+
+* `build-apk.yml` (Linux) — decodes base Kodi, injects wizard/firstrun/repo +
+  deps, **signs** with the keystore (a GitHub secret, never committed), and
+  publishes `MasterKodiIL-arm64-v8a.apk` / `-armeabi-v7a.apk`.
+* `build-exe.yml` (Windows) — assembles KodiFiles + bootstrap portable_data,
+  packages, and compiles with Inno Setup into `MasterKodiIL_Setup.exe`.
+
+Both publish to the `installers` release and run on demand or when the wizard /
+firstrun / installer assets change. Heavy base binaries live in the
+`build-inputs` release; signing secrets live in repo secrets
+(`KEYSTORE_B64`, `KEYSTORE_ALIAS`, `KEYSTORE_PASS`).
+
 ### The client (wizard)
 
 The MasterKodi wizard reads `manifest.json`, compares each addon's installed
