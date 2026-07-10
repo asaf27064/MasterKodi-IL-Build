@@ -208,7 +208,7 @@ def default_settings():
 {'setting_id': 'addon_icon_choice', 'setting_type': 'string', 'setting_default': 'icon.png'},
 {'setting_id': 'default_addon_fanart', 'setting_type': 'path', 'setting_default': kodi_utils.addon_fanart(), 'browse_mode': '2'},
 {'setting_id': 'limit_concurrent_threads', 'setting_type': 'boolean', 'setting_default': 'false'},
-{'setting_id': 'max_threads', 'setting_type': 'action', 'setting_default': '60', 'min_value': '10', 'max_value': '250'},
+{'setting_id': 'max_threads', 'setting_type': 'action', 'setting_default': '100', 'min_value': '10', 'max_value': '250'}, ########### KODIRDIL - faster scrape (was 60) ###########
 #==================== Manage Updates
 {'setting_id': 'update.action', 'setting_type': 'action', 'setting_default': '0', 'settings_options': {'0': 'Prompt', '1': 'Automatic', '2': 'Notification', '3': 'Off'}},
 {'setting_id': 'update.delay', 'setting_type': 'action', 'setting_default': '10', 'min_value': '10', 'max_value': '300'},
@@ -432,7 +432,7 @@ def default_settings():
 #====================================RESULTS====================================#
 #===============================================================================#
 #==================== Display
-{'setting_id': 'results.timeout', 'setting_type': 'action', 'setting_default': '20', 'min_value': '1'},
+{'setting_id': 'results.timeout', 'setting_type': 'action', 'setting_default': '12', 'min_value': '1'}, ########### KODIRDIL - faster results window (was 20) ###########
 {'setting_id': 'results.list_format', 'setting_type': 'string', 'setting_default': 'List'},
 #==================== General
 {'setting_id': 'results.auto_rescrape_cache_ignored', 'setting_type': 'action', 'setting_default': '0', 'settings_options': {'0': 'Off', '1': 'Auto', '2': 'Prompt'}}, ########### KODIRDIL - cached-only: no uncached rescrape (was 1/Auto) ###########
