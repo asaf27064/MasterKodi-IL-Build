@@ -1,0 +1,65 @@
+name: build-exe
+
+# Builds the MasterKodi IL Windows installer (.exe) on a Windows runner.
+# Bootstrap only (base Kodi + wizard/firstrun/repo); the full build then arrives
+# via the manifest updater. Runs on demand or when the bootstrap changes.
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - 'addons/plugin.program.masterkodi.il.wizard/**'
+      - 'addons/service.kodi.il.firstrun/**'
+      - 'installers/windows/**'
+      - '.github/workflows/build-exe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build addon zips (wizard/firstrun/repo)
+        run: python tools/build_addons.py --repo-root . --out dist
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Fetch + extract build inputs (KodiFiles, portable_data)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download build-inputs --pattern "KodiFiles.tar.gz" --output KodiFiles.tar.gz --clobber
+          gh release download build-inputs --pattern "portable_data_template.tar.gz" --output portable_data_template.tar.gz --clobber
+          mkdir inputs
+          tar -xzf KodiFiles.tar.gz -C inputs
+          tar -xzf portable_data_template.tar.gz -C inputs
+          dir inputs
+
+      - name: Build installer
+        run: |
+          python installers/windows/build_exe.py `
+            --kodifiles inputs/KodiFiles `
+            --portable inputs/portable_data `
+            --dist dist `
+            --assets installers/windows `
+            --iscc "C:/Program Files (x86)/Inno Setup 6/ISCC.exe" `
+            --sevenzip "C:/Program Files/7-Zip/7z.exe"
+
+      - name: Upload EXE to installers release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if (-not (gh release view installers 2>$null)) {
+            gh release create installers --title "MasterKodi IL - Installers" --notes "Signed EXE/APK bootstraps built by CI." --latest=false
+          }
+          gh release upload installers "installers/windows/Output/MasterKodiIL_Setup.exe" --clobber
