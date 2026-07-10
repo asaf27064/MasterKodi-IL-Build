@@ -139,23 +139,30 @@
             <label>[CAPITALIZE]$VAR[VideoPlayerSubtitleLanguage][/CAPITALIZE]</label>
           </control>
         </control>
-        <!-- KODIRDIL - standalone Hebrew subtitles button (gearsai sub_window), Estuary-style -->
+        <!-- KODIRDIL - standalone Hebrew subtitles button (gearsai sub_window), in-row like its neighbors -->
         <control type="grouplist">
           <orientation>vertical</orientation>
           <align>center</align>
           <itemgap>-3</itemgap>
           <visible>VideoPlayer.Content(movies) | VideoPlayer.Content(episodes)</visible>
           <control type="button" id="730">
-            <width>240</width>
-            <height>55</height>
-            <font>Font22</font>
+            <font>PlayerIconSmall</font>
+            <textoffsety>7</textoffsety>
             <align>center</align>
-            <label>[COLOR gold]כתוביות עברית[/COLOR]</label>
-            <texturefocus colordiffuse="button_focus">osd/fullscreen/buttons/button-fo.png</texturefocus>
-            <texturenofocus colordiffuse="4da0a0a0">osd/fullscreen/buttons/button-fo.png</texturenofocus>
+            <include>PlayerButton</include>
+            <label>&#xef43;</label>
             <onclick>RunScript(service.subtitles.gearsai,sub_window)</onclick>
             <onleft>709</onleft>
             <onright>710</onright>
+          </control>
+          <control type="label">
+            <top>0</top>
+            <left>-21</left>
+            <height>48</height>
+            <width>90</width>
+            <font>Font22</font>
+            <align>center</align>
+            <label>[COLOR gold]עברית[/COLOR]</label>
           </control>
         </control>
         <control type="grouplist">
@@ -496,24 +503,29 @@
             <label>[CAPITALIZE]$VAR[VideoPlayerSubtitleLanguage][/CAPITALIZE]</label>
           </control>
         </control>
-        <!-- KODIRDIL - standalone Hebrew subtitles button (gearsai sub_window), Estuary-style -->
+        <!-- KODIRDIL - standalone Hebrew subtitles button (gearsai sub_window), in-row like its neighbors -->
         <control type="grouplist">
           <orientation>vertical</orientation>
           <align>center</align>
           <itemgap>12</itemgap>
-          <width>240</width>
+          <width>64</width>
           <visible>VideoPlayer.Content(movies) | VideoPlayer.Content(episodes)</visible>
-          <control type="button" id="730">
-            <width>240</width>
-            <height>62</height>
-            <font>Font12</font>
-            <align>center</align>
-            <label>[COLOR gold]כתוביות עברית[/COLOR]</label>
-            <texturefocus colordiffuse="button_focus">osd/fullscreen/buttons/button-fo.png</texturefocus>
-            <texturenofocus colordiffuse="4da0a0a0">osd/fullscreen/buttons/button-fo.png</texturenofocus>
+          <control type="radiobutton" id="730">
+            <include content="OSDButton">
+              <param name="texture" value="osd/fullscreen/buttons/settings-subtitle.png"/>
+            </include>
             <onclick>RunScript(service.subtitles.gearsai,sub_window)</onclick>
             <onleft>709</onleft>
             <onright>710</onright>
+          </control>
+          <control type="label">
+            <top>0</top>
+            <left>0</left>
+            <height>64</height>
+            <width>64</width>
+            <font>Font12</font>
+            <align>center</align>
+            <label>[COLOR gold]עברית[/COLOR]</label>
           </control>
         </control>
         <control type="grouplist">
