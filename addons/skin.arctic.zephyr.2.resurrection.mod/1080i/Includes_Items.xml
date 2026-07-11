@@ -1429,7 +1429,25 @@
         </content>
     </include>
 
-    <include name="Items_PowerMenu"><content><include>skinshortcuts-group-powermenu</include></content></include>
+    <include name="Items_PowerMenu"><content>
+        <include>skinshortcuts-group-powermenu</include>
+        <!-- MasterKodi IL: build-specific power items (match Estuary/Nimbus) -->
+        <item>
+            <label>החלפת סקין</label>
+            <onclick>Dialog.Close(shutdownmenu)</onclick>
+            <onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</onclick>
+        </item>
+        <item>
+            <label>ניקוי קאש Gears</label>
+            <onclick>Dialog.Close(shutdownmenu)</onclick>
+            <onclick>RunPlugin(plugin://plugin.video.gears/?mode=clear_all_cache)</onclick>
+        </item>
+        <item>
+            <label>ניקוי קאש Gears AI</label>
+            <onclick>Dialog.Close(shutdownmenu)</onclick>
+            <onclick>RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</onclick>
+        </item>
+    </content></include>
 
     <include name="Items_Info_Manage">
         <content>
