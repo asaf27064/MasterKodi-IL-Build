@@ -816,7 +816,10 @@ class BuildManager:
     # Hebrew font; AF3's "Default" is Latin-only so it must use "Hebrew (Rubik)".
     SKIN_FONTSET = {
         'skin.arctic.fuse.3': 'Hebrew (Rubik)',
-        'skin.arctic.zephyr.2.resurrection.mod': 'Hebrew (Rubik)',
+        # Zephyr: use its built-in "Arial" fontset. Its Rubik renders Hebrew in
+        # labels but tofus inside Kodi <textbox> controls (the Gears plot panel);
+        # Arial is a complete font that renders Hebrew everywhere, incl. textboxes.
+        'skin.arctic.zephyr.2.resurrection.mod': 'Arial',
         'skin.estuary': 'Default',
         'skin.nimbus': 'Default',
     }
