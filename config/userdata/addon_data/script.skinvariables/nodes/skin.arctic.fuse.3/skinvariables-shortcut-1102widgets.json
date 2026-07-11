@@ -1,16 +1,8 @@
 [
     {
-        "label": "שירותי RD וניקוי מטמון",
-        "path": "plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&name=RD+Services&iconImage=folder",
-        "icon": "folder",
-        "target": "videos",
-        "guid": "guid-8b411b9d",
-        "widget_style": "Square"
-    },
-    {
         "label": "שירותי TorBox",
         "path": "plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&name=TorBox+Services&iconImage=folder",
-        "icon": "folder",
+        "icon": "cloud-arrow-down",
         "target": "videos",
         "guid": "guid-torbox001",
         "widget_style": "Square"
