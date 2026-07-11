@@ -3,6 +3,11 @@ dist/
 *.pyc
 __pycache__/
 
+# CI-generated merged Hebrew addons (source of truth is overlays/<id>/).
+# Reconstructed by tools/apply_overlay.py at build time -- never commit them.
+addons/plugin.video.gears/
+addons/skin.arctic.fuse.3/
+
 # secrets - NEVER commit (public repo)
 .secrets/
 *.keystore

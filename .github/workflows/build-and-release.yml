@@ -9,6 +9,7 @@ on:
     branches: [main]
     paths:
       - 'addons/**'
+      - 'overlays/**'
       - 'config/**'
       - 'build.json'
       - 'tools/**'
@@ -35,6 +36,17 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Install build deps
+        run: pip install requests
+
+      - name: Reconstruct Hebrew addons (clean upstream + overlay)
+        # The Hebrew-modified addons are NOT committed as merged trees -- only
+        # our overlay (overlays/<id>/) is. CI downloads clean upstream, strips
+        # git junk / de-versions the folder, applies the overlay on top, and
+        # writes the merged addon into addons/ so the normal build picks it up.
+        # This keeps the Hebrew isolated + re-appliable to future upstreams.
+        run: python tools/apply_overlay.py overlays addons
 
       - name: Build addon zips (reproducible)
         run: python tools/build_addons.py --repo-root . --out dist

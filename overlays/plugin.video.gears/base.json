@@ -1,0 +1,11 @@
+{
+  "addon_id": "plugin.video.gears",
+  "base_version": "2.3.4",
+  "base_zip_local": "base/plugin.video.gears-2.3.4.zip",
+  "base_zip_url": "https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/plugin.video.gears/plugin.video.gears-{version}.zip",
+  "upstream_zip_url": "https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/plugin.video.gears/plugin.video.gears-{version}.zip",
+  "upstream_addons_xml": "https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/addons.xml",
+  "overlay_version": "2.2.9",
+  "note": "unhingedthemes keeps ONLY the latest zip upstream, so the clean base of the version we ship is committed at base_zip_local (immune to upstream deleting older versions). upstream_zip_url is used by the watcher/adopt to fetch newer versions.",
+  "changelog": "Hebrew subtitles overlay (kodirdil) + baked build defaults (cached-only fast search, non-blocking Hebrew match, meta_language he)."
+}

@@ -15,7 +15,7 @@ import zipfile
 
 # Files/dirs never shipped inside an addon zip.
 EXCLUDE_DIRS = {'.git', '__pycache__', '.github', '.idea', '.vscode', 'node_modules'}
-EXCLUDE_NAMES = {'.DS_Store', 'Thumbs.db', 'desktop.ini', '.gitignore', '.gitattributes'}
+EXCLUDE_NAMES = {'.DS_Store', 'Thumbs.db', 'desktop.ini', '.gitignore', '.gitattributes', '.gitmodules'}
 EXCLUDE_EXTS = {'.pyc', '.pyo', '.pyd'}
 
 # Addon sub-paths that must never ship (heavy/binary or environment specific).

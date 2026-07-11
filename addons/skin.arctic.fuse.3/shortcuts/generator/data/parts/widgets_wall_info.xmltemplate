@@ -1,3 +1,0 @@
-<include content="Hub_Wall_Info">
-    <param name="id">{widget_id}</param>
-</include>

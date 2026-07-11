@@ -1,0 +1,11 @@
+{
+  "addon_id": "skin.arctic.fuse.3",
+  "base_version": "3.2.13",
+  "base_zip_url": "https://github.com/jurialmunkey/skin.arctic.fuse.3/archive/refs/tags/v{version}.zip",
+  "upstream_zip_url": "https://github.com/jurialmunkey/skin.arctic.fuse.3/archive/refs/tags/v{version}.zip",
+  "upstream_releases_api": "https://api.github.com/repos/jurialmunkey/skin.arctic.fuse.3/releases/latest",
+  "raw_top_folder": "skin.arctic.fuse.3-{version}",
+  "overlay_version": "3.2.13",
+  "note": "GitHub source archives are permanent per tag, so no committed base is needed; CI fetches base_zip_url at build time.",
+  "changelog": "Hebrew skin overlay: Rubik/NotoSansHebrew fonts, gearsai subtitle OSD button (Custom_1147), Hebrew info labels."
+}
