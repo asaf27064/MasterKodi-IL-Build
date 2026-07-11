@@ -453,8 +453,17 @@ def _maybe_apply_config(manifest, state, force=False):
         return False
     key = 'config:%s' % cfg['version']
     fresh = '__config__' not in state          # first ever config apply on this device
-    if state.get('__config__') == key and not force:
-        return False                           # already applied (repair re-applies)
+    # Re-apply the config whenever the WIZARD version changed, even if the config
+    # version didn't: config is applied by the currently-running wizard code, so a
+    # config feature added in a new wizard (e.g. gears_shortcuts) would otherwise
+    # never run on a device where the config was already applied by the old wizard.
+    try:
+        wiz_ver = ADDON.getAddonInfo('version')
+    except Exception:
+        wiz_ver = ''
+    already = state.get('__config__') == key and state.get('__config_wizard__') == wiz_ver
+    if already and not force:
+        return False                           # already applied by THIS wizard version
     try:
         data = _download(cfg['url'])
         if hashlib.sha256(data).hexdigest() != cfg['sha256']:
@@ -480,6 +489,7 @@ def _maybe_apply_config(manifest, state, force=False):
                 z.extractall(home)   # no policy -> legacy behaviour
                 log('applied config %s (no policy, full extract)' % cfg['version'])
         state['__config__'] = key
+        state['__config_wizard__'] = wiz_ver
         return True
     except Exception as e:
         log('config apply failed: %s' % e, xbmc.LOGWARNING)
