@@ -109,6 +109,37 @@ def _process_pending_skin_removal():
         log(f"pending skin removal failed for {sid}: {e}", xbmc.LOGWARNING)
 
 
+def _prewarm_gears(mon):
+    """Warm Gears so the FIRST home-widget/shortcut click is fast. The first
+    plugin call pays a cold start (python imports of the whole gears stack +
+    TMDB/Trakt list fetch); gears has reuselanguageinvoker so every later call
+    reuses the warm interpreter. We pay that cost here silently instead of on
+    the user's first click. Headless via JSON-RPC Files.GetDirectory (no
+    window opens). Fail-open: any error -> do nothing."""
+    try:
+        if not xbmc.getCondVisibility('System.HasAddon(plugin.video.gears)'):
+            return
+        paths = (
+            'plugin://plugin.video.gears/?name=Trending&mode=build_movie_list'
+            '&action=trakt_movies_trending&random_support=true&iconImage=trending',
+            'plugin://plugin.video.gears/?name=Trending&mode=build_tvshow_list'
+            '&action=trakt_tv_trending&random_support=true&iconImage=trending',
+        )
+        for p in paths:
+            if mon.abortRequested():
+                return
+            try:
+                xbmc.executeJSONRPC(
+                    '{"jsonrpc":"2.0","id":1,"method":"Files.GetDirectory",'
+                    '"params":{"directory":"%s","media":"video",'
+                    '"properties":["title"],"limits":{"start":0,"end":3}}}' % p)
+            except Exception:
+                pass
+        log("gears pre-warm done")
+    except Exception as e:
+        log("prewarm error: %s" % e, xbmc.LOGDEBUG)
+
+
 class POVHebrewService(xbmc.Monitor):
     def __init__(self):
         super().__init__()
@@ -122,6 +153,8 @@ class POVHebrewService(xbmc.Monitor):
         if ADDON.getSetting('skip_update_check') == 'true':
             log("Skipping update check (after build installation)")
             ADDON.setSetting('skip_update_check', 'false')
+            if not self.waitForAbort(20):
+                _prewarm_gears(self)
             while not self.abortRequested():
                 if self.waitForAbort(300):
                     break
@@ -156,6 +189,9 @@ class POVHebrewService(xbmc.Monitor):
                 log(f"manifest update error: {e}", xbmc.LOGERROR)
         else:
             log("Auto update check disabled")
+
+        # Warm gears now that boot + update check are done (nothing else to do).
+        _prewarm_gears(self)
 
         # Keep the service alive until Kodi shuts down.
         while not self.abortRequested():

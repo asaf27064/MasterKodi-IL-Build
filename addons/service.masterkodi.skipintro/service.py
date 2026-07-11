@@ -199,48 +199,7 @@ class SkipService(xbmc.Monitor):
                 break
 
 
-def _prewarm_gears():
-    """Warm Gears in the background so the FIRST home-widget/shortcut click is
-    fast. The first plugin call pays a cold start (python imports of the whole
-    gears stack + TMDB/Trakt list fetch); gears has reuselanguageinvoker so
-    every later call reuses the warm interpreter. We pay that cost silently
-    ~20s after boot instead of on the user's first click. Headless via JSON-RPC
-    Files.GetDirectory (no window opens). Fail-open: any error -> do nothing."""
-    try:
-        mon = xbmc.Monitor()
-        if mon.waitForAbort(20):
-            return
-        if not xbmc.getCondVisibility('System.HasAddon(plugin.video.gears)'):
-            return
-        paths = (
-            # the two hottest widget/menu paths (movies + tv trending)
-            'plugin://plugin.video.gears/?name=Trending&mode=build_movie_list'
-            '&action=trakt_movies_trending&random_support=true&iconImage=trending',
-            'plugin://plugin.video.gears/?name=Trending&mode=build_tvshow_list'
-            '&action=trakt_tv_trending&random_support=true&iconImage=trending',
-        )
-        for p in paths:
-            if mon.abortRequested():
-                return
-            try:
-                xbmc.executeJSONRPC(
-                    '{"jsonrpc":"2.0","id":1,"method":"Files.GetDirectory",'
-                    '"params":{"directory":"%s","media":"video",'
-                    '"properties":["title"],"limits":{"start":0,"end":3}}}'
-                    % p)
-            except Exception:
-                pass
-        log('gears pre-warm done')
-    except Exception as e:
-        xbmc.log('[skipintro] prewarm error: %s' % e, xbmc.LOGDEBUG)
-
-
 if __name__ == '__main__':
-    try:
-        import threading
-        threading.Thread(target=_prewarm_gears, daemon=True).start()
-    except Exception as e:
-        xbmc.log('[skipintro] prewarm spawn failed: %s' % e, xbmc.LOGWARNING)
     try:
         SkipService().run()
     except Exception as e:
