@@ -15,6 +15,24 @@ import urllib.request
 
 WIZARD_ID = 'plugin.program.masterkodi.il.wizard'
 REPO_ID = 'repository.masterkodi.il'
+
+# Addons WE ship MODDED (Hebrew skins, patched gears/skinhelper). estuary/nimbus
+# live in Kodi's official repo and gears in chainsrepo -- both always installed
+# and global auto-update is ON, so Kodi could overwrite our modded copy with a
+# vanilla upstream release. Pin them (USER_DISABLED_AUTO_UPDATE=1) so the wizard
+# stays their only updater. Vanilla deps are intentionally NOT listed -- they
+# keep auto-updating. Keep this in sync with modular_update.MODDED_ADDONS.
+MODDED_ADDONS = (
+    'plugin.video.gears',
+    'skin.estuary',
+    'skin.nimbus',
+    'skin.arctic.fuse.3',
+    'skin.arctic.zephyr.2.resurrection.mod',
+    'script.skinhelper',
+    'script.module.gearsscrapers',
+    'service.subtitles.gearsai',
+    'service.masterkodi.skipintro',
+)
 MARKER_FILE = '.masterkodi_il_done'
 REPO_ADDONS_XML = 'https://asaf27064.github.io/addons.xml'
 
@@ -101,9 +119,18 @@ def setup_addons_db():
             addon_id = row[0]
         
         # Link
-        cursor.execute('INSERT OR IGNORE INTO addonlinkrepo (idRepo, idAddon) VALUES (?, ?)', 
+        cursor.execute('INSERT OR IGNORE INTO addonlinkrepo (idRepo, idAddon) VALUES (?, ?)',
                        (repo_id, addon_id))
-        
+
+        # Pin our MODDED addons against Kodi auto-update (the wizard is their only
+        # updater). USER_DISABLED_AUTO_UPDATE = 1 in update_rules. Fail-open per id.
+        for aid in MODDED_ADDONS:
+            try:
+                cursor.execute('DELETE FROM update_rules WHERE addonID = ?', (aid,))
+                cursor.execute('INSERT INTO update_rules (addonID, updateRule) VALUES (?, 1)', (aid,))
+            except Exception as e:
+                log(f'pin {aid} failed: {e}', xbmc.LOGWARNING)
+
         conn.commit()
         conn.close()
         return True

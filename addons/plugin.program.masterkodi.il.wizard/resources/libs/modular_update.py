@@ -163,19 +163,41 @@ def compute_updates(manifest, force=False):
 # --------------------------------------------------------------------------- #
 # apply
 # --------------------------------------------------------------------------- #
-def _disable_kodi_autoupdate(aid):
-    """Pin an addon so Kodi never auto-updates it -- WE are the only updater.
+# Addons WE ship MODDED -- an upstream/official-repo copy would overwrite our
+# work (Hebrew skins, patched gears, PIL-stripped skinhelper). These must never
+# be auto-updated by Kodi; the wizard manifest is their only updater. Everything
+# else we ship (themoviedb.helper, skinvariables, resource.images.*, the script
+# modules, metadata scrapers, ...) is VANILLA upstream and SHOULD keep
+# auto-updating from its repo -- so it is deliberately absent here. The wizard
+# and repo self-update from our own repo, so they're excluded too.
+MODDED_ADDONS = {
+    'plugin.video.gears',
+    'skin.estuary',            # in Kodi's official repo -> real clobber risk
+    'skin.nimbus',             # in Kodi's official repo -> real clobber risk
+    'skin.arctic.fuse.3',
+    'skin.arctic.zephyr.2.resurrection.mod',
+    'script.skinhelper',       # we removed its PIL requirement
+    'script.module.gearsscrapers',
+    'service.subtitles.gearsai',
+    'service.masterkodi.skipintro',
+    'service.kodi.il.firstrun',
+}
 
-    Our addons are shipped modded (Hebrew skins, patched gears, etc.). They are
-    installed by extraction so they normally have no repo origin and Kodi leaves
-    them alone -- but global auto-update is ON, so if a user ever adds a repo
-    that also provides one of them (e.g. the upstream skin's repo), Kodi could
-    replace our modded copy with a vanilla upstream release and wipe the Hebrew
-    work. Writing USER_DISABLED_AUTO_UPDATE (=1) into Kodi's update_rules table
-    is exactly what the "disable auto-update" per-addon toggle in the Kodi UI
-    does, and makes that impossible. Fail-open: any DB/schema problem is ignored
-    (origin='' already protects us in the common case).
+
+def _disable_kodi_autoupdate(aid):
+    """Pin a MODDED addon so Kodi never auto-updates it -- WE are its only updater.
+
+    Global auto-update is ON. Our modded addons install by extraction (origin='')
+    so Kodi normally leaves them alone, but estuary/nimbus/gears are also provided
+    by repos that are always installed (official Kodi repo / chainsrepo), so Kodi
+    COULD replace our modded copy with a vanilla upstream release and wipe the
+    work. Writing USER_DISABLED_AUTO_UPDATE (=1) into Kodi's update_rules table is
+    exactly the per-addon "disable auto-update" toggle from the Kodi UI. Only
+    applied to MODDED_ADDONS -- vanilla deps are left to auto-update normally.
+    Fail-open: any DB/schema problem is ignored.
     """
+    if aid not in MODDED_ADDONS:
+        return
     import sqlite3
     try:
         dbdir = xbmcvfs.translatePath('special://database/')
@@ -193,6 +215,26 @@ def _disable_kodi_autoupdate(aid):
         pass
 
 
+def _pin_all_modded_once(state):
+    """One-time retrofit: pin every already-installed modded addon.
+
+    firstrun pins these on a fresh install, and _apply_one pins on update -- but
+    an EXISTING install that booted before this feature shipped would otherwise
+    leave estuary/nimbus/gears unpinned until they next change. Run once (guarded
+    by a state flag) so existing boxes get protected on the first update cycle
+    after the wizard reaches the version that added this.
+    """
+    if state.get('__pinned_v1__'):
+        return
+    for aid in MODDED_ADDONS:
+        try:
+            if _installed_version(aid) is not None:
+                _disable_kodi_autoupdate(aid)
+        except Exception:
+            pass
+    state['__pinned_v1__'] = True
+
+
 def _apply_one(entry):
     """Download, verify sha256, extract. Raises on any mismatch/failure."""
     data = _download(entry['url'])
@@ -204,7 +246,8 @@ def _apply_one(entry):
         if bad is not None:
             raise Exception('corrupt zip for %s (%s)' % (entry['id'], bad))
         z.extractall(ADDONS_PATH)
-    # WE own updates for everything we ship -- stop Kodi from auto-replacing it.
+    # If this is one of OUR modded addons, stop Kodi auto-replacing it from a
+    # repo (no-op for vanilla deps, which keep auto-updating normally).
     _disable_kodi_autoupdate(entry['id'])
     return True
 
@@ -395,6 +438,9 @@ def run_update(silent=False, notify=None, force=False):
         return {'ok': False, 'error': str(e), 'applied': [], 'failed': []}
 
     state = _load_state()
+    # One-time: pin modded addons on existing installs (new installs get pinned
+    # by firstrun; updates get pinned by _apply_one).
+    _pin_all_modded_once(state)
     # Uninstall addons we previously installed that are no longer in the build
     # (e.g. DarkSubs removed) - runs even when everything else is up to date.
     removed = _apply_removals(manifest, state)
