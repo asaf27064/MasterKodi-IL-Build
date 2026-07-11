@@ -82,6 +82,33 @@ def get_addon_version(addon_id):
     return None
 
 
+def _process_pending_skin_removal():
+    """Uninstall the skin the user dropped during a skin switch. Deferred from
+    the skins menu to now (the old skin is no longer the running one)."""
+    marker = os.path.join(xbmcvfs.translatePath('special://userdata/addon_data/'),
+                          ADDON_ID, 'pending_skin_removal')
+    if not os.path.isfile(marker):
+        return
+    try:
+        sid = open(marker, encoding='utf-8').read().strip()
+    except Exception:
+        sid = ''
+    try:
+        os.remove(marker)
+    except Exception:
+        pass
+    if not sid:
+        return
+    try:
+        if xbmc.getSkinDir() == sid:      # somehow still active -> leave it
+            return
+        from resources.libs.builds import BuildManager
+        if BuildManager().remove_skin(sid):
+            log(f"Removed previous skin after switch: {sid}")
+    except Exception as e:
+        log(f"pending skin removal failed for {sid}: {e}", xbmc.LOGWARNING)
+
+
 class POVHebrewService(xbmc.Monitor):
     def __init__(self):
         super().__init__()
@@ -112,6 +139,10 @@ class POVHebrewService(xbmc.Monitor):
 
         # Sweep stale '<addon>_old_<timestamp>' backup dirs from past updates.
         _cleanup_old_addon_dirs()
+
+        # Remove a previous skin the user chose to drop when switching skins
+        # (deferred here so it's not the running skin anymore).
+        _process_pending_skin_removal()
 
         # Manifest-driven update: ONE pass updates every addon (Gears + overlay,
         # AI subs, skins, and the wizard itself) from the MasterKodi-IL-Build

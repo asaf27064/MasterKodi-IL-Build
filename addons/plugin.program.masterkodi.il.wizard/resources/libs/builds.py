@@ -1088,6 +1088,113 @@ class BuildManager:
             self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]שגיאה:[/COLOR] {str(e)}")
             return False
 
+    # ------------------------------------------------------------------ #
+    # Skin manager helpers (used by skins_menu)
+    # ------------------------------------------------------------------ #
+    def get_optional_skin_url(self, url_key):
+        """The zip URL for an optional skin (from build.txt), or None."""
+        try:
+            for b in (self.fetch_builds_list() or []):
+                if b.get(url_key):
+                    return b[url_key]
+        except Exception as e:
+            log(f"get_optional_skin_url failed: {e}", xbmc.LOGWARNING)
+        return None
+
+    def install_skin(self, skin_key, skin_url):
+        """Download + install an optional skin (with its bundled deps) WITHOUT
+        switching or restarting. Returns True on success."""
+        skin = self.OPTIONAL_SKINS.get(skin_key)
+        if not skin or not skin_url:
+            return False
+        progress = xbmcgui.DialogProgress()
+        progress.create(ADDON_NAME, f"[COLOR cyan]מתקין סקין {skin['name']}...[/COLOR]")
+        try:
+            ADDON.setSetting('skip_update_check', 'true')
+            if not os.path.exists(TEMP_FOLDER):
+                os.makedirs(TEMP_FOLDER)
+            skin_zip = os.path.join(TEMP_FOLDER, skin['zip'])
+            try:
+                os.remove(skin_zip)
+            except Exception:
+                pass
+            progress.update(0, f"[COLOR yellow]מוריד {skin['name']}...[/COLOR]")
+            ok = self.download_file(skin_url, skin_zip, progress, f"[COLOR yellow]מוריד {skin['name']}...[/COLOR]")
+            if not ok or not os.path.exists(skin_zip) or os.path.getsize(skin_zip) == 0:
+                progress.close()
+                self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]ההורדה נכשלה![/COLOR]")
+                return False
+            progress.update(50, "[COLOR yellow]סורק אדונים...[/COLOR]")
+            skin_addons = self.grab_addons_from_zip(skin_zip)
+            progress.update(60, f"[COLOR yellow]מתקין {skin['name']}...[/COLOR]")
+            success, _ = self.extract_and_merge_skin(skin_zip, progress, f"מתקין {skin['name']}...")
+            if not success:
+                progress.close()
+                self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]ההתקנה נכשלה![/COLOR]")
+                return False
+            progress.update(85, "[COLOR yellow]מפעיל אדונים...[/COLOR]")
+            self.enable_addons_in_db(skin_addons)
+            self.setup_wizard_repo_in_db()
+            xbmc.executebuiltin('UpdateAddonRepos()')
+            xbmc.executebuiltin('UpdateLocalAddons()')
+            try:
+                os.remove(skin_zip)
+            except Exception:
+                pass
+            progress.update(100, "[COLOR lime]הותקן![/COLOR]")
+            xbmc.sleep(400)
+            progress.close()
+            return True
+        except Exception as e:
+            try:
+                progress.close()
+            except Exception:
+                pass
+            log(f"install_skin error: {e}", xbmc.LOGERROR)
+            self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]שגיאה:[/COLOR] {e}")
+            return False
+
+    def _db_remove_addon(self, aid):
+        """Delete an addon's rows from every Addons*.db (so Kodi forgets it)."""
+        try:
+            import sqlite3
+            dbdir = xbmcvfs.translatePath('special://database/')
+            for f in os.listdir(dbdir):
+                if f.startswith('Addons') and f.endswith('.db'):
+                    c = sqlite3.connect(os.path.join(dbdir, f))
+                    for t in ('installed', 'addons', 'repo'):
+                        try:
+                            c.execute('DELETE FROM %s WHERE addonID=?' % t, (aid,))
+                        except Exception:
+                            pass
+                    c.commit(); c.close()
+        except Exception as e:
+            log(f"_db_remove_addon {aid} failed: {e}", xbmc.LOGWARNING)
+
+    def remove_skin(self, skin_id):
+        """Uninstall an optional skin (folder + addon_data + db rows). Never
+        removes Estuary or the currently-active skin."""
+        if skin_id == 'skin.estuary':
+            return False
+        try:
+            if xbmc.getSkinDir() == skin_id:
+                return False
+        except Exception:
+            pass
+        try:
+            folder = os.path.join(ADDONS, skin_id)
+            if os.path.isdir(folder):
+                shutil.rmtree(folder, ignore_errors=True)
+            ad = os.path.join(USERDATA, 'addon_data', skin_id)
+            if os.path.isdir(ad):
+                shutil.rmtree(ad, ignore_errors=True)
+            self._db_remove_addon(skin_id)
+            xbmc.executebuiltin('UpdateLocalAddons()')
+            log(f"removed skin {skin_id}")
+            return True
+        except Exception as e:
+            log(f"remove_skin {skin_id} failed: {e}", xbmc.LOGWARNING)
+            return False
 
     def _ask_and_apply_oled(self, progress):
         """Ask about OLED and modify guisettings.xml if needed"""
@@ -1298,3 +1405,139 @@ def builds_menu():
             manager.install_build(selected_build, skin_choice=skin_choice,
                                   keep_keys=keep_keys, keep_extras=extras)
             break
+
+
+# ===================================================================== #
+# Skin manager menu
+# ===================================================================== #
+# (key, display name, addon id, preview image). Estuary is Kodi's built-in
+# fallback skin -- always available, never removable.
+_SKIN_CATALOG = [
+    ('estuary', 'Estuary', 'skin.estuary', 'estuary.jpg'),
+    ('arctic', 'Arctic Fuse', 'skin.arctic.fuse.3', 'af3.jpg'),
+    ('nimbus', 'Nimbus', 'skin.nimbus', 'nimbus.jpg'),
+]
+_OPTIONAL_SKIN_IDS = {'skin.arctic.fuse.3', 'skin.nimbus'}
+
+
+def _skin_installed(skin_id):
+    try:
+        if xbmc.getCondVisibility('System.HasAddon(%s)' % skin_id):
+            return True
+    except Exception:
+        pass
+    return os.path.isdir(os.path.join(ADDONS, skin_id))
+
+
+def _skin_name(skin_id):
+    for _k, name, sid, _img in _SKIN_CATALOG:
+        if sid == skin_id:
+            return name
+    return skin_id
+
+
+def skins_menu():
+    """Dedicated skin manager: switch active skin (install if needed, ask what
+    to do with the previous one) and clean up unused skins."""
+    while True:
+        items = [
+            menu_item('החלפת סקין', 'בחר את הסקין הפעיל (יותקן אם צריך)', 'DefaultAddonSkin.png'),
+            menu_item('הסרת סקינים לא בשימוש', 'פנה מקום — משאיר את הפעיל ואת Estuary', 'DefaultAddonService.png'),
+        ]
+        sel = wizard_select('סקינים', items)
+        if sel == -1:
+            return
+        if sel == 0:
+            _skin_switch_flow()
+        elif sel == 1:
+            _skin_cleanup_flow()
+
+
+def _skin_switch_flow():
+    manager = BuildManager()
+    dialog = xbmcgui.Dialog()
+    preview_dir = os.path.join(xbmcvfs.translatePath(ADDON.getAddonInfo('path')),
+                               'resources', 'media', 'skin_previews')
+    try:
+        active = xbmc.getSkinDir() or ''
+    except Exception:
+        active = ''
+
+    picker, meta = [], []
+    for key, name, sid, img in _SKIN_CATALOG:
+        installed = _skin_installed(sid)
+        if sid == active:
+            tag = '● פעיל'
+        elif installed:
+            tag = 'מותקן'
+        else:
+            tag = 'לא מותקן'
+        picker.append((name, tag, os.path.join(preview_dir, img)))
+        meta.append((key, name, sid, installed))
+
+    try:
+        idx = SkinPickerDialog.pick('בחר סקין', picker)
+    except Exception as e:
+        log(f"SkinPickerDialog failed ({e}); fallback select", xbmc.LOGWARNING)
+        idx = dialog.select('בחר סקין', [f"{n}  ({t})" for n, t, _ in picker])
+    if idx is None or idx < 0:
+        return
+
+    key, name, sid, installed = meta[idx]
+    if sid == active:
+        dialog.ok('סקינים', f'הסקין {name} כבר פעיל.')
+        return
+    if not dialog.yesno('סקינים', f'להחליף לסקין {name}?', yeslabel='החלף', nolabel='ביטול'):
+        return
+
+    prev_active = active
+    # install if it's an optional skin that isn't present yet
+    if not installed and key != 'estuary':
+        url = manager.get_optional_skin_url(BuildManager.OPTIONAL_SKINS[key]['url_key'])
+        if not url:
+            dialog.ok('סקינים', f'לא נמצא קישור להורדת {name}.')
+            return
+        if not manager.install_skin(key, url):
+            return
+
+    # switch active skin
+    manager.set_default_skin(sid)
+    ADDON.setSetting('installed_skin', name)
+
+    # ask what to do with the previous optional skin (never touch Estuary).
+    # Removal is DEFERRED to the next startup: the old skin is still the running
+    # one until we restart, and deleting a live skin (Windows file locks) fails.
+    if prev_active in _OPTIONAL_SKIN_IDS:
+        if dialog.yesno('סקינים',
+                        f'מה לעשות עם הסקין הקודם ({_skin_name(prev_active)})?',
+                        yeslabel='הסר', nolabel='השאר'):
+            try:
+                marker = os.path.join(ADDON_DATA_PATH, ADDON_ID, 'pending_skin_removal')
+                os.makedirs(os.path.dirname(marker), exist_ok=True)
+                with open(marker, 'w', encoding='utf-8') as f:
+                    f.write(prev_active)
+            except Exception as e:
+                log(f"could not schedule skin removal: {e}", xbmc.LOGWARNING)
+
+    # restart to apply the new skin (service removes the old one on next launch)
+    manager._countdown_restart(manager.get_installed_build_name(), name)
+
+
+def _skin_cleanup_flow():
+    manager = BuildManager()
+    dialog = xbmcgui.Dialog()
+    try:
+        active = xbmc.getSkinDir() or ''
+    except Exception:
+        active = ''
+    removable = [sid for sid in _OPTIONAL_SKIN_IDS
+                 if sid != active and _skin_installed(sid)]
+    if not removable:
+        dialog.ok('סקינים', 'אין סקינים לא בשימוש להסרה.')
+        return
+    names = ', '.join(_skin_name(s) for s in removable)
+    if not dialog.yesno('סקינים', f'להסיר את הסקינים הבאים?\n{names}',
+                        yeslabel='הסר', nolabel='ביטול'):
+        return
+    removed = [s for s in removable if manager.remove_skin(s)]
+    dialog.ok('סקינים', f'הוסרו {len(removed)} סקינים.' if removed else 'לא הוסר דבר.')
