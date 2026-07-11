@@ -28,6 +28,7 @@
       "script.skinhelper",
       "script.module.simplejson",
       "script.module.unidecode",
+      "script.module.simpleeval",
       "resource.images.studios.white",
       "resource.images.moviegenreicons.transparent",
       "resource.images.moviecountryicons.maps"

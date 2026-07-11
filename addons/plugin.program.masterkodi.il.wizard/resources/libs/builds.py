@@ -873,6 +873,7 @@ class BuildManager:
                    'manifest_install': True,
                    'deps': ['script.skinshortcuts', 'script.skinhelper',
                             'script.module.simplejson', 'script.module.unidecode',
+                            'script.module.simpleeval',
                             'script.skinvariables', 'plugin.video.themoviedb.helper',
                             'resource.images.studios.white',
                             'resource.images.moviegenreicons.transparent',
