@@ -1310,7 +1310,7 @@ def builds_menu():
             name = b.get('name', 'Unknown')
             ver = b.get('version', '?')
             if name == installed_build:
-                rows.append(menu_item(name, f"v{ver}  ·  מותקן ({installed_skin})", 'DefaultAddonProgram.png'))
+                rows.append(menu_item(name, f"v{ver}  |  מותקן ({installed_skin})", 'DefaultAddonProgram.png'))
             else:
                 rows.append(menu_item(name, f"v{ver}", 'DefaultAddonProgram.png'))
             row_kind.append(('build', b))
@@ -1350,11 +1350,11 @@ def builds_menu():
         # build advertises their zip URL.
         if has_skin:
             # (choice, name, one-line desc, preview image under resources/media/skin_previews/)
-            skin_options = [('estuary', 'Estuary', 'הרגיל · הכי מהיר · עיצוב פשוט', 'estuary.jpg')]
+            skin_options = [('estuary', 'Estuary', 'הרגיל | הכי מהיר | עיצוב פשוט', 'estuary.jpg')]
             if selected_build.get('skin_url'):
-                skin_options.append(('arctic', 'Arctic Fuse', 'הכי יפה ומעוצב · הכי כבד · למכשירים חזקים', 'af3.jpg'))
+                skin_options.append(('arctic', 'Arctic Fuse', 'הכי יפה ומעוצב | הכי כבד | למכשירים חזקים', 'af3.jpg'))
             if selected_build.get('nimbus_skin_url'):
-                skin_options.append(('nimbus', 'Nimbus', 'מהיר ויפה יותר מהרגיל · מתאים גם למכשירים חלשים', 'nimbus.jpg'))
+                skin_options.append(('nimbus', 'Nimbus', 'מהיר ויפה יותר מהרגיל | מתאים גם למכשירים חלשים', 'nimbus.jpg'))
 
             # Custom picker window with a LARGE live preview of the focused skin.
             # Falls back to the old useDetails select if the window fails.
@@ -1442,7 +1442,7 @@ def skins_menu():
     while True:
         items = [
             menu_item('החלפת סקין', 'בחר את הסקין הפעיל (יותקן אם צריך)', 'DefaultAddonSkin.png'),
-            menu_item('הסרת סקינים לא בשימוש', 'פנה מקום — משאיר את הפעיל ואת Estuary', 'DefaultAddonService.png'),
+            menu_item('הסרת סקינים לא בשימוש', 'פנה מקום - משאיר את הפעיל ואת Estuary', 'DefaultAddonService.png'),
         ]
         sel = wizard_select('סקינים', items)
         if sel == -1:
@@ -1467,7 +1467,7 @@ def _skin_switch_flow():
     for key, name, sid, img in _SKIN_CATALOG:
         installed = _skin_installed(sid)
         if sid == active:
-            tag = '● פעיל'
+            tag = 'פעיל'
         elif installed:
             tag = 'מותקן'
         else:

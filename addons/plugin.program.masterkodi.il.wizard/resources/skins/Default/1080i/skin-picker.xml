@@ -134,7 +134,7 @@
             <align>center</align>
             <font>font12</font>
             <textcolor>FF808080</textcolor>
-            <label>OK לבחירה · Back לביטול</label>
+            <label>OK לבחירה | Back לביטול</label>
         </control>
     </controls>
 </window>

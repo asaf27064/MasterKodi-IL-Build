@@ -205,7 +205,7 @@ def _fmt(b):
     when = m.get('created') or datetime.fromtimestamp(b['mtime']).strftime('%Y-%m-%d %H:%M')
     mb = b['size'] / 1048576.0
     tag = 'מהיר' if scope == 'quick' else ('מלא' if scope == 'full' else scope)
-    return f"[{tag}] {when}  ·  {mb:.1f}MB"
+    return f"[{tag}] {when}  |  {mb:.1f}MB"
 
 
 def create_flow():

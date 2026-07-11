@@ -115,12 +115,12 @@ def build_status_menu():
         else:
             state = color(f'{installed} -> {a["version"]}', COLOR_WARNING); n_old += 1
         tag = ' [Skin]' if a.get('channel') == 'optional' else ''
-        rows.append(menu_item(f"{a['id']}{tag}", f"v{a.get('version','?')}  ·  {state}", 'DefaultAddonInfoProvider.png'))
+        rows.append(menu_item(f"{a['id']}{tag}", f"v{a.get('version','?')}  |  {state}", 'DefaultAddonInfoProvider.png'))
 
-    header = (f"{color('סטטוס הבילד', COLOR_GOLD)}  ·  "
+    header = (f"{color('סטטוס הבילד', COLOR_GOLD)}  |  "
               f"{color(str(n_ok)+' מעודכנים', COLOR_SUCCESS)}"
-              + (f" · {color(str(n_old)+' לעדכון', COLOR_WARNING)}" if n_old else '')
-              + (f" · {color(str(n_missing)+' חסרים', COLOR_ERROR)}" if n_missing else ''))
+              + (f" | {color(str(n_old)+' לעדכון', COLOR_WARNING)}" if n_old else '')
+              + (f" | {color(str(n_missing)+' חסרים', COLOR_ERROR)}" if n_missing else ''))
     wizard_select(header, rows)
 
 
@@ -139,21 +139,21 @@ def main_menu():
         # per-addon "reinstall Hebrew overlay" flows (Gears/Skin/POV) are gone --
         # they downloaded the legacy overlay zips and no longer apply.
         items, handlers = [], []
-        items.append(menu_item('בדוק עדכונים', 'עדכון כל הבילד · אימות SHA256 · רק מה שהשתנה', 'DefaultAddonsUpdates.png'))
+        items.append(menu_item('בדוק עדכונים', 'עדכון כל הבילד | אימות SHA256 | רק מה שהשתנה', 'DefaultAddonsUpdates.png'))
         handlers.append(check_updates_now)
-        items.append(menu_item('התקנה / החלפת בילד', 'התקן בילד · בחר סקין (Estuary · Nimbus · Arctic Fuse)', 'DefaultAddonProgram.png'))
+        items.append(menu_item('התקנה / החלפת בילד', 'התקן בילד | בחר סקין (Estuary | Nimbus | Arctic Fuse)', 'DefaultAddonProgram.png'))
         handlers.append(build_menu)
         items.append(menu_item('סקינים', 'החלפה / התקנה / הסרה של סקין', 'DefaultAddonSkin.png'))
         handlers.append(open_skins_menu)
-        items.append(menu_item('סטטוס הבילד', 'מה מותקן וגרסאות · מהמאניפסט', 'DefaultAddonInfoProvider.png'))
+        items.append(menu_item('סטטוס הבילד', 'מה מותקן וגרסאות | מהמאניפסט', 'DefaultAddonInfoProvider.png'))
         handlers.append(build_status_menu)
         items.append(menu_item('כתוביות AI (Gemini)', format_status(gearsai_status), 'DefaultAddonSubtitles.png'))
         handlers.append(gearsai_menu)
-        items.append(menu_item('תחזוקה', 'ניקוי מטמון · חבילות · תמונות · OLED', 'DefaultAddonService.png'))
+        items.append(menu_item('תחזוקה', 'ניקוי מטמון | חבילות | תמונות | OLED', 'DefaultAddonService.png'))
         handlers.append(maintenance_menu)
-        items.append(menu_item('גיבוי ושחזור', 'מפתח Gemini · דבריד · הגדרות', 'DefaultHardDisk.png'))
+        items.append(menu_item('גיבוי ושחזור', 'מפתח Gemini | דבריד | הגדרות', 'DefaultHardDisk.png'))
         handlers.append(backup_menu)
-        items.append(menu_item('הגדרות האשף', 'עדכון אוטומטי · השהיות · אפשרויות', 'DefaultAddonProgram.png'))
+        items.append(menu_item('הגדרות האשף', 'עדכון אוטומטי | השהיות | אפשרויות', 'DefaultAddonProgram.png'))
         handlers.append(lambda: ADDON.openSettings())
 
         header = f"{color('MasterKodi IL Wizard', COLOR_GOLD)} v{ADDON_VERSION}"
@@ -187,7 +187,7 @@ def gearsai_menu():
             install_gearsai()
         return
     items = [
-        menu_item('הגדרות כתוביות AI', 'מפתח Gemini · מודל · מאגר קהילתי', 'DefaultAddonProgram.png'),
+        menu_item('הגדרות כתוביות AI', 'מפתח Gemini | מודל | מאגר קהילתי', 'DefaultAddonProgram.png'),
         menu_item('מידע', f"v{status['version']}", 'DefaultAddonInfoProvider.png'),
         menu_item('חזרה', '', 'DefaultFolderBack.png'),
     ]
@@ -243,9 +243,9 @@ def build_menu():
     
     while True:
         items = [
-            menu_item('התקנת בילד', 'התקנה נקייה · בחירת סקין (Estuary · Nimbus · Arctic Fuse) · מוחק את הקיים', 'DefaultAddonProgram.png'),
+            menu_item('התקנת בילד', 'התקנה נקייה | בחירת סקין (Estuary | Nimbus | Arctic Fuse) | מוחק את הקיים', 'DefaultAddonProgram.png'),
             menu_item('תיקון / רענון בילד', 'התקנה מחדש של כל התוספים מהמאניפסט (ההגדרות והמפתחות נשמרים)', 'DefaultAddonsUpdates.png'),
-            menu_item('מידע על בילד נוכחי', 'שם · גרסה · סקין מותקן', 'DefaultAddonInfoProvider.png'),
+            menu_item('מידע על בילד נוכחי', 'שם | גרסה | סקין מותקן', 'DefaultAddonInfoProvider.png'),
         ]
 
         selection = wizard_select(color('התקנה / עדכון בילד', COLOR_HEADER), items)
@@ -414,9 +414,9 @@ def maintenance_menu():
             menu_item('ניקוי Cache', 'מחיקת מטמון זמני להאצת Kodi ופינוי מקום', 'DefaultAddonService.png'),
             menu_item('ניקוי Packages', 'מחיקת קובצי התקנה שמורים (packages)', 'DefaultAddonService.png'),
             menu_item('ניקוי Thumbnails', 'מחיקת תמונות ממוזערות שמורות', 'DefaultAddonService.png'),
-            menu_item('ניקוי הכל', 'Cache · Packages · Thumbnails יחד', 'DefaultAddonService.png'),
+            menu_item('ניקוי הכל', 'Cache | Packages | Thumbnails יחד', 'DefaultAddonService.png'),
             menu_item('סגירת Kodi', 'סגירה מלאה (לרענון אחרי שינויים)', 'DefaultAddonService.png'),
-            menu_item('הגדרות OLED', 'חיסכון בשחיקת מסך · בהירות · הגנת פיקסלים', 'DefaultAddonPVRClient.png'),
+            menu_item('הגדרות OLED', 'חיסכון בשחיקת מסך | בהירות | הגנת פיקסלים', 'DefaultAddonPVRClient.png'),
         ]
 
         selection = wizard_select(color('תחזוקה', COLOR_HEADER), menu_items)
@@ -542,7 +542,7 @@ def backup_menu():
     
     while True:
         items = [
-            menu_item('יצירת גיבוי', 'מהיר (מפתח Gemini · טוקני דבריד · הגדרות · מועדפים) או מלא', 'DefaultAddonService.png'),
+            menu_item('יצירת גיבוי', 'מהיר (מפתח Gemini | טוקני דבריד | הגדרות | מועדפים) או מלא', 'DefaultAddonService.png'),
             menu_item('שחזור מגיבוי', 'שחזר מפתחות והגדרות אחרי התקנה מחדש', 'DefaultAddonsUpdates.png'),
             menu_item('מחיקת גיבויים', 'ניקוי גיבויים ישנים ופינוי מקום', 'DefaultAddonService.png'),
         ]

@@ -126,7 +126,7 @@
             <left>110</left><bottom>40</bottom><width>1700</width><height>36</height>
             <align>center</align><font>font10</font>
             <textcolor>FF888888</textcolor>
-            <label>OK לבחירה  ·  Back ליציאה</label>
+            <label>OK לבחירה  |  Back ליציאה</label>
         </control>
     </controls>
 </window>
