@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-11T13:35:43Z",
+  "generated_utc": "2026-07-11T13:49:04Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -468,10 +468,10 @@
     }
   ],
   "config": {
-    "version": "7",
-    "zip": "config-7.zip",
-    "sha256": "bb402185aec6f95935cd8b4640f3102decb9b2e7a6f171957955379e8c37f34e",
-    "size": 24366,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-7.zip"
+    "version": "8",
+    "zip": "config-8.zip",
+    "sha256": "20c99bcce755eed6c17fd43fd27b77df4191879240ffd6b6c15f7d2accc4b35f",
+    "size": 24349,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-8.zip"
   }
 }
