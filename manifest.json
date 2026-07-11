@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-11T09:16:39Z",
+  "generated_utc": "2026-07-11T10:55:54Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -81,12 +81,12 @@
     },
     {
       "id": "plugin.video.gears",
-      "version": "2.3.1",
+      "version": "2.3.4",
       "channel": "core",
-      "zip": "plugin.video.gears-2.3.1.zip",
-      "sha256": "b2bfb98cda8a3395e646df331294a383a3ebb8d04797d25e5e57c130752baad3",
-      "size": 9104640,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.gears-2.3.1.zip"
+      "zip": "plugin.video.gears-2.3.4.zip",
+      "sha256": "ceada75afffd8284df472438f999114b9014de3dabc0fdeaf8b634b3d0e18e11",
+      "size": 9104805,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.gears-2.3.4.zip"
     },
     {
       "id": "plugin.video.themoviedb.helper",
