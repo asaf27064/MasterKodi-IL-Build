@@ -1296,8 +1296,8 @@
             <height>48</height>
             <label/>
             <font/>
-            <texturefocus colordiffuse="$VAR[ColorHighlight]">osd/subs.png</texturefocus>
-            <texturenofocus colordiffuse="panel_fg_70">osd/subs.png</texturenofocus>
+            <texturefocus colordiffuse="$VAR[ColorHighlight]">special://skin/extras/icons/wand.png</texturefocus>
+            <texturenofocus colordiffuse="panel_fg_70">special://skin/extras/icons/wand.png</texturenofocus>
             <onclick>RunScript(service.subtitles.gearsai,sub_window)</onclick>
             <onfocus>ClearProperty(OSD_Menu,Home)</onfocus>
             <include>OSD_Button_OnFocus</include>
