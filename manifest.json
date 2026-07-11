@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-11T16:26:11Z",
+  "generated_utc": "2026-07-11T16:34:36Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -72,12 +72,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.21",
+      "version": "2.4.22",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.21.zip",
-      "sha256": "e8ae4848c0ddc9b5a0b7b6575856dd273385d95ff16044dd21347c89b85c9add",
-      "size": 2303825,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.21.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.22.zip",
+      "sha256": "c6238b68842e16d3c1431aa60f4ee923113105dde151dad9940fe1171988921f",
+      "size": 2304305,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.22.zip"
     },
     {
       "id": "plugin.video.gears",
@@ -513,12 +513,12 @@
     },
     {
       "id": "skin.arctic.zephyr.2.resurrection.mod",
-      "version": "1.0.51.3",
+      "version": "1.0.51.4",
       "channel": "optional",
-      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.0.51.3.zip",
-      "sha256": "65ec892b8aa7dc6826595f078b3644fd71c5e79873830a2bfeb2e0fa64adba37",
-      "size": 18331145,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.zephyr.2.resurrection.mod-1.0.51.3.zip"
+      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.0.51.4.zip",
+      "sha256": "15c063fab1611246bb37c20aa73f4d4cba1338b4b2cfc97ea3108b3088cdbf1f",
+      "size": 18331175,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.zephyr.2.resurrection.mod-1.0.51.4.zip"
     },
     {
       "id": "skin.estuary",
