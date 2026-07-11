@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-11T21:21:50Z",
+  "generated_utc": "2026-07-11T21:53:56Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -72,12 +72,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.26",
+      "version": "2.4.27",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.26.zip",
-      "sha256": "01b0570852da10b5ed554e3beaa3e3805dd5a941d5fee866023173ab6bdf7d38",
-      "size": 2305327,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.26.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.27.zip",
+      "sha256": "568294a2c9e6705848c2f245cae5e94da1f442bec7d7fa935e6c4cae30d5834d",
+      "size": 2305960,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.27.zip"
     },
     {
       "id": "plugin.video.gears",
@@ -468,12 +468,12 @@
     },
     {
       "id": "service.masterkodi.skipintro",
-      "version": "1.2.4",
+      "version": "1.2.5",
       "channel": "core",
-      "zip": "service.masterkodi.skipintro-1.2.4.zip",
-      "sha256": "8af6f6e699dcf9a11485c0d09e729a9f142eedcf9f4647937f8e4cc9c1ff68ca",
-      "size": 17931,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/service.masterkodi.skipintro-1.2.4.zip"
+      "zip": "service.masterkodi.skipintro-1.2.5.zip",
+      "sha256": "17da53768d793cdf529d111a680d4ded847e13b801990fcb38b6941640743a18",
+      "size": 17219,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/service.masterkodi.skipintro-1.2.5.zip"
     },
     {
       "id": "service.subtitles.all_subs_plus",
