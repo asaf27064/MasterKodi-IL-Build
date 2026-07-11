@@ -237,7 +237,7 @@ def build_menu():
     while True:
         items = [
             menu_item('התקנת בילד', 'התקנה נקייה · בחירת סקין (Estuary · Nimbus · Arctic Fuse) · מוחק את הקיים', 'DefaultAddonProgram.png'),
-            menu_item('עדכון בילד', 'משדרג את הבילד הנוכחי בלי למחוק הגדרות ומפתחות', 'DefaultAddonsUpdates.png'),
+            menu_item('תיקון / רענון בילד', 'התקנה מחדש של כל התוספים מהמאניפסט (ההגדרות והמפתחות נשמרים)', 'DefaultAddonsUpdates.png'),
             menu_item('מידע על בילד נוכחי', 'שם · גרסה · סקין מותקן', 'DefaultAddonInfoProvider.png'),
         ]
 
@@ -264,29 +264,63 @@ def install_build():
 
 
 def update_build():
-    """Update the current build via the manifest (same engine as 'check updates').
-
-    In the manifest model there is no separate 'build update' -- every addon
-    (Gears + its baked Hebrew, skins, AI subs, wizard) is pulled/verified from
-    the manifest. So this just runs the modular updater."""
+    """Repair / resync the build: reinstall every manifest addon regardless of
+    version (keeping settings + keys). Distinct from the main-menu 'בדוק
+    עדכונים', which only pulls what actually changed."""
     try:
         from resources.libs import modular_update
-        modular_update.check_and_prompt()
+        modular_update.repair_build()
     except Exception as e:
-        xbmcgui.Dialog().ok(ADDON_NAME, f"{color('שגיאה בעדכון:', COLOR_ERROR)}\n{e}")
+        xbmcgui.Dialog().ok(ADDON_NAME, f"{color('שגיאה בתיקון:', COLOR_ERROR)}\n{e}")
 
 
 def show_build_info():
-    """Show current build info"""
-    dialog = xbmcgui.Dialog()
-    
-    build_name = ADDON.getSetting('buildname') or 'לא מותקן'
-    build_version = ADDON.getSetting('buildversion') or 'N/A'
-    
-    dialog.textviewer(
+    """Quick offline snapshot of the installed build: skin + key addon versions
+    + config + last update. (The full per-addon manifest comparison is under
+    'סטטוס הבילד'.) The old buildname/buildversion settings are unused in the
+    manifest model, so read the real state from disk + applied_manifest.json."""
+    import os, re, json, time
+    addons_path = xbmcvfs.translatePath('special://home/addons/')
+
+    def ver(aid):
+        try:
+            with open(os.path.join(addons_path, aid, 'addon.xml'), encoding='utf-8', errors='replace') as fh:
+                m = re.search(r'<addon[^>]*version="([^"]+)"', fh.read())
+            return m.group(1) if m else '-'
+        except Exception:
+            return 'לא מותקן'
+
+    skin_names = {'skin.arctic.fuse.3': 'Arctic Fuse', 'skin.nimbus': 'Nimbus',
+                  'skin.estuary': 'Estuary'}
+    try:
+        skin_id = xbmc.getSkinDir()
+    except Exception:
+        skin_id = ''
+    skin = skin_names.get(skin_id, skin_id or '-')
+
+    cfg_ver, n_addons, last = '-', 0, '-'
+    state_file = os.path.join(ADDON_DATA, 'applied_manifest.json')
+    try:
+        with open(state_file, encoding='utf-8') as fh:
+            state = json.load(fh)
+        cfg = state.get('__config__', '')
+        if cfg.startswith('config:'):
+            cfg_ver = cfg.split(':', 1)[1]
+        n_addons = len([k for k in state if not k.startswith('__')])
+        last = time.strftime('%Y-%m-%d %H:%M', time.localtime(os.path.getmtime(state_file)))
+    except Exception:
+        pass
+
+    xbmcgui.Dialog().textviewer(
         'מידע על הבילד',
-        f"[B]בילד נוכחי:[/B] {build_name}\n"
-        f"[B]גירסה:[/B] {build_version}\n"
+        f"[B]בילד:[/B] MasterKodi IL\n"
+        f"[B]סקין נוכחי:[/B] {skin}\n"
+        f"[B]Gears:[/B] {ver('plugin.video.gears')}\n"
+        f"[B]כתוביות AI:[/B] {ver('service.subtitles.gearsai')}\n"
+        f"[B]אשף:[/B] {ver(ADDON_ID)}\n"
+        f"[B]תצורה (config):[/B] {cfg_ver}\n"
+        f"[B]תוספים מנוהלים:[/B] {n_addons}\n"
+        f"[B]עדכון אחרון:[/B] {last}\n"
     )
 
 

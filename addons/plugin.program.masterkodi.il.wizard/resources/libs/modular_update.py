@@ -131,8 +131,13 @@ def _save_state(state):
 # --------------------------------------------------------------------------- #
 # diff
 # --------------------------------------------------------------------------- #
-def compute_updates(manifest):
-    """Return the list of addon entries that need (re)installing."""
+def compute_updates(manifest, force=False):
+    """Return the list of addon entries that need (re)installing.
+
+    force=True (repair / resync) returns EVERY manifest addon that applies to
+    this device -- regardless of version/sha -- so a broken or partial build is
+    fully reinstalled. Optional skins the user never installed are still skipped,
+    and NEVER_TOUCH ids are still left alone."""
     state = _load_state()
     updates = []
     for a in manifest.get('addons', []):
@@ -142,6 +147,9 @@ def compute_updates(manifest):
         installed = _installed_version(aid)
         if a.get('channel') == 'optional' and installed is None:
             continue  # don't force-install heavy optional skins
+        if force:
+            updates.append(a)                       # repair -> reinstall all
+            continue
         if installed is None:
             updates.append(a)                       # missing core addon -> install
         elif version_newer(a['version'], installed):
@@ -330,10 +338,11 @@ def _finalize_reload(summary):
             pass
 
 
-def run_update(silent=False, notify=None):
+def run_update(silent=False, notify=None, force=False):
     """Check + apply. Returns dict summary.
 
     notify: optional callable(message) for user-facing status text.
+    force:  repair mode -- reinstall every applicable addon + re-apply config.
     """
     def _say(msg):
         if notify:
@@ -354,12 +363,12 @@ def run_update(silent=False, notify=None):
         _save_state(state)
         xbmc.executebuiltin('UpdateLocalAddons')
 
-    updates = compute_updates(manifest)
+    updates = compute_updates(manifest, force=force)
     if not updates:
         if not removed:
             _say('הבילד מעודכן')
         # still apply config on a version bump even if no addon changed
-        _maybe_apply_config(manifest, state)
+        _maybe_apply_config(manifest, state, force=force)
         _save_state(state)
         return {'ok': True, 'applied': [], 'failed': [], 'removed': removed,
                 'up_to_date': not removed,
@@ -398,7 +407,7 @@ def run_update(silent=False, notify=None):
     dp.close()
 
     # config payload (default userdata) - applied on version bump only
-    _maybe_apply_config(manifest, state)
+    _maybe_apply_config(manifest, state, force=force)
     _save_state(state)
 
     summary = {
@@ -415,7 +424,7 @@ def run_update(silent=False, notify=None):
     return summary
 
 
-def _maybe_apply_config(manifest, state):
+def _maybe_apply_config(manifest, state, force=False):
     """Apply the shipped build-config using config_policy.json (if present).
 
     Instead of blindly extracting the whole config zip over userdata/ (which
@@ -435,8 +444,8 @@ def _maybe_apply_config(manifest, state):
         return
     key = 'config:%s' % cfg['version']
     fresh = '__config__' not in state          # first ever config apply on this device
-    if state.get('__config__') == key:
-        return
+    if state.get('__config__') == key and not force:
+        return                                 # already applied (repair re-applies)
     try:
         data = _download(cfg['url'])
         if hashlib.sha256(data).hexdigest() != cfg['sha256']:
@@ -597,6 +606,30 @@ def check_and_prompt():
         msg += '\n(הסקין ייטען מחדש)'
     dlg.ok('MasterKodi IL', msg)
     # auto reload/restart if needed (no further confirmation)
+    _finalize_reload(summary)
+
+
+def repair_build():
+    """Interactive repair/resync: reinstall EVERY applicable addon from the
+    manifest (regardless of version), plus re-apply the build config. Settings
+    and credentials are preserved (config_policy exclude_ids). Fixes a broken,
+    partial, or corrupted build."""
+    dlg = xbmcgui.Dialog()
+    if not dlg.yesno(
+            'MasterKodi IL',
+            'תיקון / רענון בילד\n\nכל תוספי הבילד יורדו ויותקנו מחדש מהמאניפסט '
+            '(ההגדרות והמפתחות נשמרים).\nזה עשוי לקחת כמה דקות.\n\nלהמשיך?',
+            yeslabel='תקן', nolabel='ביטול'):
+        return
+    summary = run_update(silent=False, force=True)
+    if summary.get('error'):
+        dlg.ok('MasterKodi IL', 'שגיאה: %s' % summary['error'])
+        return
+    if summary.get('failed'):
+        dlg.ok('MasterKodi IL', 'תוקנו %d, נכשלו %d:\n%s' % (
+            len(summary['applied']), len(summary['failed']), ', '.join(summary['failed'])))
+    else:
+        dlg.ok('MasterKodi IL', 'הבילד רוענן: %d תוספים הותקנו מחדש' % len(summary.get('applied', [])))
     _finalize_reload(summary)
 
 
