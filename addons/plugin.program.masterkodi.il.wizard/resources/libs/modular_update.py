@@ -218,6 +218,118 @@ def _db_remove_addon(aid):
         pass
 
 
+def _active_skin():
+    """Addon id of the skin Kodi is currently running, or None."""
+    try:
+        return xbmc.getSkinDir() or None
+    except Exception:
+        return None
+
+
+class _Progress(object):
+    """Unified progress UI. Service/silent runs get a NON-modal background bar
+    (Kodi stays usable, but the user SEES the update happening); interactive
+    runs get a modal cancelable dialog."""
+    def __init__(self, silent):
+        self.bg = None
+        self.dp = None
+        try:
+            if silent:
+                self.bg = xbmcgui.DialogProgressBG()
+                self.bg.create('MasterKodi IL', 'מוריד עדכונים...')
+            else:
+                self.dp = xbmcgui.DialogProgress()
+                self.dp.create('MasterKodi IL', 'מוריד עדכונים...')
+        except Exception:
+            pass
+
+    def update(self, pct, msg):
+        try:
+            if self.bg:
+                self.bg.update(pct, 'MasterKodi IL', msg)
+            elif self.dp:
+                self.dp.update(pct, msg)
+        except Exception:
+            pass
+
+    def iscanceled(self):
+        try:
+            return bool(self.dp and self.dp.iscanceled())
+        except Exception:
+            return False
+
+    def close(self):
+        try:
+            if self.bg:
+                self.bg.close()
+            elif self.dp:
+                self.dp.close()
+        except Exception:
+            pass
+
+
+def _restart_kodi():
+    """Best-effort full app restart (needed to reload the wizard's own code)."""
+    try:
+        xbmc.executebuiltin('RestartApp')
+        return
+    except Exception:
+        pass
+    try:
+        xbmc.restart()
+    except Exception:
+        pass
+
+
+def _finalize_reload(summary):
+    """Auto reload/restart when an applied update needs it -- no confirmation.
+
+      * active skin updated  -> ReloadSkin() (seamless, visible).
+      * wizard itself updated -> a running script can't reload itself, so we
+        show a short visible countdown and restart Kodi.
+
+    Never interrupts playback: if something is playing we just notify and let the
+    update take effect on the next launch (it's already on disk)."""
+    if not summary.get('applied'):
+        return
+    need_restart = summary.get('wizard_changed')
+    need_skin = summary.get('skin_changed')
+    if not (need_restart or need_skin):
+        return
+    try:
+        playing = xbmc.Player().isPlaying()
+    except Exception:
+        playing = False
+    if playing:
+        xbmcgui.Dialog().notification(
+            'MasterKodi IL', 'העדכון יוחל בהפעלה הבאה',
+            xbmcgui.NOTIFICATION_INFO, 6000)
+        return
+
+    if need_restart:
+        try:
+            dlg = xbmcgui.DialogProgress()
+            dlg.create('MasterKodi IL', 'העדכון הותקן. מפעיל מחדש את Kodi...')
+            for s in (3, 2, 1):
+                if dlg.iscanceled():
+                    break
+                dlg.update(int((3 - s) / 3.0 * 100), 'מפעיל מחדש בעוד %d...' % s)
+                xbmc.sleep(1000)
+            dlg.close()
+        except Exception:
+            pass
+        _restart_kodi()
+    elif need_skin:
+        xbmcgui.Dialog().notification(
+            'MasterKodi IL', 'הסקין עודכן, טוען מחדש...',
+            xbmcgui.NOTIFICATION_INFO, 4000)
+        xbmc.sleep(800)
+        try:
+            xbmc.executebuiltin('ReloadSkin()')
+        except Exception:
+            pass
+
+
 def run_update(silent=False, notify=None):
     """Check + apply. Returns dict summary.
 
@@ -255,37 +367,35 @@ def run_update(silent=False, notify=None):
 
     applied, failed = [], []
     wizard_changed = False
+    skin_changed = False
+    active_skin = _active_skin()
 
-    dp = None
-    if not silent:
-        dp = xbmcgui.DialogProgress()
-        dp.create('MasterKodi IL', 'מוריד עדכונים...')
+    dp = _Progress(silent)
 
     total = len(updates)
     for i, entry in enumerate(updates):
-        if dp and dp.iscanceled():
+        if dp.iscanceled():
             break
         pct = int((i / float(total)) * 100)
         aid = entry['id']
-        if dp:
-            dp.update(pct, 'מעדכן: %s (%d/%d)' % (aid, i + 1, total))
+        dp.update(pct, 'מעדכן: %s (%d/%d)' % (aid, i + 1, total))
         try:
             _apply_one(entry)
             state[aid] = entry['sha256']
             applied.append(aid)
             if aid == ADDON_ID:
                 wizard_changed = True
+            if active_skin and aid == active_skin:
+                skin_changed = True
         except Exception as e:
             log('update failed for %s: %s' % (aid, e), xbmc.LOGERROR)
             failed.append(aid)
 
     _save_state(state)
-    if dp:
-        dp.update(100, 'מרענן רשימת תוספים...')
+    dp.update(100, 'מרענן רשימת תוספים...')
     xbmc.executebuiltin('UpdateLocalAddons')
     xbmc.sleep(500)
-    if dp:
-        dp.close()
+    dp.close()
 
     # config payload (default userdata) - applied on version bump only
     _maybe_apply_config(manifest, state)
@@ -296,6 +406,8 @@ def run_update(silent=False, notify=None):
         'applied': applied,
         'failed': failed,
         'wizard_changed': wizard_changed,
+        'skin_changed': skin_changed,
+        'active_skin': active_skin,
         'up_to_date': False,
         'manifest_generated': manifest.get('generated_utc'),
     }
@@ -477,11 +589,15 @@ def check_and_prompt():
     if summary.get('failed'):
         dlg.ok('MasterKodi IL', 'הותקנו %d, נכשלו %d:\n%s' % (
             len(summary['applied']), len(summary['failed']), ', '.join(summary['failed'])))
-    else:
-        msg = 'עודכנו %d תוספים ✓' % len(summary['applied'])
-        if summary.get('wizard_changed'):
-            msg += '\n(האשף עודכן - מומלץ להפעיל מחדש)'
-        dlg.ok('MasterKodi IL', msg)
+        return
+    msg = 'עודכנו %d תוספים ✓' % len(summary['applied'])
+    if summary.get('wizard_changed'):
+        msg += '\n(האשף עודכן - Kodi יופעל מחדש)'
+    elif summary.get('skin_changed'):
+        msg += '\n(הסקין ייטען מחדש)'
+    dlg.ok('MasterKodi IL', msg)
+    # auto reload/restart if needed (no further confirmation)
+    _finalize_reload(summary)
 
 
 def silent_check():
@@ -491,4 +607,6 @@ def silent_check():
         xbmcgui.Dialog().notification(
             'MasterKodi IL', 'עודכנו %d תוספים ✓' % len(summary['applied']),
             xbmcgui.NOTIFICATION_INFO, 5000)
+        # auto reload/restart if the skin or the wizard itself changed
+        _finalize_reload(summary)
     return summary
