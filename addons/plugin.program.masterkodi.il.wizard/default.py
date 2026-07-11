@@ -340,9 +340,16 @@ def install_build():
 
 
 def update_build():
-    """Update current build"""
-    dialog = xbmcgui.Dialog()
-    dialog.ok('עדכון בילד', 'פיצ\'ר זה יהיה זמין בקרוב!')
+    """Update the current build via the manifest (same engine as 'check updates').
+
+    In the manifest model there is no separate 'build update' -- every addon
+    (Gears + its baked Hebrew, skins, AI subs, wizard) is pulled/verified from
+    the manifest. So this just runs the modular updater."""
+    try:
+        from resources.libs import modular_update
+        modular_update.check_and_prompt()
+    except Exception as e:
+        xbmcgui.Dialog().ok(ADDON_NAME, f"{color('שגיאה בעדכון:', COLOR_ERROR)}\n{e}")
 
 
 def show_build_info():
