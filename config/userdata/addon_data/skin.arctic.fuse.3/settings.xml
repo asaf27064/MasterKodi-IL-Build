@@ -122,7 +122,6 @@
     <setting id="customrating.tvshows.item03" type="string">Trakt</setting>
     <setting id="OptionsTiles.01.Icon" type="string"></setting>
     <setting id="TMDbHelper.UseLocalWindowIDs" type="string">10000|11101|11102|11103|11104|11105|11106|11107|11108|11109</setting>
-    <setting id="script-skinviewtypes-checksum" type="string">168e0bd8b9f26d0f6503e1ebe90eb210</setting>
     <setting id="dialoginfo.movies.item03" type="string">Wikipedia</setting>
     <setting id="dialoginfo.movies.item02" type="string">Trakt</setting>
     <setting id="homeswitcher.1103.icon" type="string"></setting>
@@ -156,10 +155,8 @@
     <setting id="home.label" type="string"></setting>
     <setting id="OptionsTiles.02.Icon" type="string"></setting>
     <setting id="homeswitcher.home.icon" type="string">special://skin/extras/icons/film.png</setting>
-    <setting id="script-skinvariables-generator-hash" type="string">233345eba171b16873ed41d418842a54</setting>
     <setting id="SkinConstant.Numeric.01" type="string">$NUMBER[1]</setting>
     <setting id="OptionsTiles.03.Onclick" type="string">ReloadSkin</setting>
-    <setting id="Shortcuts.RebuildDateTime" type="string">2026-02-01_11:35:53</setting>
     <setting id="SkinConstant.Numeric.13" type="string">$NUMBER[13]</setting>
     <setting id="HomeSwitcher.1102.Mode" type="string">Standard</setting>
     <setting id="optionstiles.02.target" type="string"></setting>
@@ -188,7 +185,6 @@
     <setting id="SkinConstant.Numeric.17" type="string">$NUMBER[17]</setting>
     <setting id="OptionsTiles.02.Label" type="string"></setting>
     <setting id="videoosd.personcredits.castcrew" type="string">crew</setting>
-    <setting id="script-skinviewtypes-hash" type="string">e6066ee953f1262e19f959935ba6b1b3</setting>
     <setting id="HomeSwitcher.1101.Mode" type="string">Standard</setting>
     <setting id="OptionsTiles.04.Label" type="string"></setting>
     <setting id="homeswitcher.1102.icon" type="string">special://skin/extras/icons/addons.png</setting>
