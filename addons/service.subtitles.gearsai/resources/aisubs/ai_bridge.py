@@ -164,9 +164,20 @@ def _pool_retime(best, hebrew_a, info, release):
             return None
         res = resync.retime(hebrew_a, english_a, english_b)
         if res and res.get('ok') and res.get('srt'):
-            xbmc.log('[gearsai-ai] pool re-timed onto release (conf {0:.2f})'.format(
+            xbmc.log('[gearsai-ai] pool re-timed onto release (text, conf {0:.2f})'.format(
                 res.get('confidence', 0)), xbmc.LOGINFO)
             return res['srt']
+        # Fallback: when text alignment isn't confident, try a global TIMESTAMP
+        # shift of the Hebrew's own cues onto english_b's timing (fail-open).
+        try:
+            from resources.aisubs import sync_align
+            al = sync_align.align(hebrew_a, english_b)
+            if al and al.get('ok') and al.get('srt'):
+                xbmc.log('[gearsai-ai] pool re-timed onto release (offset {0:+.2f}s, conf {1:.2f})'.format(
+                    al.get('offset', 0.0), al.get('confidence', 0.0)), xbmc.LOGINFO)
+                return al['srt']
+        except Exception as e:
+            xbmc.log('[gearsai-ai] timestamp-align fallback failed: {0}'.format(e), xbmc.LOGWARNING)
     except Exception as e:
         xbmc.log('[gearsai-ai] pool re-time failed: {0}'.format(e), xbmc.LOGWARNING)
     return None
