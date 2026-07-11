@@ -1048,6 +1048,13 @@
 							<include content="Custom2MainMenu" condition="!Skin.HasSetting(HomeMenuNoCustom2Button)" />
 							<!-- CUSTOM 3 25000 -->
 							<include content="Custom3MainMenu" condition="!Skin.HasSetting(HomeMenuNoCustom3Button)" />
+							<!-- MasterKodi: skin switch (own side item) -->
+							<item>
+								<label>החלפת סקין</label>
+								<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</onclick>
+								<property name="menu_id">$NUMBER[9000]</property>
+								<property name="id">mk_skin</property>
+							</item>
 							<item>
 								<label>$LOCALIZE[2]</label>
 								<onclick>ActivateWindow(Music,root,return)</onclick>
