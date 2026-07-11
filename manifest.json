@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-11T11:05:46Z",
+  "generated_utc": "2026-07-11T11:10:48Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -444,7 +444,7 @@
       "version": "3.2.13",
       "channel": "optional",
       "zip": "skin.arctic.fuse.3-3.2.13.zip",
-      "sha256": "ec1ae9eb2390d9ba765ffca27481c2f1e1f4dfaf2c81ea459a35a406d64d7641",
+      "sha256": "dc5509dc0ca250015bf44577d106ac216b183defc736b62ce25c26d9719d0ba2",
       "size": 54447002,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.fuse.3-3.2.13.zip"
     },
