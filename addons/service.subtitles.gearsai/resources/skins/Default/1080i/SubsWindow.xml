@@ -98,9 +98,14 @@
 					</control>
 				</focusedlayout>
 			</control>
+			<!-- footer accent (mirrors the header line) -->
+			<control type="image">
+				<left>0</left><top>820</top><width>1600</width><height>2</height>
+				<texture colordiffuse="FF00AEEF">white.png</texture>
+			</control>
 			<!-- count line -->
 			<control type="label" id="104">
-				<left>40</left><top>822</top><width>1520</width><height>34</height>
+				<left>40</left><top>828</top><width>1520</width><height>34</height>
 				<font>font12</font>
 				<textcolor>FF8A97A8</textcolor>
 				<align>center</align><aligny>center</aligny>
