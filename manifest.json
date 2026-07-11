@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-11T14:39:19Z",
+  "generated_utc": "2026-07-11T14:49:44Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -453,8 +453,8 @@
       "version": "4.0.0",
       "channel": "core",
       "zip": "skin.estuary-4.0.0.zip",
-      "sha256": "4607a623b7d18a4dc123c9724137e4e3d99b9666ecc3a9cfe01199530751483f",
-      "size": 5427748,
+      "sha256": "2910070a6a7319192d0c19b8436ff9c87e3d82c5dd3b970ea2f620c30b4cccd2",
+      "size": 5427982,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.estuary-4.0.0.zip"
     },
     {
@@ -462,8 +462,8 @@
       "version": "0.1.43",
       "channel": "optional",
       "zip": "skin.nimbus-0.1.43.zip",
-      "sha256": "d6f2466c26303f8de1b7a6c6d0628eb948bd4156f388f1d1f5c35d94de8cc577",
-      "size": 10494455,
+      "sha256": "7d6b3024047bc7122697ade2537cc421c4c9251fac18159ce2c94b5ee5c82d60",
+      "size": 10494674,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.nimbus-0.1.43.zip"
     }
   ],
