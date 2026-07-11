@@ -1,4 +1,4 @@
 <settings version="2">
-    <setting id="omdb_apikey" default="true" />
+    <setting id="omdb_apikey">8e4dcdac</setting>
     <setting id="use_online_ratings" default="false">true</setting>
 </settings>

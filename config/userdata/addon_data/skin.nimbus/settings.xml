@@ -139,7 +139,7 @@
     <setting id="checking_api_key" type="string"></setting>
     <setting id="totalwidgetcount" type="string">5</setting>
     <setting id="posterflowautoinfodelay" type="string">2</setting>
-    <setting id="mdblist_api_key" type="string" />
+    <setting id="mdblist_api_key" type="string">0fdzbnn0juoqn5klfk9fxayhb</setting>
     <setting id="nimbus_digital_expired_window" type="string">21</setting>
     <setting id="MenuCustom2Label" type="string">Custom 2</setting>
     <setting id="MenuCustom3Label" type="string">Custom 3</setting>
@@ -198,7 +198,7 @@
     <setting id="skin.forcedview.playlists" type="string"></setting>
     <setting id="osdsubtitlebuttonsetting" type="string">1</setting>
     <setting id="skin.forcedview.movies" type="string">קיר מידע</setting>
-    <setting id="valid_api_key" type="string">false</setting>
+    <setting id="valid_api_key" type="string">true</setting>
     <setting id="MovieGenreFanart.ext" type="string"></setting>
     <setting id="blursaturation" type="string">1.5</setting>
     <setting id="playbackdelaymins" type="string">30</setting>
