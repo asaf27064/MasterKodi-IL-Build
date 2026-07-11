@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-11T15:17:24Z",
+  "generated_utc": "2026-07-11T15:55:13Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -72,12 +72,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.20",
+      "version": "2.4.21",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.20.zip",
-      "sha256": "958edf7a008400981885201690145f73456cff04fbee0338c95d194fa5f52117",
-      "size": 2111955,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.20.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.21.zip",
+      "sha256": "e8ae4848c0ddc9b5a0b7b6575856dd273385d95ff16044dd21347c89b85c9add",
+      "size": 2303825,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.21.zip"
     },
     {
       "id": "plugin.video.gears",
@@ -170,6 +170,24 @@
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.font.robotocjksc-0.0.3.zip"
     },
     {
+      "id": "resource.images.moviecountryicons.maps",
+      "version": "0.0.1",
+      "channel": "optional",
+      "zip": "resource.images.moviecountryicons.maps-0.0.1.zip",
+      "sha256": "b4efa20c031439abbbb4514c036b01ef819bc27234e45a6a2beacef60c489b6f",
+      "size": 2205371,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.images.moviecountryicons.maps-0.0.1.zip"
+    },
+    {
+      "id": "resource.images.moviegenreicons.transparent",
+      "version": "0.0.6",
+      "channel": "optional",
+      "zip": "resource.images.moviegenreicons.transparent-0.0.6.zip",
+      "sha256": "5994e0d46b6f4b22d70bc8e2f9f16d8c7b49b77f6e7369a72e832402310a95f7",
+      "size": 159006,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.images.moviegenreicons.transparent-0.0.6.zip"
+    },
+    {
       "id": "resource.images.studios.coloured",
       "version": "0.0.23",
       "channel": "optional",
@@ -177,6 +195,15 @@
       "sha256": "5b2aae5c8ed5570e0e1f3a722d4b91caad76c336a23b051fd8f2e220aa9c3c1b",
       "size": 58229865,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.images.studios.coloured-0.0.23.zip"
+    },
+    {
+      "id": "resource.images.studios.white",
+      "version": "0.0.34",
+      "channel": "optional",
+      "zip": "resource.images.studios.white-0.0.34.zip",
+      "sha256": "30d4c3d7cd24f577699e017cc06c7f92ac405bf1db3bef0db1b7ca42590ef9b8",
+      "size": 10613553,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.images.studios.white-0.0.34.zip"
     },
     {
       "id": "resource.images.weathericons.white",
@@ -332,6 +359,15 @@
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.requests-2.31.0.zip"
     },
     {
+      "id": "script.module.simplejson",
+      "version": "3.19.1+matrix.1",
+      "channel": "optional",
+      "zip": "script.module.simplejson-3.19.1+matrix.1.zip",
+      "sha256": "87bbb1f401acead9e3d46fe19f8106bf7ce83d9fe8bead65b793eb488860fbfd",
+      "size": 32709,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.simplejson-3.19.1+matrix.1.zip"
+    },
+    {
       "id": "script.module.six",
       "version": "1.16.0+matrix.1",
       "channel": "optional",
@@ -350,6 +386,15 @@
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.soupsieve-2.4.1.zip"
     },
     {
+      "id": "script.module.unidecode",
+      "version": "1.3.6",
+      "channel": "optional",
+      "zip": "script.module.unidecode-1.3.6.zip",
+      "sha256": "26853c86b31a2ddce17acc2792ed032c48fc3f3113621bab978a7e60f18b1f01",
+      "size": 238291,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.unidecode-1.3.6.zip"
+    },
+    {
       "id": "script.module.urllib3",
       "version": "2.2.3",
       "channel": "core",
@@ -366,6 +411,24 @@
       "sha256": "8ed463948b6f6c4a903948d86b35f82ebe5664b59c52ed8a86542da81387c3e0",
       "size": 35866,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.nimbus.helper-0.0.52.zip"
+    },
+    {
+      "id": "script.skinhelper",
+      "version": "0.0.4",
+      "channel": "optional",
+      "zip": "script.skinhelper-0.0.4.zip",
+      "sha256": "673dbd9d5551631b994c2b2449a685004c57fbb2eb94bb2cde006f016e1e708e",
+      "size": 1430,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.skinhelper-0.0.4.zip"
+    },
+    {
+      "id": "script.skinshortcuts",
+      "version": "2.0.3",
+      "channel": "optional",
+      "zip": "script.skinshortcuts-2.0.3.zip",
+      "sha256": "30de40e9f8cfb00989e86efde864151022ea1aa41275ded03a435b1554e1e1f5",
+      "size": 536728,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.skinshortcuts-2.0.3.zip"
     },
     {
       "id": "script.skinvariables",
@@ -447,6 +510,15 @@
       "sha256": "dd67df72197821f0a1cc6b58836ec490b3ee4714a9564a8ba3700ceb970b9355",
       "size": 54447002,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.fuse.3-3.2.13.zip"
+    },
+    {
+      "id": "skin.arctic.zephyr.2.resurrection.mod",
+      "version": "1.0.51",
+      "channel": "optional",
+      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.0.51.zip",
+      "sha256": "67d70448ffbdded2fc55bd0b886cb46f2cb72a956686b437e98f047a29c17179",
+      "size": 18317924,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.zephyr.2.resurrection.mod-1.0.51.zip"
     },
     {
       "id": "skin.estuary",
