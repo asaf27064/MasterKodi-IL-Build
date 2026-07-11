@@ -1470,7 +1470,7 @@ msgstr "Clearart עם פס הרצה"
 #: /1080i/Includes_View_54_ROM_Simple.xml
 msgctxt "#31435"
 msgid "ROM Trailer"
-msgstr "טריילר ROM - ROM Trailer"
+msgstr "טריילר - ROM Trailer"
 
 #: /1080i/Includes_View_51_Wall.xml
 msgctxt "#31436"
@@ -1495,7 +1495,7 @@ msgstr "הצג מוני עמודים ופריטים בדפי רשימה"
 #: /1080i/Includes_View_54_AEL.xml
 msgctxt "#31440"
 msgid "ROM Info Wall Trailer"
-msgstr "קיר מידע טריילר ROM - ROM Info Wall Trailer"
+msgstr "קיר מידע טריילר - ROM Info Wall Trailer"
 
 #: /1080i/SkinSettings.xml
 msgctxt "#31441"
@@ -2278,8 +2278,8 @@ msgid "Square Wall 2"
 msgstr "קיר מרובע 2 - Square Wall 2"
 
 msgctxt "#31604"
-msgid "Square Showcase"
-msgstr "חלון ראווה מרובע - Square Showcase"
+msgid "Aura Showcase"
+msgstr "חלון ראווה זוהר - Aura Showcase"
 
 msgctxt "#31605"
 msgid "Season Info"
@@ -2291,19 +2291,19 @@ msgstr "פרטי עונה 2 - Season Info 2"
 
 msgctxt "#31607"
 msgid "Showcase Flix"
-msgstr "תצוגת Flix - Showcase Flix"
+msgstr "חלון ראווה פליקס - Showcase Flix"
 
 msgctxt "#31608"
 msgid "Flix Poster"
-msgstr "פוסטר Flix - Flix Poster"
+msgstr "פוסטר פליקס - Flix Poster"
 
 msgctxt "#31609"
 msgid "Flix Poster 2"
-msgstr "פוסטר Flix 2 - Flix Poster 2"
+msgstr "פוסטר פליקס 2 - Flix Poster 2"
 
 msgctxt "#31610"
 msgid "Flix Landscape"
-msgstr "נוף Flix - Flix Landscape"
+msgstr "נוף פליקס - Flix Landscape"
 
 msgctxt "#31611"
 msgid "Square Showcase 2"

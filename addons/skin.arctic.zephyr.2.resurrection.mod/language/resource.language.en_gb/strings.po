@@ -2277,8 +2277,8 @@ msgid "Square Wall 2"
 msgstr "Square Wall 2"
 
 msgctxt "#31604"
-msgid "Square Showcase"
-msgstr "Square Showcase"
+msgid "Aura Showcase"
+msgstr "Aura Showcase"
 
 msgctxt "#31605"
 msgid "Season Info"
