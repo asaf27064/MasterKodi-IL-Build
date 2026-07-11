@@ -1171,6 +1171,12 @@ class BuildManager:
                     mu._apply_one(entry)          # sha-verified download + extract to addons/
                 except Exception as e:
                     log(f"manifest install {aid} failed: {e}", xbmc.LOGWARNING)
+            # CRITICAL: freshly-extracted addons are added to Kodi as DISABLED.
+            # A disabled skin (or disabled dep) can't load -> "failed to load skin
+            # / missing files" and Kodi reverts to Estuary. Enable them all (deps
+            # first, skin last) so the restart lands on a working skin. The other
+            # install paths (install_skin_only/install_skin) already do this.
+            self.enable_addons_in_db(ids)
             self.setup_wizard_repo_in_db()
             xbmc.executebuiltin('UpdateAddonRepos()')
             xbmc.executebuiltin('UpdateLocalAddons()')
