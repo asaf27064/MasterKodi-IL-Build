@@ -5,10 +5,8 @@
     <setting id="DisabledProfileInfo" type="bool">true</setting>
     <setting id="ExtendedNotification" type="bool">true</setting>
     <setting id="ShowEpisodeRatings" type="bool">true</setting>
-    <setting id="UnwatchedCountIndicator" type="bool">true</setting>
     <setting id="SeriesIndicators" type="bool">true</setting>
     <setting id="EnableLanguages" type="bool">true</setting>
-    <setting id="HomeIcons" type="bool">true</setting>
     <setting id="TMDBhCrop" type="bool">true</setting>
     <setting id="EnableShowItemCount" type="bool">true</setting>
     <setting id="Icons" type="string">colorful</setting>
@@ -19,4 +17,6 @@
     <setting id="customrating.tvshows.item01" type="string">IMDb</setting>
     <setting id="customrating.tvshows.item02" type="string">TMDb</setting>
     <setting id="customrating.tvshows.item03" type="string">Trakt</setting>
+    <setting id="Infoline.DisableMatch" type="bool">true</setting>
+    <setting id="ShowClearlogo" type="bool">false</setting>
 </settings>
