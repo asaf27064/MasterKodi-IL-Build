@@ -829,8 +829,9 @@ class BuildManager:
                    'url_key': 'nimbus_skin_url', 'zip': 'nimbus.zip'},
     }
 
-    def install_build(self, build_info, skin_choice='estuary', with_arctic_fuse=None):
-        """Full build installation. skin_choice: 'estuary' | 'arctic' | 'nimbus'."""
+    def install_build(self, build_info, skin_choice='estuary', with_arctic_fuse=None, keep_keys=None):
+        """Full build installation. skin_choice: 'estuary' | 'arctic' | 'nimbus'.
+        keep_keys: list of 'keep' group keys to carry across the wipe (see keep.py)."""
         # Back-compat: older callers pass with_arctic_fuse=True/False.
         if with_arctic_fuse is not None:
             skin_choice = 'arctic' if with_arctic_fuse else 'estuary'
@@ -876,6 +877,15 @@ class BuildManager:
             progress.update(0, "[COLOR yellow]סורק אדונים בבילד...[/COLOR]")
             addon_list = self.grab_addons_from_zip(zip_path)
             
+            # Step 2.5: snapshot the user's 'keep' selections BEFORE wiping
+            if keep_keys:
+                try:
+                    from resources.libs import keep as keep_mod
+                    progress.update(0, "[COLOR yellow]שומר נתונים נבחרים...[/COLOR]")
+                    keep_mod.backup(keep_keys)
+                except Exception as e:
+                    log(f"keep backup failed: {e}", xbmc.LOGWARNING)
+
             # Step 3: Wipe
             progress.update(0, "[COLOR yellow]מכין להתקנה...[/COLOR]")
             self.wipe(progress)
@@ -950,7 +960,16 @@ class BuildManager:
             progress.update(95, "[COLOR yellow]מעדכן...[/COLOR]")
             xbmc.executebuiltin('UpdateAddonRepos()')
             xbmc.executebuiltin('UpdateLocalAddons()')
-            
+
+            # Step 7.5: restore the 'keep' selections onto the fresh build
+            if keep_keys:
+                try:
+                    from resources.libs import keep as keep_mod
+                    progress.update(96, "[COLOR yellow]משחזר נתונים שנשמרו...[/COLOR]")
+                    keep_mod.restore()
+                except Exception as e:
+                    log(f"keep restore failed: {e}", xbmc.LOGWARNING)
+
             # Save build info
             ADDON.setSetting('buildname', build_name)
             ADDON.setSetting('buildversion', build_info.get('version', '1.0'))
@@ -1254,10 +1273,13 @@ def builds_menu():
         confirm_msg = (
             f"[COLOR cyan]בילד:[/COLOR] {build_name} v{build_ver}\n"
             f"[COLOR cyan]סקין:[/COLOR] {skin_name}\n\n"
-            f"[COLOR {COLOR_WARNING}]אזהרה: כל ההגדרות הקיימות יימחקו![/COLOR]\n\n"
+            f"[COLOR {COLOR_WARNING}]הבילד הקיים יימחק (תוכל לבחור מה לשמור בשלב הבא).[/COLOR]\n\n"
             "להתחיל בהתקנה?"
         )
-        
+
         if dialog.yesno("[B]אישור התקנה[/B]", confirm_msg, yeslabel="[B]התקן[/B]", nolabel="ביטול"):
-            manager.install_build(selected_build, skin_choice=skin_choice)
+            # 'What to keep' checklist (all ticked by default) -> carried across the wipe
+            from resources.libs import keep as keep_mod
+            keep_keys = keep_mod.prompt(default_all=True)
+            manager.install_build(selected_build, skin_choice=skin_choice, keep_keys=keep_keys)
             break
