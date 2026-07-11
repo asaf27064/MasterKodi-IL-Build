@@ -2263,3 +2263,47 @@ msgstr ""
 msgctxt "#31599"
 msgid "Reboot to android"
 msgstr ""
+
+msgctxt "#31601"
+msgid "Square List"
+msgstr "Square List"
+
+msgctxt "#31602"
+msgid "Tri-Panel"
+msgstr "Tri-Panel"
+
+msgctxt "#31603"
+msgid "Square Wall 2"
+msgstr "Square Wall 2"
+
+msgctxt "#31604"
+msgid "Square Showcase"
+msgstr "Square Showcase"
+
+msgctxt "#31605"
+msgid "Season Info"
+msgstr "Season Info"
+
+msgctxt "#31606"
+msgid "Season Info 2"
+msgstr "Season Info 2"
+
+msgctxt "#31607"
+msgid "Showcase Flix"
+msgstr "Showcase Flix"
+
+msgctxt "#31608"
+msgid "Flix Poster"
+msgstr "Flix Poster"
+
+msgctxt "#31609"
+msgid "Flix Poster 2"
+msgstr "Flix Poster 2"
+
+msgctxt "#31610"
+msgid "Flix Landscape"
+msgstr "Flix Landscape"
+
+msgctxt "#31611"
+msgid "Square Showcase 2"
+msgstr "Square Showcase 2"

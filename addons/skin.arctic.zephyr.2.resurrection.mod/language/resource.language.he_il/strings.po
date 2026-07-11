@@ -2264,3 +2264,47 @@ msgstr "מידע OSD פשוט עם פוסטר"
 msgctxt "#31599"
 msgid "Reboot to android"
 msgstr "אתחל מחדש ל-Android"
+
+msgctxt "#31601"
+msgid "Square List"
+msgstr "רשימת ריבועים - Square List"
+
+msgctxt "#31602"
+msgid "Tri-Panel"
+msgstr "שלושה פאנלים - Tri-Panel"
+
+msgctxt "#31603"
+msgid "Square Wall 2"
+msgstr "קיר מרובע 2 - Square Wall 2"
+
+msgctxt "#31604"
+msgid "Square Showcase"
+msgstr "חלון ראווה מרובע - Square Showcase"
+
+msgctxt "#31605"
+msgid "Season Info"
+msgstr "פרטי עונה - Season Info"
+
+msgctxt "#31606"
+msgid "Season Info 2"
+msgstr "פרטי עונה 2 - Season Info 2"
+
+msgctxt "#31607"
+msgid "Showcase Flix"
+msgstr "תצוגת Flix - Showcase Flix"
+
+msgctxt "#31608"
+msgid "Flix Poster"
+msgstr "פוסטר Flix - Flix Poster"
+
+msgctxt "#31609"
+msgid "Flix Poster 2"
+msgstr "פוסטר Flix 2 - Flix Poster 2"
+
+msgctxt "#31610"
+msgid "Flix Landscape"
+msgstr "נוף Flix - Flix Landscape"
+
+msgctxt "#31611"
+msgid "Square Showcase 2"
+msgstr "חלון ראווה מרובע 2 - Square Showcase 2"
