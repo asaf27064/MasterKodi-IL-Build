@@ -9,4 +9,5 @@
     <favourite name="רשתות סטרימינג" thumb="special://home/media/build_icons/Netflix.png">ActivateWindow(10025,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder",return)</favourite>
     <favourite name="TorBox - חיבור ושירותים" thumb="special://home/media/build_icons/TorBox.png">ActivateWindow(10025,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</favourite>
     <favourite name="Real Debrid - חיבור ושירותים" thumb="special://home/media/build_icons/Real_Derbid.png">ActivateWindow(10025,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=RD+Services&amp;iconImage=folder",return)</favourite>
+    <favourite name="החלפת סקין" thumb="DefaultAddonSkin.png">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</favourite>
 </favourites>

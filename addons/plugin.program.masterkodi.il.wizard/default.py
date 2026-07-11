@@ -663,6 +663,9 @@ if __name__ == '__main__':
         check_updates_now()
     elif mode == 'status':
         build_status_menu()
+    elif mode == 'skins':
+        log("Opening Skins menu directly")
+        open_skins_menu()
     else:
         main_menu()
     
