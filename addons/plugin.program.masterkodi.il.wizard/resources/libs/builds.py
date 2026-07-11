@@ -829,9 +829,11 @@ class BuildManager:
                    'url_key': 'nimbus_skin_url', 'zip': 'nimbus.zip'},
     }
 
-    def install_build(self, build_info, skin_choice='estuary', with_arctic_fuse=None, keep_keys=None):
+    def install_build(self, build_info, skin_choice='estuary', with_arctic_fuse=None,
+                      keep_keys=None, keep_extras=None):
         """Full build installation. skin_choice: 'estuary' | 'arctic' | 'nimbus'.
-        keep_keys: list of 'keep' group keys to carry across the wipe (see keep.py)."""
+        keep_keys: list of 'keep' group keys to carry across the wipe (see keep.py).
+        keep_extras: user-installed addon ids to preserve if 'extras' is kept."""
         # Back-compat: older callers pass with_arctic_fuse=True/False.
         if with_arctic_fuse is not None:
             skin_choice = 'arctic' if with_arctic_fuse else 'estuary'
@@ -882,7 +884,7 @@ class BuildManager:
                 try:
                     from resources.libs import keep as keep_mod
                     progress.update(0, "[COLOR yellow]שומר נתונים נבחרים...[/COLOR]")
-                    keep_mod.backup(keep_keys)
+                    keep_mod.backup(keep_keys, extras=keep_extras)
                 except Exception as e:
                     log(f"keep backup failed: {e}", xbmc.LOGWARNING)
 
@@ -966,7 +968,11 @@ class BuildManager:
                 try:
                     from resources.libs import keep as keep_mod
                     progress.update(96, "[COLOR yellow]משחזר נתונים שנשמרו...[/COLOR]")
-                    keep_mod.restore()
+                    restored_extras = keep_mod.restore()
+                    # register + enable any restored user addons
+                    if restored_extras:
+                        self.enable_addons_in_db(restored_extras)
+                        xbmc.executebuiltin('UpdateLocalAddons()')
                 except Exception as e:
                     log(f"keep restore failed: {e}", xbmc.LOGWARNING)
 
@@ -1278,8 +1284,17 @@ def builds_menu():
         )
 
         if dialog.yesno("[B]אישור התקנה[/B]", confirm_msg, yeslabel="[B]התקן[/B]", nolabel="ביטול"):
-            # 'What to keep' checklist (all ticked by default) -> carried across the wipe
+            # 'What to keep' checklist (all ticked by default) -> carried across the wipe.
+            # Detect user-installed extra addons (in home/addons but not in the build).
             from resources.libs import keep as keep_mod
-            keep_keys = keep_mod.prompt(default_all=True)
-            manager.install_build(selected_build, skin_choice=skin_choice, keep_keys=keep_keys)
+            extras = []
+            try:
+                from resources.libs import modular_update
+                man = modular_update.fetch_manifest()
+                extras = keep_mod.detect_extras({a.get('id') for a in man.get('addons', [])})
+            except Exception as e:
+                log(f"detect_extras skipped: {e}", xbmc.LOGWARNING)
+            keep_keys = keep_mod.prompt(extras=extras, default_all=True)
+            manager.install_build(selected_build, skin_choice=skin_choice,
+                                  keep_keys=keep_keys, keep_extras=extras)
             break

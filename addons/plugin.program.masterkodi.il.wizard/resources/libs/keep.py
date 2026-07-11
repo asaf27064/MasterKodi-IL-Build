@@ -26,8 +26,31 @@ import xbmcvfs
 
 USERDATA = xbmcvfs.translatePath('special://userdata/')
 ADDON_DATA = os.path.join(USERDATA, 'addon_data')
+HOME_ADDONS = os.path.join(xbmcvfs.translatePath('special://home/'), 'addons')
 WIZARD_ID = 'plugin.program.masterkodi.il.wizard'
 STAGE = os.path.join(ADDON_DATA, WIZARD_ID, '_keep_backup')   # survives the wipe
+
+# Never treated as a "user extra" (part of our own build machinery).
+_PROTECTED = {WIZARD_ID, 'service.kodi.il.firstrun', 'repository.masterkodi.il', 'packages'}
+
+
+def detect_extras(manifest_ids):
+    """Addons under home/addons that the user installed themselves -- i.e. not
+    part of the build (manifest) and not our own machinery. Kodi's bundled
+    system addons live in special://xbmc/addons, so they don't appear here."""
+    out = []
+    try:
+        for name in sorted(os.listdir(HOME_ADDONS)):
+            p = os.path.join(HOME_ADDONS, name)
+            if not os.path.isdir(p) or name in manifest_ids or name in _PROTECTED:
+                continue
+            if '_old_' in name or name.endswith('_old'):
+                continue
+            if os.path.isfile(os.path.join(p, 'addon.xml')):
+                out.append(name)
+    except Exception as e:
+        log('detect_extras failed: %s' % e, xbmc.LOGWARNING)
+    return out
 
 GEARS_DB_DIR = os.path.join(ADDON_DATA, 'plugin.video.gears', 'databases')
 GEARS_SETTINGS_DB = os.path.join(GEARS_DB_DIR, 'settings.db')
@@ -141,22 +164,25 @@ def _xml_write(path, values):
 # --------------------------------------------------------------------------- #
 # public API
 # --------------------------------------------------------------------------- #
-def prompt(default_all=True):
+def prompt(extras=None, default_all=True):
     """Show the 'what to keep' checklist (all ticked by default). Returns a list
-    of selected group keys. Cancel -> keep the defaults (all) so nothing is lost
-    by accident."""
-    labels = [g['label'] for g in GROUPS]
-    preselect = list(range(len(GROUPS))) if default_all else []
+    of selected group keys (may include 'extras'). Cancel -> keep the defaults
+    (all) so nothing is lost by accident."""
+    entries = [(g['key'], g['label']) for g in GROUPS]
+    if extras:
+        entries.append(('extras', 'תוספים שהתקנת בעצמך (%d)' % len(extras)))
+    labels = [lbl for _k, lbl in entries]
+    preselect = list(range(len(entries))) if default_all else []
     try:
         chosen = xbmcgui.Dialog().multiselect('מה לשמור בהתקנה?', labels, preselect=preselect)
     except Exception:
         chosen = preselect
     if chosen is None:
         chosen = preselect
-    return [GROUPS[i]['key'] for i in chosen]
+    return [entries[i][0] for i in chosen]
 
 
-def backup(keys):
+def backup(keys, extras=None):
     """Snapshot the selected groups to STAGE (call BEFORE the wipe)."""
     try:
         if os.path.isdir(STAGE):
@@ -186,6 +212,21 @@ def backup(keys):
                     shutil.copy2(f, os.path.join(STAGE, 'file__' + os.path.basename(f)))
                 except Exception as e:
                     log('backup file %s failed: %s' % (f, e), xbmc.LOGWARNING)
+    # user-installed extra addons: whole folder + their addon_data
+    if 'extras' in (keys or []) and extras:
+        for aid in extras:
+            src = os.path.join(HOME_ADDONS, aid)
+            if os.path.isdir(src):
+                try:
+                    shutil.copytree(src, os.path.join(STAGE, 'addon__' + aid))
+                except Exception as e:
+                    log('backup addon %s failed: %s' % (aid, e), xbmc.LOGWARNING)
+            ad = os.path.join(ADDON_DATA, aid)
+            if os.path.isdir(ad):
+                try:
+                    shutil.copytree(ad, os.path.join(STAGE, 'addondata__' + aid))
+                except Exception as e:
+                    log('backup addon_data %s failed: %s' % (aid, e), xbmc.LOGWARNING)
     try:
         json.dump(saved, open(os.path.join(STAGE, 'manifest.json'), 'w', encoding='utf-8'))
     except Exception as e:
@@ -194,20 +235,23 @@ def backup(keys):
 
 
 def restore():
-    """Write back whatever backup() staged (call AFTER install + config)."""
+    """Write back whatever backup() staged (call AFTER install + config).
+    Returns the list of restored user-extra addon ids (so the caller can enable
+    them in the addon DB)."""
+    restored_addons = []
     mf = os.path.join(STAGE, 'manifest.json')
     if not os.path.isfile(mf):
-        return
+        return restored_addons
     try:
         saved = json.load(open(mf, encoding='utf-8'))
     except Exception:
-        return
+        return restored_addons
     # gears settings.db credentials
     _db_write(GEARS_SETTINGS_DB, saved.get('settings', {}).get('gears', {}))
     # xml settings (gearsai key, tmdb-helper trakt)
     for path, values in saved.get('xml', {}).items():
         _xml_write(path, values)
-    # staged db files + plain files
+    # staged db files, plain files, and extra addons/addon_data
     for name in os.listdir(STAGE):
         try:
             if name.startswith('gearsdb__'):
@@ -215,13 +259,24 @@ def restore():
                 shutil.copy2(os.path.join(STAGE, name),
                              os.path.join(GEARS_DB_DIR, name[len('gearsdb__'):]))
             elif name.startswith('file__'):
-                base = name[len('file__'):]
-                if base == 'favourites.xml':
+                if name[len('file__'):] == 'favourites.xml':
                     shutil.copy2(os.path.join(STAGE, name), FAVOURITES)
+            elif name.startswith('addon__'):
+                aid = name[len('addon__'):]
+                dst = os.path.join(HOME_ADDONS, aid)
+                if not os.path.isdir(dst):
+                    shutil.copytree(os.path.join(STAGE, name), dst)
+                restored_addons.append(aid)
+            elif name.startswith('addondata__'):
+                aid = name[len('addondata__'):]
+                dst = os.path.join(ADDON_DATA, aid)
+                if not os.path.isdir(dst):
+                    shutil.copytree(os.path.join(STAGE, name), dst)
         except Exception as e:
             log('restore %s failed: %s' % (name, e), xbmc.LOGWARNING)
-    log('restore complete')
+    log('restore complete (extras: %s)' % (', '.join(restored_addons) or 'none'))
     cleanup()
+    return restored_addons
 
 
 def cleanup():
