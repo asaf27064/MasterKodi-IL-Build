@@ -799,12 +799,51 @@ class BuildManager:
             
             with open(guisettings, 'w', encoding='utf-8') as f:
                 f.write(content)
-            
+
             log(f"Set default skin to: {skin_id}")
+            # Also set the correct Hebrew fontset for the target skin. lookandfeel.font
+            # is GLOBAL, so switching skins keeps the previous value -- and AF3's
+            # "Default" fontset is Latin-only (Hebrew renders as tofu). Each skin needs
+            # its Hebrew-capable fontset here.
+            self.set_skin_font(skin_id)
             return True
-            
+
         except Exception as e:
             log(f"Error setting default skin: {e}", xbmc.LOGERROR)
+            return False
+
+    # Hebrew-capable fontset per skin. Estuary/Nimbus "Default" already map to a
+    # Hebrew font; AF3's "Default" is Latin-only so it must use "Hebrew (Rubik)".
+    SKIN_FONTSET = {
+        'skin.arctic.fuse.3': 'Hebrew (Rubik)',
+        'skin.estuary': 'Default',
+        'skin.nimbus': 'Default',
+    }
+
+    def set_skin_font(self, skin_id):
+        """Force the target skin's Hebrew fontset into guisettings (lookandfeel.font
+        is global, so a skin switch would otherwise keep a font with no Hebrew)."""
+        fontset = self.SKIN_FONTSET.get(skin_id, 'Default')
+        try:
+            guisettings = os.path.join(USERDATA, 'guisettings.xml')
+            if not os.path.exists(guisettings):
+                return False
+            import re
+            with open(guisettings, 'r', encoding='utf-8') as f:
+                content = f.read()
+            if re.search(r'<setting id="lookandfeel.font"', content):
+                content = re.sub(r'(<setting id="lookandfeel.font"[^>]*>)[^<]*(</setting>)',
+                                 lambda m: m.group(1) + fontset + m.group(2), content, count=1)
+                content = re.sub(r'(<setting id="lookandfeel.font"[^>]*) default="[^"]*"', r'\1', content)
+            else:
+                content = content.replace('</settings>',
+                                          '    <setting id="lookandfeel.font">%s</setting>\n</settings>' % fontset, 1)
+            with open(guisettings, 'w', encoding='utf-8') as f:
+                f.write(content)
+            log(f"Set skin font to '{fontset}' for {skin_id}")
+            return True
+        except Exception as e:
+            log(f"set_skin_font error: {e}", xbmc.LOGERROR)
             return False
 
     def is_build_installed(self):
