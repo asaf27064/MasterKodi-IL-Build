@@ -1766,7 +1766,7 @@
                 <usecontrolcoords>true</usecontrolcoords>
                 <itemgap>0</itemgap>
                 <include content="Object_Info_Title">
-                    <param name="label" value="$INFO[Container($PARAM[id]).ListItem.Title]" />
+                    <param name="label" value="$INFO[Container($PARAM[id]).ListItem.Label]" />
                     <param name="font" value="$PARAM[font]" />
                     <param name="titleheight" value="$PARAM[titleheight]" />
                 </include>
@@ -1816,7 +1816,7 @@
                 <usecontrolcoords>true</usecontrolcoords>
                 <itemgap>0</itemgap>
                 <include content="Object_Info_Title">
-                    <param name="label" value="$INFO[Container($PARAM[id]).ListItem.Title]" />
+                    <param name="label" value="$INFO[Container($PARAM[id]).ListItem.Label]" />
                     <param name="font" value="$PARAM[font]" />
                     <param name="titleheight" value="$PARAM[titleheight]" />
                 </include>
@@ -1842,7 +1842,7 @@
                 <control type="group">
                     <height>200</height>
                     <include content="Flix_Object_Info_Title">
-                        <param name="label" value="$INFO[Container($PARAM[id]).ListItem.Title]" />
+                        <param name="label" value="$INFO[Container($PARAM[id]).ListItem.Label]" />
                         <param name="font" value="font_title_large" />
                         <param name="shadowcolor" value="ff000000" />
                         <param name="titleheight" value="$PARAM[titleheight]" />
