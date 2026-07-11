@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-11T21:01:56Z",
+  "generated_utc": "2026-07-11T21:21:50Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -90,12 +90,12 @@
     },
     {
       "id": "plugin.video.themoviedb.helper",
-      "version": "6.15.0",
+      "version": "6.16.1",
       "channel": "optional",
-      "zip": "plugin.video.themoviedb.helper-6.15.0.zip",
-      "sha256": "d4822f5e9308efd82839a497c0062068148d04940e7e91cf7f3b6f3a844bfd88",
-      "size": 5047887,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.15.0.zip"
+      "zip": "plugin.video.themoviedb.helper-6.16.1.zip",
+      "sha256": "2b89de4fd6394ed5a327fc2eb81e9dbde7639e4056496736232854bc0a102fdc",
+      "size": 5051224,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.16.1.zip"
     },
     {
       "id": "repository.KodiRealDebridIsrael",
@@ -189,12 +189,12 @@
     },
     {
       "id": "resource.images.studios.coloured",
-      "version": "0.0.23",
+      "version": "0.0.24",
       "channel": "optional",
-      "zip": "resource.images.studios.coloured-0.0.23.zip",
-      "sha256": "5b2aae5c8ed5570e0e1f3a722d4b91caad76c336a23b051fd8f2e220aa9c3c1b",
-      "size": 58229865,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.images.studios.coloured-0.0.23.zip"
+      "zip": "resource.images.studios.coloured-0.0.24.zip",
+      "sha256": "9ec03ca08165aac1627bfe57701cece20aeb19d236d063e734198c7f1cefc018",
+      "size": 60584821,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.images.studios.coloured-0.0.24.zip"
     },
     {
       "id": "resource.images.studios.white",
@@ -315,12 +315,12 @@
     },
     {
       "id": "script.module.jurialmunkey",
-      "version": "0.2.31",
+      "version": "0.2.35",
       "channel": "optional",
-      "zip": "script.module.jurialmunkey-0.2.31.zip",
-      "sha256": "4dae7152e53c32a5ece378f1495ac3f0051d8e278e59e6b7c518672a909e0e88",
-      "size": 55641,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.jurialmunkey-0.2.31.zip"
+      "zip": "script.module.jurialmunkey-0.2.35.zip",
+      "sha256": "65966f3a49fee7339b66c9d58d16ce714d95d8b5bcb17144e5b9aecc2ce08302",
+      "size": 55792,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.jurialmunkey-0.2.35.zip"
     },
     {
       "id": "script.module.magneto",
@@ -441,12 +441,12 @@
     },
     {
       "id": "script.skinvariables",
-      "version": "2.1.35",
+      "version": "2.2.2",
       "channel": "optional",
-      "zip": "script.skinvariables-2.1.35.zip",
-      "sha256": "78163c2c36b2f1d8e0aff1e961ff46b09dd126819f179c430e0ff42b522b3020",
-      "size": 215584,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.skinvariables-2.1.35.zip"
+      "zip": "script.skinvariables-2.2.2.zip",
+      "sha256": "92578e8aae06e53b580074f382092d27c1f1fe02d27842b0b2b4e7a712b38722",
+      "size": 231198,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.skinvariables-2.2.2.zip"
     },
     {
       "id": "script.texturemaker",
@@ -468,12 +468,12 @@
     },
     {
       "id": "service.masterkodi.skipintro",
-      "version": "1.2.3",
+      "version": "1.2.4",
       "channel": "core",
-      "zip": "service.masterkodi.skipintro-1.2.3.zip",
-      "sha256": "a1b4ee4483bfb7516cf6a51604b79bdab24b3d3412321f9cfb879b1deed074b9",
-      "size": 17219,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/service.masterkodi.skipintro-1.2.3.zip"
+      "zip": "service.masterkodi.skipintro-1.2.4.zip",
+      "sha256": "8af6f6e699dcf9a11485c0d09e729a9f142eedcf9f4647937f8e4cc9c1ff68ca",
+      "size": 17931,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/service.masterkodi.skipintro-1.2.4.zip"
     },
     {
       "id": "service.subtitles.all_subs_plus",
