@@ -1287,6 +1287,23 @@
             <visible>!VideoPlayer.Content(LiveTV)</visible>
             <visible>!VideoPlayer.Content(musicvideos)</visible>
         </control>
+
+        <!-- MasterKodi IL: GearsAI Hebrew subtitles window (RunScript ...,sub_window), like AF3/Nimbus -->
+        <control type="button" id="7301">
+            <centertop>50%</centertop>
+            <description>GearsAI Subtitles</description>
+            <width>48</width>
+            <height>48</height>
+            <label/>
+            <font/>
+            <texturefocus colordiffuse="$VAR[ColorHighlight]">osd/subs.png</texturefocus>
+            <texturenofocus colordiffuse="panel_fg_70">osd/subs.png</texturenofocus>
+            <onclick>RunScript(service.subtitles.gearsai,sub_window)</onclick>
+            <onfocus>ClearProperty(OSD_Menu,Home)</onfocus>
+            <include>OSD_Button_OnFocus</include>
+            <visible>Window.IsVisible(videoosd)</visible>
+            <visible>VideoPlayer.Content(movies) | VideoPlayer.Content(episodes)</visible>
+        </control>
         <control type="button" id="10018">
             <centertop>50%</centertop>
             <description>Audio</description>
