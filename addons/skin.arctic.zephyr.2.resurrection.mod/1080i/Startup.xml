@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+    <onload>SetProperty(SkinInitStarted,1,home)</onload>
+    <onload>ClearProperty(SkinSplashStarted,home)</onload>
+
+    <!-- Start TMDbH service -->
+    <onload condition="String.IsEmpty(Window.Property(ReloadDone))">Skin.SetBool(TMDbHelper.Service)</onload>
+    <onload condition="String.IsEmpty(Window.Property(ReloadDone))">Skin.SetBool(TMDbHelper.UseLocalWidgetContainer)</onload>
+    <onload condition="String.IsEmpty(Window.Property(ReloadDone))">Skin.SetBool(TMDbHelper.DirectCallAuto)</onload>
+    <onload condition="String.IsEmpty(Window.Property(ReloadDone))">Skin.SetBool(TMDbHelper.DisableExtendedProperties)</onload>
+    <onload condition="String.IsEmpty(Window.Property(ReloadDone))">Skin.Reset(TMDbHelper.MonitorContainer)</onload>
+
+    <!-- Skin Init -->
+    <onload condition="String.IsEmpty(Skin.String(focuscolor.name))">Skin.SetString(focuscolor.name,ff283ba8)</onload>
+    <onload condition="String.IsEmpty(Skin.String(gradientcolor.name))">Skin.SetString(gradientcolor.name,ff3949ab)</onload>
+    <onload condition="String.IsEmpty(Skin.String(CustomRating.Movies.Item01))">Skin.SetString(CustomRating.Movies.Item01,Kodi)</onload>
+    <onload condition="String.IsEmpty(Skin.String(CustomRating.Movies.Item02))">Skin.SetString(CustomRating.Movies.Item02,TMDb)</onload>
+    <onload condition="String.IsEmpty(Skin.String(CustomRating.TVShows.Item01))">Skin.SetString(CustomRating.TVShows.Item01,Kodi)</onload>
+    <onload condition="String.IsEmpty(Skin.String(CustomRating.TVShows.Item02))">Skin.SetString(CustomRating.TVShows.Item02,TMDb)</onload>
+    <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetString(weather.icons.path,resource://resource.images.weathericons.white/)</onload>
+    <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetBool(SubmenuOnly)</onload>
+    <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetString(widgetPath,special://skin/extras/playlists/RandomMovies.xsp)</onload>
+    <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetString(widgetTarget,videos)</onload>
+    <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetBool(HomeMultiVertical)</onload>
+    <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetBool(HomeMulti)</onload>
+    <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetString(Icons,monochrome)</onload>
+    <onload condition="!Skin.HasSetting(SkinInit)">RunScript(script.skinhelper,gradient=true,highlight=$VAR[ColorHighlight],gradient=$VAR[ColorGradient])</onload>
+    <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetString(PosterHighlight,Mix)</onload>
+    <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetBool(SkinInit)</onload>
+
+
+    <onload condition="!String.IsEmpty(Skin.String(StartupPlaylist))">ReplaceWindow(1113)</onload>
+    <onload condition="String.IsEmpty(Skin.String(StartupPlaylist))">ReplaceWindow($INFO[System.StartupWindow])</onload>
+
+    <onload condition="String.IsEmpty(Window.Property(ReloadDone))">RunScript(script.skinvariables,action=buildviews,no_reload)</onload>
+
+    <onload>SetProperty(ReloadDone,1)</onload>
+    <onload>SetProperty(ReloadDone,1,Home)</onload>
+    <controls />
+</window>

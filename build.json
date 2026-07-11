@@ -22,7 +22,15 @@
       "script.texturemaker",
       "skin.nimbus",
       "script.nimbus.helper",
-      "service.kodi.il.firstrun"
+      "service.kodi.il.firstrun",
+      "skin.arctic.zephyr.2.resurrection.mod",
+      "script.skinshortcuts",
+      "script.skinhelper",
+      "script.module.simplejson",
+      "script.module.unidecode",
+      "resource.images.studios.white",
+      "resource.images.moviegenreicons.transparent",
+      "resource.images.moviecountryicons.maps"
     ]
   },
   "notes": "channels.optional = addons that are NOT part of every install, so the client only updates them if the user already has them. This is the two skins + their bundled deps (Arctic Fuse pulls themoviedb.helper/skinvariables/jurialmunkey/six/qrcode/fonts/resources; Nimbus pulls script.nimbus.helper) + the bootstrap-only firstrun. Marking them core would make an Estuary/Nimbus user's 'check updates' list every AF3 dependency as missing. Everything else is core and auto-updates for everyone."

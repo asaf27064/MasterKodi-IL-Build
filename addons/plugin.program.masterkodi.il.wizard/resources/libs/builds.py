@@ -816,6 +816,7 @@ class BuildManager:
     # Hebrew font; AF3's "Default" is Latin-only so it must use "Hebrew (Rubik)".
     SKIN_FONTSET = {
         'skin.arctic.fuse.3': 'Hebrew (Rubik)',
+        'skin.arctic.zephyr.2.resurrection.mod': 'Hebrew (Rubik)',
         'skin.estuary': 'Default',
         'skin.nimbus': 'Default',
     }
@@ -866,6 +867,17 @@ class BuildManager:
                    'url_key': 'skin_url', 'zip': 'arctic_fuse.zip'},
         'nimbus': {'id': 'skin.nimbus', 'name': 'Nimbus',
                    'url_key': 'nimbus_skin_url', 'zip': 'nimbus.zip'},
+        # Zephyr's deps aren't bundled in a single build.txt zip like AF3/Nimbus,
+        # so it installs the skin + its deps straight from the manifest.
+        'zephyr': {'id': 'skin.arctic.zephyr.2.resurrection.mod', 'name': 'Arctic Zephyr',
+                   'manifest_install': True,
+                   'deps': ['script.skinshortcuts', 'script.skinhelper',
+                            'script.module.simplejson', 'script.module.unidecode',
+                            'script.skinvariables', 'plugin.video.themoviedb.helper',
+                            'resource.images.studios.white',
+                            'resource.images.moviegenreicons.transparent',
+                            'resource.images.moviecountryicons.maps',
+                            'resource.images.weathericons.white']},
     }
 
     def install_build(self, build_info, skin_choice='estuary', with_arctic_fuse=None,
@@ -1140,11 +1152,45 @@ class BuildManager:
             log(f"get_optional_skin_url failed: {e}", xbmc.LOGWARNING)
         return None
 
-    def install_skin(self, skin_key, skin_url):
-        """Download + install an optional skin (with its bundled deps) WITHOUT
-        switching or restarting. Returns True on success."""
+    def _install_from_manifest(self, addon_id, deps, name='סקין'):
+        """Install a skin + its deps straight from the build manifest (for skins
+        whose deps aren't bundled in a single build.txt zip). Returns True."""
+        try:
+            from resources.libs import modular_update as mu
+            manifest = mu.fetch_manifest()
+            by_id = {a['id']: a for a in manifest.get('addons', [])}
+            ids = list(dict.fromkeys(list(deps) + [addon_id]))   # deps first, skin last, unique
+            progress = xbmcgui.DialogProgress()
+            progress.create(ADDON_NAME, f"[COLOR cyan]מתקין {name}...[/COLOR]")
+            for i, aid in enumerate(ids):
+                entry = by_id.get(aid)
+                if not entry:
+                    continue
+                progress.update(int(i / max(len(ids), 1) * 100), f"[COLOR yellow]מתקין: {aid}[/COLOR]")
+                try:
+                    mu._apply_one(entry)          # sha-verified download + extract to addons/
+                except Exception as e:
+                    log(f"manifest install {aid} failed: {e}", xbmc.LOGWARNING)
+            self.setup_wizard_repo_in_db()
+            xbmc.executebuiltin('UpdateAddonRepos()')
+            xbmc.executebuiltin('UpdateLocalAddons()')
+            progress.update(100, "[COLOR lime]הותקן![/COLOR]")
+            xbmc.sleep(400); progress.close()
+            return True
+        except Exception as e:
+            log(f"_install_from_manifest error: {e}", xbmc.LOGERROR)
+            return False
+
+    def install_skin(self, skin_key, skin_url=None):
+        """Download + install an optional skin (with its deps) WITHOUT switching
+        or restarting. Uses the manifest for skins flagged manifest_install,
+        else the bundled build.txt zip. Returns True on success."""
         skin = self.OPTIONAL_SKINS.get(skin_key)
-        if not skin or not skin_url:
+        if not skin:
+            return False
+        if skin.get('manifest_install'):
+            return self._install_from_manifest(skin['id'], skin.get('deps', []), skin['name'])
+        if not skin_url:
             return False
         progress = xbmcgui.DialogProgress()
         progress.create(ADDON_NAME, f"[COLOR cyan]מתקין סקין {skin['name']}...[/COLOR]")
@@ -1455,8 +1501,10 @@ _SKIN_CATALOG = [
     ('estuary', 'Estuary', 'skin.estuary', 'estuary.jpg'),
     ('arctic', 'Arctic Fuse', 'skin.arctic.fuse.3', 'af3.jpg'),
     ('nimbus', 'Nimbus', 'skin.nimbus', 'nimbus.jpg'),
+    ('zephyr', 'Arctic Zephyr', 'skin.arctic.zephyr.2.resurrection.mod', 'zephyr.jpg'),
 ]
-_OPTIONAL_SKIN_IDS = {'skin.arctic.fuse.3', 'skin.nimbus'}
+_OPTIONAL_SKIN_IDS = {'skin.arctic.fuse.3', 'skin.nimbus',
+                      'skin.arctic.zephyr.2.resurrection.mod'}
 
 
 def _skin_installed(skin_id):
@@ -1532,12 +1580,17 @@ def _skin_switch_flow():
     prev_active = active
     # install if it's an optional skin that isn't present yet
     if not installed and key != 'estuary':
-        url = manager.get_optional_skin_url(BuildManager.OPTIONAL_SKINS[key]['url_key'])
-        if not url:
-            dialog.ok('סקינים', f'לא נמצא קישור להורדת {name}.')
-            return
-        if not manager.install_skin(key, url):
-            return
+        skin_cfg = BuildManager.OPTIONAL_SKINS.get(key, {})
+        if skin_cfg.get('manifest_install'):
+            if not manager.install_skin(key):           # skin + deps from manifest
+                return
+        else:
+            url = manager.get_optional_skin_url(skin_cfg.get('url_key'))
+            if not url:
+                dialog.ok('סקינים', f'לא נמצא קישור להורדת {name}.')
+                return
+            if not manager.install_skin(key, url):
+                return
 
     # switch active skin
     manager.set_default_skin(sid)

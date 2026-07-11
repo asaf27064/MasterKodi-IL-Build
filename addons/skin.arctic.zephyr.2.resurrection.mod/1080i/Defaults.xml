@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Foundation -->
+<includes>
+
+    <default type="label">
+        <aligny>center</aligny>
+        <font>font_small</font>
+        <textcolor>dialog_fg_70</textcolor>
+        <focusedcolor>dialog_fg_70</focusedcolor>
+        <selectedcolor>$VAR[ColorHighlight]</selectedcolor>
+        <disabledcolor>dialog_fg_30</disabledcolor>
+    </default>
+
+    <default type="edit">
+        <align>center</align>
+        <aligny>center</aligny>
+        <font>font_small</font>
+        <textoffsetx>30</textoffsetx>
+        <textcolor>dialog_fg_70</textcolor>
+        <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+        <selectedcolor>$VAR[ColorHighlight]</selectedcolor>
+        <disabledcolor>dialog_fg_12</disabledcolor>
+        <texturefocus colordiffuse="dialog_bg_30">common/white.png</texturefocus>
+        <texturenofocus/>
+        <pulseonselect>false</pulseonselect>
+    </default>
+
+    <default type="fadelabel">
+        <align>left</align>
+        <aligny>center</aligny>
+        <font>font_small</font>
+        <textcolor>dialog_fg_70</textcolor>
+        <focusedcolor>Selected</focusedcolor>
+        <selectedcolor>$VAR[ColorHighlight]</selectedcolor>
+        <disabledcolor>dialog_fg_12</disabledcolor>
+        <scrollout>false</scrollout>
+        <pauseatend>2000</pauseatend>
+    </default>
+
+    <default type="image">
+    </default>
+
+    <default type="button">
+        <align>center</align>
+        <aligny>center</aligny>
+        <font>font_small</font>
+        <textoffsetx>30</textoffsetx>
+        <textcolor>dialog_fg_70</textcolor>
+        <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+        <disabledcolor>dialog_fg_30</disabledcolor>
+        <selectedcolor>$VAR[ColorHighlight]</selectedcolor>
+        <texturefocus>special://userdata/addon_data/script.skinhelper/button_texture.png</texturefocus>
+        <texturenofocus/>
+        <pulseonselect>false</pulseonselect>
+    </default>
+
+    <default type="togglebutton">
+        <align>center</align>
+        <aligny>center</aligny>
+        <font>font_small</font>
+        <textoffsetx>30</textoffsetx>
+        <textcolor>dialog_fg_70</textcolor>
+        <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+        <selectedcolor>$VAR[ColorHighlight]</selectedcolor>
+        <disabledcolor>dialog_fg_30</disabledcolor>
+        <!-- <texturefocus>special://userdata/addon_data/script.skinhelper/button_texture.png</texturefocus> -->
+        <!-- <alttexturefocus>special://userdata/addon_data/script.skinhelper/button_texture.png</alttexturefocus> -->
+        <texturenofocus/>
+        <alttexturenofocus/>
+        <pulseonselect>false</pulseonselect>
+    </default>
+
+    <default type="radiobutton">
+        <align>center</align>
+        <aligny>center</aligny>
+        <font>font_small</font>
+        <radioposx>1250</radioposx>
+        <radiowidth>32</radiowidth>
+        <radioheight>32</radioheight>
+        <textoffsetx>30</textoffsetx>
+        <textcolor>dialog_fg_70</textcolor>
+        <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+        <disabledcolor>dialog_fg_12</disabledcolor>
+        <selectedcolor>$VAR[ColorHighlight]</selectedcolor>
+        <texturefocus>special://userdata/addon_data/script.skinhelper/button_texture.png</texturefocus>
+        <texturenofocus/>
+        <textureradioondisabled colordiffuse="dialog_fg_12">buttons/radio-on.png</textureradioondisabled>
+        <textureradiooffdisabled colordiffuse="dialog_fg_12">buttons/radio-off.png</textureradiooffdisabled>
+        <textureradioonfocus colordiffuse="$VAR[ColorSelected]">buttons/radio-on.png</textureradioonfocus>
+        <textureradioofffocus colordiffuse="$VAR[ColorSelected]">buttons/radio-off.png</textureradioofffocus>
+        <textureradioonnofocus colordiffuse="dialog_fg_70">buttons/radio-on.png</textureradioonnofocus>
+        <textureradiooffnofocus colordiffuse="dialog_fg_30">buttons/radio-off.png</textureradiooffnofocus>
+        <textoffsetx>30</textoffsetx>
+        <pulseonselect>false</pulseonselect>
+    </default>
+
+    <default type="spincontrolex">
+        <font>font_small</font>
+        <spinwidth>32</spinwidth>
+        <spinheight>32</spinheight>
+        <textcolor>dialog_fg_70</textcolor>
+        <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+        <disabledcolor>dialog_fg_12</disabledcolor>
+        <selectedcolor>$VAR[ColorHighlight]</selectedcolor>
+        <texturefocus>special://userdata/addon_data/script.skinhelper/button_texture.png</texturefocus>
+        <texturenofocus/>
+        <textureup flipy="true" colordiffuse="dialog_fg_30">buttons/spin-down.png</textureup>
+        <texturedown colordiffuse="dialog_fg_30">buttons/spin-down.png</texturedown>
+        <textureupfocus flipy="true" colordiffuse="Selected">buttons/spin-down.png</textureupfocus>
+        <texturedownfocus colordiffuse="Selected">buttons/spin-down.png</texturedownfocus>
+        <textureupdisabled flipy="true" colordiffuse="dialog_fg_12">buttons/spin-down.png</textureupdisabled>
+        <texturedowndisabled colordiffuse="dialog_fg_12">buttons/spin-down.png</texturedowndisabled>
+        <textoffsetx>30</textoffsetx>
+        <align>left</align>
+        <aligny>center</aligny>
+        <reverse>yes</reverse>
+        <pulseonselect>false</pulseonselect>
+    </default>
+
+    <default type="spincontrol">
+        <font>font_small</font>
+        <spinwidth>32</spinwidth>
+        <spinheight>32</spinheight>
+        <textcolor>dialog_fg_70</textcolor>
+        <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+        <disabledcolor>dialog_fg_12</disabledcolor>
+        <selectedcolor>$VAR[ColorHighlight]</selectedcolor>
+        <texturefocus>special://userdata/addon_data/script.skinhelper/button_texture.png</texturefocus>
+        <texturenofocus/>
+        <textureup flipy="true" colordiffuse="dialog_fg_30">buttons/spin-down.png</textureup>
+        <texturedown colordiffuse="dialog_fg_30">buttons/spin-down.png</texturedown>
+        <textureupfocus flipy="true" colordiffuse="Selected">buttons/spin-down.png</textureupfocus>
+        <texturedownfocus colordiffuse="Selected">buttons/spin-down.png</texturedownfocus>
+        <textureupdisabled flipy="true" colordiffuse="dialog_fg_12">buttons/spin-down.png</textureupdisabled>
+        <texturedowndisabled colordiffuse="dialog_fg_12">buttons/spin-down.png</texturedowndisabled>
+        <textoffsetx>30</textoffsetx>
+        <align>left</align>
+        <aligny>center</aligny>
+        <reverse>yes</reverse>
+        <pulseonselect>false</pulseonselect>
+    </default>
+
+    <default type="progress">
+        <texturebg colordiffuse="2f5f5f5f" border="4">diffuse/progress-bg.png</texturebg>
+        <lefttexture colordiffuse="$VAR[ColorHighlight]" border="4">diffuse/progress-left.png</lefttexture>
+        <midtexture colordiffuse="$VAR[ColorHighlight]" border="4">diffuse/progress-end.png</midtexture>
+        <righttexture colordiffuse="$VAR[ColorHighlight]" border="4">diffuse/progress-right.png</righttexture>
+        <overlaytexture/>
+    </default>
+
+    <default type="slider">
+        <width>360</width>
+        <height>12</height>
+        <orientation>horizontal</orientation>
+        <texturefocus/>
+        <texturenofocus/>
+        <pulseonselect>false</pulseonselect>
+        <texturesliderbar colordiffuse="dialog_fg_12" border="6">slider/slider_bg.png</texturesliderbar>
+        <textureslidernib colordiffuse="dialog_fg_30" border="6">slider/slider_nib.png</textureslidernib>
+        <textureslidernibfocus colordiffuse="Selected" border="6">slider/slider_nib.png</textureslidernibfocus>
+    </default>
+
+    <default type="sliderex">
+        <orientation>horizontal</orientation>
+        <selectedcolor>$VAR[ColorHighlight]</selectedcolor>
+        <sliderwidth>192</sliderwidth>
+        <sliderheight>12</sliderheight>
+        <pulseonselect>false</pulseonselect>
+        <texturesliderbar colordiffuse="dialog_fg_12" border="6">slider/slider_bg.png</texturesliderbar>
+        <textureslidernib colordiffuse="dialog_fg_30" border="6">slider/slider_nib.png</textureslidernib>
+        <textureslidernibfocus colordiffuse="Selected" border="6">slider/slider_nib.png</textureslidernibfocus>
+        <font>font_small</font>
+        <aligny>center</aligny>
+        <textcolor>dialog_fg_70</textcolor>
+        <focusedcolor>$VAR[ColorSelected]</focusedcolor>
+        <disabledcolor>dialog_fg_12</disabledcolor>
+        <textoffsetx>30</textoffsetx>
+        <textoffsety>0</textoffsety>
+    </default>
+
+    <default type="scrollbar">
+        <width>8</width>
+        <texturesliderbackground colordiffuse="dialog_fg_12" border="4">common/white.png</texturesliderbackground>
+        <texturesliderbar colordiffuse="dialog_fg_30" border="4">scrollbar/scrollv.png</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="$VAR[ColorHighlight]" border="4">scrollbar/scrollv.png</texturesliderbarfocus>
+        <textureslidernib/>
+        <textureslidernibfocus/>
+        <showonepage>false</showonepage>
+        <orientation>vertical</orientation>
+    </default>
+
+    <default type="colorbutton">
+        <height>70</height>
+        <align>left</align>
+        <aligny>center</aligny>
+        <font>font_small</font>
+        <colorwidth>96</colorwidth>
+        <colorheight>30</colorheight>
+        <texturecolormask>common/white.png</texturecolormask>
+        <texturecolordisabledmask colordiffuse="disabled">common/white.png</texturecolordisabledmask>
+        <textoffsetx>30</textoffsetx>
+        <textcolor>dialog_fg_70</textcolor>
+        <focusedcolor>Selected</focusedcolor>
+        <disabledcolor>dialog_fg_30</disabledcolor>
+        <selectedcolor>$VAR[ColorHighlight]</selectedcolor>
+        <texturefocus>special://userdata/addon_data/script.skinhelper/button_texture.png</texturefocus>
+        <texturenofocus />
+        <pulseonselect>false</pulseonselect>
+    </default>
+
+    <default type="textbox">
+        <font>font_small</font>
+        <textcolor>dialog_fg_70</textcolor>
+        <shadowcolor/>
+        <selectedcolor>$VAR[ColorHighlight]</selectedcolor>
+        <autoscroll delay="6000" time="3000" repeat="10000"/>
+    </default>
+
+    <include name="Defaults_FauneFonts">
+        <!-- Plot Font -->
+        <font>
+            <name>font_plotbox</name>
+            <filename>Faune-Text_Regular.ttf</filename>
+            <size>30</size>
+            <aspect>0.9</aspect>
+        </font>
+        <font>
+            <name>font_weather_small</name>
+            <filename>Faune-Text_Regular.ttf</filename>
+            <size>26</size>
+            <aspect>0.9</aspect>
+        </font>
+        <font>
+            <name>font_overlay_plotbox</name>
+            <filename>Faune-Text_Regular.ttf</filename>
+            <aspect>0.9</aspect>
+            <size>48</size>
+            <linespacing>1.4</linespacing>
+        </font>
+
+        <font>
+            <name>font_info_display</name>
+            <filename>Faune-Display_Black.ttf</filename>
+            <size>64</size>
+        </font>
+    </include>
+
+    <include name="Defaults_RobotoFonts">
+        <!-- Plot Font -->
+        <font>
+            <name>font_plotbox</name>
+            <filename>Roboto-Regular-Linespacing.ttf</filename>
+            <linespacing>1</linespacing>
+            <size>29</size>
+            <aspect>0.9</aspect>
+        </font>
+        <font>
+            <name>font_weather_small</name>
+            <filename>Roboto-Regular-Linespacing.ttf</filename>
+            <size>26</size>
+            <aspect>0.9</aspect>
+        </font>
+        <font>
+            <name>font_overlay_plotbox</name>
+            <filename>Roboto-Regular-Linespacing.ttf</filename>
+            <linespacing>1.4</linespacing>
+            <aspect>0.9</aspect>
+            <size>48</size>
+        </font>
+        <font>
+            <name>font_info_display</name>
+            <style>bold</style>
+            <filename>RobotoCondensed-Bold.ttf</filename>
+            <size>64</size>
+        </font>
+    </include>
+
+    <include name="Defaults_RobotoRegularFonts">
+        <!-- Plot Font -->
+        <font>
+            <name>font_plotbox</name>
+            <filename>Roboto-Regular-Linespacing.ttf</filename>
+            <linespacing>1</linespacing>
+            <size>29</size>
+            <aspect>0.9</aspect>
+        </font>
+        <font>
+            <name>font_weather_small</name>
+            <filename>Roboto-Regular-Linespacing.ttf</filename>
+            <size>26</size>
+            <aspect>0.9</aspect>
+        </font>
+        <font>
+            <name>font_overlay_plotbox</name>
+            <filename>Roboto-Regular-Linespacing.ttf</filename>
+            <linespacing>1.4</linespacing>
+            <aspect>0.9</aspect>
+            <size>48</size>
+        </font>
+        <font>
+            <name>font_info_display</name>
+            <style>bold</style>
+            <filename>Roboto-Bold.ttf</filename>
+            <size>64</size>
+        </font>
+    </include>
+
+    <include name="Defaults_RobotoRegularLargerFonts">
+        <!-- Plot Font -->
+        <font>
+            <name>font_plotbox</name>
+            <filename>Roboto-Regular-Linespacing.ttf</filename>
+            <linespacing>1</linespacing>
+            <size>32</size>
+            <aspect>0.9</aspect>
+        </font>
+        <font>
+            <name>font_weather_small</name>
+            <filename>Roboto-Regular-Linespacing.ttf</filename>
+            <size>29</size>
+            <aspect>0.9</aspect>
+        </font>
+        <font>
+            <name>font_overlay_plotbox</name>
+            <filename>Roboto-Regular-Linespacing.ttf</filename>
+            <linespacing>1.4</linespacing>
+            <aspect>0.9</aspect>
+            <size>48</size>
+        </font>
+        <font>
+            <name>font_info_display</name>
+            <style>bold</style>
+            <filename>Roboto-Bold.ttf</filename>
+            <size>64</size>
+        </font>
+    </include>
+
+    <include name="Defaults_ArialFonts">
+        <!-- Plot Font -->
+        <font>
+            <name>font_plotbox</name>
+            <filename>arial.ttf</filename>
+            <size>30</size>
+            <aspect>0.9</aspect>
+            <linespacing>1.12</linespacing>
+        </font>
+        <font>
+            <name>font_weather_small</name>
+            <filename>arial.ttf</filename>
+            <size>26</size>
+            <aspect>0.9</aspect>
+        </font>
+        <font>
+            <name>font_overlay_plotbox</name>
+            <filename>arial.ttf</filename>
+            <aspect>0.9</aspect>
+            <size>48</size>
+            <linespacing>1.4</linespacing>
+        </font>
+
+        <font>
+            <name>font_info_display</name>
+            <filename>arialbd.ttf</filename>
+            <size>64</size>
+        </font>
+    </include>
+
+    <include name="Defaults_AmazonEmberFonts">
+        <!-- Plot Font -->
+        <font>
+            <name>font_plotbox</name>
+            <filename>AmazonEmberDisplay_Rg.ttf</filename>
+            <size>29</size>
+            <linespacing>1.14</linespacing>
+        </font>
+        <font>
+            <name>font_weather_small</name>
+            <filename>AmazonEmberDisplay_Rg.ttf</filename>
+            <size>26</size>
+        </font>
+        <font>
+            <name>font_overlay_plotbox</name>
+            <filename>AmazonEmberDisplay_Rg.ttf</filename>
+            <size>48</size>
+            <linespacing>1.14</linespacing>
+        </font>
+        <font>
+            <name>font_info_display</name>
+            <style>bold</style>
+            <filename>AmazonEmberDisplay_Rg.ttf</filename>
+            <size>64</size>
+        </font>
+    </include>
+
+</includes>

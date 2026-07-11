@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Foundation -->
+<window id="120">
+    <onload condition="!Player.PauseEnabled">SetFocus(15)</onload>
+    <onload condition="Player.PauseEnabled">SetFocus(14)</onload>
+    <onunload>CancelAlarm(osd_timeout,true)</onunload>
+    <controls>
+
+        <control type="button" id="99220">
+            <include>Defs_Hidden_Button</include>
+            <onfocus>SetFocus(15)</onfocus>
+            <onfocus condition="Window.IsVisible(musicosd)">Action(Close)</onfocus>
+        </control>
+
+        <control type="group">
+            <include>Animation_FadeIn</include>
+            <include>Animation_FadeOut</include>
+            <control type="grouplist" id="9000">
+                <include>OSD_MusicPosition</include>
+                <itemgap>32</itemgap>
+                <orientation>horizontal</orientation>
+                <usecontrolcoords>true</usecontrolcoords>
+                <include>OSD_Controls</include>
+            </control>
+        </control>
+
+        <control type="slider">
+            <bottom>140</bottom>
+            <left>325</left>
+            <height>24</height>
+            <width>66%</width>
+            <texturesliderbar/>
+            <textureslidernib/>
+            <textureslidernibfocus/>
+            <info>Player.Progress</info>
+            <action>seek</action>
+            <visible>!Skin.HasSetting(UseLongMusicOSD)</visible>
+        </control>
+
+        <control type="slider">
+            <bottom>140</bottom>
+            <left>325</left>
+            <height>24</height>
+            <width>75%</width>
+            <texturesliderbar/>
+            <textureslidernib/>
+            <textureslidernibfocus/>
+            <info>Player.Progress</info>
+            <action>seek</action>
+            <visible>Skin.HasSetting(UseLongMusicOSD)</visible>
+        </control>
+
+        <include content="OSD_Menu_List">
+            <param name="content" value="Items_OSD_MusicVis" />
+            <param name="height" value="662" />
+            <param name="id" value="3112" />
+            <param name="label" value="$LOCALIZE[33063]" />
+            <param name="position" value="80,60" />
+        </include>
+
+    </controls>
+
+</window>

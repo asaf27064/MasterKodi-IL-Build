@@ -1,0 +1,3069 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<includes>
+
+    <include name="Items_ColorPalette_Material">
+        <content>
+            <item>
+                <label>ffffebee</label>
+                <icon>colors/ffffebee.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffcdd2</label>
+                <icon>colors/ffffcdd2.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffef9a9a</label>
+                <icon>colors/ffef9a9a.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe57373</label>
+                <icon>colors/ffe57373.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffef5350</label>
+                <icon>colors/ffef5350.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fff44336</label>
+                <icon>colors/fff44336.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe53935</label>
+                <icon>colors/ffe53935.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffd32f2f</label>
+                <icon>colors/ffd32f2f.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffc62828</label>
+                <icon>colors/ffc62828.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffb71c1c</label>
+                <icon>colors/ffb71c1c.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff8a80</label>
+                <icon>colors/ffff8a80.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff5252</label>
+                <icon>colors/ffff5252.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff1744</label>
+                <icon>colors/ffff1744.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffd50000</label>
+                <icon>colors/ffd50000.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>ffede7f6</label>
+                <icon>colors/ffede7f6.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffd1c4e9</label>
+                <icon>colors/ffd1c4e9.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffb39ddb</label>
+                <icon>colors/ffb39ddb.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff9575cd</label>
+                <icon>colors/ff9575cd.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff7e57c2</label>
+                <icon>colors/ff7e57c2.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff673ab7</label>
+                <icon>colors/ff673ab7.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff5e35b1</label>
+                <icon>colors/ff5e35b1.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff512da8</label>
+                <icon>colors/ff512da8.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff4527a0</label>
+                <icon>colors/ff4527a0.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff311b92</label>
+                <icon>colors/ff311b92.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffb388ff</label>
+                <icon>colors/ffb388ff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff7c4dff</label>
+                <icon>colors/ff7c4dff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff651fff</label>
+                <icon>colors/ff651fff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff6200ea</label>
+                <icon>colors/ff6200ea.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>ffe1f5fe</label>
+                <icon>colors/ffe1f5fe.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffb3e5fc</label>
+                <icon>colors/ffb3e5fc.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff81d4fa</label>
+                <icon>colors/ff81d4fa.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff4fc3f7</label>
+                <icon>colors/ff4fc3f7.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff29b6f6</label>
+                <icon>colors/ff29b6f6.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff03a9f4</label>
+                <icon>colors/ff03a9f4.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff039be5</label>
+                <icon>colors/ff039be5.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff0288d1</label>
+                <icon>colors/ff0288d1.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff0277bd</label>
+                <icon>colors/ff0277bd.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff01579b</label>
+                <icon>colors/ff01579b.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff80d8ff</label>
+                <icon>colors/ff80d8ff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff40c4ff</label>
+                <icon>colors/ff40c4ff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff00b0ff</label>
+                <icon>colors/ff00b0ff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff0091ea</label>
+                <icon>colors/ff0091ea.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>ffe8f5e9</label>
+                <icon>colors/ffe8f5e9.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffc8e6c9</label>
+                <icon>colors/ffc8e6c9.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffa5d6a7</label>
+                <icon>colors/ffa5d6a7.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff81c784</label>
+                <icon>colors/ff81c784.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff66bb6a</label>
+                <icon>colors/ff66bb6a.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff4caf50</label>
+                <icon>colors/ff4caf50.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff43a047</label>
+                <icon>colors/ff43a047.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff388e3c</label>
+                <icon>colors/ff388e3c.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff2e7d32</label>
+                <icon>colors/ff2e7d32.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff1b5e20</label>
+                <icon>colors/ff1b5e20.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffb9f6ca</label>
+                <icon>colors/ffb9f6ca.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff69f0ae</label>
+                <icon>colors/ff69f0ae.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff00e676</label>
+                <icon>colors/ff00e676.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff00c853</label>
+                <icon>colors/ff00c853.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>fffffde7</label>
+                <icon>colors/fffffde7.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fffff9c4</label>
+                <icon>colors/fffff9c4.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fffff59d</label>
+                <icon>colors/fffff59d.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fffff176</label>
+                <icon>colors/fffff176.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffee58</label>
+                <icon>colors/ffffee58.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffeb3b</label>
+                <icon>colors/ffffeb3b.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fffdd835</label>
+                <icon>colors/fffdd835.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fffbc02d</label>
+                <icon>colors/fffbc02d.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fff9a825</label>
+                <icon>colors/fff9a825.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fff57f17</label>
+                <icon>colors/fff57f17.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffff8d</label>
+                <icon>colors/ffffff8d.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffff00</label>
+                <icon>colors/ffffff00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffea00</label>
+                <icon>colors/ffffea00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffd600</label>
+                <icon>colors/ffffd600.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>fffbe9e7</label>
+                <icon>colors/fffbe9e7.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffccbc</label>
+                <icon>colors/ffffccbc.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffab91</label>
+                <icon>colors/ffffab91.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff8a65</label>
+                <icon>colors/ffff8a65.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff7043</label>
+                <icon>colors/ffff7043.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff5722</label>
+                <icon>colors/ffff5722.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fff4511e</label>
+                <icon>colors/fff4511e.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe64a19</label>
+                <icon>colors/ffe64a19.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffd84315</label>
+                <icon>colors/ffd84315.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffbf360c</label>
+                <icon>colors/ffbf360c.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff9e80</label>
+                <icon>colors/ffff9e80.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff6e40</label>
+                <icon>colors/ffff6e40.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff3d00</label>
+                <icon>colors/ffff3d00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffdd2c00</label>
+                <icon>colors/ffdd2c00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>ffeceff1</label>
+                <icon>colors/ffeceff1.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffcfd8dc</label>
+                <icon>colors/ffcfd8dc.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffb0bec5</label>
+                <icon>colors/ffb0bec5.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff90a4ae</label>
+                <icon>colors/ff90a4ae.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff78909c</label>
+                <icon>colors/ff78909c.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff607d8b</label>
+                <icon>colors/ff607d8b.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff546e7a</label>
+                <icon>colors/ff546e7a.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff455a64</label>
+                <icon>colors/ff455a64.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff37474f</label>
+                <icon>colors/ff37474f.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff263238</label>
+                <icon>colors/ff263238.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>fffce4ec</label>
+                <icon>colors/fffce4ec.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fff8bbd0</label>
+                <icon>colors/fff8bbd0.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fff48fb1</label>
+                <icon>colors/fff48fb1.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fff06292</label>
+                <icon>colors/fff06292.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffec407a</label>
+                <icon>colors/ffec407a.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe91e63</label>
+                <icon>colors/ffe91e63.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffd81b60</label>
+                <icon>colors/ffd81b60.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffc2185b</label>
+                <icon>colors/ffc2185b.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffad1457</label>
+                <icon>colors/ffad1457.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff880e4f</label>
+                <icon>colors/ff880e4f.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff80ab</label>
+                <icon>colors/ffff80ab.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff4081</label>
+                <icon>colors/ffff4081.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fff50057</label>
+                <icon>colors/fff50057.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffc51162</label>
+                <icon>colors/ffc51162.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>ffe8eaf6</label>
+                <icon>colors/ffe8eaf6.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffc5cae9</label>
+                <icon>colors/ffc5cae9.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff9fa8da</label>
+                <icon>colors/ff9fa8da.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff7986cb</label>
+                <icon>colors/ff7986cb.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff5c6bc0</label>
+                <icon>colors/ff5c6bc0.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff3f51b5</label>
+                <icon>colors/ff3f51b5.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff3949ab</label>
+                <icon>colors/ff3949ab.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff303f9f</label>
+                <icon>colors/ff303f9f.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff283593</label>
+                <icon>colors/ff283593.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff1a237e</label>
+                <icon>colors/ff1a237e.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff8c9eff</label>
+                <icon>colors/ff8c9eff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff536dfe</label>
+                <icon>colors/ff536dfe.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff3d5afe</label>
+                <icon>colors/ff3d5afe.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff304ffe</label>
+                <icon>colors/ff304ffe.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>ffe0f7fa</label>
+                <icon>colors/ffe0f7fa.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffb2ebf2</label>
+                <icon>colors/ffb2ebf2.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff80deea</label>
+                <icon>colors/ff80deea.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff4dd0e1</label>
+                <icon>colors/ff4dd0e1.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff26c6da</label>
+                <icon>colors/ff26c6da.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff00bcd4</label>
+                <icon>colors/ff00bcd4.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff00acc1</label>
+                <icon>colors/ff00acc1.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff0097a7</label>
+                <icon>colors/ff0097a7.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff00838f</label>
+                <icon>colors/ff00838f.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff006064</label>
+                <icon>colors/ff006064.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff84ffff</label>
+                <icon>colors/ff84ffff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff18ffff</label>
+                <icon>colors/ff18ffff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff00e5ff</label>
+                <icon>colors/ff00e5ff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff00b8d4</label>
+                <icon>colors/ff00b8d4.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>fff1f8e9</label>
+                <icon>colors/fff1f8e9.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffdcedc8</label>
+                <icon>colors/ffdcedc8.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffc5e1a5</label>
+                <icon>colors/ffc5e1a5.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffaed581</label>
+                <icon>colors/ffaed581.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff9ccc65</label>
+                <icon>colors/ff9ccc65.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff8bc34a</label>
+                <icon>colors/ff8bc34a.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff7cb342</label>
+                <icon>colors/ff7cb342.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff689f38</label>
+                <icon>colors/ff689f38.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff558b2f</label>
+                <icon>colors/ff558b2f.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff33691e</label>
+                <icon>colors/ff33691e.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffccff90</label>
+                <icon>colors/ffccff90.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffb2ff59</label>
+                <icon>colors/ffb2ff59.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff76ff03</label>
+                <icon>colors/ff76ff03.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff64dd17</label>
+                <icon>colors/ff64dd17.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>fffff8e1</label>
+                <icon>colors/fffff8e1.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffecb3</label>
+                <icon>colors/ffffecb3.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffe082</label>
+                <icon>colors/ffffe082.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffd54f</label>
+                <icon>colors/ffffd54f.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffca28</label>
+                <icon>colors/ffffca28.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffc107</label>
+                <icon>colors/ffffc107.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffb300</label>
+                <icon>colors/ffffb300.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffa000</label>
+                <icon>colors/ffffa000.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff8f00</label>
+                <icon>colors/ffff8f00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff6f00</label>
+                <icon>colors/ffff6f00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffe57f</label>
+                <icon>colors/ffffe57f.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffd740</label>
+                <icon>colors/ffffd740.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffc400</label>
+                <icon>colors/ffffc400.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffab00</label>
+                <icon>colors/ffffab00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>ffefebe9</label>
+                <icon>colors/ffefebe9.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffd7ccc8</label>
+                <icon>colors/ffd7ccc8.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffbcaaa4</label>
+                <icon>colors/ffbcaaa4.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffa1887f</label>
+                <icon>colors/ffa1887f.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff8d6e63</label>
+                <icon>colors/ff8d6e63.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff795548</label>
+                <icon>colors/ff795548.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff6d4c41</label>
+                <icon>colors/ff6d4c41.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff5d4037</label>
+                <icon>colors/ff5d4037.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff4e342e</label>
+                <icon>colors/ff4e342e.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff3e2723</label>
+                <icon>colors/ff3e2723.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>fff3e5f5</label>
+                <icon>colors/fff3e5f5.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe1bee7</label>
+                <icon>colors/ffe1bee7.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffce93d8</label>
+                <icon>colors/ffce93d8.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffba68c8</label>
+                <icon>colors/ffba68c8.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffab47bc</label>
+                <icon>colors/ffab47bc.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff9c27b0</label>
+                <icon>colors/ff9c27b0.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff8e24aa</label>
+                <icon>colors/ff8e24aa.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff7b1fa2</label>
+                <icon>colors/ff7b1fa2.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff6a1b9a</label>
+                <icon>colors/ff6a1b9a.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff4a148c</label>
+                <icon>colors/ff4a148c.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffea80fc</label>
+                <icon>colors/ffea80fc.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe040fb</label>
+                <icon>colors/ffe040fb.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffd500f9</label>
+                <icon>colors/ffd500f9.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffaa00ff</label>
+                <icon>colors/ffaa00ff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>ffe3f2fd</label>
+                <icon>colors/ffe3f2fd.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffbbdefb</label>
+                <icon>colors/ffbbdefb.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff90caf9</label>
+                <icon>colors/ff90caf9.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff64b5f6</label>
+                <icon>colors/ff64b5f6.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff42a5f5</label>
+                <icon>colors/ff42a5f5.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff2196f3</label>
+                <icon>colors/ff2196f3.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff1e88e5</label>
+                <icon>colors/ff1e88e5.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff1976d2</label>
+                <icon>colors/ff1976d2.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff1565c0</label>
+                <icon>colors/ff1565c0.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff0d47a1</label>
+                <icon>colors/ff0d47a1.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff82b1ff</label>
+                <icon>colors/ff82b1ff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff448aff</label>
+                <icon>colors/ff448aff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff2979ff</label>
+                <icon>colors/ff2979ff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff2962ff</label>
+                <icon>colors/ff2962ff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>ffe0f2f1</label>
+                <icon>colors/ffe0f2f1.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffb2dfdb</label>
+                <icon>colors/ffb2dfdb.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff80cbc4</label>
+                <icon>colors/ff80cbc4.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff4db6ac</label>
+                <icon>colors/ff4db6ac.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff26a69a</label>
+                <icon>colors/ff26a69a.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff009688</label>
+                <icon>colors/ff009688.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff00897b</label>
+                <icon>colors/ff00897b.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff00796b</label>
+                <icon>colors/ff00796b.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff00695c</label>
+                <icon>colors/ff00695c.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff004d40</label>
+                <icon>colors/ff004d40.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffa7ffeb</label>
+                <icon>colors/ffa7ffeb.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff64ffda</label>
+                <icon>colors/ff64ffda.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff1de9b6</label>
+                <icon>colors/ff1de9b6.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff00bfa5</label>
+                <icon>colors/ff00bfa5.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>fff9fbe7</label>
+                <icon>colors/fff9fbe7.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fff0f4c3</label>
+                <icon>colors/fff0f4c3.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe6ee9c</label>
+                <icon>colors/ffe6ee9c.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffdce775</label>
+                <icon>colors/ffdce775.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffd4e157</label>
+                <icon>colors/ffd4e157.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffcddc39</label>
+                <icon>colors/ffcddc39.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffc0ca33</label>
+                <icon>colors/ffc0ca33.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffafb42b</label>
+                <icon>colors/ffafb42b.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff9e9d24</label>
+                <icon>colors/ff9e9d24.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff827717</label>
+                <icon>colors/ff827717.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fff4ff81</label>
+                <icon>colors/fff4ff81.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffeeff41</label>
+                <icon>colors/ffeeff41.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffc6ff00</label>
+                <icon>colors/ffc6ff00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffaeea00</label>
+                <icon>colors/ffaeea00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>fffff3e0</label>
+                <icon>colors/fffff3e0.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffe0b2</label>
+                <icon>colors/ffffe0b2.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffcc80</label>
+                <icon>colors/ffffcc80.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffb74d</label>
+                <icon>colors/ffffb74d.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffa726</label>
+                <icon>colors/ffffa726.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff9800</label>
+                <icon>colors/ffff9800.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fffb8c00</label>
+                <icon>colors/fffb8c00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fff57c00</label>
+                <icon>colors/fff57c00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffef6c00</label>
+                <icon>colors/ffef6c00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe65100</label>
+                <icon>colors/ffe65100.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffd180</label>
+                <icon>colors/ffffd180.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffab40</label>
+                <icon>colors/ffffab40.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff9100</label>
+                <icon>colors/ffff9100.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffff6d00</label>
+                <icon>colors/ffff6d00.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>fffafafa</label>
+                <icon>colors/fffafafa.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>fff5f5f5</label>
+                <icon>colors/fff5f5f5.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffeeeeee</label>
+                <icon>colors/ffeeeeee.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe0e0e0</label>
+                <icon>colors/ffe0e0e0.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffbdbdbd</label>
+                <icon>colors/ffbdbdbd.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff9e9e9e</label>
+                <icon>colors/ff9e9e9e.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff757575</label>
+                <icon>colors/ff757575.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff616161</label>
+                <icon>colors/ff616161.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff424242</label>
+                <icon>colors/ff424242.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff212121</label>
+                <icon>colors/ff212121.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+
+            <item>
+                <label>ff000000</label>
+                <icon>colors/ff000000.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffffffff</label>
+                <icon>colors/ffffffff.png</icon>
+                <visible>!Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+        </content>
+    </include>
+    <include name="Items_ColorPalette_Standard">
+        <content>
+            <item>
+                <label>ff283ba8</label>
+                <icon>colors/ff283ba8.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff287ba8</label>
+                <icon>colors/ff287ba8.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff28a855</label>
+                <icon>colors/ff28a855.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff28a895</label>
+                <icon>colors/ff28a895.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff3ba828</label>
+                <icon>colors/ff3ba828.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff5528a8</label>
+                <icon>colors/ff5528a8.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff7ba828</label>
+                <icon>colors/ff7ba828.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff9528a8</label>
+                <icon>colors/ff9528a8.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffa8283b</label>
+                <icon>colors/ffa8283b.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffa8287b</label>
+                <icon>colors/ffa8287b.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffa85528</label>
+                <icon>colors/ffa85528.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffa89528</label>
+                <icon>colors/ffa89528.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe5b535</label>
+                <icon>colors/ffe5b535.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffbce535</label>
+                <icon>colors/ffbce535.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff64e535</label>
+                <icon>colors/ff64e535.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff35e55e</label>
+                <icon>colors/ff35e55e.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff35bce5</label>
+                <icon>colors/ff35bce5.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff0385b5</label>
+                <icon>colors/ff0385b5.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff3564e5</label>
+                <icon>colors/ff3564e5.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ff5e35e5</label>
+                <icon>colors/ff5e35e5.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffb635e5</label>
+                <icon>colors/ffb635e5.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe535bc</label>
+                <icon>colors/ffe535bc.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe53564</label>
+                <icon>colors/ffe53564.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+            <item>
+                <label>ffe55e35</label>
+                <icon>colors/ffe55e35.png</icon>
+                <visible>Skin.HasSetting(UseOriginalPalette)</visible>
+            </item>
+        </content>
+    </include>
+
+    <include name="Items_PowerMenu"><content><include>skinshortcuts-group-powermenu</include></content></include>
+
+    <include name="Items_Info_Manage">
+        <content>
+            <item>
+                <label>$LOCALIZE[31193]</label>
+                <visible>Control.IsEnabled(10)</visible>
+                <onclick>SendClick(10)</onclick>
+            </item>
+            <item>
+                <label>$LOCALIZE[31195]</label>
+                <visible>[String.IsEqual(ListItem.DBType,tvshow) | String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,musicvideo) | String.IsEqual(ListItem.DBType,episode)] + system.hasaddon(script.artwork.dump)</visible>
+                <onclick condition="String.IsEqual(ListItem.DBType,episode)">RunScript(script.artwork.dump, mode=gui, mediatype=episode, dbid=$INFO[ListItem.DBID])</onclick>
+                <onclick condition="String.IsEqual(ListItem.DBType,tvshow)">RunScript(script.artwork.dump, mode=gui, mediatype=tvshow, dbid=$INFO[ListItem.DBID])</onclick>
+                <onclick condition="String.IsEqual(ListItem.DBType,movie)">RunScript(script.artwork.dump, mode=gui, mediatype=movie, dbid=$INFO[ListItem.DBID])</onclick>
+            </item>
+            <item>
+                <label>$LOCALIZE[31197]</label>
+                <visible>[String.IsEqual(ListItem.DBType,tvshow) | String.IsEqual(ListItem.DBType,movie) | String.IsEqual(ListItem.DBType,musicvideo) | String.IsEqual(ListItem.DBType,episode)] + system.hasaddon(script.artwork.dump)</visible>
+                <onclick>Back</onclick>
+                <onclick condition="String.IsEqual(ListItem.DBType,episode)">RunScript(script.artwork.dump, mode=auto, mediatype=tvshow, dbid=$INFO[ListItem.DBID])</onclick>
+                <onclick condition="String.IsEqual(ListItem.DBType,tvshow)">RunScript(script.artwork.dump, mode=auto, mediatype=tvshow, dbid=$INFO[ListItem.DBID])</onclick>
+                <onclick condition="String.IsEqual(ListItem.DBType,movie)">RunScript(script.artwork.dump, mode=auto, mediatype=movie, dbid=$INFO[ListItem.DBID])</onclick>
+            </item>
+            <item>
+                <label>$LOCALIZE[31204]</label>
+                <visible>Control.IsEnabled(6)</visible>
+                <onclick>SendClick(6)</onclick>
+            </item>
+            <item>
+                <label>$LOCALIZE[31566]</label>
+                <onclick>UpdateLibrary(video)</onclick>
+                <onclick>Dialog.Close(all,force)</onclick>
+            </item>
+        </content>
+    </include>
+
+    <include name="Items_Info_Gallery">
+        <content>
+            <item>
+                <icon>$INFO[ListItem.Art(fanart)]</icon>
+                <visible>!String.IsEmpty(ListItem.Art(fanart))</visible>
+            </item>
+            <item>
+                <icon>$INFO[ListItem.Art(fanart1)]</icon>
+                <visible>!String.IsEmpty(ListItem.Art(fanart1))</visible>
+            </item>
+            <item>
+                <icon>$INFO[ListItem.Art(fanart2)]</icon>
+                <visible>!String.IsEmpty(ListItem.Art(fanart2))</visible>
+            </item>
+            <item>
+                <icon>$INFO[ListItem.Art(fanart3)]</icon>
+                <visible>!String.IsEmpty(ListItem.Art(fanart3))</visible>
+            </item>
+            <item>
+                <icon>$INFO[ListItem.Art(fanart4)]</icon>
+                <visible>!String.IsEmpty(ListItem.Art(fanart4))</visible>
+            </item>
+            <item>
+                <icon>$INFO[ListItem.Art(fanart5)]</icon>
+                <visible>!String.IsEmpty(ListItem.Art(fanart5))</visible>
+            </item>
+            <item>
+                <visible>!String.IsEmpty(ListItem.Art(discart))</visible>
+                <icon>$INFO[ListItem.Art(discart)]</icon>
+                <property name="discart">$INFO[ListItem.Art(discart)]</property>
+                <property name="clearlogo">$INFO[ListItem.Art(clearlogo)]</property>
+                <property name="tagline">$INFO[ListItem.Tagline]</property>
+            </item>
+        </content>
+    </include>
+
+    <include name="Items_OSD_Settings">
+        <content>
+            <item>
+                <icon />
+                <label>$LOCALIZE[298]</label>
+                <onclick>Close</onclick>
+                <onclick>ActivateWindow(125)</onclick>
+            </item>
+            <item>
+                <icon />
+                <label>$LOCALIZE[13395]</label>
+                <onclick>ActivateWindow(osdvideosettings)</onclick>
+            </item>
+            <item>
+                <icon />
+                <label>$LOCALIZE[31033]</label>
+                <onclick>ActivateWindow(osdaudiosettings)</onclick>
+            </item>
+            <item>
+                <icon />
+                <label>$LOCALIZE[31408]</label>
+                <onclick>ActivateWindow(osdsubtitlesettings)</onclick>
+            </item>
+            <item>
+                <icon/>
+                <label>297</label>
+                <onclick>audiodelay</onclick>
+            </item>
+            <item>
+                <icon/>
+                <label>22006</label>
+                <onclick>subtitledelay</onclick>
+            </item>
+
+        </content>
+    </include>
+
+    <include name="Items_OSD_MusicVis">
+        <content>
+            <!-- Show artist slideshow -->
+            <item>
+                <label>$LOCALIZE[108]: $LOCALIZE[16041]</label>
+                <visible>!Skin.HasSetting(ArtistSlideShow.Disabled)</visible>
+                <onclick>Skin.ToggleSetting(ArtistSlideShow.Disabled)</onclick>
+            </item>
+            <item>
+                <label>$LOCALIZE[108]: $LOCALIZE[16039]</label>
+                <visible>Skin.HasSetting(ArtistSlideShow.Disabled)</visible>
+                <onclick>Skin.ToggleSetting(ArtistSlideShow.Disabled)</onclick>
+            </item>
+
+            <!-- Visualisation -->
+            <item>
+                <label>$LOCALIZE[250]: $LOCALIZE[16041]</label>
+                <visible>Skin.HasSetting(OSDVisualisation.ShowFanart)</visible>
+                <onclick>Skin.ToggleSetting(OSDVisualisation.ShowFanart)</onclick>
+                <visible>Skin.HasSetting(musicvis.fanartfallback) | [!Skin.HasSetting(ArtistSlideShow.Disabled)]</visible>
+            </item>
+            <item>
+                <label>$LOCALIZE[250]: $LOCALIZE[16039]</label>
+                <visible>!Skin.HasSetting(OSDVisualisation.ShowFanart)</visible>
+                <onclick>Skin.ToggleSetting(OSDVisualisation.ShowFanart)</onclick>
+                <visible>Skin.HasSetting(musicvis.fanartfallback) | [!Skin.HasSetting(ArtistSlideShow.Disabled)]</visible>
+            </item>
+
+            <!-- Animate -->
+            <item>
+                <label>$LOCALIZE[20079]: $LOCALIZE[16041]</label>
+                <visible>Skin.HasSetting(ArtistSlideshow.Animate)</visible>
+                <onclick>Skin.ToggleSetting(ArtistSlideshow.Animate)</onclick>
+                <visible>Skin.HasSetting(musicvis.fanartfallback) | [!Skin.HasSetting(ArtistSlideShow.Disabled)]</visible>
+            </item>
+            <item>
+                <label>$LOCALIZE[20079]: $LOCALIZE[16039]</label>
+                <visible>!Skin.HasSetting(ArtistSlideshow.Animate)</visible>
+                <onclick>Skin.ToggleSetting(ArtistSlideshow.Animate)</onclick>
+                <visible>Skin.HasSetting(musicvis.fanartfallback) | [!Skin.HasSetting(ArtistSlideShow.Disabled)]</visible>
+            </item>
+
+            <!-- Colour overlay -->
+            <item>
+                <label>$LOCALIZE[31131]: $LOCALIZE[16041]</label>
+                <visible>!Skin.HasSetting(HideOSDDiffuseColors)</visible>
+                <onclick>Skin.ToggleSetting(HideOSDDiffuseColors)</onclick>
+            </item>
+            <item>
+                <label>$LOCALIZE[31131]: $LOCALIZE[16039]</label>
+                <visible>Skin.HasSetting(HideOSDDiffuseColors)</visible>
+                <onclick>Skin.ToggleSetting(HideOSDDiffuseColors)</onclick>
+            </item>
+
+            <!-- Scroll text overlay -->
+            <item>
+                <label>$LOCALIZE[31142]: $LOCALIZE[16041]</label>
+                <visible>Skin.HasSetting(Visualisation.EnableScrollingText)</visible>
+                <onclick>Skin.ToggleSetting(Visualisation.EnableScrollingText)</onclick>
+            </item>
+            <item>
+                <label>$LOCALIZE[31142]: $LOCALIZE[16039]</label>
+                <visible>!Skin.HasSetting(Visualisation.EnableScrollingText)</visible>
+                <onclick>Skin.ToggleSetting(Visualisation.EnableScrollingText)</onclick>
+            </item>
+
+            <item>
+                <description>Rate Song</description>
+                <label>$LOCALIZE[31311]</label>
+                <onclick>Close</onclick>
+                <onclick>setrating</onclick>
+            </item>
+            <item>
+                <description>Vis</description>
+                <label>250</label>
+                <onclick>SendClick(500)</onclick>
+            </item>
+            <!-- <item>
+                <label>24013</label>
+                <onclick>Close</onclick>
+                <onclick>RunScript(script.cu.lrclyrics)</onclick>
+                <enable>System.HasAddon(script.cu.lrclyrics)</enable>
+            </item> -->
+
+            <!-- CD Spin Animation -->
+            <item>
+                <label>$LOCALIZE[31497]: $LOCALIZE[16041]</label>
+                <visible>Skin.HasSetting(Music.HideCD)</visible>
+                <onclick>Skin.ToggleSetting(Music.HideCD)</onclick>
+            </item>
+            <item>
+                <label>$LOCALIZE[31497]: $LOCALIZE[16039]</label>
+                <visible>!Skin.HasSetting(Music.HideCD)</visible>
+                <onclick>Skin.ToggleSetting(Music.HideCD)</onclick>
+            </item>
+        </content>
+    </include>
+
+    <include name="Items_Settings_System">
+        <content>
+            <item id="1">
+                <label>[CAPITALIZE]$LOCALIZE[7][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/folder.png</icon>
+                <onclick>ActivateWindow(filemanager)</onclick>
+            </item>
+            <item id="2">
+                <label>[CAPITALIZE]$LOCALIZE[24001][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/addon.png</icon>
+                <onclick>ActivateWindow(addonbrowser)</onclick>
+            </item>
+            <item id="3">
+                <label>[CAPITALIZE]$LOCALIZE[10007][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/sysinfo.png</icon>
+                <onclick>ActivateWindow(systeminfo)</onclick>
+                <onclick>SetFocus(95)</onclick>
+            </item>
+            <item id="4">
+                <label>[CAPITALIZE]$LOCALIZE[10050][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/recent.png</icon>
+                <onclick>ActivateWindow(eventlog)</onclick>
+                <visible>!System.HasAddon(service.libreelec.settings)</visible>
+                <visible>!System.HasAddon(service.coreelec.settings)</visible>
+            </item>
+            <item id="5">
+                <label>[CAPITALIZE]LibreELEC $LOCALIZE[5][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/libreelec.png</icon>
+                <onclick>RunScript(service.libreelec.settings)</onclick>
+                <visible>System.HasAddon(service.libreelec.settings)</visible>
+            </item>
+            <item id="6">
+                <label>[CAPITALIZE]CoreELEC $LOCALIZE[5][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/coreelec.png</icon>
+                <onclick>RunScript(service.coreelec.settings)</onclick>
+                <visible>System.HasAddon(service.coreelec.settings)</visible>
+            </item>
+        </content>
+    </include>
+    <include name="Items_Settings_Main">
+        <content>
+            <item id="4">
+                <label>[CAPITALIZE]$LOCALIZE[20077][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/paintbrush.png</icon>
+                <onclick>ActivateWindow(SkinSettings)</onclick>
+                <onclick>SetFocus(9000)</onclick>
+            </item>
+            <item id="1">
+                <label>[CAPITALIZE]$LOCALIZE[14207][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/skinsettings.png</icon>
+                <onclick>ActivateWindow(InterfaceSettings)</onclick>
+                <onclick>SetFocus(-200)</onclick>
+            </item>
+            <item id="2">
+                <label>[CAPITALIZE]$LOCALIZE[14212][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/tags.png</icon>
+                <onclick>ActivateWindow(MediaSettings)</onclick>
+                <onclick>SetFocus(-200)</onclick>
+            </item>
+            <item id="3">
+                <label>[CAPITALIZE]$LOCALIZE[14201][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/equalizer.png</icon>
+                <onclick>ActivateWindow(PlayerSettings)</onclick>
+                <onclick>SetFocus(-200)</onclick>
+            </item>
+            <item id="5">
+                <label>[CAPITALIZE]$LOCALIZE[14209][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/configure.png</icon>
+                <onclick>ActivateWindow(SystemSettings)</onclick>
+                <onclick>SetFocus(-200)</onclick>
+            </item>
+            <item id="6">
+                <label>[CAPITALIZE]$LOCALIZE[14208][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/network.png</icon>
+                <onclick>ActivateWindow(servicesettings)</onclick>
+                <onclick>SetFocus(-200)</onclick>
+            </item>
+            <item id="10">
+                <label>[CAPITALIZE]$LOCALIZE[14205][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/livetv.png</icon>
+                <onclick>ActivateWindow(pvrsettings)</onclick>
+                <onclick>SetFocus(-200)</onclick>
+            </item>
+            <item id="7">
+                <label>[CAPITALIZE]$LOCALIZE[14210][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/actor.png</icon>
+                <onclick>ActivateWindow(Profiles)</onclick>
+                <onclick>SetFocus(4)</onclick>
+            </item>
+        </content>
+    </include>
+
+    <include name="Items_Settings">
+        <content>
+            <item id="4">
+                <label>[CAPITALIZE]$LOCALIZE[20077][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/paintbrush.png</icon>
+                <onclick>ReplaceWindow(SkinSettings)</onclick>
+                <property name="path">ReplaceWindow(SkinSettings)</property>
+                <property name="altpath">ActivateWindow(SkinSettings)</property>
+            </item>
+            <item id="1">
+                <label>[CAPITALIZE]$LOCALIZE[14207][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/skinsettings.png</icon>
+                <onclick>ReplaceWindow(InterfaceSettings)</onclick>
+                <property name="path">ReplaceWindow(InterfaceSettings)</property>
+                <property name="altpath">ActivateWindow(InterfaceSettings)</property>
+            </item>
+            <item id="2">
+                <label>[CAPITALIZE]$LOCALIZE[14212][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/tags.png</icon>
+                <onclick>ReplaceWindow(MediaSettings)</onclick>
+                <property name="path">ReplaceWindow(MediaSettings)</property>
+                <property name="altpath">ActivateWindow(MediaSettings)</property>
+            </item>
+            <item id="3">
+                <label>[CAPITALIZE]$LOCALIZE[14201][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/equalizer.png</icon>
+                <onclick>ReplaceWindow(PlayerSettings)</onclick>
+                <property name="path">ReplaceWindow(PlayerSettings)</property>
+                <property name="altpath">ActivateWindow(PlayerSettings)</property>
+            </item>
+            <item id="5">
+                <label>[CAPITALIZE]$LOCALIZE[14209][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/configure.png</icon>
+                <onclick>ReplaceWindow(SystemSettings)</onclick>
+                <property name="path">ReplaceWindow(SystemSettings)</property>
+                <property name="altpath">ActivateWindow(SystemSettings)</property>
+            </item>
+            <item id="6">
+                <label>[CAPITALIZE]$LOCALIZE[14208][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/network.png</icon>
+                <onclick>ReplaceWindow(servicesettings)</onclick>
+                <property name="path">ReplaceWindow(servicesettings)</property>
+                <property name="altpath">ActivateWindow(servicesettings)</property>
+            </item>
+            <item id="10">
+                <label>[CAPITALIZE]$LOCALIZE[14205][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/livetv.png</icon>
+                <onclick>ReplaceWindow(pvrsettings)</onclick>
+                <property name="path">ReplaceWindow(pvrsettings)</property>
+                <property name="altpath">ActivateWindow(pvrsettings)</property>
+            </item>
+            <item id="9">
+                <label>[CAPITALIZE]$LOCALIZE[10007][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/sysinfo.png</icon>
+                <onclick>ReplaceWindow(systeminfo)</onclick>
+                <property name="path">ReplaceWindow(systeminfo)</property>
+                <property name="altpath">ActivateWindow(systeminfo)</property>
+            </item>
+            <item id="7">
+                <label>[CAPITALIZE]$LOCALIZE[14210][/CAPITALIZE]</label>
+                <icon>special://skin/extras/icons/actor.png</icon>
+                <onclick>ReplaceWindow(Profiles)</onclick>
+                <property name="path">ReplaceWindow(Profiles)</property>
+                <property name="altpath">ActivateWindow(Profiles)</property>
+            </item>
+        </content>
+    </include>
+
+    <include name="Items_Weather">
+        <content>
+            <!-- Next -->
+            <item>
+                <label>$LOCALIZE[31217]</label>
+                <icon>special://skin/extras/icons/sort-up.png</icon>
+                <onclick>SetFocus(50)</onclick>
+                <onclick>Weather.LocationNext</onclick>
+            </item>
+            <!-- Refresh -->
+            <item>
+                <label>$INFO[Control.GetLabel(2)]</label>
+                <icon>special://skin/extras/icons/update.png</icon>
+                <onclick>SetFocus(50)</onclick>
+                <onclick>SendClick(2)</onclick>
+                <visible>Control.IsEnabled(2)</visible>
+            </item>
+
+            <!-- Settings -->
+            <item>
+                <label>$INFO[Control.GetLabel(9004)]</label>
+                <icon>special://skin/extras/icons/sun.png</icon>
+                <onclick>SetFocus(50)</onclick>
+                <onclick>Addon.OpenSettings($INFO[Weather.Plugin])</onclick>
+                <visible>Control.IsEnabled(9004)</visible>
+            </item>
+            <!-- Settings -->
+            <item>
+                <label>$INFO[Control.GetLabel(9005)]</label>
+                <icon>special://skin/extras/icons/settings.png</icon>
+                <onclick>SetFocus(50)</onclick>
+                <onclick>ActivateWindow(ServiceSettings,weather)</onclick>
+                <visible>Control.IsEnabled(9005)</visible>
+            </item>
+            <!-- Icons -->
+            <item>
+                <label>$INFO[Control.GetLabel(9006)]</label>
+                <icon>special://skin/extras/icons/paintbrush.png</icon>
+                <onclick>RunScript(script.image.resource.select,property=weather.icons&amp;type=resource.images.weathericons)</onclick>
+                <visible>Control.IsEnabled(9006)</visible>
+            </item>
+            <!-- Fanart -->
+            <item>
+                <label>$INFO[Control.GetLabel(9007)]</label>
+                <icon>special://skin/extras/icons/pictures.png</icon>
+                <onclick condition="!System.HasAddon(resource.images.weatherfanart.multi)">InstallAddon(resource.images.weatherfanart.multi)</onclick>
+                <visible>Control.IsEnabled(9007)</visible>
+            </item>
+        </content>
+    </include>
+
+    <include name="Items_PVRQuickJump">
+        <content>
+            <!-- Channels -->
+            <item>
+                <label>TV Channels</label>
+                <icon>special://skin/extras/icons/livetv.png</icon>
+                <onclick>ActivateWindow(tvchannels)</onclick>
+                <visible>!Window.IsVisible(MyPVRChannels.xml)</visible>
+            </item>
+            <!-- Guide -->
+            <item>
+                <label>TV Guide</label>
+                <icon>special://skin/extras/icons/tvguide.png</icon>
+                <onclick>ActivateWindow(tvguide)</onclick>
+                <visible>!Window.IsVisible(MyPVRGuide.xml)</visible>
+            </item>
+            <!-- Recordings -->
+            <item>
+                <label>TV Recordings</label>
+                <icon>special://skin/extras/icons/database.png</icon>
+                <onclick>ActivateWindow(tvrecordings)</onclick>
+                <visible>!Window.IsVisible(MyPVRRecordings.xml)</visible>
+            </item>
+            <!-- Timers -->
+            <item>
+                <label>TV Timers</label>
+                <icon>special://skin/extras/icons/alarm.png</icon>
+                <onclick>ActivateWindow(tvtimers)</onclick>
+                <visible>!Window.IsVisible(MyPVRTimers.xml)</visible>
+            </item>
+            <!-- Search -->
+            <item>
+                <label>TV Search</label>
+                <icon>special://skin/extras/icons/search.png</icon>
+                <onclick>ActivateWindow(tvsearch)</onclick>
+                <visible>!Window.IsVisible(MyPVRSearch.xml)</visible>
+            </item>
+        </content>
+    </include>
+
+    <include name="Items_PVRGuide">
+        <content>
+            <!-- Viewmode -->
+            <item>
+                <label>Guide Style</label>
+                <icon>special://skin/extras/icons/viewmode.png</icon>
+                <onclick>Skin.ToggleSetting(PVRGuide.DisableSlimMode)</onclick>
+                <onclick>ReloadSkin()</onclick>
+                <visible>!Skin.HasSetting(KioskMode)</visible>
+            </item>
+            <!-- Info -->
+            <item>
+                <label>Show Info</label>
+                <icon>special://skin/extras/icons/infobubble.png</icon>
+                <onclick>Skin.ToggleSetting(PVRGuide.Info)</onclick>
+                <onclick>ReloadSkin()</onclick>
+                <visible>!Skin.HasSetting(KioskMode)</visible>
+            </item>
+            <!-- Numbers -->
+            <item>
+                <label>Channel Numbers</label>
+                <icon>special://skin/extras/icons/years.png</icon>
+                <onclick>Skin.ToggleSetting(PVRGuide.ChannelNumber)</onclick>
+                <onclick>ReloadSkin()</onclick>
+                <visible>!Skin.HasSetting(PVRGuide.DisableSlimMode)</visible>
+                <visible>!Skin.HasSetting(KioskMode)</visible>
+            </item>
+        </content>
+    </include>
+
+    <variable name="Items_ViewMode_Switch">
+        <value condition="String.IsEqual(Container.Content,genres) + Window.IsVisible(MyMusicNav.xml)">genres-music</value>
+        <value condition="String.IsEqual(Container.Content,years) + Window.IsVisible(MyMusicNav.xml)">years-music</value>
+        <value condition="!String.IsEmpty(Container.Content)">$INFO[Container.Content]</value>
+        <value condition="Window.IsVisible(MyGames.xml)">none-games</value>
+        <value condition="Window.IsVisible(MyPVRRecordings.xml)">none-recordings</value>
+        <value condition="Window.IsVisible(MyPVRTimers.xml)">none-timers</value>
+        <value condition="Window.IsVisible(MyPVRSearch.xml)">none-search</value>
+        <value>none</value>
+    </variable>
+
+    <include name="Items_View">
+        <content>
+            <!-- Viewmode -->
+            <item>
+                <label>$INFO[Container.Viewmode]</label>
+                <icon>special://skin/extras/icons/viewmode.png</icon>
+                <onclick condition="!Window.IsVisible(MyPVRChannels.xml) + !$EXP[InGameAEL]">Runscript(script.skinvariables,action=buildviews,contentid=$VAR[Items_ViewMode_Switch],pluginname=$INFO[Container.PluginName])</onclick>
+                <onclick condition="Window.IsVisible(MyPVRChannels.xml) | $EXP[InGameAEL]">Container.NextViewMode</onclick>
+                <visible>Control.IsEnabled(2)</visible>
+                <visible>Window.IsVisible(MyVideoNav.xml) | Window.IsVisible(MyMusicNav.xml) | Window.IsVisible(AddonBrowser.xml) | Window.IsVisible(MyPics.xml) | Window.IsVisible(MyPrograms.xml) | Window.IsVisible(MyGames.xml) | Window.IsVisible(MyPVRChannels.xml) | Window.IsVisible(MyFavourites.xml)</visible>
+                <visible>!Skin.HasSetting(KioskMode)</visible>
+            </item>
+            <!-- Group -->
+            <item>
+                <label>$INFO[Control.GetLabel(28)]</label>
+                <icon>special://skin/extras/icons/years.png</icon>
+                <onclick>SendClick(28)</onclick>
+                <visible>Control.IsEnabled(28)</visible>
+            </item>
+
+            <!-- Sort -->
+            <item>
+                <label>$INFO[Control.GetLabel(3)]</label>
+                <icon>special://skin/extras/icons/sort2.png</icon>
+                <onclick>SendClick(3)</onclick>
+                <visible>Control.IsEnabled(3)</visible>
+            </item>
+            <!-- Ascend Descend -->
+            <item>
+                <label>$INFO[Control.GetLabel(4)]</label>
+                <icon>special://skin/extras/icons/sort.png</icon>
+                <onclick>SendClick(4)</onclick>
+                <visible>Control.IsEnabled(4)</visible>
+            </item>
+            <!-- Search -->
+            <item>
+                <label>$LOCALIZE[137]</label>
+                <icon>special://skin/extras/icons/search.png</icon>
+                <onclick>Skin.Reset(SearchTerm)</onclick>
+                <onclick>Skin.SetString(SearchTerm)</onclick>
+                <onclick>ActivateWindow(1138)</onclick>
+                <visible>!Window.IsVisible(MyPVRChannels.xml) + !Window.IsVisible(MyPVRGuide.xml) + !Window.IsVisible(MyPVRTimers.xml) + !Window.IsVisible(MyPVRRecordings.xml) + !Window.IsVisible(MyPVRSearch.xml)</visible>
+            </item>
+            <!-- Filter -->
+            <item>
+                <label>$LOCALIZE[587]: $VAR[Label_Filtered]</label>
+                <icon>$VAR[Image_Filtered]</icon>
+                <onclick>SendClick(19)</onclick>
+                <visible>!Container.CanFilterAdvanced</visible>
+                <visible>Container.CanFilter</visible>
+            </item>
+            <item>
+                <label>$LOCALIZE[587]: $VAR[Label_Filtered]</label>
+                <icon>$VAR[Image_Filtered]</icon>
+                <onclick>Filter</onclick>
+                <visible>Container.CanFilterAdvanced</visible>
+            </item>
+            <!-- Hide Watched -->
+            <item>
+                <label>$INFO[Control.GetLabel(14)]</label>
+                <icon>$VAR[Image_Watched]</icon>
+                <onclick>SendClick(14)</onclick>
+                <visible>Control.IsEnabled(14)</visible>
+            </item>
+
+            <!-- Hide Foreign -->
+            <item>
+                <label>$INFO[Control.GetLabel(7)]</label>
+                <icon>special://skin/extras/icons/world.png</icon>
+                <onclick>SendClick(7)</onclick>
+                <visible>Window.IsVisible(AddonBrowser.xml)</visible>
+                <visible>Control.IsEnabled(7)</visible>
+                <visible>!Skin.HasSetting(KioskMode)</visible>
+            </item>
+            <!-- Hide Incompat -->
+            <item>
+                <label>$INFO[Control.GetLabel(8)]</label>
+                <icon>special://skin/extras/icons/warning.png</icon>
+                <onclick>SendClick(8)</onclick>
+                <visible>Window.IsVisible(AddonBrowser.xml)</visible>
+                <visible>Control.IsEnabled(8)</visible>
+                <visible>!Skin.HasSetting(KioskMode)</visible>
+            </item>
+
+            <!-- Settings -->
+            <item>
+                <label>$INFO[Control.GetLabel(5)]</label>
+                <icon>special://skin/extras/icons/settings.png</icon>
+                <onclick>SendClick(5)</onclick>
+                <visible>Control.IsEnabled(5)</visible>
+                <visible>!Skin.HasSetting(KioskMode)</visible>
+            </item>
+            <!-- Update -->
+            <item>
+                <label>$INFO[Control.GetLabel(20)]</label>
+                <icon>special://skin/extras/icons/update.png</icon>
+                <onclick>SendClick(20)</onclick>
+                <visible>Control.IsEnabled(20)</visible>
+                <visible>!Skin.HasSetting(KioskMode)</visible>
+            </item>
+            <!-- Check Updates -->
+            <item>
+                <label>$INFO[Control.GetLabel(9)]</label>
+                <icon>special://skin/extras/icons/update.png</icon>
+                <onclick>SendClick(9)</onclick>
+                <visible>Control.IsEnabled(9)</visible>
+                <visible>!Skin.HasSetting(KioskMode)</visible>
+            </item>
+
+            <!-- Playlist -->
+            <item>
+                <icon>special://skin/extras/icons/playlist.png</icon>
+                <label>13350</label>
+                <onclick condition="!String.IsEqual(Playlist.Length(music),0) + String.IsEqual(Playlist.Length(video),0)">ActivateWindow(musicplaylist)</onclick>
+                <onclick condition="!String.IsEqual(Playlist.Length(video),0) + String.IsEqual(Playlist.Length(music),0)">ActivateWindow(videoplaylist)</onclick>
+                <visible>!String.IsEqual(Playlist.Length(music),0) | !String.IsEqual(Playlist.Length(video),0)</visible>
+            </item>
+            <!-- Fullscreen -->
+            <item>
+                <icon>special://skin/extras/icons/fullscreen.png</icon>
+                <label>$LOCALIZE[31023]</label>
+                <visible>Player.HasMedia</visible>
+                <onclick>Fullscreen</onclick>
+            </item>
+            <!-- Addon settings -->
+            <item>
+                <icon>special://skin/extras/icons/settings.png</icon>
+                <label>$LOCALIZE[10140]</label>
+                <onclick>Addon.OpenSettings($INFO[Container.PluginName])</onclick>
+                <visible>!String.IsEmpty(Container.PluginName)</visible>
+                <visible>!Skin.HasSetting(KioskMode)</visible>
+            </item>
+            <!-- Get More -->
+            <item>
+                <icon>special://skin/extras/icons/download.png</icon>
+                <label>$LOCALIZE[21452]</label>
+                <onclick>ActivateWindow(addonbrowser,addons://more/video/,return)</onclick>
+                <visible>Container.Content(addons) + !String.Contains(Container.FolderPath,addons://)</visible>
+                <visible>!Skin.HasSetting(KioskMode)</visible>
+            </item>
+        </content>
+    </include>
+
+    <include name="Items_Playlist">
+        <content>
+            <!-- Sort -->
+            <item>
+                <label>$INFO[Control.GetLabel(3)]</label>
+                <icon>special://skin/extras/icons/sort2.png</icon>
+                <onclick>SendClick(3)</onclick>
+                <visible>Control.IsEnabled(3)</visible>
+            </item>
+            <!-- Ascend Descend -->
+            <item>
+                <label>$INFO[Control.GetLabel(4)]</label>
+                <icon>special://skin/extras/icons/sort.png</icon>
+                <onclick>SendClick(4)</onclick>
+                <visible>Control.IsEnabled(4)</visible>
+            </item>
+            <!-- Save -->
+            <item>
+                <label>$INFO[Control.GetLabel(21)]</label>
+                <icon>special://skin/extras/icons/files.png</icon>
+                <onclick>SendClick(21)</onclick>
+                <visible>Control.IsEnabled(21)</visible>
+            </item>
+            <!-- Clear -->
+            <item>
+                <label>$INFO[Control.GetLabel(22)]</label>
+                <icon>special://skin/extras/icons/error.png</icon>
+                <onclick>SendClick(22)</onclick>
+                <visible>Control.IsEnabled(22)</visible>
+            </item>
+            <!-- Play -->
+            <item>
+                <label>$INFO[Control.GetLabel(23)]</label>
+                <icon>special://skin/extras/icons/play3.png</icon>
+                <onclick>SendClick(23)</onclick>
+                <visible>Control.IsEnabled(23)</visible>
+            </item>
+            <!-- Repeat -->
+            <item>
+                <label>$INFO[Control.GetLabel(26)]</label>
+                <icon>special://skin/extras/icons/repeat.png</icon>
+                <onclick>SendClick(26)</onclick>
+                <visible>Control.IsEnabled(26)</visible>
+            </item>
+            <!-- Shuffle -->
+            <item>
+                <label>$INFO[Control.GetLabel(20)]</label>
+                <icon>special://skin/extras/icons/shuffle.png</icon>
+                <onclick>SendClick(20)</onclick>
+                <visible>Control.IsEnabled(20)</visible>
+            </item>
+            <!-- Fullscreen -->
+            <item>
+                <icon>special://skin/extras/icons/fullscreen.png</icon>
+                <label>$LOCALIZE[31023]</label>
+                <visible>Player.HasMedia</visible>
+                <onclick>Fullscreen</onclick>
+            </item>
+        </content>
+    </include>
+
+    <include name="Items_SettingsDialog_Layout">
+        <control type="button" id="9001">
+            <label>$LOCALIZE[31584]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(HomeMultiNetflix)</onclick>
+            <onclick>Skin.Reset(HomeMultiVertical)</onclick>
+            <onclick>Skin.Reset(HomeMultiHorizontal)</onclick>
+            <onclick>Skin.Reset(HomeBasic)</onclick>
+            <onclick>Skin.SetBool(HomeMulti)</onclick>
+            <onclick>Skin.SetBool(HomeMultiFlixView)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <label>$LOCALIZE[31564]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(HomeMultiFlixView)</onclick>
+            <onclick>Skin.Reset(HomeMultiVertical)</onclick>
+            <onclick>Skin.Reset(HomeMultiHorizontal)</onclick>
+            <onclick>Skin.Reset(HomeBasic)</onclick>
+            <onclick>Skin.SetBool(HomeMulti)</onclick>
+            <onclick>Skin.SetBool(HomeMultiNetflix)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9004">
+            <label>$LOCALIZE[31541]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(HomeMultiNetflix)</onclick>
+            <onclick>Skin.Reset(HomeMultiFlixView)</onclick>
+            <onclick>Skin.Reset(HomeMultiHorizontal)</onclick>
+            <onclick>Skin.Reset(HomeBasic)</onclick>
+            <onclick>Skin.SetBool(HomeMulti)</onclick>
+            <onclick>Skin.SetBool(HomeMultiVertical)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9005">
+            <label>$LOCALIZE[31542]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(HomeMultiNetflix)</onclick>
+            <onclick>Skin.Reset(HomeMultiVertical)</onclick>
+            <onclick>Skin.Reset(HomeMultiFlixView)</onclick>
+            <onclick>Skin.Reset(HomeBasic)</onclick>
+            <onclick>Skin.SetBool(HomeMulti)</onclick>
+            <onclick>Skin.SetBool(HomeMultiHorizontal)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9006">
+            <label>$LOCALIZE[31551]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(HomeMultiNetflix)</onclick>
+            <onclick>Skin.Reset(HomeMultiVertical)</onclick>
+            <onclick>Skin.Reset(HomeMultiHorizontal)</onclick>
+            <onclick>Skin.Reset(HomeMultiFlixView)</onclick>
+            <onclick>Skin.Reset(HomeMulti)</onclick>
+            <onclick>Skin.SetBool(HomeBasic)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+    </include>
+    <include name="Items_SettingsDialog_MenuStyle">
+        <control type="button" id="9001">
+            <label>$LOCALIZE[31544]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(VerticalIconsOnly)</onclick>
+            <onclick>Skin.Reset(HomeIcons)</onclick>
+            <onclick>Skin.SetBool(HomeTextAutoWidth)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>ReloadSkin()</onclick>
+            <onclick>AlarmClock(refocus1,SetFocus(9000,0),00:00,silent)</onclick>
+            <onclick>AlarmClock(refocus2,SetFocus(19109),00:00,silent)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <label>$LOCALIZE[31543]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(VerticalIconsOnly)</onclick>
+            <onclick>Skin.Reset(HomeTextAutoWidth)</onclick>
+            <onclick>Skin.SetBool(HomeIcons)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>ReloadSkin()</onclick>
+            <onclick>AlarmClock(refocus1,SetFocus(9000,0),00:00,silent)</onclick>
+            <onclick>AlarmClock(refocus2,SetFocus(19109),00:00,silent)</onclick>
+        </control>
+        <control type="button" id="9004">
+            <label>$LOCALIZE[31565]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(HomeIcons)</onclick>
+            <onclick>Skin.Reset(HomeTextAutoWidth)</onclick>
+            <onclick>Skin.SetBool(VerticalIconsOnly)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>ReloadSkin()</onclick>
+            <onclick>AlarmClock(refocus1,SetFocus(9000,0),00:00,silent)</onclick>
+            <onclick>AlarmClock(refocus2,SetFocus(19109),00:00,silent)</onclick>
+        </control>
+    </include>
+    <include name="Items_SettingsDialog_MenuStyle2">
+        <control type="button" id="9001">
+            <label>$LOCALIZE[31546]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(HomeIcons)</onclick>
+            <onclick>Skin.SetBool(HomeTextAutoWidth)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>ReloadSkin()</onclick>
+            <onclick>AlarmClock(refocus1,SetFocus(9000,0),00:00,silent)</onclick>
+            <onclick>AlarmClock(refocus2,SetFocus(19109),00:00,silent)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <label>$LOCALIZE[31547]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(VerticalIconsOnly)</onclick>
+            <onclick>Skin.Reset(HomeTextAutoWidth)</onclick>
+            <onclick>Skin.Reset(HomeIcons)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>ReloadSkin()</onclick>
+            <onclick>AlarmClock(refocus1,SetFocus(9000,0),00:00,silent)</onclick>
+            <onclick>AlarmClock(refocus2,SetFocus(19109),00:00,silent)</onclick>
+        </control>
+        <control type="button" id="9004">
+            <label>$LOCALIZE[31545]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(HomeTextAutoWidth)</onclick>
+            <onclick>Skin.SetBool(HomeIcons)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>ReloadSkin()</onclick>
+            <onclick>AlarmClock(refocus1,SetFocus(9000,0),00:00,silent)</onclick>
+            <onclick>AlarmClock(refocus2,SetFocus(19109),00:00,silent)</onclick>
+        </control>
+    </include>
+    <include name="Items_SettingsDialog_FallbackImage">
+        <control type="button" id="9001">
+            <label>$LOCALIZE[16018]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(HomeBackgroundImage)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <label>$LOCALIZE[31271]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetImage(HomeBackgroundImage)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9004">
+            <label>$LOCALIZE[31272]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetPath(HomeBackgroundImage)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+    </include>
+    <include name="Items_SettingsDialog_FallbackImage_Fanart">
+        <control type="button" id="9001">
+            <label>$LOCALIZE[16018]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(fanart.fallback)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <label>$LOCALIZE[31271]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetImage(fanart.fallback)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+    </include>
+    <include name="Items_SettingsDialog_CustomStartupImage">
+        <control type="button" id="9001">
+            <label>$LOCALIZE[571]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(StartupImage)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <label>$LOCALIZE[31271]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetImage(StartupImage)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+    </include>
+    <include name="Items_SettingsDialog_TrailerDelay">
+        <control type="button" id="9001">
+            <label>$LOCALIZE[31529]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(Trailer_Delay)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <label>$LOCALIZE[31594]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(Trailer_Delay,00:03)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9003">
+            <label>$LOCALIZE[31595]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(Trailer_Delay,00:06)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9004">
+            <label>$LOCALIZE[31117]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(Trailer_Delay,00:09)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9005">
+            <label>$LOCALIZE[31123]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(Trailer_Delay,00:14)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9006">
+            <label>$LOCALIZE[31124]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(Trailer_Delay,00:19)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9007">
+            <label>$LOCALIZE[31125]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(Trailer_Delay,00:29)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9008">
+            <label>$LOCALIZE[31126]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(Trailer_Delay,00:59)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+    </include>
+    <include name="Items_SettingsDialog_TimePerImage">
+        <control type="button" id="9001">
+            <label>$LOCALIZE[31117]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(AutoScroll,$LOCALIZE[31117])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <label>$LOCALIZE[31122]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(AutoScroll,$LOCALIZE[31122])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9003">
+            <label>$LOCALIZE[31123]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(AutoScroll,$LOCALIZE[31123])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9004">
+            <label>$LOCALIZE[31124]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(AutoScroll,$LOCALIZE[31124])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9005">
+            <label>$LOCALIZE[31125]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(AutoScroll,$LOCALIZE[31125])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9006">
+            <label>$LOCALIZE[31126]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(AutoScroll,$LOCALIZE[31126])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9007">
+            <label>$LOCALIZE[31127]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(AutoScroll,$LOCALIZE[31127])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+    </include>
+    <include name="Items_SettingsDialog_IconStyle">
+        <control type="button" id="9001">
+            <label>$LOCALIZE[31517]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(Icons,monochrome)</onclick>
+            <onclick>Skin.SetString(icons.diffuse,main_fg_100)</onclick>
+            <onclick>Skin.SetString(icons.label,Monochrome)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <label>$LOCALIZE[31518]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(Icons,colorful)</onclick>
+            <onclick>Skin.SetString(icons.diffuse, '')</onclick>
+            <onclick>Skin.SetString(icons.label,Colorful)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+    </include>
+    <include name="Items_SettingsDialog_OSD_Timeout">
+        <control type="button" id="9001">
+            <label>$LOCALIZE[31529]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.Reset(OSD_Timeout)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <label>$LOCALIZE[31554]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(OSD_Timeout,$LOCALIZE[31554])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9003">
+            <label>$LOCALIZE[31555]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(OSD_Timeout,$LOCALIZE[31555])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9004">
+            <label>$LOCALIZE[31117]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(OSD_Timeout,$LOCALIZE[31117])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9005">
+            <label>$LOCALIZE[31122]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(OSD_Timeout,$LOCALIZE[31122])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9006">
+            <label>$LOCALIZE[31123]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(OSD_Timeout,$LOCALIZE[31123])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9007">
+            <label>$LOCALIZE[31124]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(OSD_Timeout,$LOCALIZE[31124])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9008">
+            <label>$LOCALIZE[31125]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(OSD_Timeout,$LOCALIZE[31125])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9009">
+            <label>$LOCALIZE[31126]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetString(OSD_Timeout,$LOCALIZE[31126])</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+    </include>
+    <include name="Items_Dialog_BackgroundFade">
+        <control type="button" id="9001">
+            <height>item_list_height</height>
+            <label>80%</label>
+            <onclick>Skin.SetString(Background_Fade,80)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <height>item_list_height</height>
+            <label>75%</label>
+            <onclick>Skin.SetString(Background_Fade,75)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9003">
+            <height>item_list_height</height>
+            <label>70%</label>
+            <onclick>Skin.SetString(Background_Fade,70)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9004">
+            <height>item_list_height</height>
+            <label>65%</label>
+            <onclick>Skin.SetString(Background_Fade,65)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9005">
+            <height>item_list_height</height>
+            <label>60%</label>
+            <onclick>Skin.SetString(Background_Fade,60)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9006">
+            <height>item_list_height</height>
+            <label>55%</label>
+            <onclick>Skin.SetString(Background_Fade,55)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9007">
+            <height>item_list_height</height>
+            <label>50%</label>
+            <onclick>Skin.SetString(Background_Fade,50)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9008">
+            <height>item_list_height</height>
+            <label>45%</label>
+            <onclick>Skin.SetString(Background_Fade,45)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9009">
+            <height>item_list_height</height>
+            <label>40%</label>
+            <onclick>Skin.SetString(Background_Fade,40)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9010">
+            <height>item_list_height</height>
+            <label>35%</label>
+            <onclick>Skin.SetString(Background_Fade,35)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9011">
+            <height>item_list_height</height>
+            <label>30%</label>
+            <onclick>Skin.SetString(Background_Fade,30)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9012">
+            <height>item_list_height</height>
+            <label>25%</label>
+            <onclick>Skin.SetString(Background_Fade,25)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9013">
+            <height>item_list_height</height>
+            <label>20% ($LOCALIZE[31549])</label>
+            <onclick>Skin.SetString(Background_Fade,20)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9014">
+            <height>item_list_height</height>
+            <label>15%</label>
+            <onclick>Skin.SetString(Background_Fade,15)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+        <control type="button" id="9015">
+            <height>item_list_height</height>
+            <label>10%</label>
+            <onclick>Skin.SetString(Background_Fade,10)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+        </control>
+    </include>
+    <include name="Items_Dialog_AlphaValue">
+        <control type="button" id="9001">
+            <height>item_list_height</height>
+            <label>100%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,100)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <height>item_list_height</height>
+            <label>95%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,95)</onclick>
+        </control>
+        <control type="button" id="9003">
+            <height>item_list_height</height>
+            <label>90%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,90)</onclick>
+        </control>
+        <control type="button" id="9004">
+            <height>item_list_height</height>
+            <label>85%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,85)</onclick>
+        </control>
+        <control type="button" id="9005">
+            <height>item_list_height</height>
+            <label>80%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,80)</onclick>
+        </control>
+        <control type="button" id="9006">
+            <height>item_list_height</height>
+            <label>75%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,75)</onclick>
+        </control>
+        <control type="button" id="9007">
+            <height>item_list_height</height>
+            <label>70%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,70)</onclick>
+        </control>
+        <control type="button" id="9008">
+            <height>item_list_height</height>
+            <label>65%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,65)</onclick>
+        </control>
+        <control type="button" id="9009">
+            <height>item_list_height</height>
+            <label>60%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,60)</onclick>
+        </control>
+        <control type="button" id="9010">
+            <height>item_list_height</height>
+            <label>55%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,55)</onclick>
+        </control>
+        <control type="button" id="9012">
+            <height>item_list_height</height>
+            <label>50%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,50)</onclick>
+        </control>
+        <control type="button" id="9013">
+            <height>item_list_height</height>
+            <label>45%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,45)</onclick>
+        </control>
+        <control type="button" id="9014">
+            <height>item_list_height</height>
+            <label>40%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,40)</onclick>
+        </control>
+        <control type="button" id="9015">
+            <height>item_list_height</height>
+            <label>35%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,35)</onclick>
+        </control>
+        <control type="button" id="9016">
+            <height>item_list_height</height>
+            <label>30%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,30)</onclick>
+        </control>
+        <control type="button" id="9017">
+            <height>item_list_height</height>
+            <label>25%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,25)</onclick>
+        </control>
+        <control type="button" id="9018">
+            <height>item_list_height</height>
+            <label>20%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,20)</onclick>
+        </control>
+        <control type="button" id="9019">
+            <height>item_list_height</height>
+            <label>15%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,15)</onclick>
+        </control>
+        <control type="button" id="9020">
+            <height>item_list_height</height>
+            <label>10%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,10)</onclick>
+        </control>
+        <control type="button" id="9021">
+            <height>item_list_height</height>
+            <label>5%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,5)</onclick>
+        </control>
+        <control type="button" id="9022">
+            <height>item_list_height</height>
+            <label>0% ($LOCALIZE[31549])</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue,0)</onclick>
+        </control>
+    </include>
+    <include name="Items_Highlight_AlphaValue">
+        <control type="button" id="9001">
+            <height>item_list_height</height>
+            <label>100%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,100)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <height>item_list_height</height>
+            <label>95%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,95)</onclick>
+        </control>
+        <control type="button" id="9003">
+            <height>item_list_height</height>
+            <label>90%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,90)</onclick>
+        </control>
+        <control type="button" id="9004">
+            <height>item_list_height</height>
+            <label>85%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,85)</onclick>
+        </control>
+        <control type="button" id="9005">
+            <height>item_list_height</height>
+            <label>80%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,80)</onclick>
+        </control>
+        <control type="button" id="9006">
+            <height>item_list_height</height>
+            <label>75%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,75)</onclick>
+        </control>
+        <control type="button" id="9007">
+            <height>item_list_height</height>
+            <label>70%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,70)</onclick>
+        </control>
+        <control type="button" id="9008">
+            <height>item_list_height</height>
+            <label>65%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,65)</onclick>
+        </control>
+        <control type="button" id="9009">
+            <height>item_list_height</height>
+            <label>60%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,60)</onclick>
+        </control>
+        <control type="button" id="9010">
+            <height>item_list_height</height>
+            <label>55%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,55)</onclick>
+        </control>
+        <control type="button" id="9012">
+            <height>item_list_height</height>
+            <label>50%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,50)</onclick>
+        </control>
+        <control type="button" id="9013">
+            <height>item_list_height</height>
+            <label>45%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,45)</onclick>
+        </control>
+        <control type="button" id="9014">
+            <height>item_list_height</height>
+            <label>40%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,40)</onclick>
+        </control>
+        <control type="button" id="9015">
+            <height>item_list_height</height>
+            <label>35%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,35)</onclick>
+        </control>
+        <control type="button" id="9016">
+            <height>item_list_height</height>
+            <label>30%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,30)</onclick>
+        </control>
+        <control type="button" id="9017">
+            <height>item_list_height</height>
+            <label>25%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,25)</onclick>
+        </control>
+        <control type="button" id="9018">
+            <height>item_list_height</height>
+            <label>20%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,20)</onclick>
+        </control>
+        <control type="button" id="9019">
+            <height>item_list_height</height>
+            <label>15%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,15)</onclick>
+        </control>
+        <control type="button" id="9020">
+            <height>item_list_height</height>
+            <label>10%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,10)</onclick>
+        </control>
+        <control type="button" id="9021">
+            <height>item_list_height</height>
+            <label>5%</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,5)</onclick>
+        </control>
+        <control type="button" id="9022">
+            <height>item_list_height</height>
+            <label>0% ($LOCALIZE[31549])</label>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>Skin.SetString(AlphaValue_Highlight,0)</onclick>
+        </control>
+    </include>
+    <include name="Items_SettingsDialog_FlixBlur">
+        <control type="button" id="9001">
+            <label>$LOCALIZE[31512]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.ToggleSetting(EnableBlur.FlixViews)</onclick>
+            <onclick condition="Skin.HasSetting(FlixViews.Simple)">Skin.Reset(FlixViews.Simple)</onclick>
+            <onclick condition="!Skin.HasSetting(TMDbHelper.EnableBlur)">Skin.SetBool(TMDbHelper.EnableBlur)</onclick>
+            <onclick condition="Skin.HasSetting(TMDbHelper.EnableBlur) + Skin.HasSetting(EnableBlur.FlixViews) + !Skin.HasSetting(EnableBlur.Background)">Skin.Reset(TMDbHelper.EnableBlur)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>ReloadSkin()</onclick>
+            <onclick>AlarmClock(refocus1,SetFocus(9000,1),00:00,silent)</onclick>
+            <onclick>AlarmClock(refocus2,SetFocus(19535),00:00,silent)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <label>$LOCALIZE[31513]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick condition="Skin.HasSetting(EnableBlur.FlixViews)">Skin.Reset(EnableBlur.FlixViews)</onclick>
+            <onclick condition="Skin.HasSetting(FlixViews.Simple)">Skin.Reset(FlixViews.Simple)</onclick>
+            <onclick condition="Skin.HasSetting(TMDbHelper.EnableBlur) + !Skin.HasSetting(EnableBlur.Background)">Skin.Reset(TMDbHelper.EnableBlur)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>ReloadSkin()</onclick>
+            <onclick>AlarmClock(refocus1,SetFocus(9000,1),00:00,silent)</onclick>
+            <onclick>AlarmClock(refocus2,SetFocus(19535),00:00,silent)</onclick>
+        </control>
+        <control type="button" id="9003">
+            <label>$LOCALIZE[31514]</label>
+            <include>Dialog_Standard_Button</include>
+            <onclick>Skin.SetBool(FlixViews.Simple)</onclick>
+            <onclick condition="Skin.HasSetting(EnableBlur.FlixViews)">Skin.Reset(EnableBlur.FlixViews)</onclick>
+            <onclick condition="Skin.HasSetting(TMDbHelper.EnableBlur) + !Skin.HasSetting(EnableBlur.Background)">Skin.Reset(TMDbHelper.EnableBlur)</onclick>
+            <onclick>Dialog.Close(1150)</onclick>
+            <onclick>ReloadSkin()</onclick>
+            <onclick>AlarmClock(refocus1,SetFocus(9000,1),00:00,silent)</onclick>
+            <onclick>AlarmClock(refocus2,SetFocus(19535),00:00,silent)</onclick>
+        </control>
+    </include>
+
+    <include name="Items_Settings_RatingsMovies">
+        <control type="button" id="9001">
+            <include>Dialog_Standard_Button</include>
+            <label>$LOCALIZE[563] 01</label>
+            <label2>$VAR[Label_CustomRating_Movies_01]</label2>
+            <onclick>SetProperty(ConfigureRatingItem,Item01,Home)</onclick>
+            <onclick>SetProperty(ConfigureRatingContent,Movies,Home)</onclick>
+            <onclick>ActivateWindow(1118)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <include>Dialog_Standard_Button</include>
+            <label>$LOCALIZE[563] 02</label>
+            <label2>$VAR[Label_CustomRating_Movies_02]</label2>
+            <onclick>SetProperty(ConfigureRatingItem,Item02,Home)</onclick>
+            <onclick>SetProperty(ConfigureRatingContent,Movies,Home)</onclick>
+            <onclick>ActivateWindow(1118)</onclick>
+        </control>
+        <control type="button" id="9003">
+            <include>Dialog_Standard_Button</include>
+            <label>$LOCALIZE[563] 03</label>
+            <label2>$VAR[Label_CustomRating_Movies_03]</label2>
+            <onclick>SetProperty(ConfigureRatingItem,Item03,Home)</onclick>
+            <onclick>SetProperty(ConfigureRatingContent,Movies,Home)</onclick>
+            <onclick>ActivateWindow(1118)</onclick>
+        </control>
+        <control type="button" id="9004">
+            <include>Dialog_Standard_Button</include>
+            <label>$LOCALIZE[563] 04</label>
+            <label2>$VAR[Label_CustomRating_Movies_04]</label2>
+            <onclick>SetProperty(ConfigureRatingItem,Item04,Home)</onclick>
+            <onclick>SetProperty(ConfigureRatingContent,Movies,Home)</onclick>
+            <onclick>ActivateWindow(1118)</onclick>
+        </control>
+        <control type="button" id="9005">
+            <include>Dialog_Standard_Button</include>
+            <label>$LOCALIZE[563] 05</label>
+            <label2>$VAR[Label_CustomRating_Movies_05]</label2>
+            <onclick>SetProperty(ConfigureRatingItem,Item05,Home)</onclick>
+            <onclick>SetProperty(ConfigureRatingContent,Movies,Home)</onclick>
+            <onclick>ActivateWindow(1118)</onclick>
+        </control>
+        <control type="button" id="9006">
+            <include>Dialog_Standard_Button</include>
+            <label>$LOCALIZE[563] 06</label>
+            <label2>$VAR[Label_CustomRating_Movies_06]</label2>
+            <onclick>SetProperty(ConfigureRatingItem,Item06,Home)</onclick>
+            <onclick>SetProperty(ConfigureRatingContent,Movies,Home)</onclick>
+            <onclick>ActivateWindow(1118)</onclick>
+        </control>
+    </include>
+
+    <include name="Items_Settings_RatingsTVShows">
+        <control type="button" id="9001">
+            <include>Dialog_Standard_Button</include>
+            <label>$LOCALIZE[563] 01</label>
+            <label2>$VAR[Label_CustomRating_TVShows_01]</label2>
+            <onclick>SetProperty(ConfigureRatingItem,Item01,Home)</onclick>
+            <onclick>SetProperty(ConfigureRatingContent,TVShows,Home)</onclick>
+            <onclick>ActivateWindow(1118)</onclick>
+        </control>
+        <control type="button" id="9002">
+            <include>Dialog_Standard_Button</include>
+            <label>$LOCALIZE[563] 02</label>
+            <label2>$VAR[Label_CustomRating_TVShows_02]</label2>
+            <onclick>SetProperty(ConfigureRatingItem,Item02,Home)</onclick>
+            <onclick>SetProperty(ConfigureRatingContent,TVShows,Home)</onclick>
+            <onclick>ActivateWindow(1118)</onclick>
+        </control>
+        <control type="button" id="9003">
+            <include>Dialog_Standard_Button</include>
+            <label>$LOCALIZE[563] 03</label>
+            <label2>$VAR[Label_CustomRating_TVShows_03]</label2>
+            <onclick>SetProperty(ConfigureRatingItem,Item03,Home)</onclick>
+            <onclick>SetProperty(ConfigureRatingContent,TVShows,Home)</onclick>
+            <onclick>ActivateWindow(1118)</onclick>
+        </control>
+        <control type="button" id="9004">
+            <include>Dialog_Standard_Button</include>
+            <label>$LOCALIZE[563] 04</label>
+            <label2>$VAR[Label_CustomRating_TVShows_04]</label2>
+            <onclick>SetProperty(ConfigureRatingItem,Item04,Home)</onclick>
+            <onclick>SetProperty(ConfigureRatingContent,TVShows,Home)</onclick>
+            <onclick>ActivateWindow(1118)</onclick>
+        </control>
+        <control type="button" id="9005">
+            <include>Dialog_Standard_Button</include>
+            <label>$LOCALIZE[563] 05</label>
+            <label2>$VAR[Label_CustomRating_TVShows_05]</label2>
+            <onclick>SetProperty(ConfigureRatingItem,Item05,Home)</onclick>
+            <onclick>SetProperty(ConfigureRatingContent,TVShows,Home)</onclick>
+            <onclick>ActivateWindow(1118)</onclick>
+        </control>
+        <control type="button" id="9006">
+            <include>Dialog_Standard_Button</include>
+            <label>$LOCALIZE[563] 06</label>
+            <label2>$VAR[Label_CustomRating_TVShows_06]</label2>
+            <onclick>SetProperty(ConfigureRatingItem,Item06,Home)</onclick>
+            <onclick>SetProperty(ConfigureRatingContent,TVShows,Home)</onclick>
+            <onclick>ActivateWindow(1118)</onclick>
+        </control>
+    </include>
+
+    <include name="Items_Dialog_RatingType_Template">
+        <include content="Settings_Button">
+            <param name="id">$PARAM[id]</param>
+            <param name="control">radiobutton</param>
+            <label>$PARAM[label]</label>
+            <radioposx>730</radioposx>
+            <onclick condition="Skin.String(CustomRating.$PARAM[content].Item01,$PARAM[type])">Skin.SetString(CustomRating.$PARAM[content].Item01,$INFO[Skin.String(CustomRating.$PARAM[content].$PARAM[item])])</onclick>
+            <onclick condition="Skin.String(CustomRating.$PARAM[content].Item02,$PARAM[type])">Skin.SetString(CustomRating.$PARAM[content].Item02,$INFO[Skin.String(CustomRating.$PARAM[content].$PARAM[item])])</onclick>
+            <onclick condition="Skin.String(CustomRating.$PARAM[content].Item03,$PARAM[type])">Skin.SetString(CustomRating.$PARAM[content].Item03,$INFO[Skin.String(CustomRating.$PARAM[content].$PARAM[item])])</onclick>
+            <onclick condition="Skin.String(CustomRating.$PARAM[content].Item04,$PARAM[type])">Skin.SetString(CustomRating.$PARAM[content].Item04,$INFO[Skin.String(CustomRating.$PARAM[content].$PARAM[item])])</onclick>
+            <onclick condition="Skin.String(CustomRating.$PARAM[content].Item05,$PARAM[type])">Skin.SetString(CustomRating.$PARAM[content].Item05,$INFO[Skin.String(CustomRating.$PARAM[content].$PARAM[item])])</onclick>
+            <onclick>Skin.SetString(CustomRating.$PARAM[content].$PARAM[item],$PARAM[type])</onclick>
+            <onclick>Close</onclick>
+            <selected>Skin.String(CustomRating.$PARAM[content].$PARAM[item],$PARAM[type])</selected>
+        </include>
+    </include>
+
+    <include name="Items_Dialog_RatingType">
+        <include content="Settings_Button">
+            <param name="id">9020</param>
+            <param name="control">radiobutton</param>
+            <label>$LOCALIZE[16018]</label>
+            <radioposx>730</radioposx>
+            <selected>Skin.String(CustomRating.$PARAM[content].$PARAM[item],None)</selected>
+            <onclick>Skin.SetString(CustomRating.$PARAM[content].$PARAM[item],None)</onclick>
+            <onclick>Close</onclick>
+        </include>
+        <include content="Items_Dialog_RatingType_Template">
+            <param name="id">9001</param>
+            <param name="label">Kodi</param>
+            <param name="type">Kodi</param>
+            <param name="item">$PARAM[item]</param>
+            <param name="content">$PARAM[content]</param>
+        </include>
+        <include content="Items_Dialog_RatingType_Template">
+            <param name="id">9002</param>
+            <param name="label">Metacritic</param>
+            <param name="type">Metacritic</param>
+            <param name="item">$PARAM[item]</param>
+            <param name="content">$PARAM[content]</param>
+        </include>
+        <include content="Items_Dialog_RatingType_Template">
+            <param name="id">9003</param>
+            <param name="label">Trakt</param>
+            <param name="type">Trakt</param>
+            <param name="item">$PARAM[item]</param>
+            <param name="content">$PARAM[content]</param>
+        </include>
+        <include content="Items_Dialog_RatingType_Template">
+            <param name="id">9004</param>
+            <param name="label">TMDb</param>
+            <param name="type">TMDb</param>
+            <param name="item">$PARAM[item]</param>
+            <param name="content">$PARAM[content]</param>
+        </include>
+        <include content="Items_Dialog_RatingType_Template">
+            <param name="id">9005</param>
+            <param name="label">RottenTomatoesUser</param>
+            <param name="type">RottenTomatoesUser</param>
+            <param name="item">$PARAM[item]</param>
+            <param name="content">$PARAM[content]</param>
+        </include>
+        <include content="Items_Dialog_RatingType_Template">
+            <param name="id">9006</param>
+            <param name="label">RottenTomatoesCritic</param>
+            <param name="type">RottenTomatoesCritic</param>
+            <param name="item">$PARAM[item]</param>
+            <param name="content">$PARAM[content]</param>
+        </include>
+        <include content="Items_Dialog_RatingType_Template">
+            <param name="id">9007</param>
+            <param name="label">IMDb</param>
+            <param name="type">IMDb</param>
+            <param name="item">$PARAM[item]</param>
+            <param name="content">$PARAM[content]</param>
+        </include>
+        <include content="Items_Dialog_RatingType_Template">
+            <param name="id">9008</param>
+            <param name="label">MDbList</param>
+            <param name="type">MDbList</param>
+            <param name="item">$PARAM[item]</param>
+            <param name="content">$PARAM[content]</param>
+        </include>
+        <include content="Items_Dialog_RatingType_Template">
+            <param name="id">9009</param>
+            <param name="label">Letterboxd</param>
+            <param name="type">Letterboxd</param>
+            <param name="item">$PARAM[item]</param>
+            <param name="content">$PARAM[content]</param>
+        </include>
+        <include content="Items_Dialog_RatingType_Template">
+            <param name="id">9010</param>
+            <param name="label">$LOCALIZE[31596]</param>
+            <param name="type">Awards</param>
+            <param name="item">$PARAM[item]</param>
+            <param name="content">$PARAM[content]</param>
+        </include>
+        <include content="Items_Dialog_RatingType_Template">
+            <param name="id">9011</param>
+            <param name="label">$LOCALIZE[858]</param>
+            <param name="type">User</param>
+            <param name="item">$PARAM[item]</param>
+            <param name="content">$PARAM[content]</param>
+        </include>
+    </include>
+</includes>
