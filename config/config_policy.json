@@ -1,5 +1,5 @@
 {
-  "config_version": 8,
+  "config_version": 9,
   "_comment": "Declarative policy for how the wizard applies the shipped build-config onto a device. Bump build.json config_version whenever ANY file under config/ changes. Modes: replace (overwrite whole file), seed_if_absent (write only if missing), merge_id (per <setting id>, build value wins, other user settings kept), merge_name (per <source><name>, add build's, keep user's). exclude_ids protect user credentials on merge. gears_settings enforces critical values in Gears' binary settings.db (fixes fresh-seed staleness + delivers setting changes to existing devices).",
   "files": [
     {
@@ -122,5 +122,32 @@
     "trakt.token",
     "trakt.secret",
     "trakt.user"
-  ]
+  ],
+  "gears_shortcuts": {
+    "delete_folders": [
+      "RD Services"
+    ],
+    "set_folders": {
+      "TorBox Services": [
+        {
+          "mode": "torbox.authenticate",
+          "name": "[B]התחבר ל-TorBox[/B]",
+          "iconImage": "torbox",
+          "isFolder": "false"
+        },
+        {
+          "mode": "torbox.tb_account_info",
+          "name": "[B]פרטי מנוי TorBox[/B]",
+          "iconImage": "torbox",
+          "isFolder": "false"
+        },
+        {
+          "mode": "torbox.revoke_authentication",
+          "name": "[B]התנתק מ-TorBox[/B]",
+          "iconImage": "torbox",
+          "isFolder": "false"
+        }
+      ]
+    }
+  }
 }

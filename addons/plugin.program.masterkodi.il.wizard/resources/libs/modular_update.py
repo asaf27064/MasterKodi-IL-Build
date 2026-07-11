@@ -520,7 +520,12 @@ def _apply_policy(zf, policy, home, fresh):
     gs = policy.get('gears_settings')
     if gs:
         _enforce_gears_settings(home, gs, set(policy.get('gears_settings_exclude', [])))
-    log('config policy applied: %d files%s' % (len(applied), ' + gears_settings' if gs else ''))
+    # Gears navigator.db shortcut-folder enforcement (delete/replace debrid folders)
+    gsc = policy.get('gears_shortcuts')
+    if gsc:
+        _enforce_gears_shortcuts(home, gsc)
+    log('config policy applied: %d files%s%s' % (len(applied),
+        ' + gears_settings' if gs else '', ' + gears_shortcuts' if gsc else ''))
 
 
 def _merge_settings_xml(src_bytes, dest, exclude_ids):
@@ -584,6 +589,34 @@ def _enforce_gears_settings(home, gears_settings, exclude):
         log('enforced %d gears settings' % len(gears_settings))
     except Exception as e:
         log('gears settings enforce failed: %s' % e, xbmc.LOGWARNING)
+
+
+def _enforce_gears_shortcuts(home, spec):
+    """Rewrite Gears' navigator.db shortcut folders. `spec` may hold:
+      delete_folders: [names]   -> remove those shortcut_folder rows
+      set_folders: {name: [items]} -> INSERT OR REPLACE the folder contents
+    list_contents is stored as a Python repr() of a list of dicts (Gears reads it
+    with eval). Takes effect after a Kodi restart (Gears caches folders in window
+    properties, cleared on restart -- which our config update triggers)."""
+    import sqlite3
+    db = os.path.join(home, 'userdata', 'addon_data', 'plugin.video.gears',
+                      'databases', 'navigator.db')
+    if not os.path.isfile(db):
+        return
+    try:
+        c = sqlite3.connect(db)
+        for name in spec.get('delete_folders', []):
+            c.execute("DELETE FROM navigator WHERE list_name=? AND list_type='shortcut_folder'", (name,))
+        for name, items in (spec.get('set_folders') or {}).items():
+            # DELETE + INSERT (not INSERT OR REPLACE) so it's correct whether or not
+            # the navigator table has a unique key on (list_name, list_type).
+            c.execute("DELETE FROM navigator WHERE list_name=? AND list_type='shortcut_folder'", (name,))
+            c.execute("INSERT INTO navigator VALUES (?, 'shortcut_folder', ?)", (name, repr(items)))
+        c.commit(); c.close()
+        log('enforced gears shortcuts (del %d, set %d)' % (
+            len(spec.get('delete_folders', [])), len(spec.get('set_folders') or {})))
+    except Exception as e:
+        log('gears shortcuts enforce failed: %s' % e, xbmc.LOGWARNING)
 
 
 # --------------------------------------------------------------------------- #
