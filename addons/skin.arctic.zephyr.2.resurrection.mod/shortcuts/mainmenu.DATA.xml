@@ -1,62 +1,106 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!--
+  MasterKodi IL default home menu for Arctic Zephyr.
+  The stock Zephyr default points at Kodi *library* windows (MovieTitles/
+  TVShowTitles), which are EMPTY in this build - content comes from The Gears,
+  not a local library. These shortcuts use the same proven Gears plugin paths +
+  build icons as favourites.xml, so a fresh switch to Zephyr lands on a working
+  Hebrew Gears home instead of empty library views.
+  NOTE: this is the menu structure only (no attached widgets yet). The widget-
+  rich AF3/Nimbus-style layout is tuned on-device.
+-->
 <shortcuts>
     <shortcut>
-        <label>20342</label>
+        <label>סרטים</label>
         <label2>Common Shortcut</label2>
-        <defaultID>movies</defaultID>
-        <icon>special://skin/extras/icons/film.png</icon>
-        <action>ActivateWindow(Videos,MovieTitles,return)</action>
+        <defaultID>mkil_movies</defaultID>
+        <icon>special://home/media/build_icons/Movies.png</icon>
+        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_movies_trending&amp;iconImage=trending&amp;mode=build_movie_list&amp;name=Trending&amp;random_support=true",return)</action>
     </shortcut>
     <shortcut>
-        <label>20343</label>
+        <label>סדרות</label>
         <label2>Common Shortcut</label2>
-        <defaultID>tvshows</defaultID>
-        <icon>special://skin/extras/icons/tv.png</icon>
-        <action>ActivateWindow(Videos,TVShowTitles,return)</action>
+        <defaultID>mkil_tvshows</defaultID>
+        <icon>special://home/media/build_icons/TV_Shows.png</icon>
+        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_tv_trending&amp;iconImage=trending&amp;mode=build_tvshow_list&amp;name=Trending&amp;random_support=true",return)</action>
     </shortcut>
     <shortcut>
-        <label>2</label>
+        <label>סרטים בתהליך צפייה</label>
         <label2>Common Shortcut</label2>
-        <defaultID>music</defaultID>
-        <icon>special://skin/extras/icons/songs.png</icon>
-        <action>ActivateWindow(Music)</action>
+        <defaultID>mkil_movies_inprogress</defaultID>
+        <icon>special://home/media/build_icons/Movies_In_Progress.png</icon>
+        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=in_progress_movies&amp;iconImage=player&amp;mode=build_movie_list&amp;name=In%20Progress",return)</action>
     </shortcut>
     <shortcut>
-        <label>31103</label>
+        <label>סדרות בתהליך צפייה</label>
         <label2>Common Shortcut</label2>
-        <defaultID>livetv</defaultID>
-        <icon>special://skin/extras/icons/livetv.png</icon>
-        <action>ActivateWindow(TVChannels)</action>
-        <visible>PVR.HasTVChannels</visible>
+        <defaultID>mkil_tv_inprogress</defaultID>
+        <icon>special://home/media/build_icons/Series_In_Progress.png</icon>
+        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?iconImage=player&amp;mode=build_in_progress_episode&amp;name=In%20Progress%20Episodes",return)</action>
     </shortcut>
     <shortcut>
-        <label>24001</label>
-        <label2/>
-        <defaultID>addons</defaultID>
-        <icon />
-        <action>ActivateWindow(AddonBrowser)</action>
+        <label>הפרקים הבאים</label>
+        <label2>Common Shortcut</label2>
+        <defaultID>mkil_next_episodes</defaultID>
+        <icon>special://home/media/build_icons/Next_Episodes.png</icon>
+        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?iconImage=next_episodes&amp;mode=build_next_episode&amp;name=Next%20Episodes",return)</action>
+    </shortcut>
+    <shortcut>
+        <label>סרטים לפי ז'אנר</label>
+        <label2>Common Shortcut</label2>
+        <defaultID>mkil_movie_genres</defaultID>
+        <icon>special://home/media/build_icons/Movies_Cat.png</icon>
+        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?iconImage=genres&amp;menu_type=movie&amp;mode=navigator.genres&amp;name=Genres&amp;random_support=true",return)</action>
+    </shortcut>
+    <shortcut>
+        <label>סדרות לפי ז'אנר</label>
+        <label2>Common Shortcut</label2>
+        <defaultID>mkil_tv_genres</defaultID>
+        <icon>special://home/media/build_icons/TV_Shows_Cat.png</icon>
+        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?iconImage=genres&amp;menu_type=tvshow&amp;mode=navigator.genres&amp;name=Genres&amp;random_support=true",return)</action>
+    </shortcut>
+    <shortcut>
+        <label>Netflix</label>
+        <label2>Common Shortcut</label2>
+        <defaultID>mkil_netflix</defaultID>
+        <icon>special://home/media/build_icons/Netflix.png</icon>
+        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=tmdb_tv_networks&amp;key_id=213&amp;mode=build_tvshow_list&amp;name=Netflix",return)</action>
+    </shortcut>
+    <shortcut>
+        <label>Disney+</label>
+        <label2>Common Shortcut</label2>
+        <defaultID>mkil_disney</defaultID>
+        <icon>special://home/media/build_icons/Disney+.png</icon>
+        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=tmdb_tv_networks&amp;key_id=2739&amp;mode=build_tvshow_list&amp;name=Disney%2b",return)</action>
+    </shortcut>
+    <shortcut>
+        <label>HBO Max</label>
+        <label2>Common Shortcut</label2>
+        <defaultID>mkil_hbomax</defaultID>
+        <icon>special://home/media/build_icons/HBO_MAX.png</icon>
+        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=tmdb_tv_networks&amp;key_id=3186&amp;mode=build_tvshow_list&amp;name=HBO%20Max",return)</action>
+    </shortcut>
+    <shortcut>
+        <label>TorBox - חיבור שירותים</label>
+        <label2>Common Shortcut</label2>
+        <defaultID>mkil_torbox</defaultID>
+        <icon>special://home/media/build_icons/TorBox_Auth.png</icon>
+        <action>RunPlugin(plugin://plugin.video.gears/?mode=torbox.authenticate)</action>
     </shortcut>
     <shortcut>
         <label>$LOCALIZE[137]</label>
         <label2>Common Shortcut</label2>
+        <defaultID>search</defaultID>
         <icon>special://skin/extras/icons/search.png</icon>
-        <thumb />
         <action>Skin.SetString(SearchTerm)</action>
         <action>ActivateWindow(1138)</action>
     </shortcut>
     <shortcut>
-        <label>3</label>
-        <label2>32034</label2>
-        <icon>DefaultVideo.png</icon>
-        <thumb />
-        <action>ActivateWindow(Videos)</action>
-    </shortcut>
-    <shortcut>
-        <label>32032</label>
-        <label2>32034</label2>
-        <icon>DefaultDVDFull.png</icon>
-        <thumb />
-        <action>PlayDVD()</action>
+        <label>החלפת סקין</label>
+        <label2>Common Shortcut</label2>
+        <defaultID>mkil_skins</defaultID>
+        <icon>DefaultAddonSkin.png</icon>
+        <action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</action>
     </shortcut>
     <shortcut>
         <label>5</label>
