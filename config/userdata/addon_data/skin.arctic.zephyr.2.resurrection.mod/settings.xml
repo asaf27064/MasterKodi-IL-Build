@@ -2,4 +2,21 @@
     <setting id="homemulti" type="bool">true</setting>
     <setting id="homemultiflixview" type="bool">true</setting>
     <setting id="HomeMultiVertical" type="bool">false</setting>
+    <setting id="DisabledProfileInfo" type="bool">true</setting>
+    <setting id="ExtendedNotification" type="bool">true</setting>
+    <setting id="ShowEpisodeRatings" type="bool">true</setting>
+    <setting id="UnwatchedCountIndicator" type="bool">true</setting>
+    <setting id="SeriesIndicators" type="bool">true</setting>
+    <setting id="EnableLanguages" type="bool">true</setting>
+    <setting id="HomeIcons" type="bool">true</setting>
+    <setting id="TMDBhCrop" type="bool">true</setting>
+    <setting id="EnableShowItemCount" type="bool">true</setting>
+    <setting id="Icons" type="string">colorful</setting>
+    <setting id="icons.label" type="string">Colorful</setting>
+    <setting id="customrating.movies.item01" type="string">IMDb</setting>
+    <setting id="customrating.movies.item02" type="string">RottenTomatoesCritic</setting>
+    <setting id="customrating.movies.item03" type="string">Metacritic</setting>
+    <setting id="customrating.tvshows.item01" type="string">IMDb</setting>
+    <setting id="customrating.tvshows.item02" type="string">TMDb</setting>
+    <setting id="customrating.tvshows.item03" type="string">Trakt</setting>
 </settings>
