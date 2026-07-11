@@ -579,9 +579,9 @@ def check_and_prompt():
         return
     updates = compute_updates(manifest)
     if not updates:
-        dlg.notification('MasterKodi IL', 'הבילד מעודכן ✓', xbmcgui.NOTIFICATION_INFO, 4000)
+        dlg.notification('MasterKodi IL', 'הבילד מעודכן', xbmcgui.NOTIFICATION_INFO, 4000)
         return
-    names = '\n'.join('• %s → %s' % (u['id'], u['version']) for u in updates[:15])
+    names = '\n'.join('- %s (%s)' % (u['id'], u['version']) for u in updates[:15])
     more = '' if len(updates) <= 15 else '\n(ועוד %d)' % (len(updates) - 15)
     if not dlg.yesno('MasterKodi IL', 'נמצאו %d עדכונים:\n%s%s\n\nלהתקין עכשיו?' % (len(updates), names, more)):
         return
@@ -590,7 +590,7 @@ def check_and_prompt():
         dlg.ok('MasterKodi IL', 'הותקנו %d, נכשלו %d:\n%s' % (
             len(summary['applied']), len(summary['failed']), ', '.join(summary['failed'])))
         return
-    msg = 'עודכנו %d תוספים ✓' % len(summary['applied'])
+    msg = 'עודכנו %d תוספים' % len(summary['applied'])
     if summary.get('wizard_changed'):
         msg += '\n(האשף עודכן - Kodi יופעל מחדש)'
     elif summary.get('skin_changed'):
@@ -605,7 +605,7 @@ def silent_check():
     summary = run_update(silent=True)
     if summary.get('applied'):
         xbmcgui.Dialog().notification(
-            'MasterKodi IL', 'עודכנו %d תוספים ✓' % len(summary['applied']),
+            'MasterKodi IL', 'עודכנו %d תוספים' % len(summary['applied']),
             xbmcgui.NOTIFICATION_INFO, 5000)
         # auto reload/restart if the skin or the wizard itself changed
         _finalize_reload(summary)

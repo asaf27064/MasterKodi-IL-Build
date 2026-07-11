@@ -189,7 +189,7 @@ def build_status_menu():
         elif installed == a['version']:
             state = color('מעודכן', COLOR_SUCCESS); n_ok += 1
         else:
-            state = color(f'{installed} → {a["version"]}', COLOR_WARNING); n_old += 1
+            state = color(f'{installed} -> {a["version"]}', COLOR_WARNING); n_old += 1
         tag = ' [Skin]' if a.get('channel') == 'optional' else ''
         rows.append(menu_item(f"{a['id']}{tag}", f"v{a.get('version','?')}  ·  {state}", 'DefaultAddonInfoProvider.png'))
 
@@ -252,7 +252,7 @@ def main_menu():
 
 
 def gearsai_menu():
-    """AI Subs (gearsai) submenu — settings / info / install."""
+    """AI Subs (gearsai) submenu - settings / info / install."""
     dialog = xbmcgui.Dialog()
     status = get_gearsai_status()
     if not status['addon']:
@@ -422,9 +422,9 @@ def oled_menu():
         color('הגדרות OLED', COLOR_HEADER),
         f'{bold("יש לך מסך OLED?")}\n\n'
         f'אם כן, נגדיר הגדרות להגנה על המסך:\n'
-        f'• Screensaver שחור (לא אנימציה)\n'
-        f'• הפעלה אחרי דקה\n'
-        f'• עמעום בזמן השהיה',
+        f'- Screensaver שחור (לא אנימציה)\n'
+        f'- הפעלה אחרי דקה\n'
+        f'- עמעום בזמן השהיה',
         yeslabel='כן, יש לי OLED',
         nolabel='לא'
     )
@@ -432,9 +432,9 @@ def oled_menu():
     if result:
         if apply_oled_to_guisettings():
             dialog.ok('הצלחה', f'{color("הגדרות OLED הוחלו!", COLOR_SUCCESS)}\n\n'
-                     f'• Screensaver: Black\n'
-                     f'• זמן המתנה: דקה\n'
-                     f'• עמעום בהשהיה: פעיל\n\n'
+                     f'- Screensaver: Black\n'
+                     f'- זמן המתנה: דקה\n'
+                     f'- עמעום בהשהיה: פעיל\n\n'
                      f'{color("יש להפעיל מחדש את Kodi", COLOR_WARNING)}')
         else:
             dialog.ok('שגיאה', 'לא הצלחתי להחיל את ההגדרות')

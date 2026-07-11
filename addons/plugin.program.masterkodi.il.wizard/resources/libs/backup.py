@@ -211,7 +211,7 @@ def _fmt(b):
 def create_flow():
     dlg = xbmcgui.Dialog()
     choice = dlg.select('סוג גיבוי', [
-        'גיבוי מהיר (הגדרות + מפתח Gemini + דבריד)  — מומלץ',
+        'גיבוי מהיר (הגדרות + מפתח Gemini + דבריד)  - מומלץ',
         'גיבוי מלא (כל userdata, ללא מטמון)',
     ])
     if choice < 0:
@@ -222,7 +222,7 @@ def create_flow():
     path, manifest = BackupManager().create(scope, lambda m, p: progress.update(p, m))
     progress.close()
     if path:
-        items = "\n".join(f"• {x}" for x in (manifest.get('items') or []))
+        items = "\n".join(f"- {x}" for x in (manifest.get('items') or []))
         dlg.ok(ADDON_NAME, f"[COLOR {SUCCESS}]הגיבוי נוצר![/COLOR]\n\n{items}\n\n{os.path.basename(path)}")
     else:
         dlg.ok(ADDON_NAME, f"[COLOR {ERROR}]הגיבוי נכשל![/COLOR]")

@@ -366,7 +366,7 @@ class BuildManager:
         
         Kodi requires the repo's origin to reference itself in the installed table.
         Without this, the repo appears as 'not installed' in the UI and auto-updates
-        don't trigger — only manual 'Check for updates' works.
+        don't trigger - only manual 'Check for updates' works.
         """
         try:
             import sqlite3
@@ -1070,9 +1070,9 @@ class BuildManager:
             '[COLOR FF00BFFF]הגדרות OLED[/COLOR]',
             '[B]יש לך מסך OLED?[/B]\n\n'
             'אם כן, נגדיר הגדרות להגנה על המסך:\n'
-            '• Screensaver שחור\n'
-            '• הפעלה אחרי דקה\n'
-            '• עמעום בזמן השהיה',
+            '- Screensaver שחור\n'
+            '- הפעלה אחרי דקה\n'
+            '- עמעום בזמן השהיה',
             yeslabel='כן, יש לי OLED',
             nolabel='לא'
         )
@@ -1178,13 +1178,13 @@ def builds_menu():
             
             # Mark installed build
             if name == installed_build:
-                menu_items.append(f"[COLOR lime]✓[/COLOR] [COLOR yellow]{name}[/COLOR] v{ver} [COLOR gray](מותקן - {installed_skin})[/COLOR]")
+                menu_items.append(f"[COLOR yellow]{name}[/COLOR] v{ver} [COLOR gray](מותקן - {installed_skin})[/COLOR]")
             else:
                 menu_items.append(f"[COLOR yellow]{name}[/COLOR] v{ver}")
         
         # Add "Install Arctic Fuse" option if build is installed and skin is Estuary
         if build_installed and installed_skin == 'Estuary' and skin_url:
-            menu_items.append("[COLOR cyan]➕ הוסף סקין Arctic Fuse לבילד הקיים[/COLOR]")
+            menu_items.append("[COLOR cyan]+ הוסף סקין Arctic Fuse לבילד הקיים[/COLOR]")
         
         menu_items.append("[COLOR gray]< חזרה[/COLOR]")
         
