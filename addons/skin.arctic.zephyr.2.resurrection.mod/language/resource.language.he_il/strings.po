@@ -213,7 +213,7 @@ msgstr "וידג'ט רקע"
 #: /1080i/Custom_1117_EnableViews.xml
 msgctxt "#31040"
 msgid "Poster Showcase"
-msgstr "חלון ראווה של פוסטרים"
+msgstr "חלון ראווה של פוסטרים - Poster Showcase"
 
 #: /1080i/Custom_1138_Search.xml
 msgctxt "#31041"
@@ -1084,7 +1084,7 @@ msgstr "אוספי סרטים"
 
 msgctxt "#31262"
 msgid "Poster"
-msgstr "פוסטר"
+msgstr "פוסטר - Poster"
 
 msgctxt "#31267"
 msgid "Action"
@@ -1175,7 +1175,7 @@ msgstr "צמתי סדרות"
 #: /1080i/Includes_View_List.xml
 msgctxt "#31298"
 msgid "Media Info"
-msgstr "מידע מדיה"
+msgstr "מידע מדיה - Media Info"
 
 #: /shortcuts/overrides.xml
 msgctxt "#31300"
@@ -1270,22 +1270,22 @@ msgstr "שנים"
 #: /shortcuts/skinviewtypes.json
 msgctxt "#31358"
 msgid "Poster Wall"
-msgstr "קיר פוסטרים"
+msgstr "קיר פוסטרים - Poster Wall"
 
 #: /shortcuts/skinviewtypes.json
 msgctxt "#31359"
 msgid "Landscape Wall"
-msgstr "קיר נוף"
+msgstr "קיר נוף - Landscape Wall"
 
 #: /shortcuts/skinviewtypes.json
 msgctxt "#31360"
 msgid "Square Wall"
-msgstr "קיר מרובע"
+msgstr "קיר מרובע - Square Wall"
 
 #: /shortcuts/skinviewtypes.json
 msgctxt "#31361"
 msgid "Landscape Showcase"
-msgstr "חלון ראווה נוף"
+msgstr "חלון ראווה נוף - Landscape Showcase"
 
 #: /shortcuts/skinviewtypes.json
 msgctxt "#31362"
@@ -1400,7 +1400,7 @@ msgstr "אייקון"
 #: /1080i/Includes_View_50_List.xml
 msgctxt "#31421"
 msgid "Banner List"
-msgstr "רשימת באנרים"
+msgstr "רשימת באנרים - Banner List"
 
 #: /1080i/SkinSettings.xml
 msgctxt "#31422"
@@ -1410,22 +1410,22 @@ msgstr "טלוויזיה חיה / הקלטות (PVR)"
 #: /1080i/Includes_View_50_List.xml
 msgctxt "#31423"
 msgid "Media Info Extended"
-msgstr "מידע מדיה מורחב"
+msgstr "מידע מדיה מורחב - Media Info Extended"
 
 #: /1080i/Includes_View_51_Wall.xml
 msgctxt "#31424"
 msgid "Icon Wall"
-msgstr "קיר סמלים"
+msgstr "קיר סמלים - Icon Wall"
 
 #: /1080i/Includes_View_51_Wall.xml
 msgctxt "#31425"
 msgid "Circle Wall"
-msgstr "קיר עגול"
+msgstr "קיר עגול - Circle Wall"
 
 #: /1080i/Includes_View_51_Wall.xml
 msgctxt "#31426"
 msgid "Info Wall"
-msgstr "קיר מידע"
+msgstr "קיר מידע - Info Wall"
 
 #: /1080i/Includes_View_52_Showcase.xml
 msgctxt "#31427"
@@ -1450,7 +1450,7 @@ msgstr "בתור"
 #: /1080i/Includes_View_51_Wall.xml
 msgctxt "#31431"
 msgid "Landscape Wall Small"
-msgstr "קיר נוף קטן"
+msgstr "קיר נוף קטן - Landscape Wall Small"
 
 #: /1080i/Custom_1138_Search.xml
 msgctxt "#31432"
@@ -1470,12 +1470,12 @@ msgstr "Clearart עם פס הרצה"
 #: /1080i/Includes_View_54_ROM_Simple.xml
 msgctxt "#31435"
 msgid "ROM Trailer"
-msgstr "טריילר ROM"
+msgstr "טריילר ROM - ROM Trailer"
 
 #: /1080i/Includes_View_51_Wall.xml
 msgctxt "#31436"
 msgid "Info Wall 2"
-msgstr "קיר מידע 2"
+msgstr "קיר מידע 2 - Info Wall 2"
 
 #: /1080i/Includes_DialogMusicInfo.xml
 msgctxt "#31437"
@@ -1495,7 +1495,7 @@ msgstr "הצג מוני עמודים ופריטים בדפי רשימה"
 #: /1080i/Includes_View_54_AEL.xml
 msgctxt "#31440"
 msgid "ROM Info Wall Trailer"
-msgstr "קיר מידע טריילר ROM"
+msgstr "קיר מידע טריילר ROM - ROM Info Wall Trailer"
 
 #: /1080i/SkinSettings.xml
 msgctxt "#31441"
