@@ -24,5 +24,7 @@
     <favourite name="HBO" thumb="special://home/media/build_icons/HBO.png">ActivateWindow(10025,"plugin://plugin.video.gears/?action=tmdb_tv_networks&amp;key_id=49&amp;mode=build_tvshow_list&amp;name=HBO",return)</favourite>
     <favourite name="NBC" thumb="special://home/media/build_icons/NBC.png">ActivateWindow(10025,"plugin://plugin.video.gears/?action=tmdb_tv_networks&amp;key_id=6&amp;mode=build_tvshow_list&amp;name=NBC",return)</favourite>
     <favourite name="The CW" thumb="special://home/media/build_icons/CW.png">ActivateWindow(10025,"plugin://plugin.video.gears/?action=tmdb_tv_networks&amp;key_id=71&amp;mode=build_tvshow_list&amp;name=The%20CW",return)</favourite>
+    <favourite name="ניקוי קאש Gears" thumb="DefaultAddonService.png">RunPlugin(plugin://plugin.video.gears/?mode=clear_all_cache)</favourite>
+    <favourite name="ניקוי קאש Gears AI" thumb="DefaultAddonService.png">RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</favourite>
     <favourite name="החלפת סקין" thumb="DefaultAddonSkin.png">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</favourite>
 </favourites>

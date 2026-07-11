@@ -1,5 +1,5 @@
 {
-  "config_version": 5,
+  "config_version": 6,
   "_comment": "Declarative policy for how the wizard applies the shipped build-config onto a device. Bump build.json config_version whenever ANY file under config/ changes. Modes: replace (overwrite whole file), seed_if_absent (write only if missing), merge_id (per <setting id>, build value wins, other user settings kept), merge_name (per <source><name>, add build's, keep user's). exclude_ids protect user credentials on merge. gears_settings enforces critical values in Gears' binary settings.db (fixes fresh-seed staleness + delivers setting changes to existing devices).",
   "files": [
     {
@@ -88,6 +88,12 @@
       "dest": "userdata/addon_data/script.module.magneto/settings.xml",
       "fresh": "replace",
       "update": "merge_id"
+    },
+    {
+      "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-powermenu.json",
+      "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-powermenu.json",
+      "fresh": "replace",
+      "update": "replace"
     }
   ],
   "gears_settings": {

@@ -7,6 +7,27 @@
         "guid": "guid-75a00b71"
     },
     {
+        "label": "\u05d4\u05d7\u05dc\u05e4\u05ea \u05e1\u05e7\u05d9\u05df",
+        "path": "RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)",
+        "icon": "special://skin/extras/icons/skinsettings.png",
+        "target": "",
+        "guid": "guid-mk-skinswitch"
+    },
+    {
+        "label": "\u05e0\u05d9\u05e7\u05d5\u05d9 \u05e7\u05d0\u05e9 Gears",
+        "path": "RunPlugin(plugin://plugin.video.gears/?mode=clear_all_cache)",
+        "icon": "special://skin/extras/icons/broom.png",
+        "target": "",
+        "guid": "guid-mk-gearscache"
+    },
+    {
+        "label": "\u05e0\u05d9\u05e7\u05d5\u05d9 \u05e7\u05d0\u05e9 Gears AI",
+        "path": "RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)",
+        "icon": "special://skin/extras/icons/eraser.png",
+        "target": "",
+        "guid": "guid-mk-gearsaicache"
+    },
+    {
         "icon": "special://skin/extras/icons/favourites2.png",
         "label": "$LOCALIZE[1036]",
         "path": "ActivateWindow(1160)",
