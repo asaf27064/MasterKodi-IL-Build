@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-11T20:21:23Z",
+  "generated_utc": "2026-07-11T20:26:29Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -522,12 +522,12 @@
     },
     {
       "id": "skin.arctic.zephyr.2.resurrection.mod",
-      "version": "1.0.51.10",
+      "version": "1.0.51.11",
       "channel": "optional",
-      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.0.51.10.zip",
-      "sha256": "641fe5932449d199068e6c9db1361601be23b3685782c3899f3c31a834ce256c",
-      "size": 18331135,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.zephyr.2.resurrection.mod-1.0.51.10.zip"
+      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.0.51.11.zip",
+      "sha256": "46f0d1d40b222e883a31d59d897dc73c37b9df8eb943569d91ee166cd0fea7b8",
+      "size": 18330973,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.zephyr.2.resurrection.mod-1.0.51.11.zip"
     },
     {
       "id": "skin.estuary",
