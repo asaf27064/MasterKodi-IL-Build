@@ -1,0 +1,10 @@
+<shortcuts>
+	<shortcut>
+		<defaultID />
+		<label>שירותי TorBox</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/mk_torbox.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</action>
+		</shortcut>
+	</shortcuts>

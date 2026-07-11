@@ -25,62 +25,6 @@
         <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_tv_trending&amp;iconImage=trending&amp;mode=build_tvshow_list&amp;name=Trending&amp;random_support=true",return)</action>
     </shortcut>
     <shortcut>
-        <label>סרטים בתהליך</label>
-        <label2>Common Shortcut</label2>
-        <defaultID>mkil_movies_inprogress</defaultID>
-        <icon>special://home/media/build_icons/Movies_In_Progress.png</icon>
-        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=in_progress_movies&amp;iconImage=player&amp;mode=build_movie_list&amp;name=In%20Progress",return)</action>
-    </shortcut>
-    <shortcut>
-        <label>סדרות בתהליך</label>
-        <label2>Common Shortcut</label2>
-        <defaultID>mkil_tv_inprogress</defaultID>
-        <icon>special://home/media/build_icons/Series_In_Progress.png</icon>
-        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?iconImage=player&amp;mode=build_in_progress_episode&amp;name=In%20Progress%20Episodes",return)</action>
-    </shortcut>
-    <shortcut>
-        <label>הפרקים הבאים</label>
-        <label2>Common Shortcut</label2>
-        <defaultID>mkil_next_episodes</defaultID>
-        <icon>special://home/media/build_icons/Next_Episodes.png</icon>
-        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?iconImage=next_episodes&amp;mode=build_next_episode&amp;name=Next%20Episodes",return)</action>
-    </shortcut>
-    <shortcut>
-        <label>סרטים לפי ז'אנר</label>
-        <label2>Common Shortcut</label2>
-        <defaultID>mkil_movie_genres</defaultID>
-        <icon>special://home/media/build_icons/Movies_Cat.png</icon>
-        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?iconImage=genres&amp;menu_type=movie&amp;mode=navigator.genres&amp;name=Genres&amp;random_support=true",return)</action>
-    </shortcut>
-    <shortcut>
-        <label>סדרות לפי ז'אנר</label>
-        <label2>Common Shortcut</label2>
-        <defaultID>mkil_tv_genres</defaultID>
-        <icon>special://home/media/build_icons/TV_Shows_Cat.png</icon>
-        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?iconImage=genres&amp;menu_type=tvshow&amp;mode=navigator.genres&amp;name=Genres&amp;random_support=true",return)</action>
-    </shortcut>
-    <shortcut>
-        <label>Netflix</label>
-        <label2>Common Shortcut</label2>
-        <defaultID>mkil_netflix</defaultID>
-        <icon>special://home/media/build_icons/Netflix.png</icon>
-        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=tmdb_tv_networks&amp;key_id=213&amp;mode=build_tvshow_list&amp;name=Netflix",return)</action>
-    </shortcut>
-    <shortcut>
-        <label>Disney+</label>
-        <label2>Common Shortcut</label2>
-        <defaultID>mkil_disney</defaultID>
-        <icon>special://home/media/build_icons/Disney+.png</icon>
-        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=tmdb_tv_networks&amp;key_id=2739&amp;mode=build_tvshow_list&amp;name=Disney%2b",return)</action>
-    </shortcut>
-    <shortcut>
-        <label>HBO Max</label>
-        <label2>Common Shortcut</label2>
-        <defaultID>mkil_hbomax</defaultID>
-        <icon>special://home/media/build_icons/HBO_MAX.png</icon>
-        <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=tmdb_tv_networks&amp;key_id=3186&amp;mode=build_tvshow_list&amp;name=HBO%20Max",return)</action>
-    </shortcut>
-    <shortcut>
         <label>חיבור TorBox</label>
         <label2>Common Shortcut</label2>
         <defaultID>mkil_torbox</defaultID>
