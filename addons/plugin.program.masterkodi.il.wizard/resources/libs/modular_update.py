@@ -163,6 +163,36 @@ def compute_updates(manifest, force=False):
 # --------------------------------------------------------------------------- #
 # apply
 # --------------------------------------------------------------------------- #
+def _disable_kodi_autoupdate(aid):
+    """Pin an addon so Kodi never auto-updates it -- WE are the only updater.
+
+    Our addons are shipped modded (Hebrew skins, patched gears, etc.). They are
+    installed by extraction so they normally have no repo origin and Kodi leaves
+    them alone -- but global auto-update is ON, so if a user ever adds a repo
+    that also provides one of them (e.g. the upstream skin's repo), Kodi could
+    replace our modded copy with a vanilla upstream release and wipe the Hebrew
+    work. Writing USER_DISABLED_AUTO_UPDATE (=1) into Kodi's update_rules table
+    is exactly what the "disable auto-update" per-addon toggle in the Kodi UI
+    does, and makes that impossible. Fail-open: any DB/schema problem is ignored
+    (origin='' already protects us in the common case).
+    """
+    import sqlite3
+    try:
+        dbdir = xbmcvfs.translatePath('special://database/')
+        for f in os.listdir(dbdir):
+            if not (f.startswith('Addons') and f.endswith('.db')):
+                continue
+            try:
+                c = sqlite3.connect(os.path.join(dbdir, f))
+                c.execute('DELETE FROM update_rules WHERE addonID=?', (aid,))
+                c.execute('INSERT INTO update_rules (addonID, updateRule) VALUES (?, 1)', (aid,))
+                c.commit(); c.close()
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+
 def _apply_one(entry):
     """Download, verify sha256, extract. Raises on any mismatch/failure."""
     data = _download(entry['url'])
@@ -174,6 +204,8 @@ def _apply_one(entry):
         if bad is not None:
             raise Exception('corrupt zip for %s (%s)' % (entry['id'], bad))
         z.extractall(ADDONS_PATH)
+    # WE own updates for everything we ship -- stop Kodi from auto-replacing it.
+    _disable_kodi_autoupdate(entry['id'])
     return True
 
 
