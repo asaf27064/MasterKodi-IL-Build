@@ -26,6 +26,8 @@ from resources.libs.config import (
     ADDON_ID, ADDON_NAME, HOME, ADDONS, USERDATA, ADDON_DATA_PATH,
     BUILD_TXT_URL, TEMP_FOLDER, COLOR_SUCCESS, COLOR_ERROR, COLOR_WARNING
 )
+# Branded custom-window menu (same look as the wizard's main menu)
+from resources.libs.ui import menu_item, wizard_select
 
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36 SE 2.X MetaSr 1.0'
@@ -1168,36 +1170,32 @@ def builds_menu():
             break
     
     while True:
-        # Build menu items
-        menu_items = []
-        
-        # Add builds
+        # Branded rows (same custom window as the wizard menu), with a parallel
+        # 'kind' list so we act on the choice by index, not by matching text.
+        rows = []
+        row_kind = []
         for b in builds:
             name = b.get('name', 'Unknown')
             ver = b.get('version', '?')
-            
-            # Mark installed build
             if name == installed_build:
-                menu_items.append(f"[COLOR yellow]{name}[/COLOR] v{ver} [COLOR gray](מותקן - {installed_skin})[/COLOR]")
+                rows.append(menu_item(name, f"v{ver}  ·  מותקן ({installed_skin})", 'DefaultAddonProgram.png'))
             else:
-                menu_items.append(f"[COLOR yellow]{name}[/COLOR] v{ver}")
-        
-        # Add "Install Arctic Fuse" option if build is installed and skin is Estuary
+                rows.append(menu_item(name, f"v{ver}", 'DefaultAddonProgram.png'))
+            row_kind.append(('build', b))
+
+        # "Add Arctic Fuse" option if a build is installed on Estuary
         if build_installed and installed_skin == 'Estuary' and skin_url:
-            menu_items.append("[COLOR cyan]+ הוסף סקין Arctic Fuse לבילד הקיים[/COLOR]")
-        
-        menu_items.append("[COLOR gray]< חזרה[/COLOR]")
-        
-        # Show menu
-        sel = dialog.select("[B]התקנת בילד[/B]", menu_items)
-        
-        if sel < 0 or sel == len(menu_items) - 1:
-            break
-        
-        selected_text = menu_items[sel]
-        
-        # Check if "Add Arctic Fuse" was selected
-        if "הוסף סקין Arctic Fuse" in selected_text:
+            rows.append(menu_item('הוסף סקין Arctic Fuse', 'לבילד הקיים, בלי למחוק', 'DefaultAddonProgram.png'))
+            row_kind.append(('add_af3', None))
+
+        sel = wizard_select('התקנת בילד', rows)
+        if sel < 0:
+            break                                   # BACK / cancel
+
+        kind, selected_build = row_kind[sel]
+
+        # "Add Arctic Fuse" to the existing build
+        if kind == 'add_af3':
             confirm_msg = (
                 f"[COLOR cyan]בילד מותקן:[/COLOR] {installed_build}\n"
                 f"[COLOR cyan]סקין נוכחי:[/COLOR] Estuary\n"
@@ -1205,21 +1203,13 @@ def builds_menu():
                 "[COLOR yellow]הסקין יותקן בלי למחוק את הבילד הקיים.[/COLOR]\n\n"
                 "להמשיך?"
             )
-            
             if dialog.yesno("[B]הוספת סקין Arctic Fuse[/B]", confirm_msg, yeslabel="[B]התקן[/B]", nolabel="ביטול"):
                 manager.install_skin_only(skin_url)
             continue
-        
-        # Find selected build
-        selected_build = None
-        for b in builds:
-            if b.get('name') in selected_text:
-                selected_build = b
-                break
-        
+
         if not selected_build:
             continue
-        
+
         build_name = selected_build.get('name', 'Unknown')
         build_ver = selected_build.get('version', '?')
         has_skin = 'skin_url' in selected_build

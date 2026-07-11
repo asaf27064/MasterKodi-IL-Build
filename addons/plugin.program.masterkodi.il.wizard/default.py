@@ -42,85 +42,9 @@ def bold(text):
     return f'[B]{text}[/B]'
 
 
-def menu_item(label, label2='', icon='DefaultAddon.png'):
-    """A menu row as a (label, label2, icon) tuple. Consumed by wizard_select
-    (custom window) or converted to a ListItem for the fallback select."""
-    return (label, label2, icon)
-
-
-_WIZ_PATH = xbmcvfs.translatePath(ADDON.getAddonInfo('path'))
-
-
-def _strip_markup(s):
-    """Drop Kodi [COLOR]/[B]/[I] tags for the big detail panel + fallbacks."""
-    import re
-    return re.sub(r'\[/?(COLOR[^\]]*|B|I|UPPERCASE|LOWERCASE)\]', '', s or '')
-
-
-class WizardMenu(xbmcgui.WindowXMLDialog):
-    """Unified MasterKodi menu: RTL list on the right, a big branded detail
-    panel (icon + title + description) on the left. Returns the chosen index
-    via .selection (-1 = cancelled)."""
-
-    def __init__(self, *args, **kwargs):
-        self.rows = kwargs.pop('rows', [])       # [(label, label2, icon), ...]
-        self.heading = kwargs.pop('heading', '')
-        self.selection = -1
-        super().__init__(*args)
-
-    @staticmethod
-    def pick(heading, rows):
-        d = WizardMenu('wizard-menu.xml', _WIZ_PATH, 'Default', '1080i',
-                       rows=rows, heading=heading)
-        d.doModal()
-        sel = d.selection
-        del d
-        return sel
-
-    def onInit(self):
-        self.setProperty('heading', self.heading)
-        lst = self.getControl(100)
-        lst.reset()
-        for label, label2, icon in self.rows:
-            li = xbmcgui.ListItem(label)
-            li.setLabel2(label2)
-            li.setArt({'icon': icon, 'thumb': icon})
-            lst.addItem(li)
-        self.setFocusId(100)
-
-    def onClick(self, control_id):
-        if control_id == 100:
-            self.selection = self.getControl(100).getSelectedPosition()
-            self.close()
-
-    def onAction(self, action):
-        if action.getId() in (9, 10, 92):  # BACK / PREVIOUS_MENU / NAV_BACK
-            self.selection = -1
-            self.close()
-
-
-def wizard_select(header, rows):
-    """Show a menu via the custom WizardMenu window. `rows` may be
-    (label, label2, icon) tuples (from menu_item) or plain strings. Falls back
-    to a useDetails dialog.select if the window can't load."""
-    norm = []
-    for r in rows:
-        if isinstance(r, (tuple, list)):
-            label, label2, icon = (list(r) + ['', 'DefaultAddon.png'])[:3]
-        else:
-            label, label2, icon = _strip_markup(r), '', 'DefaultAddon.png'
-        norm.append((_strip_markup(label), _strip_markup(label2), icon))
-    try:
-        return WizardMenu.pick(_strip_markup(header), norm)
-    except Exception as e:
-        log(f"WizardMenu failed ({e}); using fallback select", xbmc.LOGWARNING)
-        li_list = []
-        for label, label2, icon in norm:
-            li = xbmcgui.ListItem(label)
-            li.setLabel2(label2)
-            li.setArt({'icon': icon, 'thumb': icon})
-            li_list.append(li)
-        return xbmcgui.Dialog().select(_strip_markup(header), li_list, useDetails=True)
+# Branded custom-window menu helpers now live in resources/libs/ui.py so the
+# install/build flow (builds.py) shares the exact same look as this menu.
+from resources.libs.ui import menu_item, wizard_select  # noqa: E402
 
 
 # ============================================
