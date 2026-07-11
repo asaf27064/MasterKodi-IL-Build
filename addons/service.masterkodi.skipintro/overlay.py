@@ -110,8 +110,10 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
             except Exception:
                 pass
             return
-        if aid in (ACTION_PREVIOUS_MENU, ACTION_BACK):
-            self._dismiss()
+        # ANY other input (open OSD, seek, info, context, nav, back) dismisses the
+        # pill so it never blocks the OSD or playback controls -- Netflix/Nuvio
+        # style: the skip prompt yields the instant you interact with the player.
+        self._dismiss()
 
     def _do_skip(self):
         with self._lock:
@@ -131,6 +133,9 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
             try:
                 if self._deadline and time.time() >= self._deadline:
                     return self._close_bg()        # safety cap (frozen player)
+                # If the video OSD opens (by any route), get out of its way.
+                if xbmc.getCondVisibility('Window.IsVisible(videoosd)'):
+                    return self._close_bg()
                 p = self._player
                 if p and p.isPlaying() and self._target is not None:
                     t = p.getTime()
