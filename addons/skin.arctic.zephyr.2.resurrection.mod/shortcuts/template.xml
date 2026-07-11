@@ -7,11 +7,9 @@
         <items insert="searchlist">
             <property name="label" tag="label" />
 
-            <property name="path" tag="property" attribute="name|list" value="DefaultSearch-Movies">videodb://movies/titles/?xsp=%7B%22order%22%3A%7B%22direction%22%3A%22ascending%22%2C%22ignorefolders%22%3A0%2C%22method%22%3A%22sorttitle%22%7D%2C%22rules%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22title%22%2C%22operator%22%3A%22contains%22%2C%22value%22%3A%5B%22</property>
-            <property name="path2" tag="property" attribute="name|list" value="DefaultSearch-Movies">%22%5D%7D%5D%7D%2C%22type%22%3A%22movies%22%7D</property>
+            <property name="path" tag="property" attribute="name|list" value="DefaultSearch-Movies">plugin://plugin.video.gears/?mode=build_movie_list&amp;action=tmdb_movies_search&amp;query=</property>
 
-            <property name="path" tag="property" attribute="name|list" value="DefaultSearch-TvShows">videodb://tvshows/titles/?xsp=%7B%22order%22%3A%7B%22direction%22%3A%22ascending%22%2C%22ignorefolders%22%3A0%2C%22method%22%3A%22sorttitle%22%7D%2C%22rules%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22title%22%2C%22operator%22%3A%22contains%22%2C%22value%22%3A%5B%22</property>
-            <property name="path2" tag="property" attribute="name|list" value="DefaultSearch-TvShows">%22%5D%7D%5D%7D%2C%22type%22%3A%22tvshows%22%7D</property>
+            <property name="path" tag="property" attribute="name|list" value="DefaultSearch-TvShows">plugin://plugin.video.gears/?mode=build_tvshow_list&amp;action=tmdb_tv_search&amp;query=</property>
 
             <property name="path" tag="property" attribute="name|list" value="DefaultSearch-Episodes">videodb://tvshows/titles/-1/-1/-1/-1/?xsp=%7B%22order%22%3A%7B%22direction%22%3A%22ascending%22%2C%22ignorefolders%22%3A0%2C%22method%22%3A%22sorttitle%22%7D%2C%22rules%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22title%22%2C%22operator%22%3A%22contains%22%2C%22value%22%3A%5B%22</property>
             <property name="path2" tag="property" attribute="name|list" value="DefaultSearch-Episodes">%22%5D%7D%5D%7D%2C%22type%22%3A%22episodes%22%7D</property>
