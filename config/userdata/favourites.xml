@@ -1,7 +1,4 @@
 <favourites>
-    <favourite name="Real Debrid - חיבור שירותים" thumb="special://home/media/build_icons/Real_Debrid_Auth.png">RunPlugin(plugin://plugin.video.gears/?mode=real_debrid.authenticate)</favourite>
-    <favourite name="פרטי מנוי" thumb="special://home/media/build_icons/Real_Derbid.png">PlayMedia("plugin://plugin.video.gears/?mode=real_debrid.rd_account_info&amp;isFolder=false")</favourite>
-	<favourite name="Real Debrid - ניתוק שירותים" thumb="special://home/media/build_icons/Real_Debrid_Revoke.png">RunPlugin(plugin://plugin.video.gears/?mode=real_debrid.revoke_authentication)</favourite>
     <favourite name="TorBox - חיבור שירותים" thumb="special://home/media/build_icons/TorBox_Auth.png">RunPlugin(plugin://plugin.video.gears/?mode=torbox.authenticate)</favourite>
     <favourite name="TorBox - פרטי מנוי" thumb="special://home/media/build_icons/TorBox.png">PlayMedia("plugin://plugin.video.gears/?mode=torbox.tb_account_info&amp;isFolder=false")</favourite>
 	<favourite name="TorBox - ניתוק שירותים" thumb="special://home/media/build_icons/TorBox_Revoke.png">RunPlugin(plugin://plugin.video.gears/?mode=torbox.revoke_authentication)</favourite>

@@ -139,9 +139,6 @@
 							<include content="InfoWallMusicLayout"><param name="fallback_image" value="DefaultFavourites.png"/><param name="focused" value="true"/></include>
 						</control></focusedlayout>
 						<content>
-							<item><label>Real Debrid - חיבור שירותים</label><onclick>RunPlugin(plugin://plugin.video.gears/?mode=real_debrid.authenticate)</onclick><thumb>special://home/media/build_icons/Real_Debrid_Auth.png</thumb></item>
-							<item><label>פרטי מנוי</label><onclick>PlayMedia("plugin://plugin.video.gears/?mode=real_debrid.rd_account_info&amp;isFolder=false")</onclick><thumb>special://home/media/build_icons/Real_Derbid.png</thumb></item>
-							<item><label>Real Debrid - ניתוק שירותים</label><onclick>RunPlugin(plugin://plugin.video.gears/?mode=real_debrid.revoke_authentication)</onclick><thumb>special://home/media/build_icons/Real_Debrid_Revoke.png</thumb></item>
 							<item><label>TorBox - חיבור שירותים</label><onclick>RunPlugin(plugin://plugin.video.gears/?mode=torbox.authenticate)</onclick><thumb>special://home/media/build_icons/TorBox_Auth.png</thumb></item>
 							<item><label>TorBox - פרטי מנוי</label><onclick>PlayMedia("plugin://plugin.video.gears/?mode=torbox.tb_account_info&amp;isFolder=false")</onclick><thumb>special://home/media/build_icons/TorBox.png</thumb></item>
 							<item><label>TorBox - ניתוק שירותים</label><onclick>RunPlugin(plugin://plugin.video.gears/?mode=torbox.revoke_authentication)</onclick><thumb>special://home/media/build_icons/TorBox_Revoke.png</thumb></item>
@@ -1071,7 +1068,7 @@
 							<label>החלפת סקין</label>
 							<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</onclick>
 							<property name="menu_id">$NUMBER[9000]</property>
-							<thumb>icons/sidemenu/settings.png</thumb>
+							<thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/icon.png</thumb>
 							<property name="id">mk_skin</property>
 						</item>
 						<item>
