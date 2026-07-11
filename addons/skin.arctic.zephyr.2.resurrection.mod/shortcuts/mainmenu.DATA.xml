@@ -25,14 +25,14 @@
         <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_tv_trending&amp;iconImage=trending&amp;mode=build_tvshow_list&amp;name=Trending&amp;random_support=true",return)</action>
     </shortcut>
     <shortcut>
-        <label>סרטים בתהליך צפייה</label>
+        <label>סרטים בתהליך</label>
         <label2>Common Shortcut</label2>
         <defaultID>mkil_movies_inprogress</defaultID>
         <icon>special://home/media/build_icons/Movies_In_Progress.png</icon>
         <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=in_progress_movies&amp;iconImage=player&amp;mode=build_movie_list&amp;name=In%20Progress",return)</action>
     </shortcut>
     <shortcut>
-        <label>סדרות בתהליך צפייה</label>
+        <label>סדרות בתהליך</label>
         <label2>Common Shortcut</label2>
         <defaultID>mkil_tv_inprogress</defaultID>
         <icon>special://home/media/build_icons/Series_In_Progress.png</icon>
@@ -81,7 +81,7 @@
         <action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=tmdb_tv_networks&amp;key_id=3186&amp;mode=build_tvshow_list&amp;name=HBO%20Max",return)</action>
     </shortcut>
     <shortcut>
-        <label>TorBox - חיבור שירותים</label>
+        <label>חיבור TorBox</label>
         <label2>Common Shortcut</label2>
         <defaultID>mkil_torbox</defaultID>
         <icon>special://home/media/build_icons/TorBox_Auth.png</icon>

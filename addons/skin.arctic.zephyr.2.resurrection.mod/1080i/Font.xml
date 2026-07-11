@@ -533,13 +533,13 @@
         <font>
             <name>font_byline</name>
             <style>uppercase</style>
-            <filename>RobotoCondensed-Spaced-Caps.ttf</filename>
+            <filename>Rubik-Bold.ttf</filename>
             <size>22</size>
         </font>
         <font>
             <name>font_hintlabel</name>
             <style>uppercase bold</style>
-            <filename>RobotoCondensed-Spaced.ttf</filename>
+            <filename>Rubik-Regular.ttf</filename>
             <size>18</size>
         </font>
 
