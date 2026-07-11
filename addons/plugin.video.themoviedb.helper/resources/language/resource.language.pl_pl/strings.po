@@ -260,7 +260,7 @@ msgstr "Usunięto informacje {} zapisane w pamięci podręcznej"
 #: /resources/settings.xml
 msgctxt "#32052"
 msgid "Delete TMDb cached item details"
-msgstr "Usuń informacje TMDB zapisane w pamięci podręcznej"
+msgstr "Usuń szczegóły pozycji TMDB z pamięci podręcznej"
 
 #: /resources/settings.xml
 msgctxt "#32053"
@@ -1665,8 +1665,7 @@ msgstr ""
 "[B]{}[/B]"
 
 #: /resources/lib/trakt/api.py
-msgctxt "#32315"
-msgid "Add to liked lists"
+msgctxt Retrievingsgid "Add to liked lists"
 msgstr "Dodaj do polubionych list"
 
 #: /resources/lib/trakt/api.py
@@ -1832,12 +1831,12 @@ msgstr "Grupy odcinków"
 #: /resources/settings.xml
 msgctxt "#32347"
 msgid "Log output of Trakt request"
-msgstr "Wyjście dziennika żądań Trakt"
+msgstr "Zapisuj w dzienniku wyniki zapytań Trakt"
 
 #: /resources/settings.xml
 msgctxt "#32348"
 msgid "Log output of TMDb request"
-msgstr "Wyjście dziennika żądań TMDB"
+msgstr "Zapisuj w dzienniku wyniki zapytań TMDB"
 
 #: /resources/settings.xml
 msgctxt "#32349"
@@ -2027,6 +2026,11 @@ msgid "Hide Up Next"
 msgstr "Ukrywaj następne"
 
 #: /resources/settings.xml
+msgctxt "#32396"
+msgid "Delete TMDb cached list details"
+msgstr "Usuń szczegóły list TMDB z pamięci podręcznej"
+
+#: /resources/settings.xml
 msgctxt "#32381"
 msgid "Hide Up Next and Specials"
 msgstr "Ukrywaj specjalne i następne"
@@ -2035,6 +2039,11 @@ msgstr "Ukrywaj specjalne i następne"
 msgctxt "#32382"
 msgid "Hide Episode Groups"
 msgstr "Ukrywaj grupy odcinków"
+
+#: /resources/tmdbhelper/lib/script/method/image_functions.py
+msgctxt "#32399"
+msgid "Retrieving Artwork"
+msgstr "Pobieranie grafik"
 
 #: /resources/settings.xml
 msgctxt "#32383"
