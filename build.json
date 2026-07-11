@@ -1,0 +1,29 @@
+{
+  "build_name": "MasterKodi IL",
+  "brand": "MasterKodi",
+  "maintainer": "asaf27064",
+  "repo": "asaf27064/MasterKodi-IL-Build",
+  "release_tag": "addons-latest",
+  "manifest_schema": 1,
+  "config_version": 8,
+  "channels": {
+    "optional": [
+      "skin.arctic.fuse.3",
+      "plugin.video.themoviedb.helper",
+      "resource.font.robotocjksc",
+      "resource.images.studios.coloured",
+      "resource.images.weathericons.white",
+      "script.module.addon.signals",
+      "script.module.infotagger",
+      "script.module.jurialmunkey",
+      "script.module.qrcode",
+      "script.module.six",
+      "script.skinvariables",
+      "script.texturemaker",
+      "skin.nimbus",
+      "script.nimbus.helper",
+      "service.kodi.il.firstrun"
+    ]
+  },
+  "notes": "channels.optional = addons that are NOT part of every install, so the client only updates them if the user already has them. This is the two skins + their bundled deps (Arctic Fuse pulls themoviedb.helper/skinvariables/jurialmunkey/six/qrcode/fonts/resources; Nimbus pulls script.nimbus.helper) + the bootstrap-only firstrun. Marking them core would make an Estuary/Nimbus user's 'check updates' list every AF3 dependency as missing. Everything else is core and auto-updates for everyone."
+}
