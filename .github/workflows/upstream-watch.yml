@@ -1,6 +1,6 @@
 name: upstream-watch
 
-# Watches upstream for every overlaid addon (gears, AF3) and opens/updates a
+# Watches upstream for every overlaid addon (gears, AF3, zephyr) and opens/updates a
 # single tracking issue when a new version appears -- classifying each as SAFE
 # (bump base_version, the same overlay applies) or MANUAL (a human must re-merge
 # specific files). This is the ONE upstream watcher for the ecosystem; it

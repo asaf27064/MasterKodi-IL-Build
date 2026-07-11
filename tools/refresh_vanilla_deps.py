@@ -8,8 +8,10 @@ until Kodi catches it up. This tool re-vendors the CLEAN upstream zip (exactly
 as a user's Kodi would download it) into addons/<id>.
 
 STRICTLY refuses to touch modded addons (the Hebrew work lives there; those are
-updated only via their overlays). Keep MODDED_ADDONS in sync with
-modular_update.py.
+updated only via their overlays). MODDED_ADDONS below is intentionally a SUPERSET
+of modular_update.py's set -- it adds the wizard + repo (they self-update from
+our own repo, so they need no Kodi auto-update pin, but must never be re-vendored
+from upstream either). Never shrink it below modular_update.py's list.
 
 Usage:
   refresh_vanilla_deps.py            # report: ours vs upstream-latest

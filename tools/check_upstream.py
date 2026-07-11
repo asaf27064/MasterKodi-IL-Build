@@ -123,7 +123,12 @@ def check_one(overlay_dir, target=None):
     the auto-detected upstream latest) and classify the update SAFE/MANUAL."""
     base = json.load(open(os.path.join(overlay_dir, 'base.json'), encoding='utf-8'))
     aid = base['addon_id']
-    cur = base['base_version']
+    # For most upstreams the release tag == the addon version (AF3, gears). For
+    # skins where the release TAG differs from the bundled addon version (e.g.
+    # Zephyr: tag v1.1.9 bundles the Omega 1.0.51 addon), compare the latest tag
+    # against the tracked tag in `upstream_tag` -- otherwise base_version (1.0.51)
+    # vs tag (1.1.9) always looks like an update and fires forever.
+    cur = base.get('upstream_tag') or base['base_version']
     latest = target or _latest_version(base)
     res = {'addon_id': aid, 'current': cur, 'latest': latest,
            'has_update': False, 'manual': [], 'safe': None}
