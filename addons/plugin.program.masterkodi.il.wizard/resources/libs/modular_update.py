@@ -298,11 +298,12 @@ def _finalize_reload(summary):
 
     Never interrupts playback: if something is playing we just notify and let the
     update take effect on the next launch (it's already on disk)."""
-    if not summary.get('applied'):
-        return
     need_restart = summary.get('wizard_changed')
     need_skin = summary.get('skin_changed')
-    if not (need_restart or need_skin):
+    # A config change can rewrite skin files (e.g. skinvariables nodes, home menu),
+    # which the running skin won't show until it reloads.
+    need_config_reload = summary.get('config_applied')
+    if not (need_restart or need_skin or need_config_reload):
         return
     try:
         playing = xbmc.Player().isPlaying()
@@ -332,6 +333,12 @@ def _finalize_reload(summary):
             'MasterKodi IL', 'הסקין עודכן, טוען מחדש...',
             xbmcgui.NOTIFICATION_INFO, 4000)
         xbmc.sleep(800)
+        try:
+            xbmc.executebuiltin('ReloadSkin()')
+        except Exception:
+            pass
+    elif need_config_reload:
+        # config-only change that may have touched the active skin -> quiet reload
         try:
             xbmc.executebuiltin('ReloadSkin()')
         except Exception:
@@ -368,9 +375,10 @@ def run_update(silent=False, notify=None, force=False):
         if not removed:
             _say('הבילד מעודכן')
         # still apply config on a version bump even if no addon changed
-        _maybe_apply_config(manifest, state, force=force)
+        cfg_applied = _maybe_apply_config(manifest, state, force=force)
         _save_state(state)
         return {'ok': True, 'applied': [], 'failed': [], 'removed': removed,
+                'config_applied': cfg_applied,
                 'up_to_date': not removed,
                 'manifest_generated': manifest.get('generated_utc')}
 
@@ -407,7 +415,7 @@ def run_update(silent=False, notify=None, force=False):
     dp.close()
 
     # config payload (default userdata) - applied on version bump only
-    _maybe_apply_config(manifest, state, force=force)
+    cfg_applied = _maybe_apply_config(manifest, state, force=force)
     _save_state(state)
 
     summary = {
@@ -417,6 +425,7 @@ def run_update(silent=False, notify=None, force=False):
         'wizard_changed': wizard_changed,
         'skin_changed': skin_changed,
         'active_skin': active_skin,
+        'config_applied': cfg_applied,
         'up_to_date': False,
         'manifest_generated': manifest.get('generated_utc'),
     }
@@ -441,19 +450,19 @@ def _maybe_apply_config(manifest, state, force=False):
     """
     cfg = manifest.get('config')
     if not cfg:
-        return
+        return False
     key = 'config:%s' % cfg['version']
     fresh = '__config__' not in state          # first ever config apply on this device
     if state.get('__config__') == key and not force:
-        return                                 # already applied (repair re-applies)
+        return False                           # already applied (repair re-applies)
     try:
         data = _download(cfg['url'])
         if hashlib.sha256(data).hexdigest() != cfg['sha256']:
             log('config sha mismatch, skipping', xbmc.LOGWARNING)
-            return
+            return False
     except Exception as e:
         log('config download failed: %s' % e, xbmc.LOGWARNING)
-        return
+        return False
 
     home = xbmcvfs.translatePath('special://home/')
     try:
@@ -471,8 +480,10 @@ def _maybe_apply_config(manifest, state, force=False):
                 z.extractall(home)   # no policy -> legacy behaviour
                 log('applied config %s (no policy, full extract)' % cfg['version'])
         state['__config__'] = key
+        return True
     except Exception as e:
         log('config apply failed: %s' % e, xbmc.LOGWARNING)
+        return False
 
 
 def _apply_policy(zf, policy, home, fresh):
@@ -588,7 +599,12 @@ def check_and_prompt():
         return
     updates = compute_updates(manifest)
     if not updates:
+        # No addon changed, but config (or a removal) still might have -- apply it.
+        # Without this, a config-only update (e.g. home menu / widgets / favourites)
+        # would never reach the user from the manual check.
+        summary = run_update(silent=True)
         dlg.notification('MasterKodi IL', 'הבילד מעודכן', xbmcgui.NOTIFICATION_INFO, 4000)
+        _finalize_reload(summary)
         return
     names = '\n'.join('- %s (%s)' % (u['id'], u['version']) for u in updates[:15])
     more = '' if len(updates) <= 15 else '\n(ועוד %d)' % (len(updates) - 15)
@@ -640,6 +656,7 @@ def silent_check():
         xbmcgui.Dialog().notification(
             'MasterKodi IL', 'עודכנו %d תוספים' % len(summary['applied']),
             xbmcgui.NOTIFICATION_INFO, 5000)
-        # auto reload/restart if the skin or the wizard itself changed
-        _finalize_reload(summary)
+    # auto reload/restart if the wizard, skin, OR config changed (config-only
+    # updates still need a skin reload to show, and produce no notification)
+    _finalize_reload(summary)
     return summary
