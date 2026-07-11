@@ -1,0 +1,5 @@
+<settings version="2">
+    <setting id="homemulti" type="bool">true</setting>
+    <setting id="homemultiflixview" type="bool">true</setting>
+    <setting id="HomeMultiVertical" type="bool">false</setting>
+</settings>
