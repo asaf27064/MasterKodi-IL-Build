@@ -4,6 +4,7 @@
 # Fully fail-open: returns None + a notification on any problem.
 
 import os
+import time
 import xbmc
 import xbmcgui
 import xbmcaddon
@@ -511,12 +512,31 @@ def sync_current_sub():
         if not retimed:
             _notify('הסנכרון לא הצליח - הכתובית נשארה כפי שהיא')
             return None
-        out = _write_srt(retimed)
+        # Write to MySubFolder with a unique name, exactly like a normal download
+        # (_download_row) -- that's the path Kodi reliably loads + selects. A fresh
+        # name each time defeats Kodi's per-path subtitle cache.
+        out = _write_synced_srt(retimed)
         if out:
             _notify('הכתובית סונכרנה!')
         return out
     except Exception as e:
         xbmc.log('[gearsai-ai] sync_current_sub failed: {0}'.format(e), xbmc.LOGWARNING)
+        return None
+
+
+def _write_synced_srt(text):
+    try:
+        from resources.modules import general
+        folder = getattr(general, 'MySubFolder', None) or None
+        if not folder or not os.path.isdir(folder):
+            from resources.aisubs import kodi_utils
+            folder = kodi_utils.temp_dir()
+        path = os.path.join(folder, 'gearsai_synced_%d.he.srt' % int(time.time()))
+        with open(path, 'w', encoding='utf-8', newline='') as f:
+            f.write(text)
+        return path
+    except Exception as e:
+        xbmc.log('[gearsai-ai] write synced failed: {0}'.format(e), xbmc.LOGWARNING)
         return None
 
 
@@ -595,11 +615,11 @@ def _read_text(path):
         return None
 
 
-def _write_srt(text):
-    """Write Hebrew SRT text to the shared temp path and return it (or None)."""
+def _write_srt(text, name='gearsai_ai_he.srt'):
+    """Write Hebrew SRT text to a temp path and return it (or None)."""
     try:
         from resources.aisubs import kodi_utils
-        path = os.path.join(kodi_utils.temp_dir(), 'gearsai_ai_he.srt')
+        path = os.path.join(kodi_utils.temp_dir(), name)
         with open(path, 'w', encoding='utf-8', newline='') as f:
             f.write(text)
         return path

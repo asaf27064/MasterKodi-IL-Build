@@ -212,6 +212,20 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         rows = _build_rows(self.list_o, self.video_data, self.all_subs,
                            self.last_name, self.last_lang, two_line=True)
         items = []
+        # MASTERKODI: pinned action row -- re-time the Hebrew sub currently on
+        # screen onto the playing file's real timing (embedded-English oracle
+        # first, release-matched external English fallback). Shown only while a
+        # Hebrew sub placed by us is active.
+        self._has_sync_row = False
+        try:
+            cur = xbmcgui.Window(10000).getProperty('gearsai.current_heb_sub')
+            self._has_sync_row = bool(cur)
+        except Exception:
+            pass
+        if self._has_sync_row:
+            items.append(xbmcgui.ListItem(
+                label='[COLOR springgreen][B]סנכרון[/B][/COLOR]  ·  סנכרן את הכתובית שמוצגת כעת',
+                label2='מיישר את התזמון לפי הקובץ המתנגן (אנגלית מוטמעת / חיצונית תואמת)'))
         for line1, line2 in rows:
             items.append(xbmcgui.ListItem(label=line1, label2=line2))
         ctl.addItems(items)
@@ -248,6 +262,12 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         if control_id != 100:
             return
         idx = self.getControl(100).getSelectedPosition()
+        # MASTERKODI: pinned sync row sits at index 0 when present.
+        if getattr(self, '_has_sync_row', False):
+            if idx == 0:
+                self._run_sync()
+                return
+            idx -= 1
         if idx < 0 or idx >= len(self.full_list):
             return
         self._set_status('מוריד…')
@@ -266,6 +286,28 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         self._fill_list(keep_pos=True)
         from resources.modules import general
         general.show_msg = "END"
+
+    def _run_sync(self):
+        """MASTERKODI: run the sync-current-sub flow (embedded-English oracle ->
+        external English) and load the re-timed sub. Blocking with status text --
+        the probe typically takes ~5-15s."""
+        self._set_status('מסנכרן לפי הקובץ המתנגן… (עד ~20 שניות)')
+        try:
+            from resources.aisubs import ai_bridge
+            path = ai_bridge.sync_current_sub()
+        except Exception as e:
+            log.warning('sync row error: %s' % e)
+            path = None
+        if path:
+            try:
+                # Mirror the normal-download path exactly (that reliably selects +
+                # shows the sub): a plain setSubtitles to a fresh MySubFolder file.
+                xbmc.Player().setSubtitles(path)
+            except Exception as e:
+                log.warning('apply synced sub failed: %s' % e)
+            self._set_status('הכתובית סונכרנה!', 'springgreen')
+        else:
+            self._set_status('הסנכרון לא הצליח - הכתובית נשארה כפי שהיא', 'red')
 
     def onAction(self, action):
         if action.getId() in (10, 92, 216, 247, 257, 275, 61467, 61448):

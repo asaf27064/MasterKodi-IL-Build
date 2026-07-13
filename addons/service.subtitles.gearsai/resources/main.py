@@ -101,7 +101,7 @@ def start():
             except Exception:
                 _has_cur = False
             if _has_cur:
-                sync_li = xbmcgui.ListItem(label='עברית', label2='🔄 סנכרן את הכתובית שמוצגת כעת')
+                sync_li = xbmcgui.ListItem(label='עברית', label2='● סנכרן את הכתובית שמוצגת כעת')
                 sync_li.setArt({'thumb': 'he', 'icon': '0'})
                 sync_li.setProperty('sync', 'true')
                 sync_li.setProperty('hearing_imp', 'false')
