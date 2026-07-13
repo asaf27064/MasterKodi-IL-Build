@@ -13,40 +13,46 @@ except ImportError:                       # pragma: no cover
     import urllib2 as _req
     import urllib as _parse
 
-TIDB_URL = 'https://api.theintrodb.org/v3/media'
+TIDB_URL = 'https://api.introdb.app/segments'
 SKIPDB_URL = 'https://api.skipdb.tv/api/segments'
 TIMEOUT = 10
 MIN_CONFIDENCE = 0.4
 SKIPDB_MAX_OFFSET = 300
 
+# IntroDB API key (idb_...). The authenticated /segments endpoint returns correct
+# per-episode intro + recap + outro (the old public /v3/media endpoint had none of
+# that -- intro-only, and an imdb->episode-1 fallback bug). Shared public build
+# key (Asaf's call, like the mdblist/omdb keys); free at introdb.app.
+INTRODB_API_KEY = 'idb_2klbzcuvxEkrBxhsRWW7Le8y8HZ36wPt'
 
-def _get_json(url, ua):
-    req = _req.Request(url, headers={'Accept': 'application/json', 'User-Agent': ua})
+
+def _get_json(url, ua, auth=False):
+    headers = {'Accept': 'application/json', 'User-Agent': ua}
+    if auth and INTRODB_API_KEY:
+        headers['Authorization'] = 'Bearer ' + INTRODB_API_KEY
+    req = _req.Request(url, headers=headers)
     raw = _req.urlopen(req, timeout=TIMEOUT).read()
     return json.loads(raw.decode('utf-8', 'replace'))
 
 
-def _tidb(imdb_id, season, episode, duration_ms, tmdb_id=None):
-    # Prefer tmdb_id: TheIntroDB's imdb_id index is patchy for some shows and then
-    # falls back to the wrong episode; tmdb_id returns correct per-episode data.
-    q = {'tmdb_id': str(tmdb_id)} if tmdb_id else {'imdb_id': imdb_id}
+def _tidb(imdb_id, season, episode, duration_ms=None, tmdb_id=None):
+    # api.introdb.app/segments: keyed by imdb_id (+ season/episode), returns
+    # correct per-episode intro/recap/outro as single objects with start_sec/end_sec.
+    if not imdb_id:
+        return {}
+    q = {'imdb_id': imdb_id}
     try:
         if season:
             q['season'] = int(season)
         if episode:
             q['episode'] = int(episode)
-        if duration_ms:
-            q['duration_ms'] = int(duration_ms)
     except (TypeError, ValueError):
         pass
     try:
-        data = _get_json(TIDB_URL + '?' + _parse.urlencode(q), 'TheIntroDB Kodi Addon/1.0')
+        data = _get_json(TIDB_URL + '?' + _parse.urlencode(q), 'MasterKodiSkipIntro/1.3', auth=True)
     except Exception:
         return {}
-    # TheIntroDB's /v3/media FALLS BACK to another episode (usually E1) when the
-    # requested one has no data -- but it honestly reports which episode it
-    # answered for. Reject the mismatch, otherwise every episode of a show that
-    # only has E1 timings gets E1's (wrong) intro. (Nuvio validates this too.)
+    # Safety: reject if the API answered for a different episode.
     try:
         if episode is not None and data.get('episode') is not None \
                 and int(data['episode']) != int(episode):
@@ -56,33 +62,30 @@ def _tidb(imdb_id, season, episode, duration_ms, tmdb_id=None):
             return {}
     except (TypeError, ValueError, AttributeError):
         pass
-    segs = (data or {}).get('segments') or data or {}
     out = {}
     for kind in ('intro', 'recap'):
-        arr = segs.get(kind)
-        if isinstance(arr, dict):
-            arr = [arr]
-        if not isinstance(arr, list):
+        s = data.get(kind)
+        if not isinstance(s, dict):
             continue
-        best, best_score = None, -1.0
-        for s in arr:
-            if not isinstance(s, dict):
-                continue
-            st, en = s.get('start_ms'), s.get('end_ms')
-            if en is None:
-                continue
-            if st is None:
-                st = 0
-            if en <= st:
-                continue
-            conf = s.get('confidence')
-            conf = 0.5 if conf is None else float(conf)
-            score = conf + s.get('submission_count', 1) * 0.001
-            if score > best_score:
-                best_score = score
-                best = (st / 1000.0, en / 1000.0)
-        if best:
-            out[kind] = best
+        st, en = s.get('start_sec'), s.get('end_sec')
+        if st is None and s.get('start_ms') is not None:
+            st = s['start_ms'] / 1000.0
+        if en is None and s.get('end_ms') is not None:
+            en = s['end_ms'] / 1000.0
+        try:
+            st, en = float(st if st is not None else 0), float(en)
+        except (TypeError, ValueError):
+            continue
+        if en <= st:
+            continue
+        c = s.get('confidence')
+        if c is not None:
+            try:
+                if float(c) < MIN_CONFIDENCE:
+                    continue
+            except (TypeError, ValueError):
+                pass
+        out[kind] = (st, en)
     return out
 
 
@@ -132,15 +135,10 @@ def _skipdb(imdb_id, season, episode, duration):
 
 def get_segments(imdb_id, season=None, episode=None, duration=None, tmdb_id=None):
     has_imdb = imdb_id and str(imdb_id).startswith('tt')
-    if not has_imdb and not tmdb_id:
-        return {}
-    duration_ms = int(float(duration) * 1000) if duration else None
-    # TheIntroDB by tmdb_id (correct per-episode); if no tmdb, by imdb_id.
-    out = _tidb(imdb_id, season, episode, duration_ms, tmdb_id=tmdb_id)
-    if 'intro' not in out and tmdb_id and has_imdb:            # tmdb missed -> try imdb
-        for k, v in _tidb(imdb_id, season, episode, duration_ms).items():
-            out.setdefault(k, v)
-    if 'intro' not in out and has_imdb:                        # fill gaps from SkipDB
+    if not has_imdb:
+        return {}                                             # introdb /segments needs imdb
+    out = _tidb(imdb_id, season, episode)                     # IntroDB: intro + recap
+    if 'intro' not in out:                                    # fill gaps from SkipDB
         for k, v in _skipdb(imdb_id, season, episode, duration).items():
             out.setdefault(k, v)
     return out
