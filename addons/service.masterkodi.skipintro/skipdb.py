@@ -41,6 +41,19 @@ def _tidb(imdb_id, season, episode, duration_ms):
         data = _get_json(TIDB_URL + '?' + _parse.urlencode(q), 'TheIntroDB Kodi Addon/1.0')
     except Exception:
         return {}
+    # TheIntroDB's /v3/media FALLS BACK to another episode (usually E1) when the
+    # requested one has no data -- but it honestly reports which episode it
+    # answered for. Reject the mismatch, otherwise every episode of a show that
+    # only has E1 timings gets E1's (wrong) intro. (Nuvio validates this too.)
+    try:
+        if episode is not None and data.get('episode') is not None \
+                and int(data['episode']) != int(episode):
+            return {}
+        if season is not None and data.get('season') is not None \
+                and int(data['season']) != int(season):
+            return {}
+    except (TypeError, ValueError, AttributeError):
+        pass
     segs = (data or {}).get('segments') or data or {}
     out = {}
     for kind in ('intro', 'recap'):
