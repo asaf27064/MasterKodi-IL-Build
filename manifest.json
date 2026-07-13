@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-13T11:21:47Z",
+  "generated_utc": "2026-07-13T11:24:47Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -45,12 +45,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.27",
+      "version": "2.4.28",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.27.zip",
-      "sha256": "568294a2c9e6705848c2f245cae5e94da1f442bec7d7fa935e6c4cae30d5834d",
-      "size": 2305960,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.27.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.28.zip",
+      "sha256": "6e8faa39cd063201a2f7c2acd6cb5a615e4b7ddfe5f7101977a883f91c951e75",
+      "size": 2305879,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.28.zip"
     },
     {
       "id": "plugin.video.gears",
