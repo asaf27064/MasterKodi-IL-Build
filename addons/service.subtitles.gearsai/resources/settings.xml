@@ -54,6 +54,7 @@
 
 		<setting label="─── MasterKodi · סנכרון חכם (ניתן לכבות כל פיצ'ר בנפרד) ───" type="lsep"/>
 		<setting id="prefetch" label="חיפוש מקדים · חפש כתוביות כבר בזמן סריקת המקורות (מהיר יותר)" type="bool" default="true" />
+		<!-- ON by default (Asaf, 2026-07-13). CAVEAT: mkv_probe Range-reads + CERT_NONE ssl are desktop-tested only; Android validation still pending. Fail-open so worst case = no-op. -->
 		<setting id="mkv_sync_oracle" label="סנכרון חכם אוטומטי · יישר כתובית מהמאגר לפי הזמנים המוטמעים בקובץ" type="bool" default="true" />
 		<setting id="manual_sync_row" label="הצג כפתור 'סנכרן את הכתובית שמוצגת כעת' בחלונות הכתוביות" type="bool" default="true" />
 

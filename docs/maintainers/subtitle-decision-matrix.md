@@ -51,3 +51,13 @@ gearsai **1.0.34** (2026-07-13). Modes:
 
 Nothing is locked: Kodi's subtitle menu can always disable the current sub or
 pick another row (list is sorted by match %).
+
+## Defaults & the Android caveat (gearsai 1.0.36)
+`prefetch`, `mkv_sync_oracle`, and `manual_sync_row` all ship **ON** by default
+(section "MasterKodi · סנכרון חכם", each individually toggleable). CAVEAT: the
+`mkv_sync_oracle` path uses `mkv_probe` HTTP Range reads + a `CERT_NONE` SSL
+context that are validated on desktop only — **Android is not yet verified**. It's
+a narrow auto path (only when a pooled sub needs re-timing AND text + timestamp
+align both fail) and is fully fail-open (any error → no-op → the sub is left as-is),
+so the on-by-default risk is bounded. TODO: validate Range + SSL on a real Android
+device; until then treat Android behavior of the auto-sync as unproven.
