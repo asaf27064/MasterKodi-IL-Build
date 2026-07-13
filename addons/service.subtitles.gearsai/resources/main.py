@@ -97,7 +97,8 @@ def start():
             # playing file's real timing (embedded English first, external English
             # fallback). Only offered while a Hebrew sub is actually active.
             try:
-                _has_cur = bool(xbmcgui.Window(10000).getProperty('gearsai.current_heb_sub'))
+                _row_on = xbmcaddon.Addon('service.subtitles.gearsai').getSetting('manual_sync_row') != 'false'
+                _has_cur = _row_on and bool(xbmcgui.Window(10000).getProperty('gearsai.current_heb_sub'))
             except Exception:
                 _has_cur = False
             if _has_cur:

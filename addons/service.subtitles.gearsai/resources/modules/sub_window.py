@@ -218,8 +218,9 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         # Hebrew sub placed by us is active.
         self._has_sync_row = False
         try:
-            cur = xbmcgui.Window(10000).getProperty('gearsai.current_heb_sub')
-            self._has_sync_row = bool(cur)
+            if Addon.getSetting('manual_sync_row') != 'false':
+                cur = xbmcgui.Window(10000).getProperty('gearsai.current_heb_sub')
+                self._has_sync_row = bool(cur)
         except Exception:
             pass
         if self._has_sync_row:
