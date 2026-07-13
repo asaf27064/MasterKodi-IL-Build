@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-13T11:12:28Z",
+  "generated_utc": "2026-07-13T11:17:51Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -480,8 +480,8 @@
       "version": "2.3.1",
       "channel": "core",
       "zip": "service.subtitles.all_subs_plus-2.3.1.zip",
-      "sha256": "814b3480f04b15e7da878e2bf9321827fea6abb724e7ee27ab83c41c439906f6",
-      "size": 619402,
+      "sha256": "5c4d63bb6922ac98f7eeb30b5f71508f2863e9ba53f96dfa331dcf39728006eb",
+      "size": 609759,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/service.subtitles.all_subs_plus-2.3.1.zip"
     },
     {
