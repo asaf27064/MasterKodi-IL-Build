@@ -145,7 +145,10 @@ class SkipService(xbmc.Monitor):
         last_file = None
         segs = None
         attempts = 0
-        shown = set()
+        # Only segments the user ACTUALLY skipped are suppressed forever. A pill
+        # that was merely dismissed (OSD opened) or a window you seeked back into
+        # can re-appear -- so closing the OSD or jumping back brings it back.
+        skipped = set()
         while not self.abortRequested():
             try:
                 if _get_bool('enabled', True) and self.player.isPlayingVideo():
@@ -154,7 +157,7 @@ class SkipService(xbmc.Monitor):
                         last_file = f
                         segs = None
                         attempts = 0
-                        shown = set()
+                        skipped = set()
                     if segs is None:
                         result = self._detect()
                         attempts += 1
@@ -166,33 +169,44 @@ class SkipService(xbmc.Monitor):
                             segs = []
                     if segs:
                         t = self._time()
+                        # Don't fight the OSD: while it's open, hold off and retry
+                        # on a later tick (which is exactly what lets the pill come
+                        # back once the user closes the OSD, still inside the intro).
+                        osd_open = xbmc.getCondVisibility('Window.IsVisible(videoosd)')
                         for i, (kind, start, end) in enumerate(segs):
-                            if i in shown:
+                            if i in skipped:
                                 continue
                             # Don't pop the pill during the chaotic first seconds
                             # of playback (startup OSD / autosub) -- it gets
                             # dismissed instantly. Wait at least a few seconds in.
                             show_at = max(start, 4.0)
-                            if show_at <= t < (end - 1):
-                                shown.add(i)
-                                if _get_bool('auto_skip', False):
+                            if not (show_at <= t < (end - 1)):
+                                continue
+                            if osd_open:
+                                break
+                            if _get_bool('auto_skip', False):
+                                skipped.add(i)
+                                try:
+                                    self.player.seekTime(float(end))
+                                except Exception:
+                                    pass
+                            else:
+                                pressed = overlay.show_skip_overlay(
+                                    LABELS.get(kind, 'דלג'), float(start), float(end), self.player, self)
+                                if pressed:
+                                    skipped.add(i)      # skipped -> don't nag again
                                     try:
                                         self.player.seekTime(float(end))
                                     except Exception:
                                         pass
-                                else:
-                                    pressed = overlay.show_skip_overlay(
-                                        LABELS.get(kind, 'דלג'), float(start), float(end), self.player, self)
-                                    if pressed:
-                                        try:
-                                            self.player.seekTime(float(end))
-                                        except Exception:
-                                            pass
-                                break
+                                # merely dismissed (OSD/other input) -> NOT added to
+                                # `skipped`, so it re-appears next tick if still in
+                                # the window.
+                            break
                 else:
                     last_file = None
                     segs = None
-                    shown = set()
+                    skipped = set()
             except Exception as e:
                 xbmc.log('[skipintro] loop error: %s' % e, xbmc.LOGDEBUG)
             if self.waitForAbort(1):
