@@ -55,7 +55,7 @@
                     <param name="label" value="$INFO[Player.Process(amlogic.displaymode),[COLOR panel_fg_100]Display mode: [/COLOR] ] " />
                 </include>
                 <include content="Object_ShadowSpot_Label">
-                    <param name="label" value="$INFO[Player.Process(amlogic.eoft_gamut),[COLOR panel_fg_100]Eotf&Gamut: [/COLOR] ]" />
+                    <param name="label" value="$INFO[Player.Process(amlogic.eoft_gamut),[COLOR panel_fg_100]Eotf&amp;amp;Gamut: [/COLOR] ]" />
                 </include>
                 <include content="Object_ShadowSpot_Label">
                     <param name="label" value="$INFO[Player.Process(amlogic.pixformat),[COLOR panel_fg_100]Colour Depth: [/COLOR] ]" />

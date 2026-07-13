@@ -819,7 +819,7 @@ class BuildManager:
         # Zephyr: use its built-in "Arial" fontset. Its Rubik renders Hebrew in
         # labels but tofus inside Kodi <textbox> controls (the Gears plot panel);
         # Arial is a complete font that renders Hebrew everywhere, incl. textboxes.
-        'skin.arctic.zephyr.2.resurrection.mod': 'Arial',
+        'skin.arctic.zephyr.2.resurrection.mod': 'Hebrew (Noto)',
         'skin.estuary': 'Default',
         'skin.nimbus': 'Default',
     }
