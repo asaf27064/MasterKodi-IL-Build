@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-13T11:45:00Z",
+  "generated_utc": "2026-07-13T12:04:36Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -45,12 +45,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.28",
+      "version": "2.4.29",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.28.zip",
-      "sha256": "6e8faa39cd063201a2f7c2acd6cb5a615e4b7ddfe5f7101977a883f91c951e75",
-      "size": 2305879,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.28.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.29.zip",
+      "sha256": "2ab65857f526fa3c7f2b8fec5b6d1a763763b965d34db95f7756bfd76af86b79",
+      "size": 2305906,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.29.zip"
     },
     {
       "id": "plugin.video.gears",
@@ -489,26 +489,26 @@
       "version": "3.2.13",
       "channel": "optional",
       "zip": "skin.arctic.fuse.3-3.2.13.zip",
-      "sha256": "dd67df72197821f0a1cc6b58836ec490b3ee4714a9564a8ba3700ceb970b9355",
-      "size": 54447002,
+      "sha256": "64516ada19b93661c1f7b6cfc6c40510f6908edd62e5ceccc5960bbebcecac90",
+      "size": 54640041,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.fuse.3-3.2.13.zip"
     },
     {
       "id": "skin.arctic.zephyr.2.resurrection.mod",
-      "version": "1.0.51.14",
+      "version": "1.0.51.15",
       "channel": "optional",
-      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.0.51.14.zip",
-      "sha256": "605f6c04900148952652852403ca3ad9bb29ae9682302d11a25dabfb9baa7a64",
-      "size": 18331240,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.zephyr.2.resurrection.mod-1.0.51.14.zip"
+      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.0.51.15.zip",
+      "sha256": "a8589af21585a52c36371649b9690d4f66253b13f4558aa192790ae1a172c584",
+      "size": 18525053,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.zephyr.2.resurrection.mod-1.0.51.15.zip"
     },
     {
       "id": "skin.estuary",
       "version": "4.0.0",
       "channel": "core",
       "zip": "skin.estuary-4.0.0.zip",
-      "sha256": "2910070a6a7319192d0c19b8436ff9c87e3d82c5dd3b970ea2f620c30b4cccd2",
-      "size": 5427982,
+      "sha256": "b6b4e073f800f4d8b866a22e0fff4426396ff64855a7206668be5835f06e42f3",
+      "size": 5605441,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.estuary-4.0.0.zip"
     },
     {
@@ -516,16 +516,16 @@
       "version": "0.1.43",
       "channel": "optional",
       "zip": "skin.nimbus-0.1.43.zip",
-      "sha256": "7d6b3024047bc7122697ade2537cc421c4c9251fac18159ce2c94b5ee5c82d60",
-      "size": 10494674,
+      "sha256": "4f9f353b577040fa3650ce7ba211a178ad954783b61609cedc77a0eb02822b0b",
+      "size": 10587233,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.nimbus-0.1.43.zip"
     }
   ],
   "config": {
     "version": "11",
     "zip": "config-11.zip",
-    "sha256": "20a14eed075225c6f208c999bb3a77d1b15acc61bfe3cf6792e1da3ef8ef3a83",
-    "size": 26880,
+    "sha256": "235cc2a331ee3f119fd6a621570221b72eda80074fac98034e8d4f08cd05ec54",
+    "size": 26926,
     "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-11.zip"
   }
 }
