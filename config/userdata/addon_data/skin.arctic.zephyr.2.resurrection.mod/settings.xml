@@ -18,7 +18,7 @@
     <setting id="customrating.tvshows.item02" type="string">TMDb</setting>
     <setting id="customrating.tvshows.item03" type="string">Trakt</setting>
     <setting id="Infoline.DisableMatch" type="bool">true</setting>
-    <setting id="ShowClearlogo" type="bool">false</setting>
+    <setting id="ShowClearlogo" type="bool">true</setting>
     <setting id="customrating.movies.item04" type="string">Letterboxd</setting>
     <setting id="customrating.movies.item05" type="string">Trakt</setting>
     <setting id="customrating.movies.item06" type="string">TMDb</setting>
