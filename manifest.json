@@ -2,29 +2,11 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-13T11:17:51Z",
+  "generated_utc": "2026-07-13T11:21:47Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
   "addons": [
-    {
-      "id": "metadata.album.universal",
-      "version": "3.1.18",
-      "channel": "core",
-      "zip": "metadata.album.universal-3.1.18.zip",
-      "sha256": "37de4b6f27960917bb200a05c7cd0bd2ab2329c0a6915576d5cc8ad712caf15b",
-      "size": 131653,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/metadata.album.universal-3.1.18.zip"
-    },
-    {
-      "id": "metadata.artists.universal",
-      "version": "4.3.21",
-      "channel": "core",
-      "zip": "metadata.artists.universal-4.3.21.zip",
-      "sha256": "bbb2a3cdc55234614d3b44ee96f93d3765af85e7aed6a1fd948a25f6c406329e",
-      "size": 146789,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/metadata.artists.universal-4.3.21.zip"
-    },
     {
       "id": "metadata.common.fanart.tv",
       "version": "3.6.5",
@@ -33,15 +15,6 @@
       "sha256": "550d8fa8c7c742d2f37e2aa11b50444427e1b742fd5a3f1da3120e7c3bc8f2d7",
       "size": 8347,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/metadata.common.fanart.tv-3.6.5.zip"
-    },
-    {
-      "id": "metadata.generic.albums",
-      "version": "1.0.18",
-      "channel": "core",
-      "zip": "metadata.generic.albums-1.0.18.zip",
-      "sha256": "4fa99b3986a193fda3de57ce835608673430bf9a35d2e0253b7d16d491e64b54",
-      "size": 141837,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/metadata.generic.albums-1.0.18.zip"
     },
     {
       "id": "metadata.themoviedb.org.python",
