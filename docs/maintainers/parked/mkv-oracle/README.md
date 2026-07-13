@@ -46,3 +46,17 @@ Production TODO when we pick this up:
 Related existing pieces: `sync_align.py` (timestamp offset aligner),
 `resync.py` (text-based English-A↔English-B aligner), `match.py` (release scoring).
 See [[moran-wizard-reference]] — Moran's `mkv_probe.py` is the prior art.
+
+## Piecewise / mid-episode step sync — DEFERRED (2026-07-13)
+Attempted: when a sub is synced for part of an episode then steps out (recap/ad
+break/extra scene), detect the breakpoint and align each segment to its own
+anchors. Prototyped (iterative segment-peeling + per-segment linear fit) but not
+shipped. Problem: on a dense cue train (a 45-min episode has ~500-800 cues), the
+offset voting can coincidentally align ~60% of even RANDOM anchors within tol, so
+step-detection either misses real steps or false-positives. This affects the
+GLOBAL aligner too (junk 10/20 on synthetic random anchors) but is a non-issue in
+practice: real oracle anchors are genuine English cue times that align at one
+consistent offset with ~0 residual, and the action is user-triggered + reversible.
+To ship piecewise safely we need real multi-sample data to set a residual-based
+junk gate (real aligns to <~0.12s; coincidence uses the full tol). Prototype
+sync_align piecewise lives only in git history (reverted from working tree).
