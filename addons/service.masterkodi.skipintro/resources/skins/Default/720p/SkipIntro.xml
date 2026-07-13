@@ -28,6 +28,17 @@
                 <texture colordiffuse="66000000" border="12">rounded_rect.png</texture>
             </control>
 
+            <!-- focus glow ring: pulses so it clearly reads as a pressable button -->
+            <control type="image" id="3009">
+                <posx>-4</posx>
+                <posy>-4</posy>
+                <width>234</width>
+                <height>48</height>
+                <aspectratio>stretch</aspectratio>
+                <texture colordiffuse="FFFFFFFF" border="15">rounded_rect.png</texture>
+                <animation effect="fade" start="100" end="28" time="750" loop="true" reversible="true" condition="true">Conditional</animation>
+            </control>
+
             <!-- the pill button (base + focus textures) -->
             <control type="button" id="3001">
                 <posx>0</posx>
@@ -40,8 +51,8 @@
                 <font>font13</font>
                 <textcolor>FFFFFFFF</textcolor>
                 <focusedcolor>FFFFFFFF</focusedcolor>
-                <texturefocus colordiffuse="FF00C6D4" border="12">rounded_rect.png</texturefocus>
-                <texturenofocus colordiffuse="FF00A0AA" border="12">rounded_rect.png</texturenofocus>
+                <texturefocus colordiffuse="FF10D4E6" border="12">rounded_rect.png</texturefocus>
+                <texturenofocus colordiffuse="FF10D4E6" border="12">rounded_rect.png</texturenofocus>
                 <label>דלג על הפתיח</label>
             </control>
 
