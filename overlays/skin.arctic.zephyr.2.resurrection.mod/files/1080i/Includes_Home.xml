@@ -1856,6 +1856,19 @@
                         <visible>!String.IsEmpty(Container($PARAM[id]).ListItem.Art(clearlogo))</visible>
                     </control>
                 </control>
+                <!-- MasterKodi IL: readable title text under the clearlogo (logos are
+                     sometimes unclear); shows only when a clearlogo is on screen. -->
+                <control type="label">
+                    <visible>!String.IsEmpty(Container($PARAM[id]).ListItem.Art(clearlogo))</visible>
+                    <height>44</height>
+                    <width>620</width>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <font>font_small_bold</font>
+                    <textcolor>main_fg_70</textcolor>
+                    <shadowcolor>ff000000</shadowcolor>
+                    <label>$INFO[Container($PARAM[id]).ListItem.Label]</label>
+                </control>
                 <include content="Flix_Object_Info_Line">
                     <param name="container" value="Container($PARAM[id])." />
                     <param name="uid" value="$PARAM[uid]" />
