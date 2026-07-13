@@ -58,7 +58,7 @@ class SkipService(xbmc.Monitor):
             return -1
 
     def _media_ids(self):
-        imdb = season = episode = ''
+        imdb = tmdb = season = episode = ''
         try:
             tag = self.player.getVideoInfoTag()
             if tag:
@@ -68,6 +68,10 @@ class SkipService(xbmc.Monitor):
                         imdb = (tag.getUniqueID('imdb') or '').strip()
                     except Exception:
                         pass
+                try:
+                    tmdb = (tag.getUniqueID('tmdb') or '').strip()
+                except Exception:
+                    pass
                 s, e = tag.getSeason(), tag.getEpisode()
                 if s is not None and s >= 0:
                     season = str(s)
@@ -77,24 +81,29 @@ class SkipService(xbmc.Monitor):
             pass
         if not imdb:
             imdb = (xbmc.getInfoLabel('VideoPlayer.IMDBNumber') or '').strip()
+        if not tmdb:
+            tmdb = (xbmc.getInfoLabel('VideoPlayer.UniqueID(tmdb)') or '').strip()
         if not season:
             season = (xbmc.getInfoLabel('VideoPlayer.Season') or '').strip()
         if not episode:
             episode = (xbmc.getInfoLabel('VideoPlayer.Episode') or '').strip()
-        return imdb, season, episode
+        return imdb, tmdb, season, episode
 
     def _from_db(self):
         if not skipdb or not _get_bool('use_skipdb', True):
             return []
-        imdb, season, episode = self._media_ids()
-        if not imdb:
+        imdb, tmdb, season, episode = self._media_ids()
+        if not imdb and not tmdb:
             return None                      # ids not ready yet -> retry
         try:
             duration = float(self.player.getTotalTime())
         except Exception:
             duration = 0
-        data = skipdb.get_segments(imdb, season, episode, duration)
-        log('db imdb=%s s=%s e=%s dur=%.0f -> %s' % (imdb, season, episode, duration, data))
+        # tmdb_id is preferred: TheIntroDB's imdb_id lookup can be incomplete and
+        # falls back to the wrong episode, while tmdb_id returns correct per-episode
+        # data (verified against NuvioMobile).
+        data = skipdb.get_segments(imdb, season, episode, duration, tmdb_id=tmdb)
+        log('db imdb=%s tmdb=%s s=%s e=%s dur=%.0f -> %s' % (imdb, tmdb, season, episode, duration, data))
         segs = []
         for kind in ('intro', 'recap'):
             if kind in data:

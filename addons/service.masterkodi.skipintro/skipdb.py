@@ -26,8 +26,10 @@ def _get_json(url, ua):
     return json.loads(raw.decode('utf-8', 'replace'))
 
 
-def _tidb(imdb_id, season, episode, duration_ms):
-    q = {'imdb_id': imdb_id}
+def _tidb(imdb_id, season, episode, duration_ms, tmdb_id=None):
+    # Prefer tmdb_id: TheIntroDB's imdb_id index is patchy for some shows and then
+    # falls back to the wrong episode; tmdb_id returns correct per-episode data.
+    q = {'tmdb_id': str(tmdb_id)} if tmdb_id else {'imdb_id': imdb_id}
     try:
         if season:
             q['season'] = int(season)
@@ -128,12 +130,17 @@ def _skipdb(imdb_id, season, episode, duration):
     return out
 
 
-def get_segments(imdb_id, season=None, episode=None, duration=None):
-    if not imdb_id or not str(imdb_id).startswith('tt'):
+def get_segments(imdb_id, season=None, episode=None, duration=None, tmdb_id=None):
+    has_imdb = imdb_id and str(imdb_id).startswith('tt')
+    if not has_imdb and not tmdb_id:
         return {}
     duration_ms = int(float(duration) * 1000) if duration else None
-    out = _tidb(imdb_id, season, episode, duration_ms)        # best source first
-    if 'intro' not in out:                                     # fill gaps from SkipDB
+    # TheIntroDB by tmdb_id (correct per-episode); if no tmdb, by imdb_id.
+    out = _tidb(imdb_id, season, episode, duration_ms, tmdb_id=tmdb_id)
+    if 'intro' not in out and tmdb_id and has_imdb:            # tmdb missed -> try imdb
+        for k, v in _tidb(imdb_id, season, episode, duration_ms).items():
+            out.setdefault(k, v)
+    if 'intro' not in out and has_imdb:                        # fill gaps from SkipDB
         for k, v in _skipdb(imdb_id, season, episode, duration).items():
             out.setdefault(k, v)
     return out
