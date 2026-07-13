@@ -7,6 +7,7 @@ __pycache__/
 # Reconstructed by tools/apply_overlay.py at build time -- never commit them.
 addons/plugin.video.gears/
 addons/skin.arctic.fuse.3/
+addons/skin.arctic.zephyr.2.resurrection.mod/
 
 # secrets - NEVER commit (public repo)
 .secrets/
