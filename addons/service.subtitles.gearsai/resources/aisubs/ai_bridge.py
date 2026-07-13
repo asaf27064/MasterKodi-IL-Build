@@ -194,11 +194,12 @@ def _pool_retime(best, hebrew_a, info, release):
     return None
 
 
-def _mkv_oracle_retime(hebrew_srt):
-    """Opt-in: sync `hebrew_srt` to the currently-playing file's embedded subtitle
-    timings. Returns re-timed SRT or None (fail-open)."""
+def _mkv_oracle_retime(hebrew_srt, force=False):
+    """Sync `hebrew_srt` to the currently-playing file's embedded subtitle timings.
+    Returns re-timed SRT or None (fail-open). `force` bypasses the opt-in setting
+    (used by the manual 'sync this subtitle' action, where the user consented)."""
     try:
-        if xbmcaddon.Addon().getSetting('mkv_sync_oracle') != 'true':
+        if not force and xbmcaddon.Addon().getSetting('mkv_sync_oracle') != 'true':
             return None
         url = xbmc.Player().getPlayingFile()
     except Exception:
@@ -487,6 +488,111 @@ def pool_should_share():
         return pool.enabled() and pool.contribute_enabled()
     except Exception:
         return False
+
+
+def sync_current_sub():
+    """Manual action: re-time the currently-shown Hebrew subtitle onto the best
+    available timing reference -- the playing file's embedded English track (mkv
+    oracle) first, then a release-matched external English sub. Keeps the Hebrew
+    TEXT; only shifts timestamps. Returns a path to the re-timed .srt or None."""
+    try:
+        cur = xbmcgui.Window(10000).getProperty('gearsai.current_heb_sub')
+        if not cur or not os.path.exists(cur):
+            cur = _newest_cached_srt()
+        if not cur or not cur.lower().endswith('.srt'):
+            _notify('לא נמצאה כתובית עברית פעילה לסנכרון')
+            return None
+        hebrew = _read_text(cur)
+        if not hebrew:
+            _notify('לא הצלחתי לקרוא את הכתובית')
+            return None
+        _notify('מסנכרן את הכתובית לפי הקובץ המתנגן...', 3500)
+        retimed = _sync_to_best_oracle(hebrew)
+        if not retimed:
+            _notify('הסנכרון לא הצליח - הכתובית נשארה כפי שהיא')
+            return None
+        out = _write_srt(retimed)
+        if out:
+            _notify('הכתובית סונכרנה!')
+        return out
+    except Exception as e:
+        xbmc.log('[gearsai-ai] sync_current_sub failed: {0}'.format(e), xbmc.LOGWARNING)
+        return None
+
+
+def _sync_to_best_oracle(hebrew):
+    """Try the embedded-MKV oracle (exact file), then a release-matched external
+    English sub. Returns re-timed Hebrew SRT or None."""
+    # 1. Embedded English from the playing file -- ground truth for this release.
+    try:
+        r = _mkv_oracle_retime(hebrew, force=True)
+        if r:
+            xbmc.log('[gearsai-ai] manual sync: used embedded MKV oracle', xbmc.LOGINFO)
+            return r
+    except Exception as e:
+        xbmc.log('[gearsai-ai] manual sync mkv path failed: {0}'.format(e), xbmc.LOGWARNING)
+    # 2. External English matching the user's release -> timestamp-align onto it.
+    try:
+        from resources.aisubs import sources, match, sync_align
+        info = _info()
+        eng = sources.search_english(
+            imdb_id=info['imdb'], title=info['tvshow'] or info['title'],
+            media_type=info['media_type'], season=info['season'] or 0,
+            episode=info['episode'] or 0, year=info['year']) or []
+        if not eng:
+            return None
+        release = info.get('release') or info.get('filename') or ''
+        try:
+            match.rank_candidates(eng, release, is_episode=(info['media_type'] == 'episode'),
+                                  season=info['season'] or 0, episode=info['episode'] or 0)
+        except Exception:
+            pass
+        english_b = sources.download(eng[0]['download_link'])
+        if not english_b:
+            return None
+        al = sync_align.align(hebrew, english_b)
+        if al and al.get('ok') and al.get('srt'):
+            xbmc.log('[gearsai-ai] manual sync: aligned to external English (offset {0:+.2f}s)'.format(
+                al.get('offset', 0.0)), xbmc.LOGINFO)
+            return al['srt']
+    except Exception as e:
+        xbmc.log('[gearsai-ai] manual sync english path failed: {0}'.format(e), xbmc.LOGWARNING)
+    return None
+
+
+def _newest_cached_srt():
+    """Most-recently-written Hebrew .srt in the cache/download folders (fallback
+    when the active-sub property isn't set, e.g. first run after update)."""
+    try:
+        from resources.modules import general
+        cands = []
+        for d in (getattr(general, 'CachedSubFolder', ''), getattr(general, 'MySubFolder', '')):
+            if d and os.path.isdir(d):
+                for fn in os.listdir(d):
+                    if fn.lower().endswith('.srt'):
+                        p = os.path.join(d, fn)
+                        try: cands.append((os.path.getmtime(p), p))
+                        except Exception: pass
+        if not cands:
+            return None
+        cands.sort(reverse=True)
+        return cands[0][1]
+    except Exception:
+        return None
+
+
+def _read_text(path):
+    try:
+        with open(path, 'rb') as f:
+            data = f.read()
+        for enc in ('utf-8', 'utf-8-sig', 'cp1255', 'windows-1255'):
+            try:
+                return data.decode(enc)
+            except Exception:
+                continue
+        return data.decode('utf-8', 'replace')
+    except Exception:
+        return None
 
 
 def _write_srt(text):

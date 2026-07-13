@@ -511,6 +511,14 @@ def place_sub(video_data,f_result,last_sub_name_in_cache,last_sub_language_in_ca
                 notify( f"{notify_language} | {notify_sync_percent}% | {notify_website_name}" )
             ################################################################################################################################
             
+            # MASTERKODI: remember the active Hebrew sub so the manual "sync this
+            # subtitle" action knows which file to re-time.
+            try:
+                if 'Hebrew' in str(language) or 'עברית' in str(language):
+                    xbmcgui.Window(10000).setProperty('gearsai.current_heb_sub', sub_file)
+            except Exception:
+                pass
+
             # Break the loop since setting external subtitle was successful.
             log.warning(f"DEBUG | place_sub | Number of try: {place_sub_count} | Successfuly set external sub: {sub_file}")
             break
@@ -690,6 +698,12 @@ def sub_from_main(arg):
             log.warning('Auto Sub result:'+str(sub_file))
             xbmc.sleep(100)
             xbmc.Player().setSubtitles(sub_file)
+            # MASTERKODI: remember the active Hebrew sub for the manual sync action.
+            try:
+                if 'Hebrew' in str(language) or 'עברית' in str(language):
+                    xbmcgui.Window(10000).setProperty('gearsai.current_heb_sub', sub_file)
+            except Exception:
+                pass
             save_file_name(filename,language,video_data)
             f_count=0
             max_sub_cache=int(Addon.getSetting("subtitle_trans_cache"))

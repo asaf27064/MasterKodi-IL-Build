@@ -51,6 +51,20 @@ def start():
                 xbmcplugin.addDirectoryItems(int(sys.argv[1]), [(_p, _li, False)], 1)
             xbmcplugin.endOfDirectory(int(sys.argv[1]))
             return
+        # MasterKodi: "sync the currently-shown Hebrew subtitle" -> re-time it onto
+        # the playing file's embedded English (or a release-matched English), hand
+        # back the re-timed .srt for Kodi to load.
+        if len(sys.argv) > 2 and 'gearsai_sync=1' in sys.argv[2]:
+            try:
+                from resources.aisubs import ai_bridge
+                _p = ai_bridge.sync_current_sub()
+            except Exception as _e:
+                log.warning('sync error: %s' % _e); _p = None
+            if _p:
+                _li = xbmcgui.ListItem(label='עברית (מסונכרן)')
+                xbmcplugin.addDirectoryItems(int(sys.argv[1]), [(_p, _li, False)], 1)
+            xbmcplugin.endOfDirectory(int(sys.argv[1]))
+            return
         #Addon = xbmcaddon.Addon('service.subtitles.gearsai').setSetting("get_subs",'1')
 
         xbmcaddon.Addon('service.subtitles.gearsai').setSetting("man_search_return","")
@@ -78,9 +92,21 @@ def start():
             sys.exit(1)
         response=json.loads(response)
         if "hearing_imp" in str(response) and 'thumbnailImage' in str(response):
-            
-            
-            
+
+            # MasterKodi: top row -> sync the Hebrew sub currently on screen onto the
+            # playing file's real timing (embedded English first, external English
+            # fallback). Only offered while a Hebrew sub is actually active.
+            try:
+                _has_cur = bool(xbmcgui.Window(10000).getProperty('gearsai.current_heb_sub'))
+            except Exception:
+                _has_cur = False
+            if _has_cur:
+                sync_li = xbmcgui.ListItem(label='עברית', label2='🔄 סנכרן את הכתובית שמוצגת כעת')
+                sync_li.setArt({'thumb': 'he', 'icon': '0'})
+                sync_li.setProperty('sync', 'true')
+                sync_li.setProperty('hearing_imp', 'false')
+                all_d.append(('plugin://service.subtitles.gearsai/?action=download&gearsai_sync=1', sync_li, False))
+
             for items in response:
                 listitem = xbmcgui.ListItem(label          = items['label'],
                                             label2         = items['label2'],
