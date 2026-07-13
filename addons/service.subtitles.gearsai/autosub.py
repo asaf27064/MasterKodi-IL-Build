@@ -41,6 +41,104 @@ def temporary_pop_and_get_subtitles(video_data):
         # Restore the original values to the video_data
         video_data.update(temp_values)
 ####################################################################################
+
+#################### MASTERKODI - Subtitle pre-fetch (opt-in) ######################
+# Gears notifies us (JSONRPC.NotifyAll 'gearsai_prefetch') the moment it STARTS
+# scraping sources: the user will very likely press play within seconds, and
+# imdb/season/episode are already known. We run the exact provider search the
+# autosub flow would run at playback (engine.get_subtitles, all enabled sites)
+# and keep the result in memory; when playback starts, autosub consumes it
+# instead of searching again -- the subtitle appears near-instantly. Keyed in
+# memory (not the sqlite fn-cache) because that cache's key is an md5 of the
+# whole video_data dict, which differs between browse and playback states.
+# Off by default ('prefetch' setting). Fail-open: any error -> normal flow.
+PREFETCH_TTL = 6 * 3600
+prefetch_store = {}          # 'imdb|season|episode' -> {'ts': epoch, 'result': list}
+prefetch_inflight = set()    # keys currently being searched (dedupe)
+
+
+def _prefetch_key(imdb, season, episode):
+    return '%s|%s|%s' % (imdb or '', str(season or '0'), str(episode or '0'))
+
+
+def _prefetch_worker(payload):
+    key = _prefetch_key(payload.get('imdb'), payload.get('season'), payload.get('episode'))
+    try:
+        media_type = 'tv' if payload.get('media_type') not in ('movie', 'movies') else 'movie'
+        title = clean_title(payload.get('title', ''))
+        # Gears passes the SHOW title for episodes (that's what its scraper meta holds).
+        video_data = {
+            'state': 'prefetch',
+            'imdb_UniqueID': payload.get('imdb', ''),
+            'IMDBNumber': payload.get('imdb', ''),
+            'imdb': payload.get('imdb', ''),
+            'title': title,
+            'OriginalTitle': clean_title(payload.get('original_title', '') or payload.get('title', '')),
+            'TVShowTitle': title if media_type == 'tv' else '',
+            'year': str(payload.get('year', '')),
+            'season': str(payload.get('season', '') or '0'),
+            'episode': str(payload.get('episode', '') or '0'),
+            'tmdb': str(payload.get('tmdb', '')),
+            'mpaa': '',
+            'Tagline': '',
+            'VideoPlayer.Tagline': '',
+            'Tagline_From_Fen': '',
+            'file_original_path': title,
+            'is_local_media_playing': False,
+            'media_type': media_type,
+        }
+        log.warning('PREFETCH | searching for %s' % key)
+        f_result = get_subtitles(dict(video_data))
+        if f_result:
+            prefetch_store[key] = {'ts': time.time(), 'result': f_result}
+            log.warning('PREFETCH | ready: %s subs for %s' % (len(f_result), key))
+        else:
+            log.warning('PREFETCH | no results for %s' % key)
+        # keep the store tiny -- a browse session touches a handful of items
+        if len(prefetch_store) > 8:
+            oldest = sorted(prefetch_store, key=lambda k: prefetch_store[k]['ts'])[0]
+            prefetch_store.pop(oldest, None)
+    except Exception as e:
+        log.warning('PREFETCH | worker error: %s' % e)
+    finally:
+        prefetch_inflight.discard(key)
+
+
+def maybe_start_prefetch(data):
+    """Handler for the gears 'gearsai_prefetch' notification (data = json str)."""
+    if xbmcaddon.Addon().getSetting('prefetch') != 'true':
+        return
+    payload = json.loads(data)
+    if isinstance(payload, list):          # NotifyAll sometimes wraps in a list
+        payload = payload[0]
+    if not payload.get('imdb', '').startswith('tt'):
+        return
+    key = _prefetch_key(payload.get('imdb'), payload.get('season'), payload.get('episode'))
+    entry = prefetch_store.get(key)
+    if entry and (time.time() - entry['ts']) < PREFETCH_TTL:
+        return                              # already have fresh results
+    if key in prefetch_inflight:
+        return                              # already searching
+    prefetch_inflight.add(key)
+    t = Thread(_prefetch_worker, payload)
+    t.daemon = True                        # never block Kodi shutdown
+    t.start()
+
+
+def prefetch_lookup(video_data):
+    """Return prefetched results matching the now-playing item, else None."""
+    try:
+        if xbmcaddon.Addon().getSetting('prefetch') != 'true':
+            return None
+        key = _prefetch_key(video_data.get('imdb'), video_data.get('season'), video_data.get('episode'))
+        entry = prefetch_store.get(key)
+        if entry and (time.time() - entry['ts']) < PREFETCH_TTL and entry['result']:
+            log.warning('PREFETCH | HIT for %s (%s subs, no live search needed)' % (key, len(entry['result'])))
+            return entry['result']
+    except Exception as e:
+        log.warning('PREFETCH | lookup error: %s' % e)
+    return None
+####################################################################################
     
 # Currently only for Hebrew/English, the most common.
 def translate_sub_language_to_hebrew(language):
@@ -863,6 +961,13 @@ class KodiMonitor(xbmc.Monitor):
         from resources.modules import general
         last_sub_name_in_cache=""
         is_playing_addon_excluded=False
+        # MASTERKODI: gears fires this when it starts scraping sources -> search now.
+        if method=='Other.gearsai_prefetch':
+            try:
+                maybe_start_prefetch(data)
+            except Exception as e:
+                log.warning('PREFETCH | notification error: %s' % e)
+            return
         if method=='Player.OnStop':
             trigger=False
             
@@ -931,9 +1036,12 @@ class KodiMonitor(xbmc.Monitor):
                     
                     
                     try:
-                        # Search for subs in cache, pop unneeded values.
-                        f_result = temporary_pop_and_get_subtitles(video_data)
-                        
+                        # MASTERKODI: prefetched during the gears scrape? use it, skip the live search.
+                        f_result = prefetch_lookup(video_data)
+                        if f_result is None:
+                            # Search for subs in cache, pop unneeded values.
+                            f_result = temporary_pop_and_get_subtitles(video_data)
+
                         f_result=cache.get(sort_subtitles,24,f_result,video_data,table='subs')
                         # Avoid f_result=None error if no subs found.
                         f_result = [] if not f_result else f_result

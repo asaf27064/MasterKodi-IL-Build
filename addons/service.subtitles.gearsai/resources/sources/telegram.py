@@ -276,12 +276,35 @@ async def connect_telegram_client(exit_if_unauthorized=True):
             client = TelegramClient(StringSession(), api_id, api_hash)
         await client.connect()
         if not await client.is_user_authorized() and exit_if_unauthorized:
+            # MASTERKODI: disconnect before bailing -- returning None while the
+            # socket is still connected leaks a live telethon connection whose
+            # later teardown can hard-crash Kodi (observed 2026-07-13).
+            try:
+                await client.disconnect()
+            except Exception:
+                pass
             return None
         return client
     except Exception as e:
         notify(f"Telegram | connect_telegram_client | Exception type: {type(e)} | Exception: {str(e)}")
         log.warning(f"[Telegram] | connect_telegram_client | Exception type: {type(e)} | Exception: {str(e)}")
         return None
+
+
+# MASTERKODI: quick logged-in check (connect_telegram_client already returns
+# None unless the session is authorized). Always disconnects cleanly.
+async def async_is_telegram_authorized():
+    try:
+        client = await connect_telegram_client()
+        if not client:
+            return False
+        try:
+            await client.disconnect()
+        except Exception:
+            pass
+        return True
+    except Exception:
+        return False
 #########################################################################
 
 
@@ -319,6 +342,16 @@ async def joinAllSubsChannel(client):
 ################### SEARCH ##############################################
 async def async_search_subtitles(search_query_list, exit_if_unauthorized):
     client = await connect_telegram_client(exit_if_unauthorized)
+    # MASTERKODI: never enter `async with` on an unauthorized client -- telethon's
+    # start() then demands interactive input() (impossible inside Kodi: raises
+    # "lost sys.stdin" and leaves a half-open connection that hard-crashes Kodi).
+    if client and not await client.is_user_authorized():
+        log.warning("[Telegram] | async_search_subtitles | Not logged in -> skipping search.")
+        try:
+            await client.disconnect()
+        except Exception:
+            pass
+        client = None
     if client:
         async with client:
             try:
@@ -382,6 +415,16 @@ def run_async_download_subtitle(telegram_message_file_id):
 async def async_upload_subtitle(sub_file_to_upload, filename_to_upload, upload_message_caption):
 
     client = await connect_telegram_client(exit_if_unauthorized=False)
+    # MASTERKODI: same guard as async_search_subtitles -- an unauthorized client
+    # entering `async with` triggers telethon's interactive login (input()) which
+    # cannot work inside Kodi and leaves a crash-prone half-open connection.
+    if client and not await client.is_user_authorized():
+        log.warning("[Telegram] | async_upload_subtitle | Not logged in -> skipping upload.")
+        try:
+            await client.disconnect()
+        except Exception:
+            pass
+        client = None
     if client:
         async with client:
             try:
@@ -515,13 +558,21 @@ def download(download_data,MySubFolder):
 
 
 def upload_subtitle_to_telegram(sub_file_to_upload,filename_to_upload,caption,source):
-    
+
+    # MASTERKODI: without a logged-in Telegram session the duplicate-check search
+    # below cannot run, so we cannot safely contribute (bot-uploading blind would
+    # spam the channel with duplicates). The old code effectively never uploaded
+    # in this state either -- it crashed on telethon's interactive login instead.
+    if not asyncio.run(async_is_telegram_authorized()):
+        log.warning("[Telegram] | upload_subtitle_to_telegram | Not logged in -> skipping contribution.")
+        return
+
     from resources.modules.general import get_video_data
     imdb_id = get_video_data().get('imdb', '')
 
     upload_message_caption = f"Imdb: {imdb_id}{caption}\nSource: {source}"
-    
-    telegram_search_results = asyncio.run((async_search_subtitles([filename_to_upload], exit_if_unauthorized=False)))
+
+    telegram_search_results = asyncio.run((async_search_subtitles([filename_to_upload], exit_if_unauthorized=True)))
     
     for telegram_message in telegram_search_results:
     

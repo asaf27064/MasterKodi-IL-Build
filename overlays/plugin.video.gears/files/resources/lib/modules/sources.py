@@ -135,6 +135,31 @@ class Sources():
 				kodi_utils.logger("Gears-HEBSUBS", f"Error starting Hebrew subtitles thread: {str(e)}")
 		#######################################################################
 
+		########### MASTERKODI - GearsAI subtitle pre-fetch trigger ###########
+		# Tell GearsAI to search subtitles NOW (while the user browses sources)
+		# so they're ready the instant playback starts. Only when its opt-in
+		# 'prefetch' setting is on. Fail-open: any error -> normal flow.
+		try:
+			import xbmcaddon as _xa
+			if _xa.Addon('service.subtitles.gearsai').getSetting('prefetch') == 'true':
+				import json as _json, xbmc as _xbmc
+				_payload = {'media_type': 'movie' if self.media_type in ('movie', 'movies') else 'tv',
+							'title': self.meta.get('title', ''),
+							'original_title': self.meta.get('original_title', '') or '',
+							'year': str(self.meta.get('year', '')),
+							'season': str(self.meta.get('season', '') or '0'),
+							'episode': str(self.meta.get('episode', '') or '0'),
+							'tmdb': str(self.meta.get('tmdb_id', '')),
+							'imdb': str(self.meta.get('imdb_id', ''))}
+				_xbmc.executeJSONRPC(_json.dumps({
+					'jsonrpc': '2.0', 'id': 1, 'method': 'JSONRPC.NotifyAll',
+					'params': {'sender': 'plugin.video.gears',
+							   'message': 'gearsai_prefetch', 'data': _payload}}))
+				kodi_utils.logger("Gears-HEBSUBS", "GearsAI prefetch notified")
+		except Exception:
+			pass
+		#######################################################################
+
 		if not self.progress_dialog and not self.background: self._make_progress_dialog()
 		results = []
 		if self.prescrape and any(x in self.active_internal_scrapers for x in self.default_internal_scrapers):
