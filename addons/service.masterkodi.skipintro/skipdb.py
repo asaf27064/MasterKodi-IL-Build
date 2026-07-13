@@ -63,7 +63,7 @@ def _tidb(imdb_id, season, episode, duration_ms=None, tmdb_id=None):
     except (TypeError, ValueError, AttributeError):
         pass
     out = {}
-    for kind in ('intro', 'recap'):
+    for kind in ('intro', 'recap', 'outro'):
         s = data.get(kind)
         if not isinstance(s, dict):
             continue

@@ -9,6 +9,7 @@
 
 import os
 import sys
+import time
 import xbmc
 import xbmcaddon
 import xbmcvfs
@@ -22,7 +23,7 @@ try:
 except Exception:
     skipdb = None
 
-LABELS = {'intro': 'דלג על הפתיח', 'recap': 'דלג על התקציר'}
+LABELS = {'intro': 'דלג על הפתיח', 'recap': 'דלג על התקציר', 'outro': 'דלג על הקרדיטים'}
 
 MIN_INTRO, MAX_INTRO = 20, 150
 LATEST_START, LATEST_END = 300, 360
@@ -105,7 +106,7 @@ class SkipService(xbmc.Monitor):
         data = skipdb.get_segments(imdb, season, episode, duration, tmdb_id=tmdb)
         log('db imdb=%s tmdb=%s s=%s e=%s dur=%.0f -> %s' % (imdb, tmdb, season, episode, duration, data))
         segs = []
-        for kind in ('intro', 'recap'):
+        for kind in ('intro', 'recap', 'outro'):
             if kind in data:
                 segs.append((kind, data[kind][0], data[kind][1]))
         return segs
@@ -154,10 +155,13 @@ class SkipService(xbmc.Monitor):
         last_file = None
         segs = None
         attempts = 0
-        # Only segments the user ACTUALLY skipped are suppressed forever. A pill
-        # that was merely dismissed (OSD opened) or a window you seeked back into
-        # can re-appear -- so closing the OSD or jumping back brings it back.
-        skipped = set()
+        # After a skip we hold the pill off for a few SECONDS (not forever) -- just
+        # long enough that seeking to the segment end (which can land a keyframe back
+        # inside the window) doesn't instantly re-pop the pill. Once the cooldown
+        # passes, the pill shows again whenever you're inside the window -- so
+        # SEEKING BACK to a recap/intro re-offers the skip. Dismissing via the OSD
+        # never suppresses at all.
+        skip_cd = {}                              # segment index -> monotonic skip time
         while not self.abortRequested():
             try:
                 if _get_bool('enabled', True) and self.player.isPlayingVideo():
@@ -166,7 +170,7 @@ class SkipService(xbmc.Monitor):
                         last_file = f
                         segs = None
                         attempts = 0
-                        skipped = set()
+                        skip_cd = {}
                     if segs is None:
                         result = self._detect()
                         attempts += 1
@@ -178,23 +182,25 @@ class SkipService(xbmc.Monitor):
                             segs = []
                     if segs:
                         t = self._time()
+                        now = time.time()
                         # Don't fight the OSD: while it's open, hold off and retry
                         # on a later tick (which is exactly what lets the pill come
-                        # back once the user closes the OSD, still inside the intro).
+                        # back once the user closes the OSD, still inside the window).
                         osd_open = xbmc.getCondVisibility('Window.IsVisible(videoosd)')
                         for i, (kind, start, end) in enumerate(segs):
-                            if i in skipped:
-                                continue
                             # Don't pop the pill during the chaotic first seconds
                             # of playback (startup OSD / autosub) -- it gets
                             # dismissed instantly. Wait at least a few seconds in.
                             show_at = max(start, 4.0)
                             if not (show_at <= t < (end - 1)):
                                 continue
+                            cd = skip_cd.get(i)
+                            if cd is not None and (now - cd) < 4.0:
+                                break             # just skipped this one -> brief hold
                             if osd_open:
                                 break
                             if _get_bool('auto_skip', False):
-                                skipped.add(i)
+                                skip_cd[i] = now
                                 try:
                                     self.player.seekTime(float(end))
                                 except Exception:
@@ -203,19 +209,18 @@ class SkipService(xbmc.Monitor):
                                 pressed = overlay.show_skip_overlay(
                                     LABELS.get(kind, 'דלג'), float(start), float(end), self.player, self)
                                 if pressed:
-                                    skipped.add(i)      # skipped -> don't nag again
+                                    skip_cd[i] = time.time()
                                     try:
                                         self.player.seekTime(float(end))
                                     except Exception:
                                         pass
-                                # merely dismissed (OSD/other input) -> NOT added to
-                                # `skipped`, so it re-appears next tick if still in
-                                # the window.
+                                # dismissed (OSD/other input) -> no cooldown, so it
+                                # re-appears next tick if still in the window.
                             break
                 else:
                     last_file = None
                     segs = None
-                    skipped = set()
+                    skip_cd = {}
             except Exception as e:
                 xbmc.log('[skipintro] loop error: %s' % e, xbmc.LOGDEBUG)
             if self.waitForAbort(1):
