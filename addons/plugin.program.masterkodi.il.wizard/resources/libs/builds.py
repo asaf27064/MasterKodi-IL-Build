@@ -815,13 +815,14 @@ class BuildManager:
     # Hebrew-capable fontset per skin. Estuary/Nimbus "Default" already map to a
     # Hebrew font; AF3's "Default" is Latin-only so it must use "Hebrew (Rubik)".
     SKIN_FONTSET = {
+        # All build skins default to the Rubik Hebrew fontset (nicest Hebrew UI
+        # face). Each skin also ships Hebrew (Noto)/(Assistant)/(Heebo) fontsets
+        # the user can pick from Skin settings -> Fonts. (Zephyr's plot boxes use
+        # font_plotbox=Noto in Defaults.xml regardless, so plots always render.)
         'skin.arctic.fuse.3': 'Hebrew (Rubik)',
-        # Zephyr: use its built-in "Arial" fontset. Its Rubik renders Hebrew in
-        # labels but tofus inside Kodi <textbox> controls (the Gears plot panel);
-        # Arial is a complete font that renders Hebrew everywhere, incl. textboxes.
-        'skin.arctic.zephyr.2.resurrection.mod': 'Hebrew (Noto)',
-        'skin.estuary': 'Default',
-        'skin.nimbus': 'Default',
+        'skin.arctic.zephyr.2.resurrection.mod': 'Hebrew (Rubik)',
+        'skin.estuary': 'Hebrew (Rubik)',
+        'skin.nimbus': 'Hebrew (Rubik)',
     }
 
     def set_skin_font(self, skin_id):
