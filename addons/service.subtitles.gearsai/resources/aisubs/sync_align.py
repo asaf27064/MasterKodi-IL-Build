@@ -123,3 +123,116 @@ def align(hebrew_srt, oracle_srt, min_confidence=0.55, max_abs_offset=45.0):
         return {'ok': True, 'srt': out, 'confidence': est['confidence'], 'offset': off}
     except Exception:
         return None
+
+
+def _scale_shift_entries(entries, scale, offset):
+    for e in entries:
+        try:
+            e.start = _sec_to_tc(_tc_to_sec(e.start) * scale + offset)
+            e.end = _sec_to_tc(_tc_to_sec(e.end) * scale + offset)
+        except Exception:
+            pass
+    return entries
+
+
+def align_to_anchors(hebrew_srt, anchor_secs, tol=0.35, max_abs_offset=90.0,
+                     min_matched=5, min_ratio=0.6):
+    """Align `hebrew_srt` to a SPARSE oracle: a few correct start-times sampled
+    from the playing file's embedded subtitle track (mkv_probe). Fits a linear
+    map new = scale*old + offset. Robust with as few as ~6 anchors because they
+    span the whole film. Returns {'ok','srt','offset','scale','confidence'} or
+    None (fail-open). Anchors that also survive a framerate change (scale~0.96 /
+    1.04) are accepted; wild scales are rejected as bad matches."""
+    try:
+        anchors = sorted(set(float(a) for a in (anchor_secs or []) if a and a > 0))
+        if len(anchors) < min_matched:
+            return None
+        heb = srt.parse(hebrew_srt)
+        starts = _starts(heb)
+        if len(starts) < min_matched:
+            return None
+
+        # Candidate global scales: 1.0 (pure offset, the common case) + the standard
+        # subtitle framerate-conversion ratios (PAL<->NTSC/film). For each we vote the
+        # best offset of the anchors against scale*hebrew, then keep the global best.
+        _fps = (24.0, 23.976, 25.0, 29.97, 30.0)
+        scales = {1.0}
+        for a in _fps:
+            for b in _fps:
+                if a != b:
+                    scales.add(round(a / b, 6))
+        inv = 1.0 / tol
+        step = 0.1
+        steps = int((2 * max_abs_offset) / step) + 1
+
+        best_scale, best_off, best_cnt = 1.0, 0.0, -1
+        for sc in scales:
+            if not (0.90 <= sc <= 1.10):
+                continue
+            hb = set()
+            for t in starts:
+                b = int((t * sc) * inv); hb.add(b); hb.add(b - 1); hb.add(b + 1)
+            for i in range(steps):
+                off = -max_abs_offset + i * step
+                cnt = 0
+                for a in anchors:
+                    if int((a - off) * inv) in hb:
+                        cnt += 1
+                if cnt > best_cnt:
+                    best_cnt, best_off, best_scale = cnt, off, sc
+        if best_cnt < min_matched or best_cnt < min_ratio * len(anchors):
+            return None
+
+        # Pair each anchor with its nearest scaled-Hebrew start. First pass uses a
+        # wide tolerance (the coarse offset can be up to `tol` off); we then fit,
+        # re-pair against the FITTED line at tight tol, and refit -- a 2-pass polish.
+        def _pair(pred, pair_tol):
+            out = []
+            for a in anchors:
+                target = (a - pred[1]) / pred[0]   # invert y=scale*x+offset -> x
+                j = bisect.bisect_left(starts, target)
+                best = None
+                for k in (j - 1, j):
+                    if 0 <= k < len(starts):
+                        d = abs(pred[0] * starts[k] + pred[1] - a)
+                        if d <= pair_tol and (best is None or d < best[0]):
+                            best = (d, starts[k])
+                if best:
+                    out.append((best[1], a))   # (x=raw heb_start, y=true_time)
+            return out
+
+        def _fit(pairs):
+            n = len(pairs)
+            sx = sum(p[0] for p in pairs); sy = sum(p[1] for p in pairs)
+            sxx = sum(p[0] * p[0] for p in pairs); sxy = sum(p[0] * p[1] for p in pairs)
+            denom = n * sxx - sx * sx
+            if abs(denom) < 1e-6:
+                return best_scale, (sy - best_scale * sx) / n
+            sc = (n * sxy - sx * sy) / denom
+            return sc, (sy - sc * sx) / n
+
+        pred = (best_scale, best_off)
+        pairs = _pair(pred, 2.2 * tol)
+        if len(pairs) < min_matched:
+            return None
+        scale, offset = _fit(pairs)
+        pairs = _pair((scale, offset), tol)          # re-pair on fitted line, tight
+        if len(pairs) < min_matched:
+            return None
+        scale, offset = _fit(pairs)
+
+        # Guard: reject implausible scales (accept PAL/NTSC framerate ratios).
+        if not (0.90 <= scale <= 1.10):
+            return None
+        # Residual check: matched pairs must fit the line tightly.
+        resid = [abs(y - (scale * x + offset)) for x, y in pairs]
+        if sorted(resid)[len(resid) // 2] > tol:
+            return None
+
+        conf = best_cnt / float(len(anchors))
+        if abs(scale - 1.0) < 1e-4 and abs(offset) < 0.05:
+            return {'ok': True, 'srt': hebrew_srt, 'confidence': conf, 'offset': 0.0, 'scale': 1.0}
+        out = srt.serialize(_scale_shift_entries(heb, scale, offset))
+        return {'ok': True, 'srt': out, 'confidence': conf, 'offset': offset, 'scale': scale}
+    except Exception:
+        return None

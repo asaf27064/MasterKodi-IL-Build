@@ -52,6 +52,7 @@
 		<setting id="force" label="הורד למרות שיש כתוביות" type="bool" default="true" />
 		<setting id="enable_autosub_notifications" label="הצג הודעות מידע בעת חיפוש כתוביות" type="bool" default="true" />
 		<setting id="prefetch" label="חיפוש מקדים - חפש כתוביות כבר בזמן סריקת המקורות (ניסיוני)" type="bool" default="false" />
+		<setting id="mkv_sync_oracle" label="סנכרון חכם - יישר כתוביות לפי הזמנים המוטמעים בקובץ (ניסיוני)" type="bool" default="false" />
 		
 		<setting label="ניתן לכבות אם אתה נתקל הרבה בתרגום מובנה עם פיסוק הפוך:" type="lsep"/>
 		<setting id="auto_place_hebrew_embedded_subs" label="אפשר הורדה אוטומטית של תרגום מובנה בעברית (אם קיים)" type="bool" default="true" />

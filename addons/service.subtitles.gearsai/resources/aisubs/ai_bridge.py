@@ -6,6 +6,7 @@
 import os
 import xbmc
 import xbmcgui
+import xbmcaddon
 
 
 def _info():
@@ -178,8 +179,44 @@ def _pool_retime(best, hebrew_a, info, release):
                 return al['srt']
         except Exception as e:
             xbmc.log('[gearsai-ai] timestamp-align fallback failed: {0}'.format(e), xbmc.LOGWARNING)
+        # Last resort (opt-in): use the playing file's OWN embedded subtitle track
+        # as the timing oracle -- perfect for the exact release, and works even when
+        # no external English matched. mkv_probe reads a few cue timestamps via HTTP
+        # range (in-memory, byte-capped, no download); align_to_anchors fits them.
+        try:
+            mkv = _mkv_oracle_retime(hebrew_a)
+            if mkv:
+                return mkv
+        except Exception as e:
+            xbmc.log('[gearsai-ai] mkv oracle fallback failed: {0}'.format(e), xbmc.LOGWARNING)
     except Exception as e:
         xbmc.log('[gearsai-ai] pool re-time failed: {0}'.format(e), xbmc.LOGWARNING)
+    return None
+
+
+def _mkv_oracle_retime(hebrew_srt):
+    """Opt-in: sync `hebrew_srt` to the currently-playing file's embedded subtitle
+    timings. Returns re-timed SRT or None (fail-open)."""
+    try:
+        if xbmcaddon.Addon().getSetting('mkv_sync_oracle') != 'true':
+            return None
+        url = xbmc.Player().getPlayingFile()
+    except Exception:
+        return None
+    if not url or not (url.startswith('http') and ('.mkv' in url.lower() or 'tb-cdn' in url.lower() or '/dld/' in url.lower())):
+        # Only remote MKV-ish streams; local files Kodi already exposes natively.
+        if not (url and url.startswith('http')):
+            return None
+    from resources.aisubs import mkv_probe, sync_align
+    anchors = mkv_probe.probe_anchor_times(url)
+    if not anchors:
+        xbmc.log('[gearsai-ai] mkv oracle: no usable anchors', xbmc.LOGINFO)
+        return None
+    al = sync_align.align_to_anchors(hebrew_srt, anchors)
+    if al and al.get('ok') and al.get('srt'):
+        xbmc.log('[gearsai-ai] mkv oracle re-timed (scale {0:.4f} offset {1:+.2f}s, {2} anchors, conf {3:.2f})'.format(
+            al.get('scale', 1.0), al.get('offset', 0.0), len(anchors), al.get('confidence', 0.0)), xbmc.LOGINFO)
+        return al['srt']
     return None
 
 
