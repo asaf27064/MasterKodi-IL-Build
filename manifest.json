@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-13T19:32:41Z",
+  "generated_utc": "2026-07-13T19:48:30Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -441,12 +441,12 @@
     },
     {
       "id": "service.masterkodi.skipintro",
-      "version": "1.2.8",
+      "version": "1.3.0",
       "channel": "core",
-      "zip": "service.masterkodi.skipintro-1.2.8.zip",
-      "sha256": "9e0c02791763f8d72506a5ca84fb4fadaec947643860c7c14fcfb94250ea8eff",
-      "size": 18146,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/service.masterkodi.skipintro-1.2.8.zip"
+      "zip": "service.masterkodi.skipintro-1.3.0.zip",
+      "sha256": "24d999b4ac142abddefb2374e2978cce6c906dda56031caef9fe40c9a0900c29",
+      "size": 18070,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/service.masterkodi.skipintro-1.3.0.zip"
     },
     {
       "id": "service.subtitles.all_subs_plus",
