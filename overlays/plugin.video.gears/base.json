@@ -5,7 +5,7 @@
   "base_zip_url": "https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/plugin.video.gears/plugin.video.gears-{version}.zip",
   "upstream_zip_url": "https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/plugin.video.gears/plugin.video.gears-{version}.zip",
   "upstream_addons_xml": "https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/addons.xml",
-  "overlay_version": "2.2.9",
+  "overlay_version": "2.2.10",
   "note": "unhingedthemes keeps ONLY the latest zip upstream, so the clean base of the version we ship is committed at base_zip_local (immune to upstream deleting older versions). upstream_zip_url is used by the watcher/adopt to fetch newer versions.",
-  "changelog": "Hebrew subtitles overlay (kodirdil) + baked build defaults (cached-only fast search, non-blocking Hebrew match, meta_language he)."
+  "changelog": "Hebrew subtitles overlay (kodirdil) + baked build defaults (cached-only fast search, non-blocking Hebrew match, meta_language he). 2.2.10: official TMDb network logos for the streaming-networks folder (11 icons)."
 }

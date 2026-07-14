@@ -1135,6 +1135,7 @@ class BuildManager:
             # Enable addons
             progress.update(85, "[COLOR yellow]מפעיל אדונים...[/COLOR]")
             self.enable_addons_in_db(skin_addons)
+            self._pin_addons_in_db(skin_addons)
             self.setup_wizard_repo_in_db()
             
             # Set as default skin
@@ -1299,6 +1300,7 @@ class BuildManager:
                 return False
             progress.update(85, "[COLOR yellow]מפעיל אדונים...[/COLOR]")
             self.enable_addons_in_db(skin_addons)
+            self._pin_addons_in_db(skin_addons)
             self.setup_wizard_repo_in_db()
             xbmc.executebuiltin('UpdateAddonRepos()')
             xbmc.executebuiltin('UpdateLocalAddons()')
@@ -1319,6 +1321,39 @@ class BuildManager:
             log(f"install_skin error: {e}", xbmc.LOGERROR)
             self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]שגיאה:[/COLOR] {e}")
             return False
+
+    def _pin_addons_in_db(self, aids):
+        """Freeze shipped MODDED addons: clear repo origin + disable auto-update so
+        Kodi never clobbers our Hebrew-modified versions (origin='' + updateRule=1).
+        Per build policy only MODDED_ADDONS are pinned -- vanilla deps
+        (skinvariables, texturemaker, resource fonts, ...) auto-update from their
+        own repos and get re-vendored via tools/refresh_vanilla_deps.py."""
+        from resources.libs.modular_update import MODDED_ADDONS
+        aids = [a for a in (aids or []) if a in MODDED_ADDONS]
+        if not aids:
+            return
+        try:
+            import sqlite3
+            dbdir = xbmcvfs.translatePath('special://database/')
+            for f in os.listdir(dbdir):
+                if not (f.startswith('Addons') and f.endswith('.db')):
+                    continue
+                c = sqlite3.connect(os.path.join(dbdir, f))
+                try:
+                    for aid in aids:
+                        c.execute("UPDATE installed SET origin='' WHERE addonID=?", (aid,))
+                        row = c.execute(
+                            "SELECT COUNT(*) FROM update_rules WHERE addonID=?", (aid,)).fetchone()
+                        if row and row[0]:
+                            c.execute("UPDATE update_rules SET updateRule=1 WHERE addonID=?", (aid,))
+                        else:
+                            c.execute("INSERT INTO update_rules(addonID, updateRule) VALUES(?, 1)", (aid,))
+                    c.commit()
+                finally:
+                    c.close()
+            log("Pinned shipped skin addons (origin='' + no auto-update): %s" % ', '.join(aids))
+        except Exception as e:
+            log("_pin_addons_in_db error: %s" % e, xbmc.LOGERROR)
 
     def _db_remove_addon(self, aid):
         """Delete an addon's rows from every Addons*.db (so Kodi forgets it)."""

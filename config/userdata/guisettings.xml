@@ -11,7 +11,7 @@
     <setting id="lookandfeel.skin" default="true">skin.estuary</setting>
     <setting id="lookandfeel.skintheme" default="true">SKINDEFAULT</setting>
     <setting id="lookandfeel.skincolors" default="true">SKINDEFAULT</setting>
-    <setting id="lookandfeel.font" default="true">Default</setting>
+    <setting id="lookandfeel.font">Hebrew (Rubik)</setting>
     <setting id="lookandfeel.skinzoom" default="true">0</setting>
     <setting id="lookandfeel.stereostrength" default="true">5</setting>
     <setting id="lookandfeel.enablerssfeeds" default="true">false</setting>
@@ -174,7 +174,7 @@
     <setting id="accessibility.audiohearing" default="true">false</setting>
     <setting id="accessibility.subhearing" default="true">false</setting>
     <setting id="subtitles.align" default="true">2</setting>
-    <setting id="subtitles.fontname">Noto Sans Hebrew</setting>
+    <setting id="subtitles.fontname">Rubik</setting>
     <setting id="subtitles.fontsize">52</setting>
     <setting id="subtitles.style">1</setting>
     <setting id="subtitles.colorpick" default="true">FFFFFFFF</setting>

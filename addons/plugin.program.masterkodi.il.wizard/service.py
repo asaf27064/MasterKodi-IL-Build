@@ -101,6 +101,15 @@ def _process_pending_view_rebuild():
         skin = xbmc.getSkinDir() or ''
         inc = os.path.join(ADDONS_PATH, skin, '1080i', 'script-skinvariables-includes.xml')
         if skin and os.path.isfile(inc):
+            # buildtemplate (force) recompiles the menu/shortcut includes from the
+            # skinvariables nodes we deliver via config (e.g. custom home categories);
+            # without it, edited node JSONs never reach the skin. buildviews rebuilds
+            # the view-type includes. Both needed for a config-driven menu change.
+            gen = os.path.join(ADDONS_PATH, skin, '1080i',
+                               'script-skinvariables-generator-includes-.xml')
+            if os.path.isfile(gen):
+                log("post-install: rebuilding skin menu templates (buildtemplate,force)")
+                xbmc.executebuiltin('RunScript(script.skinvariables,action=buildtemplate,force=true)')
             log("post-install: rebuilding skin views (buildviews)")
             xbmc.executebuiltin('RunScript(script.skinvariables,action=buildviews)')
     except Exception as e:

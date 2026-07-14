@@ -6,6 +6,7 @@ import xbmc
 import xbmcgui
 import xbmcaddon
 import xbmcvfs
+import xbmcplugin
 import os
 import sys
 import json
@@ -608,6 +609,48 @@ def check_updates_now():
 # ============================================
 # PARAMETER PARSING
 # ============================================
+def maintenance_folder():
+    """Browsable plugin folder of maintenance actions, for skins whose home shows
+    widget folders (AF3/Nimbus) rather than action panels. Each item is a
+    non-folder action tile that, when clicked, runs its wizard mode."""
+    try:
+        handle = int(sys.argv[1])
+    except Exception:
+        # not called as a directory (e.g. RunPlugin) -> open the dialog instead
+        maintenance_menu()
+        return
+    base = sys.argv[0]
+    ICON = 'special://skin/extras/icons/%s'
+    items = [
+        ('ניקוי קאש Gears',     'maint_gears',   ICON % 'broom.png'),
+        ('ניקוי קאש Gears AI',  'maint_gearsai', ICON % 'broom-ball.png'),
+        ('שלח לוגים לתמיכה',    'send_logs',     ICON % 'circle-info.png'),
+        ('עדכון מהיר',          'check_updates', ICON % 'arrows-rotate.png'),
+    ]
+    xbmcplugin.setContent(handle, 'files')
+    for label, mode, icon in items:
+        li = xbmcgui.ListItem(label=label)
+        li.setArt({'icon': icon, 'thumb': icon, 'poster': icon})
+        li.setProperty('IsPlayable', 'false')
+        li.setInfo('video', {'title': label, 'plot': ' '})
+        url = '%s?mode=%s' % (base, mode)
+        xbmcplugin.addDirectoryItem(handle, url, li, isFolder=False)
+    xbmcplugin.endOfDirectory(handle, cacheToDisc=False)
+
+
+def maint_gears():
+    """Clear Gears cache (fire-and-forget for a home tile)."""
+    xbmc.executebuiltin('RunPlugin(plugin://plugin.video.gears/?mode=clear_all_cache)')
+    xbmcgui.Dialog().notification(ADDON_NAME, 'מנקה קאש Gears...', xbmcgui.NOTIFICATION_INFO, 3000)
+
+
+def maint_gearsai():
+    """Clear GearsAI cache (fire-and-forget for a home tile)."""
+    xbmc.executebuiltin(
+        'RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)')
+    xbmcgui.Dialog().notification(ADDON_NAME, 'מנקה קאש Gears AI...', xbmcgui.NOTIFICATION_INFO, 3000)
+
+
 def parse_params():
     """Parse addon parameters from sys.argv"""
     params = {}
@@ -657,6 +700,12 @@ if __name__ == '__main__':
         gearsai_menu()
     elif mode == 'maintenance':
         maintenance_menu()
+    elif mode == 'maintenance_folder':
+        maintenance_folder()
+    elif mode == 'maint_gears':
+        maint_gears()
+    elif mode == 'maint_gearsai':
+        maint_gearsai()
     elif mode == 'backup':
         backup_menu()
     elif mode == 'check_updates':

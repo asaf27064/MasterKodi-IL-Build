@@ -145,6 +145,31 @@
 						</content>
 					</control>
 				</control>
+				<!-- KODIRDIL - Services submenu (Gears/GearsAI cache clear, send logs, quick update) -->
+				<control type="group" id="9150">
+					<visible>String.IsEqual(Container(9000).ListItem.Property(id),mk_services)</visible>
+					<include content="Visible_Right_Delayed"><param name="id" value="mk_services"/></include>
+					<control type="panel" id="9151">
+						<left>65</left><top>0</top><right>0</right><bottom>0</bottom>
+						<onleft>9000</onleft><onright>9000</onright><onup>9151</onup><ondown>9151</ondown>
+						<preloaditems>2</preloaditems><orientation>vertical</orientation>
+						<scrolltime tween="cubic" easing="out">500</scrolltime>
+						<itemlayout width="330" height="401"><control type="group"><top>130</top>
+							<include content="InfoWallMusicLayout"><param name="fallback_image" value="DefaultAddonService.png"/><param name="focused" value="false"/></include>
+						</control></itemlayout>
+						<focusedlayout width="330" height="401"><control type="group"><depth>DepthContentPopout</depth><top>130</top>
+							<animation effect="zoom" start="100" end="110" time="200" tween="sine" easing="inout" center="170,320">Focus</animation>
+							<animation effect="zoom" start="110" end="100" time="200" tween="sine" easing="inout" center="170,320">UnFocus</animation>
+							<include content="InfoWallMusicLayout"><param name="fallback_image" value="DefaultAddonService.png"/><param name="focused" value="true"/></include>
+						</control></focusedlayout>
+						<content>
+							<item><label>ניקוי מטמון Gears</label><onclick>RunPlugin(plugin://plugin.video.gears/?mode=clear_all_cache)</onclick><thumb>DefaultAddonService.png</thumb></item>
+							<item><label>ניקוי מטמון GearsAI</label><onclick>RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</onclick><thumb>DefaultAddonService.png</thumb></item>
+							<item><label>שלח לוגים לתמיכה</label><onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)</onclick><thumb>DefaultAddonService.png</thumb></item>
+							<item><label>עדכון מהיר</label><onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=check_updates)</onclick><thumb>DefaultAddonService.png</thumb></item>
+						</content>
+					</control>
+				</control>
 				<control type="group" id="5000">
 					<visible>String.IsEqual(Container(9000).ListItem.Property(id),movies)</visible>
 					<include content="Visible_Right_Delayed">
@@ -1058,7 +1083,7 @@
 							<property name="id">mk_networks</property>
 						</item>
 						<item>
-							<label>דבריד</label>
+							<label>חיבור שירותים</label>
 							<onclick>ActivateWindow(Videos,plugin://plugin.video.gears/?mode=navigator.premium&amp;name=My%20Services,return)</onclick>
 							<property name="menu_id">$NUMBER[9141]</property>
 							<thumb>icons/sidemenu/manage.png</thumb>
@@ -1070,6 +1095,13 @@
 							<property name="menu_id">$NUMBER[9000]</property>
 							<thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/icon.png</thumb>
 							<property name="id">mk_skin</property>
+						</item>
+						<item>
+							<label>תחזוקה</label>
+							<onclick>SetFocus(9151)</onclick>
+							<property name="menu_id">$NUMBER[9151]</property>
+							<thumb>icons/sidemenu/manage.png</thumb>
+							<property name="id">mk_services</property>
 						</item>
 						<item>
 							<label>$LOCALIZE[342]</label>

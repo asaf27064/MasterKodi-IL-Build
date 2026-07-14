@@ -1,5 +1,5 @@
 {
-  "config_version": 19,
+  "config_version": 20,
   "_comment": "Declarative policy for how the wizard applies the shipped build-config onto a device. Bump build.json config_version whenever ANY file under config/ changes. Modes: replace (overwrite whole file), seed_if_absent (write only if missing), merge_id (per <setting id>, build value wins - CLOBBERS user changes), merge_seed (per <setting id>, add-if-absent - our value is the DEFAULT but a user's own change is NEVER overwritten), merge_name (per <source><name>, add build's, keep user's). To DELIBERATELY push a changed default to every device with merge_seed: add that id to the file's optional \"force_ids\" list (overwrites even user-set values) and bump config_version; remove it once propagated if you want user changes to stick again. exclude_ids always win over force_ids to protect credentials. gears_settings enforces critical values in Gears' binary settings.db.",
   "files": [
     {
@@ -25,6 +25,10 @@
       "dest": "userdata/guisettings.xml",
       "fresh": "merge_id",
       "update": "merge_seed",
+      "force_ids": [
+        "lookandfeel.font",
+        "subtitles.fontname"
+      ],
       "exclude_ids": [
         "services.devicename",
         "services.deviceuuid",
@@ -54,7 +58,15 @@
       "src": "userdata/addon_data/skin.arctic.fuse.3/settings.xml",
       "dest": "userdata/addon_data/skin.arctic.fuse.3/settings.xml",
       "fresh": "replace",
-      "update": "merge_seed"
+      "update": "merge_seed",
+      "force_ids": [
+        "homeswitcher.1102.name",
+        "homeswitcher.1103.name",
+        "homeswitcher.1103.toggle",
+        "homeswitcher.1103.icon",
+        "labels.autoscroll",
+        "startup.enablehubpreloading"
+      ]
     },
     {
       "src": "userdata/addon_data/skin.arctic.zephyr.2.resurrection.mod/settings.xml",
@@ -104,6 +116,18 @@
     {
       "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1102widgets.json",
       "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1102widgets.json",
+      "fresh": "replace",
+      "update": "replace"
+    },
+    {
+      "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1103widgets.json",
+      "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1103widgets.json",
+      "fresh": "replace",
+      "update": "replace"
+    },
+    {
+      "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1103submenu.json",
+      "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1103submenu.json",
       "fresh": "replace",
       "update": "replace"
     },

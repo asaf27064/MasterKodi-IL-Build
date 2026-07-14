@@ -356,7 +356,45 @@ def _apply_one(entry):
     # If this is one of OUR modded addons, stop Kodi auto-replacing it from a
     # repo (no-op for vanilla deps, which keep auto-updating normally).
     _disable_kodi_autoupdate(entry['id'])
+    if entry['id'] == 'plugin.video.gears':
+        # Kodi's texture cache keys images by URL; replaced media files with
+        # unchanged filenames (e.g. network_icons logo refresh) would keep
+        # showing the OLD cached art forever. Purge those entries so the new
+        # icons render after this update.
+        _purge_texture_cache('%network_icons%')
     return True
+
+
+def _purge_texture_cache(like_pattern):
+    """Delete matching rows from Textures*.db + their cached thumb files, so
+    Kodi re-caches the images from disk. Fail-open."""
+    try:
+        import sqlite3
+        dbdir = xbmcvfs.translatePath('special://database/')
+        thumbs = xbmcvfs.translatePath('special://thumbnails/')
+        purged = 0
+        for f in os.listdir(dbdir):
+            if not (f.startswith('Textures') and f.endswith('.db')):
+                continue
+            con = sqlite3.connect(os.path.join(dbdir, f))
+            try:
+                rows = list(con.execute(
+                    'SELECT id, cachedurl FROM texture WHERE url LIKE ?', (like_pattern,)))
+                for tid, cached in rows:
+                    try:
+                        os.remove(os.path.join(thumbs, cached.replace('/', os.sep)))
+                    except Exception:
+                        pass
+                    con.execute('DELETE FROM sizes WHERE idtexture=?', (tid,))
+                    con.execute('DELETE FROM texture WHERE id=?', (tid,))
+                    purged += 1
+                con.commit()
+            finally:
+                con.close()
+        if purged:
+            log('purged %d stale texture-cache entries (%s)' % (purged, like_pattern))
+    except Exception as e:
+        log('texture cache purge failed (non-fatal): %s' % e)
 
 
 # never uninstall these even if a glitched manifest omits them

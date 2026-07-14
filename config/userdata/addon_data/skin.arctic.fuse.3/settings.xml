@@ -49,7 +49,7 @@
     <setting id="videoinfo.widgets.disablecrew" type="bool">false</setting>
     <setting id="tmdbhelper.service" type="bool">true</setting>
     <setting id="videoinfo.widgets.disablestudio" type="bool">false</setting>
-    <setting id="startup.enablehubpreloading" type="bool">false</setting>
+    <setting id="startup.enablehubpreloading" type="bool">true</setting>
     <setting id="debuginfo" type="bool">false</setting>
     <setting id="skinuserlogin.startuploginscreen" type="bool">false</setting>
     <setting id="search.disablecombined" type="bool">true</setting>
@@ -88,7 +88,7 @@
     <setting id="disable.holidaytheme.additionalicons" type="bool">false</setting>
     <setting id="TMDbHelper.DisableExtendedProperties" type="bool">true</setting>
     <setting id="debuggrid" type="bool">false</setting>
-    <setting id="labels.autoscroll" type="bool">false</setting>
+    <setting id="labels.autoscroll" type="bool">true</setting>
     <setting id="homeswitcher.enableicons" type="bool">false</setting>
     <setting id="background.extrafanart" type="bool">false</setting>
     <setting id="indicator.episodetypebanner" type="bool">false</setting>
@@ -124,7 +124,7 @@
     <setting id="TMDbHelper.UseLocalWindowIDs" type="string">10000|11101|11102|11103|11104|11105|11106|11107|11108|11109</setting>
     <setting id="dialoginfo.movies.item03" type="string">Wikipedia</setting>
     <setting id="dialoginfo.movies.item02" type="string">Trakt</setting>
-    <setting id="homeswitcher.1103.icon" type="string"></setting>
+    <setting id="homeswitcher.1103.icon" type="string">special://skin/extras/icons/arrows-rotate.png</setting>
     <setting id="dialoginfo.movies.item01" type="string">Trailer</setting>
     <setting id="homeswitcher.1102.toggle" type="string">true</setting>
     <setting id="Startup.VideoPath" type="string"></setting>
@@ -150,7 +150,7 @@
     <setting id="customrating.tvshows.item01" type="string">IMDb</setting>
     <setting id="mousepointercolor.name" type="string"></setting>
     <setting id="optionstiles.03.path" type="string">ReloadSkin</setting>
-    <setting id="homeswitcher.1103.name" type="string">מותאם אישי</setting>
+    <setting id="homeswitcher.1103.name" type="string">תחזוקה</setting>
     <setting id="TMDbHelper.Blur.Size" type="string"></setting>
     <setting id="home.label" type="string"></setting>
     <setting id="OptionsTiles.02.Icon" type="string"></setting>
@@ -204,7 +204,7 @@
     <setting id="optionstiles.03.target" type="string"></setting>
     <setting id="HomeSwitcher.1101.Shortcut.Path" type="string"></setting>
     <setting id="homeswitcher.1106.mode" type="string">Standard</setting>
-    <setting id="homeswitcher.1102.name" type="string">חשבון ותחזוקה</setting>
+    <setting id="homeswitcher.1102.name" type="string">חיבור שירותים</setting>
     <setting id="Background.DialogImage" type="string">Adaptive</setting>
     <setting id="HomeSwitcher.1101.Spotlight.Path" type="string"></setting>
     <setting id="osd.autoonpause" type="string">Hide</setting>
@@ -220,7 +220,7 @@
     <setting id="OSD_Timeout" type="string">5</setting>
     <setting id="HomeSwitcher.Home.Shortcut.Path" type="string">ActivateWindow(1181)</setting>
     <setting id="HomeSwitcher.1103.Mode" type="string">Standard</setting>
-    <setting id="homeswitcher.1103.toggle" type="string"></setting>
+    <setting id="homeswitcher.1103.toggle" type="string">true</setting>
     <setting id="HomeSwitcher.1102.Shortcut.Path" type="string"></setting>
     <setting id="HomeSwitcher.1102.Spotlight.Label" type="string"></setting>
     <setting id="autoscrolltime" type="string"></setting>
