@@ -1,0 +1,3123 @@
+<includes>
+	<include name="skinshortcuts-mainmenu">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<label>סרטים</label>
+			<label2>Common Shortcut</label2>
+			<icon>special://home/media/build_icons/Movies.png</icon>
+			<thumb />
+			<property name="labelID">srtym</property>
+			<property name="defaultID">mkil_movies</property>
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_movies_trending&amp;iconImage=trending&amp;mode=build_movie_list&amp;name=Trending&amp;random_support=true",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_movies_trending&amp;iconImage=trending&amp;mode=build_movie_list&amp;name=Trending&amp;random_support=true",return)</property>
+			<property name="list">plugin://plugin.video.gears/?action=trakt_movies_trending&amp;iconImage=trending&amp;mode=build_movie_list&amp;name=Trending&amp;random_support=true</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="submenuVisibility">srtym</property>
+			<property name="group">mainmenu</property>
+			<property name="hasSubmenu">False</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<label>סדרות</label>
+			<label2>Common Shortcut</label2>
+			<icon>special://home/media/build_icons/TV_Shows.png</icon>
+			<thumb />
+			<property name="labelID">sdrvt</property>
+			<property name="defaultID">mkil_tvshows</property>
+			<onclick>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_tv_trending&amp;iconImage=trending&amp;mode=build_tvshow_list&amp;name=Trending&amp;random_support=true",return)</onclick>
+			<property name="path">ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_tv_trending&amp;iconImage=trending&amp;mode=build_tvshow_list&amp;name=Trending&amp;random_support=true",return)</property>
+			<property name="list">plugin://plugin.video.gears/?action=trakt_tv_trending&amp;iconImage=trending&amp;mode=build_tvshow_list&amp;name=Trending&amp;random_support=true</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="submenuVisibility">sdrvt</property>
+			<property name="group">mainmenu</property>
+			<property name="hasSubmenu">False</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<label>חיבור TorBox</label>
+			<label2>Common Shortcut</label2>
+			<icon>special://home/media/build_icons/TorBox_Auth.png</icon>
+			<thumb />
+			<property name="labelID">hybvrtorbox</property>
+			<property name="defaultID">mkil_torbox</property>
+			<onclick>RunPlugin(plugin://plugin.video.gears/?mode=torbox.authenticate)</onclick>
+			<property name="path">RunPlugin(plugin://plugin.video.gears/?mode=torbox.authenticate)</property>
+			<property name="list">RunPlugin(plugin://plugin.video.gears/?mode=torbox.authenticate)</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="submenuVisibility">hybvrtorbox</property>
+			<property name="group">mainmenu</property>
+			<property name="hasSubmenu">False</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<label>$LOCALIZE[137]</label>
+			<label2>Common Shortcut</label2>
+			<icon>special://skin/extras/icons/search.png</icon>
+			<thumb />
+			<property name="labelID">137</property>
+			<property name="defaultID">search</property>
+			<onclick>Skin.Reset(SearchTerm)</onclick>
+			<property name="path">Skin.Reset(SearchTerm)</property>
+			<property name="list">Skin.Reset(SearchTerm)</property>
+			<onclick>Skin.SetString(SearchTerm)</onclick>
+			<onclick>ActivateWindow(1138)</onclick>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="submenuVisibility">num-137</property>
+			<property name="group">mainmenu</property>
+			<property name="hasSubmenu">False</property>
+			</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<label>החלפת סקין</label>
+			<label2>Common Shortcut</label2>
+			<icon>DefaultAddonSkin.png</icon>
+			<thumb />
+			<property name="labelID">hhlptskyn</property>
+			<property name="defaultID">mkil_skins</property>
+			<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</onclick>
+			<property name="path">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</property>
+			<property name="list">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="submenuVisibility">hhlptskyn</property>
+			<property name="group">mainmenu</property>
+			<property name="hasSubmenu">False</property>
+			</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<label>$LOCALIZE[5]</label>
+			<label2>Common Shortcut</label2>
+			<icon>special://skin/extras/icons/settings.png</icon>
+			<thumb />
+			<property name="labelID">5</property>
+			<property name="defaultID">settings</property>
+			<onclick>ActivateWindow(Settings)</onclick>
+			<property name="path">ActivateWindow(Settings)</property>
+			<property name="list">Settings</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="submenuVisibility">num-5</property>
+			<property name="group">mainmenu</property>
+			<property name="hasSubmenu">True</property>
+			</item>
+		<item id="7">
+			<property name="id">$NUMBER[7]</property>
+			<label>$LOCALIZE[13012]</label>
+			<label2>Common Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13012</property>
+			<property name="defaultID">13012</property>
+			<onclick>ActivateWindow(shutdownmenu)</onclick>
+			<property name="path">ActivateWindow(shutdownmenu)</property>
+			<property name="list">shutdownmenu</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="submenuVisibility">num-13012</property>
+			<property name="group">mainmenu</property>
+			<property name="hasSubmenu">False</property>
+			</item>
+		</include>
+	<include />
+	<include name="skinshortcuts-submenu">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[7]</label>
+			<label2>$ADDON[script.skinshortcuts 32034]</label2>
+			<icon>special://skin/extras/icons/folder.png</icon>
+			<thumb />
+			<property name="labelID">7</property>
+			<property name="defaultID">7</property>
+			<onclick>ActivateWindow(FileManager)</onclick>
+			<property name="path">ActivateWindow(FileManager)</property>
+			<property name="list">FileManager</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5)</visible>
+			<property name="group">5</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[13200]</label>
+			<label2>$ADDON[script.skinshortcuts 32034]</label2>
+			<icon>special://skin/extras/icons/actor.png</icon>
+			<thumb />
+			<property name="labelID">13200</property>
+			<property name="defaultID">13200</property>
+			<onclick>ActivateWindow(Profiles)</onclick>
+			<property name="path">ActivateWindow(Profiles)</property>
+			<property name="list">Profiles</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5)</visible>
+			<property name="group">5</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[10007]</label>
+			<label2>$ADDON[script.skinshortcuts 32034]</label2>
+			<icon>special://skin/extras/icons/sysinfo.png</icon>
+			<thumb />
+			<property name="labelID">10007</property>
+			<property name="defaultID">10007</property>
+			<onclick>ActivateWindow(SystemInfo)</onclick>
+			<property name="path">ActivateWindow(SystemInfo)</property>
+			<property name="list">SystemInfo</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5)</visible>
+			<property name="group">5</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[14111]</label>
+			<label2>$ADDON[script.skinshortcuts 32034]</label2>
+			<icon>special://skin/extras/icons/actor.png</icon>
+			<thumb />
+			<property name="labelID">14111</property>
+			<property name="defaultID">14111</property>
+			<visible>[system.getbool(eventlog.enabled)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5)</visible>
+			<onclick>ActivateWindow(EventLog,events://,return)</onclick>
+			<property name="path">ActivateWindow(EventLog,events://,return)</property>
+			<property name="list">events://</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">5</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[20183]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">20183</property>
+			<property name="defaultID">20183</property>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>ReloadSkin()</onclick>
+			<property name="path">ReloadSkin()</property>
+			<property name="list">ReloadSkin()</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),powermenu)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[13012]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13012</property>
+			<property name="defaultID">13012</property>
+			<visible>[[System.ShowExitButton] + [System.ShowExitButton]] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>Quit()</onclick>
+			<property name="path">Quit()</property>
+			<property name="list">Quit()</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[13011]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13011</property>
+			<property name="defaultID">13011</property>
+			<visible>[[System.CanSuspend] + [System.CanSuspend]] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>Suspend()</onclick>
+			<property name="path">Suspend()</property>
+			<property name="list">Suspend()</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[31599]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/android.png</icon>
+			<thumb />
+			<property name="labelID">31599</property>
+			<property name="defaultID">31599</property>
+			<visible>[System.PathExist("/dev/env")] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>System.ExecWait("/usr/sbin/rebootfromnand")</onclick>
+			<property name="path">System.ExecWait("/usr/sbin/rebootfromnand")</property>
+			<property name="list">System.ExecWait(/usr/sbin/rebootfromnand)</property>
+			<onclick>Reset()</onclick>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[20126]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">20126</property>
+			<property name="defaultID">20126</property>
+			<visible>[System.HasLoginScreen | IntegerGreaterThan(System.ProfileCount,1)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>dialog.close(all,true)</onclick>
+			<property name="path">dialog.close(all,true)</property>
+			<property name="list">dialog.close(all,true)</property>
+			<onclick>System.LogOff</onclick>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[20046]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">20046</property>
+			<property name="defaultID">20046</property>
+			<visible>[[System.HasLocks] + [System.HasLocks]] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>mastermode</onclick>
+			<property name="path">mastermode</property>
+			<property name="list">mastermode</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="7">
+			<property name="id">$NUMBER[7]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[13017]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13017</property>
+			<property name="defaultID">13017</property>
+			<visible>[[System.HasShutdown +!System.IsInhibit] + [System.HasShutdown +!System.IsInhibit]] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>InhibitIdleShutdown(true)</onclick>
+			<property name="path">InhibitIdleShutdown(true)</property>
+			<property name="list">InhibitIdleShutdown(true)</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="8">
+			<property name="id">$NUMBER[8]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[13018]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13018</property>
+			<property name="defaultID">13018</property>
+			<visible>[[System.HasShutdown + System.IsInhibit] + [System.HasShutdown + System.IsInhibit]] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>InhibitIdleShutdown(false)</onclick>
+			<property name="path">InhibitIdleShutdown(false)</property>
+			<property name="list">InhibitIdleShutdown(false)</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="9">
+			<property name="id">$NUMBER[9]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[20151]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">20151</property>
+			<property name="defaultID">20151</property>
+			<visible>[[System.HasAlarm(shutdowntimer)] + [System.HasAlarm(shutdowntimer)]] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>CancelAlarm(shutdowntimer)</onclick>
+			<property name="path">CancelAlarm(shutdowntimer)</property>
+			<property name="list">CancelAlarm(shutdowntimer)</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="10">
+			<property name="id">$NUMBER[10]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[5]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">5</property>
+			<property name="defaultID">5</property>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>ActivateWindow(Settings)</onclick>
+			<property name="path">ActivateWindow(Settings)</property>
+			<property name="list">Settings</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),powermenu)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">9</property>
+			<label>סרטים</label>
+			<label2>$LOCALIZE[571]</label2>
+			<icon>special://skin/extras/icons/film.png</icon>
+			<thumb />
+			<property name="labelID">srtym</property>
+			<property name="defaultID">srtym</property>
+			<onclick>DefaultSearch-Movies</onclick>
+			<property name="path">DefaultSearch-Movies</property>
+			<property name="list">DefaultSearch-Movies</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),searchmenu)</visible>
+			<property name="group">searchmenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">9</property>
+			<label>סדרות</label>
+			<label2>$LOCALIZE[571]</label2>
+			<icon>special://skin/extras/icons/tv.png</icon>
+			<thumb />
+			<property name="labelID">sdrvt</property>
+			<property name="defaultID">sdrvt</property>
+			<onclick>DefaultSearch-TvShows</onclick>
+			<property name="path">DefaultSearch-TvShows</property>
+			<property name="list">DefaultSearch-TvShows</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),searchmenu)</visible>
+			<property name="group">searchmenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include />
+	<include name="skinshortcuts-submenu-1">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">1</property>
+			<label>המשך צפייה</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/player.png</thumb>
+			<property name="labelID">hmshkhtspyyh</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">1</property>
+			<label>חם עכשיו</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/trending.png</thumb>
+			<property name="labelID">hm-khshyv</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">1</property>
+			<label>בקולנוע</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/intheatres.png</thumb>
+			<property name="labelID">bkvlnv</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">1</property>
+			<label>שוברי קופות</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/most_voted.png</thumb>
+			<property name="labelID">shvbrykvpvt</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">1</property>
+			<label>זוכי אוסקר</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/oscar_winners.png</thumb>
+			<property name="labelID">zvkhyavskr</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<property name="mainmenuid">1</property>
+			<label>ז'אנרים</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/genres.png</thumb>
+			<property name="labelID">zanrym</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">2</property>
+			<label>המשך צפייה</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/player.png</thumb>
+			<property name="labelID">hmshkhtspyyh</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">2</property>
+			<label>חם עכשיו</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/trending.png</thumb>
+			<property name="labelID">hm-khshyv</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">2</property>
+			<label>רשתות סטרימינג</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/folder.png</thumb>
+			<property name="labelID">rshtvtstrymyng</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder",return)</property>
+			<property name="list">plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">2</property>
+			<label>שידור בכורה</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/fresh.png</thumb>
+			<property name="labelID">shydvrbkhvrh</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">2</property>
+			<label>בקרוב</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/lists.png</thumb>
+			<property name="labelID">bkrvb</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<property name="mainmenuid">2</property>
+			<label>ז'אנרים</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/genres.png</thumb>
+			<property name="labelID">zanrym</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">3</property>
+			<label>שירותי TorBox</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/mk_torbox.png</thumb>
+			<property name="labelID">shyrvtytorbox</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</property>
+			<property name="list">plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox)</visible>
+			<property name="group">hybvrtorbox.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-group-srtym">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-srtym">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-srtym-1">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">1</property>
+			<label>המשך צפייה</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/player.png</thumb>
+			<property name="labelID">hmshkhtspyyh</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">1</property>
+			<label>חם עכשיו</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/trending.png</thumb>
+			<property name="labelID">hm-khshyv</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">1</property>
+			<label>בקולנוע</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/intheatres.png</thumb>
+			<property name="labelID">bkvlnv</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">1</property>
+			<label>שוברי קופות</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/most_voted.png</thumb>
+			<property name="labelID">shvbrykvpvt</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">1</property>
+			<label>זוכי אוסקר</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/oscar_winners.png</thumb>
+			<property name="labelID">zvkhyavskr</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<property name="mainmenuid">1</property>
+			<label>ז'אנרים</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/genres.png</thumb>
+			<property name="labelID">zanrym</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-group-alt-srtym-1">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">1</property>
+			<label>המשך צפייה</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/player.png</thumb>
+			<property name="labelID">hmshkhtspyyh</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),srtym)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">1</property>
+			<label>חם עכשיו</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/trending.png</thumb>
+			<property name="labelID">hm-khshyv</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),srtym)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">1</property>
+			<label>בקולנוע</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/intheatres.png</thumb>
+			<property name="labelID">bkvlnv</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),srtym)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">1</property>
+			<label>שוברי קופות</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/most_voted.png</thumb>
+			<property name="labelID">shvbrykvpvt</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),srtym)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">1</property>
+			<label>זוכי אוסקר</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/oscar_winners.png</thumb>
+			<property name="labelID">zvkhyavskr</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),srtym)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<property name="mainmenuid">1</property>
+			<label>ז'אנרים</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/genres.png</thumb>
+			<property name="labelID">zanrym</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),srtym)</visible>
+			<property name="group">srtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-group-sdrvt">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-sdrvt">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-sdrvt-1">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">2</property>
+			<label>המשך צפייה</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/player.png</thumb>
+			<property name="labelID">hmshkhtspyyh</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">2</property>
+			<label>חם עכשיו</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/trending.png</thumb>
+			<property name="labelID">hm-khshyv</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">2</property>
+			<label>רשתות סטרימינג</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/folder.png</thumb>
+			<property name="labelID">rshtvtstrymyng</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder",return)</property>
+			<property name="list">plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">2</property>
+			<label>שידור בכורה</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/fresh.png</thumb>
+			<property name="labelID">shydvrbkhvrh</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">2</property>
+			<label>בקרוב</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/lists.png</thumb>
+			<property name="labelID">bkrvb</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<property name="mainmenuid">2</property>
+			<label>ז'אנרים</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/genres.png</thumb>
+			<property name="labelID">zanrym</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-group-alt-sdrvt-1">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">2</property>
+			<label>המשך צפייה</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/player.png</thumb>
+			<property name="labelID">hmshkhtspyyh</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),sdrvt)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">2</property>
+			<label>חם עכשיו</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/trending.png</thumb>
+			<property name="labelID">hm-khshyv</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),sdrvt)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">2</property>
+			<label>רשתות סטרימינג</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/folder.png</thumb>
+			<property name="labelID">rshtvtstrymyng</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder",return)</property>
+			<property name="list">plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),sdrvt)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">2</property>
+			<label>שידור בכורה</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/fresh.png</thumb>
+			<property name="labelID">shydvrbkhvrh</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),sdrvt)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">2</property>
+			<label>בקרוב</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/lists.png</thumb>
+			<property name="labelID">bkrvb</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists",return)</property>
+			<property name="widgetTarget">videos</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),sdrvt)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<property name="mainmenuid">2</property>
+			<label>ז'אנרים</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/genres.png</thumb>
+			<property name="labelID">zanrym</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),sdrvt)</visible>
+			<property name="group">sdrvt.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-group-hybvrtorbox">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-hybvrtorbox">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-hybvrtorbox-1">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">3</property>
+			<label>שירותי TorBox</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/mk_torbox.png</thumb>
+			<property name="labelID">shyrvtytorbox</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</property>
+			<property name="list">plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">hybvrtorbox.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-group-alt-hybvrtorbox-1">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">3</property>
+			<label>שירותי TorBox</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/mk_torbox.png</thumb>
+			<property name="labelID">shyrvtytorbox</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</property>
+			<property name="list">plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),hybvrtorbox)</visible>
+			<property name="group">hybvrtorbox.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-group-num-137">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-num-137">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-num-137-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-num-137-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-hhlptskyn">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-hhlptskyn">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-hhlptskyn-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-hhlptskyn-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-num-5">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[7]</label>
+			<label2>$ADDON[script.skinshortcuts 32034]</label2>
+			<icon>special://skin/extras/icons/folder.png</icon>
+			<thumb />
+			<property name="labelID">7</property>
+			<property name="defaultID">7</property>
+			<onclick>ActivateWindow(FileManager)</onclick>
+			<property name="path">ActivateWindow(FileManager)</property>
+			<property name="list">FileManager</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">5</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[13200]</label>
+			<label2>$ADDON[script.skinshortcuts 32034]</label2>
+			<icon>special://skin/extras/icons/actor.png</icon>
+			<thumb />
+			<property name="labelID">13200</property>
+			<property name="defaultID">13200</property>
+			<onclick>ActivateWindow(Profiles)</onclick>
+			<property name="path">ActivateWindow(Profiles)</property>
+			<property name="list">Profiles</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">5</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[10007]</label>
+			<label2>$ADDON[script.skinshortcuts 32034]</label2>
+			<icon>special://skin/extras/icons/sysinfo.png</icon>
+			<thumb />
+			<property name="labelID">10007</property>
+			<property name="defaultID">10007</property>
+			<onclick>ActivateWindow(SystemInfo)</onclick>
+			<property name="path">ActivateWindow(SystemInfo)</property>
+			<property name="list">SystemInfo</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">5</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[14111]</label>
+			<label2>$ADDON[script.skinshortcuts 32034]</label2>
+			<icon>special://skin/extras/icons/actor.png</icon>
+			<thumb />
+			<property name="labelID">14111</property>
+			<property name="defaultID">14111</property>
+			<visible>system.getbool(eventlog.enabled)</visible>
+			<onclick>ActivateWindow(EventLog,events://,return)</onclick>
+			<property name="path">ActivateWindow(EventLog,events://,return)</property>
+			<property name="list">events://</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">5</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-group-alt-num-5">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[7]</label>
+			<label2>$ADDON[script.skinshortcuts 32034]</label2>
+			<icon>special://skin/extras/icons/folder.png</icon>
+			<thumb />
+			<property name="labelID">7</property>
+			<property name="defaultID">7</property>
+			<onclick>ActivateWindow(FileManager)</onclick>
+			<property name="path">ActivateWindow(FileManager)</property>
+			<property name="list">FileManager</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),num-5)</visible>
+			<property name="group">5</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[13200]</label>
+			<label2>$ADDON[script.skinshortcuts 32034]</label2>
+			<icon>special://skin/extras/icons/actor.png</icon>
+			<thumb />
+			<property name="labelID">13200</property>
+			<property name="defaultID">13200</property>
+			<onclick>ActivateWindow(Profiles)</onclick>
+			<property name="path">ActivateWindow(Profiles)</property>
+			<property name="list">Profiles</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),num-5)</visible>
+			<property name="group">5</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[10007]</label>
+			<label2>$ADDON[script.skinshortcuts 32034]</label2>
+			<icon>special://skin/extras/icons/sysinfo.png</icon>
+			<thumb />
+			<property name="labelID">10007</property>
+			<property name="defaultID">10007</property>
+			<onclick>ActivateWindow(SystemInfo)</onclick>
+			<property name="path">ActivateWindow(SystemInfo)</property>
+			<property name="list">SystemInfo</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),num-5)</visible>
+			<property name="group">5</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">6</property>
+			<label>$LOCALIZE[14111]</label>
+			<label2>$ADDON[script.skinshortcuts 32034]</label2>
+			<icon>special://skin/extras/icons/actor.png</icon>
+			<thumb />
+			<property name="labelID">14111</property>
+			<property name="defaultID">14111</property>
+			<visible>[system.getbool(eventlog.enabled)] + String.IsEqual(Window(10000).Property(submenuVisibility),num-5)</visible>
+			<onclick>ActivateWindow(EventLog,events://,return)</onclick>
+			<property name="path">ActivateWindow(EventLog,events://,return)</property>
+			<property name="list">events://</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">5</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-group-num-5-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-num-5-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-num-13012">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-num-13012">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-num-13012-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-num-13012-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-powermenu">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[20183]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">20183</property>
+			<property name="defaultID">20183</property>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>ReloadSkin()</onclick>
+			<property name="path">ReloadSkin()</property>
+			<property name="list">ReloadSkin()</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[13012]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13012</property>
+			<property name="defaultID">13012</property>
+			<visible>[System.ShowExitButton] + [System.ShowExitButton]</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>Quit()</onclick>
+			<property name="path">Quit()</property>
+			<property name="list">Quit()</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[13011]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13011</property>
+			<property name="defaultID">13011</property>
+			<visible>[System.CanSuspend] + [System.CanSuspend]</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>Suspend()</onclick>
+			<property name="path">Suspend()</property>
+			<property name="list">Suspend()</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[31599]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/android.png</icon>
+			<thumb />
+			<property name="labelID">31599</property>
+			<property name="defaultID">31599</property>
+			<visible>System.PathExist("/dev/env")</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>System.ExecWait("/usr/sbin/rebootfromnand")</onclick>
+			<property name="path">System.ExecWait("/usr/sbin/rebootfromnand")</property>
+			<property name="list">System.ExecWait(/usr/sbin/rebootfromnand)</property>
+			<onclick>Reset()</onclick>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[20126]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">20126</property>
+			<property name="defaultID">20126</property>
+			<visible>System.HasLoginScreen | IntegerGreaterThan(System.ProfileCount,1)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>dialog.close(all,true)</onclick>
+			<property name="path">dialog.close(all,true)</property>
+			<property name="list">dialog.close(all,true)</property>
+			<onclick>System.LogOff</onclick>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[20046]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">20046</property>
+			<property name="defaultID">20046</property>
+			<visible>[System.HasLocks] + [System.HasLocks]</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>mastermode</onclick>
+			<property name="path">mastermode</property>
+			<property name="list">mastermode</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="7">
+			<property name="id">$NUMBER[7]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[13017]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13017</property>
+			<property name="defaultID">13017</property>
+			<visible>[System.HasShutdown +!System.IsInhibit] + [System.HasShutdown +!System.IsInhibit]</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>InhibitIdleShutdown(true)</onclick>
+			<property name="path">InhibitIdleShutdown(true)</property>
+			<property name="list">InhibitIdleShutdown(true)</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="8">
+			<property name="id">$NUMBER[8]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[13018]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13018</property>
+			<property name="defaultID">13018</property>
+			<visible>[System.HasShutdown + System.IsInhibit] + [System.HasShutdown + System.IsInhibit]</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>InhibitIdleShutdown(false)</onclick>
+			<property name="path">InhibitIdleShutdown(false)</property>
+			<property name="list">InhibitIdleShutdown(false)</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="9">
+			<property name="id">$NUMBER[9]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[20151]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">20151</property>
+			<property name="defaultID">20151</property>
+			<visible>[System.HasAlarm(shutdowntimer)] + [System.HasAlarm(shutdowntimer)]</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>CancelAlarm(shutdowntimer)</onclick>
+			<property name="path">CancelAlarm(shutdowntimer)</property>
+			<property name="list">CancelAlarm(shutdowntimer)</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="10">
+			<property name="id">$NUMBER[10]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[5]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">5</property>
+			<property name="defaultID">5</property>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>ActivateWindow(Settings)</onclick>
+			<property name="path">ActivateWindow(Settings)</property>
+			<property name="list">Settings</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-group-alt-powermenu">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[20183]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">20183</property>
+			<property name="defaultID">20183</property>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>ReloadSkin()</onclick>
+			<property name="path">ReloadSkin()</property>
+			<property name="list">ReloadSkin()</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),powermenu)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[13012]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13012</property>
+			<property name="defaultID">13012</property>
+			<visible>[[System.ShowExitButton] + [System.ShowExitButton]] + String.IsEqual(Window(10000).Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>Quit()</onclick>
+			<property name="path">Quit()</property>
+			<property name="list">Quit()</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="3">
+			<property name="id">$NUMBER[3]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[13011]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13011</property>
+			<property name="defaultID">13011</property>
+			<visible>[[System.CanSuspend] + [System.CanSuspend]] + String.IsEqual(Window(10000).Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>Suspend()</onclick>
+			<property name="path">Suspend()</property>
+			<property name="list">Suspend()</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[31599]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/android.png</icon>
+			<thumb />
+			<property name="labelID">31599</property>
+			<property name="defaultID">31599</property>
+			<visible>[System.PathExist("/dev/env")] + String.IsEqual(Window(10000).Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>System.ExecWait("/usr/sbin/rebootfromnand")</onclick>
+			<property name="path">System.ExecWait("/usr/sbin/rebootfromnand")</property>
+			<property name="list">System.ExecWait(/usr/sbin/rebootfromnand)</property>
+			<onclick>Reset()</onclick>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="5">
+			<property name="id">$NUMBER[5]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[20126]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">20126</property>
+			<property name="defaultID">20126</property>
+			<visible>[System.HasLoginScreen | IntegerGreaterThan(System.ProfileCount,1)] + String.IsEqual(Window(10000).Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>dialog.close(all,true)</onclick>
+			<property name="path">dialog.close(all,true)</property>
+			<property name="list">dialog.close(all,true)</property>
+			<onclick>System.LogOff</onclick>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[20046]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">20046</property>
+			<property name="defaultID">20046</property>
+			<visible>[[System.HasLocks] + [System.HasLocks]] + String.IsEqual(Window(10000).Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>mastermode</onclick>
+			<property name="path">mastermode</property>
+			<property name="list">mastermode</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="7">
+			<property name="id">$NUMBER[7]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[13017]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13017</property>
+			<property name="defaultID">13017</property>
+			<visible>[[System.HasShutdown +!System.IsInhibit] + [System.HasShutdown +!System.IsInhibit]] + String.IsEqual(Window(10000).Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>InhibitIdleShutdown(true)</onclick>
+			<property name="path">InhibitIdleShutdown(true)</property>
+			<property name="list">InhibitIdleShutdown(true)</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="8">
+			<property name="id">$NUMBER[8]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[13018]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">13018</property>
+			<property name="defaultID">13018</property>
+			<visible>[[System.HasShutdown + System.IsInhibit] + [System.HasShutdown + System.IsInhibit]] + String.IsEqual(Window(10000).Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>InhibitIdleShutdown(false)</onclick>
+			<property name="path">InhibitIdleShutdown(false)</property>
+			<property name="list">InhibitIdleShutdown(false)</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="9">
+			<property name="id">$NUMBER[9]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[20151]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">20151</property>
+			<property name="defaultID">20151</property>
+			<visible>[[System.HasAlarm(shutdowntimer)] + [System.HasAlarm(shutdowntimer)]] + String.IsEqual(Window(10000).Property(submenuVisibility),powermenu)</visible>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>CancelAlarm(shutdowntimer)</onclick>
+			<property name="path">CancelAlarm(shutdowntimer)</property>
+			<property name="list">CancelAlarm(shutdowntimer)</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="10">
+			<property name="id">$NUMBER[10]</property>
+			<property name="mainmenuid">8</property>
+			<label>$LOCALIZE[5]</label>
+			<label2>Power Menu Shortcut</label2>
+			<icon>special://skin/extras/icons/power.png</icon>
+			<thumb />
+			<property name="labelID">5</property>
+			<property name="defaultID">5</property>
+			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
+			<onclick>ActivateWindow(Settings)</onclick>
+			<property name="path">ActivateWindow(Settings)</property>
+			<property name="list">Settings</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),powermenu)</visible>
+			<property name="group">powermenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-group-powermenu-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-powermenu-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-searchmenu">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">9</property>
+			<label>סרטים</label>
+			<label2>$LOCALIZE[571]</label2>
+			<icon>special://skin/extras/icons/film.png</icon>
+			<thumb />
+			<property name="labelID">srtym</property>
+			<property name="defaultID">srtym</property>
+			<onclick>DefaultSearch-Movies</onclick>
+			<property name="path">DefaultSearch-Movies</property>
+			<property name="list">DefaultSearch-Movies</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">searchmenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">9</property>
+			<label>סדרות</label>
+			<label2>$LOCALIZE[571]</label2>
+			<icon>special://skin/extras/icons/tv.png</icon>
+			<thumb />
+			<property name="labelID">sdrvt</property>
+			<property name="defaultID">sdrvt</property>
+			<onclick>DefaultSearch-TvShows</onclick>
+			<property name="path">DefaultSearch-TvShows</property>
+			<property name="list">DefaultSearch-TvShows</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">searchmenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-group-alt-searchmenu">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">9</property>
+			<label>סרטים</label>
+			<label2>$LOCALIZE[571]</label2>
+			<icon>special://skin/extras/icons/film.png</icon>
+			<thumb />
+			<property name="labelID">srtym</property>
+			<property name="defaultID">srtym</property>
+			<onclick>DefaultSearch-Movies</onclick>
+			<property name="path">DefaultSearch-Movies</property>
+			<property name="list">DefaultSearch-Movies</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),searchmenu)</visible>
+			<property name="group">searchmenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="2">
+			<property name="id">$NUMBER[2]</property>
+			<property name="mainmenuid">9</property>
+			<label>סדרות</label>
+			<label2>$LOCALIZE[571]</label2>
+			<icon>special://skin/extras/icons/tv.png</icon>
+			<thumb />
+			<property name="labelID">sdrvt</property>
+			<property name="defaultID">sdrvt</property>
+			<onclick>DefaultSearch-TvShows</onclick>
+			<property name="path">DefaultSearch-TvShows</property>
+			<property name="list">DefaultSearch-TvShows</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),searchmenu)</visible>
+			<property name="group">searchmenu</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		</include>
+	<include name="skinshortcuts-template-search">
+		<include condition="String.IsEqual(System.ProfileName,Master user)">skinshortcuts-template-search-Master user</include>
+		</include>
+	<include name="skinshortcuts-template-search-Master user">
+		<include content="Object_SearchList_Template">
+			<param name="id" value="5041" />
+			<param name="groupid" value="7541" />
+			<param name="path" value="plugin://plugin.video.gears/?mode=build_movie_list&amp;action=tmdb_movies_search&amp;query=" />
+			<param name="path2" value="" />
+			<param name="label" value="סרטים" />
+			<param name="limit" value="" />
+			<param name="target" value="videos" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			</include>
+		<include content="Object_SearchList_Template">
+			<param name="id" value="5042" />
+			<param name="groupid" value="7542" />
+			<param name="path" value="plugin://plugin.video.gears/?mode=build_tvshow_list&amp;action=tmdb_tv_search&amp;query=" />
+			<param name="path2" value="" />
+			<param name="label" value="סדרות" />
+			<param name="limit" value="" />
+			<param name="target" value="videos" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			</include>
+		</include>
+	<include name="skinshortcuts-group-searchmenu-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-searchmenu-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-template-vertical-submenu">
+		<include condition="String.IsEqual(System.ProfileName,Master user)">skinshortcuts-template-vertical-submenu-Master user</include>
+		</include>
+	<include name="skinshortcuts-template-vertical-submenu-Master user">
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="17501" />
+			<param name="id" value="13101" />
+			<param name="label" value="המשך צפייה" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="13101" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(13101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(13101).NumItems,0) | Container(13101).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="13101" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(13101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(13101).NumItems,0) | Container(13101).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="17502" />
+			<param name="id" value="13102" />
+			<param name="label" value="חם עכשיו" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,2,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),2) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="13102" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(13101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(13102).NumItems,0) | Container(13102).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,2,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),2) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="13102" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(13101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(13102).NumItems,0) | Container(13102).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,2,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),2) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="17503" />
+			<param name="id" value="13103" />
+			<param name="label" value="בקולנוע" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,3,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),3) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="13103" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(13101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(13103).NumItems,0) | Container(13103).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,3,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),3) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="13103" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(13101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(13103).NumItems,0) | Container(13103).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,3,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),3) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="17504" />
+			<param name="id" value="13104" />
+			<param name="label" value="שוברי קופות" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,4,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),4) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="13104" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(13101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(13104).NumItems,0) | Container(13104).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,4,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),4) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="13104" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(13101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(13104).NumItems,0) | Container(13104).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,4,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),4) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="17505" />
+			<param name="id" value="13105" />
+			<param name="label" value="זוכי אוסקר" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,5,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),5) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="13105" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(13101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(13105).NumItems,0) | Container(13105).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,5,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),5) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="13105" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(13101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(13105).NumItems,0) | Container(13105).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,5,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),5) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="17506" />
+			<param name="id" value="13106" />
+			<param name="label" value="ז'אנרים" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,6,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),6) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="13106" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="true" />
+			<param name="squarecondition" value="true" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(13101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(13106).NumItems,0) | Container(13106).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,6,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),6) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="13106" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="true" />
+			<param name="squarecondition" value="true" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(13101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(13106).NumItems,0) | Container(13106).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),1)</visible>
+			<onfocus>SetProperty(widgetMovementId,6,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),6) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="27501" />
+			<param name="id" value="23101" />
+			<param name="label" value="המשך צפייה" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="23101" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(23101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(23101).NumItems,0) | Container(23101).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="23101" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(23101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(23101).NumItems,0) | Container(23101).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="27502" />
+			<param name="id" value="23102" />
+			<param name="label" value="חם עכשיו" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,2,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),2) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="23102" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(23101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(23102).NumItems,0) | Container(23102).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,2,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),2) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="23102" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(23101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(23102).NumItems,0) | Container(23102).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,2,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),2) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="27503" />
+			<param name="id" value="23103" />
+			<param name="label" value="רשתות סטרימינג" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,3,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),3) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="23103" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="true" />
+			<param name="squarecondition" value="true" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(23101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(23103).NumItems,0) | Container(23103).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,3,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),3) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="23103" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="true" />
+			<param name="squarecondition" value="true" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(23101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(23103).NumItems,0) | Container(23103).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,3,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),3) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="27504" />
+			<param name="id" value="23104" />
+			<param name="label" value="שידור בכורה" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,4,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),4) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="23104" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(23101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(23104).NumItems,0) | Container(23104).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,4,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),4) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="23104" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(23101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(23104).NumItems,0) | Container(23104).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,4,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),4) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="27505" />
+			<param name="id" value="23105" />
+			<param name="label" value="בקרוב" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,5,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),5) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="23105" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(23101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(23105).NumItems,0) | Container(23105).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,5,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),5) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="23105" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(23101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(23105).NumItems,0) | Container(23105).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,5,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),5) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="27506" />
+			<param name="id" value="23106" />
+			<param name="label" value="ז'אנרים" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,6,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),6) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="23106" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="true" />
+			<param name="squarecondition" value="true" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(23101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(23106).NumItems,0) | Container(23106).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,6,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),6) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="23106" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="true" />
+			<param name="squarecondition" value="true" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(23101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(23106).NumItems,0) | Container(23106).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),2)</visible>
+			<onfocus>SetProperty(widgetMovementId,6,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),6) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="37501" />
+			<param name="id" value="33101" />
+			<param name="label" value="שירותי TorBox" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),3)</visible>
+			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="33101" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="true" />
+			<param name="squarecondition" value="true" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(33101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(33101).NumItems,0) | Container(33101).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),3)</visible>
+			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="33101" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="true" />
+			<param name="squarecondition" value="true" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(33101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(33101).NumItems,0) | Container(33101).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),3)</visible>
+			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		</include>
+	<include name="skinshortcuts-template-spotlight-submenu">
+		<include condition="String.IsEqual(System.ProfileName,Master user)">skinshortcuts-template-spotlight-submenu-Master user</include>
+		</include>
+	<include name="skinshortcuts-template-spotlight-submenu-Master user">
+		<include content="Object_Widget_Spotlight">
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="" />
+			<param name="content" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),5)</visible>
+			<visible>String.IsEqual(Container(302).ListItem.Property(id),$NUMBER[1])</visible>
+			<onup>302</onup>
+			<onback condition="Window.IsVisible(Home)">301</onback>
+			<ondown>noop</ondown>
+			</include>
+		<include content="Object_Widget_Spotlight">
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="" />
+			<param name="content" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),5)</visible>
+			<visible>String.IsEqual(Container(302).ListItem.Property(id),$NUMBER[2])</visible>
+			<onup>302</onup>
+			<onback condition="Window.IsVisible(Home)">301</onback>
+			<ondown>noop</ondown>
+			</include>
+		<include content="Object_Widget_Spotlight">
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="" />
+			<param name="content" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),5)</visible>
+			<visible>String.IsEqual(Container(302).ListItem.Property(id),$NUMBER[3])</visible>
+			<onup>302</onup>
+			<onback condition="Window.IsVisible(Home)">301</onback>
+			<ondown>noop</ondown>
+			</include>
+		<include content="Object_Widget_Spotlight">
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="" />
+			<param name="content" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),5)</visible>
+			<visible>String.IsEqual(Container(302).ListItem.Property(id),$NUMBER[4])</visible>
+			<onup>302</onup>
+			<onback condition="Window.IsVisible(Home)">301</onback>
+			<ondown>noop</ondown>
+			</include>
+		</include>
+	<include name="skinshortcuts-template-vertical-main">
+		<include condition="String.IsEqual(System.ProfileName,Master user)">skinshortcuts-template-vertical-main-Master user</include>
+		</include>
+	<include name="skinshortcuts-template-vertical-main-Master user">
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="997500" />
+			<param name="id" value="993100" />
+			<param name="label" value="$LOCALIZE[31105]" />
+			<param name="spinner-visible" value="String.IsEmpty(Container(993100).ListItem.Label)" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
+			<visible>Integer.IsEqual(Container(9989).NumItems,0)</visible>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="993100" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="item_cast_height" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="$VAR[Defs_Widget_Target]" />
+			<param name="content" value="$INFO[Skin.String(widgetPath)]" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<include content="Defs_AutoScroll">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			<onback>301</onback>
+			<visible>Integer.IsGreater(Container(993100).NumItems,0) | Container(993100).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
+			<visible>Integer.IsEqual(Container(9989).NumItems,0)</visible>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="993100" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="item_cast_height" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="$VAR[Defs_Widget_Target]" />
+			<param name="content" value="$INFO[Skin.String(widgetPath)]" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<include content="Defs_AutoScroll">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			<onback>301</onback>
+			<visible>Integer.IsGreater(Container(993100).NumItems,0) | Container(993100).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
+			<visible>Integer.IsEqual(Container(9989).NumItems,0)</visible>
+			</include>
+		</include>
+	<include name="skinshortcuts-template-vertical-info">
+		<include condition="String.IsEqual(System.ProfileName,Master user)">skinshortcuts-template-vertical-info-Master user</include>
+		</include>
+	<include name="skinshortcuts-template-vertical-info-Master user">
+		<include content="Home_Vertical_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="13101" />
+			<param name="uid" value="91" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym)</visible>
+			</include>
+		<include content="Home_Vertical_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="23101" />
+			<param name="uid" value="92" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt)</visible>
+			</include>
+		<include content="Home_Vertical_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="33101" />
+			<param name="uid" value="93" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox)</visible>
+			</include>
+		<include content="Home_Vertical_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="43101" />
+			<param name="uid" value="94" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137)</visible>
+			</include>
+		<include content="Home_Vertical_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="53101" />
+			<param name="uid" value="95" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn)</visible>
+			</include>
+		<include content="Home_Vertical_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="63101" />
+			<param name="uid" value="96" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5)</visible>
+			</include>
+		<include content="Home_Vertical_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="73101" />
+			<param name="uid" value="97" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
+			</include>
+		</include>
+	<include name="skinshortcuts-template-flix-info">
+		<include condition="String.IsEqual(System.ProfileName,Master user)">skinshortcuts-template-flix-info-Master user</include>
+		</include>
+	<include name="skinshortcuts-template-flix-info-Master user">
+		<include content="Home_Flix_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="13101" />
+			<param name="uid" value="91" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym)</visible>
+			</include>
+		<include content="Home_Flix_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="23101" />
+			<param name="uid" value="92" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt)</visible>
+			</include>
+		<include content="Home_Flix_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="33101" />
+			<param name="uid" value="93" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox)</visible>
+			</include>
+		<include content="Home_Flix_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="43101" />
+			<param name="uid" value="94" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137)</visible>
+			</include>
+		<include content="Home_Flix_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="53101" />
+			<param name="uid" value="95" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn)</visible>
+			</include>
+		<include content="Home_Flix_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="63101" />
+			<param name="uid" value="96" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5)</visible>
+			</include>
+		<include content="Home_Flix_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="73101" />
+			<param name="uid" value="97" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
+			</include>
+		</include>
+	<include name="skinshortcuts-template-spotlight-mainmenu">
+		<include condition="String.IsEqual(System.ProfileName,Master user)">skinshortcuts-template-spotlight-mainmenu-Master user</include>
+		</include>
+	<include name="skinshortcuts-template-spotlight-mainmenu-Master user">
+		<include content="Object_Widget_Spotlight">
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="$INFO[Skin.String(widgetTarget)]" />
+			<param name="content" value="$INFO[Skin.String(widgetPath)]" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="false" />
+			<param name="squarecondition" value="false" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
+			<onup>302</onup>
+			<onback condition="Window.IsVisible(Home)">301</onback>
+			<ondown>noop</ondown>
+			<visible>String.IsEmpty(Container(302).ListItem.Property(widgetPath))</visible>
+			</include>
+		</include>
+	<include name="skinshortcuts-template-global">
+		<include condition="String.IsEqual(System.ProfileName,Master user)">skinshortcuts-template-global-Master user</include>
+		</include>
+	<include name="skinshortcuts-template-global-Master user">
+		<control type="wraplist" id="5600">
+			<height>100</height>
+			<top>0</top>
+			<onfocus>SetProperty(TMDbHelper.WidgetContainer,5600,Home)</onfocus>
+			<onup>301</onup>
+			<ondown>301</ondown>
+			<onback>301</onback>
+			<include content="Defs_AutoScroll">
+				<param name="condition" value="[Control.HasFocus(301) | Control.HasFocus(302)] + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			<orientation>horizontal</orientation>
+			<itemlayout />
+			<focusedlayout />
+			<content limit="25" target="$INFO[Skin.String(widgetTarget)]" browse="$VAR[Defs_Widgets_Browse]">$INFO[Skin.String(widgetPath)]</content>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
+			</control>
+		</include>
+	</includes>

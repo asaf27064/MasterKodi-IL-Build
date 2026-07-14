@@ -23,6 +23,7 @@ import io
 import json
 import os
 import re
+import shutil
 import zipfile
 
 import xbmc
@@ -37,6 +38,7 @@ except ImportError:  # py2 safety, never hit on Kodi 19+
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
+ADDON_PATH = xbmcvfs.translatePath(ADDON.getAddonInfo('path'))
 ADDON_DATA = xbmcvfs.translatePath('special://userdata/addon_data/%s' % ADDON_ID)
 ADDONS_PATH = xbmcvfs.translatePath('special://home/addons/')
 STATE_FILE = os.path.join(ADDON_DATA, 'applied_manifest.json')
@@ -414,51 +416,76 @@ def _active_skin():
         return None
 
 
-def repair_skin_menu():
-    """Rebuild a script.skinshortcuts home menu whose generated includes are
-    missing. A skinshortcuts skin (e.g. Arctic Zephyr) generates
-    <res>/script-skinshortcuts-includes.xml from the menu DATA via a buildxml
-    call in Home.xml's onload. On a fresh wizard install that build can be lost:
-    it runs during early boot before addons settle, and the wizard's own
-    post-boot skin re-extract clobbers the result (the skin zip has no generated
-    includes). The symptom is a home menu with category labels but empty content
-    and dead navigation ('Control ... asked to focus, but it can't').
+def _menu_is_broken(inc_path):
+    """A skinshortcuts includes file is broken if it's missing OR doesn't define
+    the main menu include (an empty on-device build writes a stub with no items)."""
+    if not os.path.isfile(inc_path):
+        return True
+    try:
+        return 'skinshortcuts-mainmenu' not in \
+            open(inc_path, 'r', encoding='utf-8', errors='replace').read()
+    except Exception:
+        return True
 
-    We run the skin's OWN buildxml from the wizard service ~after settle, when
-    every dep is enabled and no re-extract will follow, then reload the skin.
-    Returns the list of resolution folders rebuilt."""
-    rebuilt = []
+
+def repair_skin_menu():
+    """Restore a known-good script.skinshortcuts home menu when the active skin's
+    generated menu is missing OR empty. Arctic Zephyr uses classic skinshortcuts,
+    which builds <res>/script-skinshortcuts-includes.xml from menu DATA in
+    userdata. On a fresh wizard install that on-device build caches an EMPTY menu
+    (its userdata DATA was never seeded), so the home shows category labels with
+    no items and dead navigation ('Control 301 ... asked to focus, but it can't').
+    buildxml then keeps regenerating empty from the poisoned cache.
+
+    Rather than depend on that build, we SHIP a known-good menu at
+    resources/menu_defaults/<skin>/ and lay it down: the skinshortcuts userdata
+    (the menu source, so any later rebuild reproduces it) plus the generated
+    includes into the skin (immediate display). Idempotent -- a healthy menu is
+    left untouched. Returns what was restored."""
+    restored = []
     try:
         skin = _active_skin()
         if not skin:
-            return rebuilt
+            return restored
+        bundle = os.path.join(ADDON_PATH, 'resources', 'menu_defaults', skin)
+        inc_src = os.path.join(bundle, 'includes')
+        ss_src = os.path.join(bundle, 'skinshortcuts')
+        if not os.path.isdir(inc_src):
+            return restored                     # no bundled menu for this skin
         sdir = os.path.join(ADDONS_PATH, skin)
-        if not os.path.isdir(sdir):
-            return rebuilt
-        for res in sorted(os.listdir(sdir)):
-            home = os.path.join(sdir, res, 'Home.xml')
-            if not os.path.isfile(home):
-                continue
-            inc = os.path.join(sdir, res, 'script-skinshortcuts-includes.xml')
-            if os.path.isfile(inc) and os.path.getsize(inc) > 100:
-                continue  # already built for this resolution
+        res = None
+        for d in sorted(os.listdir(sdir)):
+            if os.path.isfile(os.path.join(sdir, d, 'Home.xml')):
+                res = d
+                break
+        if not res:
+            return restored
+        if not _menu_is_broken(os.path.join(sdir, res, 'script-skinshortcuts-includes.xml')):
+            return restored                     # menu already good
+        log('restoring known-good %s home menu (was empty/missing)' % skin)
+        # 1) skinshortcuts userdata = the menu SOURCE -> overwrite the empty cache
+        if os.path.isdir(ss_src):
+            ss_dst = xbmcvfs.translatePath('special://profile/addon_data/script.skinshortcuts/')
             try:
-                txt = open(home, 'r', encoding='utf-8', errors='replace').read()
-            except Exception:
-                continue
-            m = re.search(r'RunScript\(\s*script\.skinshortcuts\s*,\s*([^)]*buildxml[^)]*)\)', txt)
-            if not m:
-                continue
-            args = m.group(1).replace('&amp;', '&').strip()
-            log('repairing empty %s menu: RunScript(script.skinshortcuts,%s)' % (skin, args))
-            xbmc.executebuiltin('RunScript(script.skinshortcuts,%s)' % args)
-            rebuilt.append(res)
-        if rebuilt:
-            xbmc.sleep(4000)                 # let buildxml write the includes
+                os.makedirs(ss_dst, exist_ok=True)
+                for f in os.listdir(ss_src):
+                    shutil.copy2(os.path.join(ss_src, f), os.path.join(ss_dst, f))
+                restored.append('skinshortcuts-data')
+            except Exception as e:
+                log('menu userdata restore failed: %s' % e, xbmc.LOGERROR)
+        # 2) generated includes into the skin -> immediate correct display
+        try:
+            for f in os.listdir(inc_src):
+                shutil.copy2(os.path.join(inc_src, f), os.path.join(sdir, res, f))
+            restored.append('skin-includes')
+        except Exception as e:
+            log('menu includes restore failed: %s' % e, xbmc.LOGERROR)
+        if restored:
+            xbmc.sleep(500)
             xbmc.executebuiltin('ReloadSkin()')
     except Exception as e:
         log('skin-menu repair error: %s' % e, xbmc.LOGERROR)
-    return rebuilt
+    return restored
 
 
 class _Progress(object):

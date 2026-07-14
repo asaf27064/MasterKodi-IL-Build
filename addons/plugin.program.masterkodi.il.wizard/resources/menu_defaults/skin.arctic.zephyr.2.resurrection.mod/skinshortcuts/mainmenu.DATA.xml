@@ -1,0 +1,58 @@
+<shortcuts>
+	<shortcut>
+		<defaultID>mkil_movies</defaultID>
+		<label>סרטים</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://home/media/build_icons/Movies.png</icon>
+		<thumb />
+		<action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_movies_trending&amp;iconImage=trending&amp;mode=build_movie_list&amp;name=Trending&amp;random_support=true",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID>mkil_tvshows</defaultID>
+		<label>סדרות</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://home/media/build_icons/TV_Shows.png</icon>
+		<thumb />
+		<action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_tv_trending&amp;iconImage=trending&amp;mode=build_tvshow_list&amp;name=Trending&amp;random_support=true",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID>mkil_torbox</defaultID>
+		<label>חיבור TorBox</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://home/media/build_icons/TorBox_Auth.png</icon>
+		<thumb />
+		<action>RunPlugin(plugin://plugin.video.gears/?mode=torbox.authenticate)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID>search</defaultID>
+		<label>137</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/search.png</icon>
+		<thumb />
+		<action>Skin.SetString(SearchTerm)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID>mkil_skins</defaultID>
+		<label>החלפת סקין</label>
+		<label2>Common Shortcut</label2>
+		<icon>DefaultAddonSkin.png</icon>
+		<thumb />
+		<action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID>settings</defaultID>
+		<label>5</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/settings.png</icon>
+		<thumb />
+		<action>ActivateWindow(Settings)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID>13012</defaultID>
+		<label>13012</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/power.png</icon>
+		<thumb />
+		<action>ActivateWindow(shutdownmenu)</action>
+		</shortcut>
+	</shortcuts>

@@ -1,0 +1,50 @@
+<shortcuts>
+	<shortcut>
+		<defaultID />
+		<label>המשך צפייה</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/player.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>חם עכשיו</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/trending.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>בקולנוע</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/intheatres.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_in_theaters&amp;random_support=true&amp;iconImage=intheatres",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>שוברי קופות</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/most_voted.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>זוכי אוסקר</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/oscar_winners.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Oscar+Winners&amp;mode=build_movie_list&amp;action=tmdb_movies_oscar_winners&amp;random_support=true&amp;iconImage=oscar_winners",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>ז'אנרים</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/genres.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres",return)</action>
+		</shortcut>
+	</shortcuts>
