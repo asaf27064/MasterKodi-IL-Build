@@ -414,6 +414,53 @@ def _active_skin():
         return None
 
 
+def repair_skin_menu():
+    """Rebuild a script.skinshortcuts home menu whose generated includes are
+    missing. A skinshortcuts skin (e.g. Arctic Zephyr) generates
+    <res>/script-skinshortcuts-includes.xml from the menu DATA via a buildxml
+    call in Home.xml's onload. On a fresh wizard install that build can be lost:
+    it runs during early boot before addons settle, and the wizard's own
+    post-boot skin re-extract clobbers the result (the skin zip has no generated
+    includes). The symptom is a home menu with category labels but empty content
+    and dead navigation ('Control ... asked to focus, but it can't').
+
+    We run the skin's OWN buildxml from the wizard service ~after settle, when
+    every dep is enabled and no re-extract will follow, then reload the skin.
+    Returns the list of resolution folders rebuilt."""
+    rebuilt = []
+    try:
+        skin = _active_skin()
+        if not skin:
+            return rebuilt
+        sdir = os.path.join(ADDONS_PATH, skin)
+        if not os.path.isdir(sdir):
+            return rebuilt
+        for res in sorted(os.listdir(sdir)):
+            home = os.path.join(sdir, res, 'Home.xml')
+            if not os.path.isfile(home):
+                continue
+            inc = os.path.join(sdir, res, 'script-skinshortcuts-includes.xml')
+            if os.path.isfile(inc) and os.path.getsize(inc) > 100:
+                continue  # already built for this resolution
+            try:
+                txt = open(home, 'r', encoding='utf-8', errors='replace').read()
+            except Exception:
+                continue
+            m = re.search(r'RunScript\(\s*script\.skinshortcuts\s*,\s*([^)]*buildxml[^)]*)\)', txt)
+            if not m:
+                continue
+            args = m.group(1).replace('&amp;', '&').strip()
+            log('repairing empty %s menu: RunScript(script.skinshortcuts,%s)' % (skin, args))
+            xbmc.executebuiltin('RunScript(script.skinshortcuts,%s)' % args)
+            rebuilt.append(res)
+        if rebuilt:
+            xbmc.sleep(4000)                 # let buildxml write the includes
+            xbmc.executebuiltin('ReloadSkin()')
+    except Exception as e:
+        log('skin-menu repair error: %s' % e, xbmc.LOGERROR)
+    return rebuilt
+
+
 class _Progress(object):
     """Unified progress UI. Service/silent runs get a NON-modal background bar
     (Kodi stays usable, but the user SEES the update happening); interactive
@@ -567,10 +614,13 @@ def run_update(silent=False, notify=None, force=False):
         # still apply config on a version bump even if no addon changed
         cfg_applied = _maybe_apply_config(manifest, state, force=force)
         _save_state(state)
+        # self-heal an empty skinshortcuts home menu (nothing was re-extracted
+        # here, so a missing includes file means the boot build never landed)
+        menu_repaired = repair_skin_menu()
         return {'ok': True, 'applied': [], 'failed': [], 'removed': removed,
-                'enabled': enabled,
+                'enabled': enabled, 'menu_repaired': menu_repaired,
                 'config_applied': cfg_applied,
-                'up_to_date': not removed and not enabled,
+                'up_to_date': not removed and not enabled and not menu_repaired,
                 'manifest_generated': manifest.get('generated_utc')}
 
     applied, failed = [], []
@@ -609,10 +659,15 @@ def run_update(silent=False, notify=None, force=False):
     cfg_applied = _maybe_apply_config(manifest, state, force=force)
     _save_state(state)
 
+    # self-heal an empty skinshortcuts home menu. Runs AFTER any skin re-extract
+    # above, so the rebuilt includes are not clobbered.
+    menu_repaired = repair_skin_menu()
+
     summary = {
         'ok': not failed,
         'applied': applied,
         'enabled': enabled,
+        'menu_repaired': menu_repaired,
         'failed': failed,
         'wizard_changed': wizard_changed,
         'skin_changed': skin_changed,
