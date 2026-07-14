@@ -17,6 +17,9 @@ subtitle-pool Worker:
   -> `{ "url": ".../v1/logs/<device>/<ts>", "device": "<id>" }`
 - `GET /v1/logs/<device>/<ts>`  -> the stored log text (WebFetch-readable)
 - `GET /v1/logs?device=<id>`    -> list all of a device's uploads
+- `GET /v1/logs/recent?key=<KEY>&limit=N` -> newest uploads across ALL devices
+  (key in query so it is WebFetch-readable). This is how I find a just-uploaded
+  log with NOTHING from the user -- I fetch /recent, read the newest url.
 
 ## Re-deploy after editing the Worker
 ```

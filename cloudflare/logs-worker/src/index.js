@@ -18,8 +18,26 @@ export default {
       const ts = new Date().toISOString().replace(/[:.]/g, "-");
       const key = `${dev}/${ts}`;
       const body = await request.text();
-      await env.LOGS.put(key, body, { expirationTtl: TTL, metadata: { platform: plat, len: body.length } });
+      await env.LOGS.put(key, body, { expirationTtl: TTL, metadata: { platform: plat, len: body.length, at: Date.now() } });
       return Response.json({ url: `${url.origin}/v1/logs/${key}`, device: dev });
+    }
+
+    // GET /v1/logs/recent?key=<KEY>&limit=N -> newest uploads across all devices
+    // (key in the query so a maintainer can read it via a plain browser/fetch).
+    if (request.method === "GET" && p === "/v1/logs/recent") {
+      if (url.searchParams.get("key") !== KEY)
+        return new Response("unauthorized", { status: 401 });
+      const limit = Math.min(parseInt(url.searchParams.get("limit") || "15", 10) || 15, 100);
+      const list = await env.LOGS.list({ limit: 1000 });
+      const rows = list.keys
+        .map(k => ({ name: k.name, at: (k.metadata && k.metadata.at) || 0,
+                     platform: (k.metadata && k.metadata.platform) || "", len: (k.metadata && k.metadata.len) || 0 }))
+        .sort((a, b) => b.at - a.at)
+        .slice(0, limit)
+        .map(r => ({ url: `${url.origin}/v1/logs/${r.name}`,
+                     device: r.name.split("/")[0], platform: r.platform, len: r.len,
+                     uploaded: r.at ? new Date(r.at).toISOString() : "" }));
+      return Response.json(rows);
     }
 
     if (request.method === "GET" && p.startsWith("/v1/logs/")) {
