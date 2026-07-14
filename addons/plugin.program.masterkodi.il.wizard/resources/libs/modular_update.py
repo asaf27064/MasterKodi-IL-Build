@@ -863,6 +863,8 @@ def _apply_policy(zf, policy, home, fresh):
                     fh.write(src_bytes)
         elif mode == 'merge_id':
             _merge_settings_xml(src_bytes, dest, exclude)
+        elif mode == 'merge_seed':
+            _seed_settings_xml(src_bytes, dest, exclude)
         elif mode == 'merge_name':
             _merge_named_xml(src_bytes, dest)
         applied.append('%s(%s)' % (dest_rel, mode))
@@ -898,6 +900,31 @@ def _merge_settings_xml(src_bytes, dest, exclude_ids):
                              lambda m: m.group(1) + val + m.group(2), dst_txt, count=1)
         else:
             dst_txt = dst_txt.replace('</settings>', '    <setting id="%s">%s</setting>\n</settings>' % (sid, val), 1)
+    with open(dest, 'w', encoding='utf-8') as fh:
+        fh.write(dst_txt)
+
+
+def _seed_settings_xml(src_bytes, dest, exclude_ids):
+    """Per <setting id=X>: add ONLY ids the user doesn't already have; NEVER
+    overwrite an existing value. This makes our values the DEFAULT while letting a
+    user's own change stick across updates -- unlike merge_id (build value wins),
+    which clobbers user customizations on every re-apply. Used for user-facing skin
+    settings, so a routine update can't undo a preference the user set."""
+    import re
+    src_txt = src_bytes.decode('utf-8', 'replace')
+    build_vals = dict(re.findall(r'<setting id="([^"]+)"[^>]*>([^<]*)</setting>', src_txt))
+    if not os.path.exists(dest):
+        with open(dest, 'wb') as fh:
+            fh.write(src_bytes)
+        return
+    with open(dest, 'r', encoding='utf-8', errors='replace') as fh:
+        dst_txt = fh.read()
+    dst_ids = set(re.findall(r'<setting id="([^"]+)"', dst_txt))
+    for sid, val in build_vals.items():
+        if sid in exclude_ids or sid in dst_ids:
+            continue                              # user already has it -> leave it
+        dst_txt = dst_txt.replace('</settings>',
+                                  '    <setting id="%s">%s</setting>\n</settings>' % (sid, val), 1)
     with open(dest, 'w', encoding='utf-8') as fh:
         fh.write(dst_txt)
 

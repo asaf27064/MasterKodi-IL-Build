@@ -1122,7 +1122,7 @@ class BuildManager:
             progress.update(95, "[COLOR yellow]מעדכן...[/COLOR]")
             xbmc.executebuiltin('UpdateAddonRepos()')
             xbmc.executebuiltin('UpdateLocalAddons()')
-            self._apply_build_config()
+            self._apply_build_config('skin.arctic.fuse.3')
 
             # Save setting
             ADDON.setSetting('installed_skin', 'Arctic Fuse')
@@ -1190,7 +1190,7 @@ class BuildManager:
             self.setup_wizard_repo_in_db()
             xbmc.executebuiltin('UpdateAddonRepos()')
             xbmc.executebuiltin('UpdateLocalAddons()')
-            self._apply_build_config()
+            self._apply_build_config(addon_id)
             progress.update(100, "[COLOR lime]הותקן![/COLOR]")
             xbmc.sleep(400); progress.close()
             return True
@@ -1198,17 +1198,26 @@ class BuildManager:
             log(f"_install_from_manifest error: {e}", xbmc.LOGERROR)
             return False
 
-    def _apply_build_config(self):
-        """Force-apply the build config (skin settings, gears settings, ...) after
-        a skin install/switch, so a freshly-(re)installed skin lands with all the
-        build defaults -- Flix view, hidden match%/profile info, colorful ratings,
-        detailed notifications, etc. Kodi RESETS a reinstalled skin's settings.xml
-        to the skin's own defaults, and the normal config-apply only runs on a
-        config-version bump -- so without this every skin switch silently loses
-        our customizations. Safe: merge_id keeps user values for ids we don't set,
-        and the policy excludes every credential."""
+    def _apply_build_config(self, skin_id=None):
+        """Force-apply the build config after a skin install/switch, so a freshly-
+        (re)installed skin lands with all the build defaults -- Flix view, hidden
+        match%/profile info, colorful ratings, detailed notifications, etc.
+
+        Skin settings are delivered with merge_seed (add-if-absent) so a ROUTINE
+        update never overwrites a preference the user set. But an explicit
+        (re)install SHOULD reset to our curated defaults -- so we first delete the
+        installed skin's settings.xml, letting the seed write our full defaults
+        fresh. Credentials stay excluded by policy; other skins are untouched."""
         try:
             from resources.libs import modular_update as mu
+            if skin_id:
+                sfile = xbmcvfs.translatePath(
+                    'special://profile/addon_data/%s/settings.xml' % skin_id)
+                try:
+                    if os.path.exists(sfile):
+                        os.remove(sfile)
+                except Exception as e:
+                    log(f"could not reset {skin_id} settings: {e}", xbmc.LOGWARNING)
             manifest = mu.fetch_manifest()
             state = mu._load_state()
             mu._maybe_apply_config(manifest, state, force=True)
@@ -1257,7 +1266,7 @@ class BuildManager:
             self.setup_wizard_repo_in_db()
             xbmc.executebuiltin('UpdateAddonRepos()')
             xbmc.executebuiltin('UpdateLocalAddons()')
-            self._apply_build_config()
+            self._apply_build_config(skin.get('id'))
             try:
                 os.remove(skin_zip)
             except Exception:
