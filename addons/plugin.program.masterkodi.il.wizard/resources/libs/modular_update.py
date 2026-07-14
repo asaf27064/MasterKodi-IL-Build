@@ -416,16 +416,32 @@ def _active_skin():
         return None
 
 
-def _menu_is_broken(inc_path):
-    """A skinshortcuts includes file is broken if it's missing OR doesn't define
-    the main menu include (an empty on-device build writes a stub with no items)."""
+def _menu_is_broken(inc_path, good_inc_path):
+    """The skinshortcuts home menu is broken if:
+      - the generated includes file is missing, OR
+      - it exists but is far smaller than our known-good copy (an empty on-device
+        build writes a stub that still *names* the includes but has no items -- so
+        a string check is unreliable; size is not), OR
+      - the userdata menu SOURCE (mainmenu.DATA.xml) has no <shortcut> entries,
+        which is the actual root cause: buildxml keeps regenerating empty from it."""
     if not os.path.isfile(inc_path):
         return True
     try:
-        return 'skinshortcuts-mainmenu' not in \
-            open(inc_path, 'r', encoding='utf-8', errors='replace').read()
+        if os.path.isfile(good_inc_path) and \
+                os.path.getsize(inc_path) < os.path.getsize(good_inc_path) * 0.5:
+            return True
+    except Exception:
+        pass
+    src = xbmcvfs.translatePath(
+        'special://profile/addon_data/script.skinshortcuts/mainmenu.DATA.xml')
+    try:
+        if not os.path.isfile(src):
+            return True
+        if '<shortcut>' not in open(src, 'r', encoding='utf-8', errors='replace').read():
+            return True
     except Exception:
         return True
+    return False
 
 
 def repair_skin_menu():
@@ -460,7 +476,9 @@ def repair_skin_menu():
                 break
         if not res:
             return restored
-        if not _menu_is_broken(os.path.join(sdir, res, 'script-skinshortcuts-includes.xml')):
+        inc_disk = os.path.join(sdir, res, 'script-skinshortcuts-includes.xml')
+        good_inc = os.path.join(inc_src, 'script-skinshortcuts-includes.xml')
+        if not _menu_is_broken(inc_disk, good_inc):
             return restored                     # menu already good
         log('restoring known-good %s home menu (was empty/missing)' % skin)
         # 1) skinshortcuts userdata = the menu SOURCE -> overwrite the empty cache
