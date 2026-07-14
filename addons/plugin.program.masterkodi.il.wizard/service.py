@@ -108,11 +108,15 @@ def _process_pending_view_rebuild():
             gen = os.path.join(ADDONS_PATH, skin, '1080i',
                                'script-skinvariables-generator-includes-.xml')
             if os.path.isfile(gen):
-                # no_reload: build silently -- the buildviews right after does the
-                # ONE ReloadSkin that shows everything (each reload replays the
-                # skin splash + widget refresh, so never stack two).
-                log("post-install: rebuilding skin menu templates (buildtemplate,force,no_reload)")
-                xbmc.executebuiltin('RunScript(script.skinvariables,action=buildtemplate,force=true,no_reload=true)')
+                # NOT forced: the generator hashes the node contents, so this
+                # no-ops (no reload, no splash) when the skin's own first-boot
+                # build already compiled everything -- AF3 self-builds on a
+                # fresh install -- and only really rebuilds when a delivered
+                # node change wasn't compiled yet. no_reload keeps it silent;
+                # the buildviews after it does the single visible reload only
+                # when views actually changed.
+                log("post-install: rebuilding skin menu templates (buildtemplate,no_reload)")
+                xbmc.executebuiltin('RunScript(script.skinvariables,action=buildtemplate,no_reload=true)')
                 xbmc.Monitor().waitForAbort(3)   # let the template write finish before buildviews
             log("post-install: rebuilding skin views (buildviews)")
             xbmc.executebuiltin('RunScript(script.skinvariables,action=buildviews)')
