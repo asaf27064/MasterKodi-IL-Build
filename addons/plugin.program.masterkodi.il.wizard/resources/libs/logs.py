@@ -12,15 +12,75 @@ matter but get caught by the generic key patterns anyway.
 import os
 import re
 import json
-import time
+import uuid
 
 import xbmc
 import xbmcgui
+import xbmcaddon
 import xbmcvfs
 
 from urllib.request import Request, urlopen
 
 MAX_BYTES = 380 * 1024                       # keep under paste-host limits; tail wins
+
+# Cloudflare pool Worker (same host the subtitle pool uses). A /v1/logs endpoint
+# stores the upload to R2 under the device id and returns a readable URL.
+CF_LOGS_URL = 'https://masterkodi-subpool.asaf27064.workers.dev/v1/logs'
+CF_LOGS_KEY = 'mk-76ed711408c449eda0c5a2d868720b0438e36309'  # shared build key (same as subtitle pool)
+
+
+def _device():
+    """Stable device id + human-readable metadata, so an uploaded log is
+    attributable to a specific box (esp. useful across many Android installs)."""
+    dev_id = ''
+    try:
+        d = xbmcvfs.translatePath('special://profile/addon_data/plugin.program.masterkodi.il.wizard/')
+        if not os.path.isdir(d):
+            os.makedirs(d)
+        p = os.path.join(d, 'device_id')
+        if os.path.isfile(p):
+            dev_id = _read(p).strip()
+        if not dev_id:
+            dev_id = uuid.uuid4().hex[:12]
+            with open(p, 'w', encoding='utf-8') as fh:
+                fh.write(dev_id)
+    except Exception:
+        pass
+
+    def lbl(x):
+        try:
+            return xbmc.getInfoLabel(x) or ''
+        except Exception:
+            return ''
+    plat = 'unknown'
+    for name in ('Android', 'Windows', 'Linux', 'OSX', 'IOS', 'Darwin'):
+        try:
+            if xbmc.getCondVisibility('System.Platform.%s' % name):
+                plat = name
+                break
+        except Exception:
+            pass
+    try:
+        build = xbmcaddon.Addon().getAddonInfo('version')
+    except Exception:
+        build = '?'
+    return {
+        'device_id': dev_id or '?',
+        'name': lbl('System.FriendlyName'),
+        'platform': plat,
+        'kodi': lbl('System.BuildVersion').split(' ')[0],
+        'wizard': build,
+        'skin': lbl('System.CurrentSkin'),
+        'time': lbl('System.Date') + ' ' + lbl('System.Time'),
+    }
+
+
+def _header(info):
+    lines = ['======== MASTERKODI IL · LOG UPLOAD ========']
+    for k in ('device_id', 'name', 'platform', 'kodi', 'wizard', 'skin', 'time'):
+        lines.append('%-10s %s' % (k + ':', info.get(k, '')))
+    lines.append('=============================================')
+    return '\n'.join(lines) + '\n\n'
 
 _SCRUB = [
     # key/token = value  (settings dumps, headers)
@@ -75,9 +135,27 @@ def _post(url, data, headers, timeout=30):
     return urlopen(req, timeout=timeout).read().decode('utf-8', 'replace')
 
 
-def _upload(text):
+def _upload_cloudflare(text, info):
+    """Store the log to the Cloudflare R2 folder via the pool Worker /v1/logs.
+    Returns a readable URL or None (silently, until the Worker endpoint exists)."""
+    try:
+        body = text.encode('utf-8', 'replace')
+        headers = {'User-Agent': 'MasterKodiIL', 'Content-Type': 'text/plain; charset=utf-8',
+                   'X-Gears-Key': CF_LOGS_KEY, 'X-Device-Id': info.get('device_id', '?'),
+                   'X-Platform': info.get('platform', '?')}
+        resp = _post(CF_LOGS_URL, body, headers)
+        try:
+            data = json.loads(resp)
+            return data.get('url') or data.get('read_url')
+        except Exception:
+            return resp.strip() if resp.strip().startswith('http') else None
+    except Exception:
+        return None
+
+
+def _upload_paste(text):
     body = text.encode('utf-8', 'replace')
-    # 1) Kodi's own paste host (hastebin API): {"key": "..."} -> /raw/<key>
+    # 1) Kodi's own paste host (hastebin API): {"key": "..."} -> /<key>
     try:
         resp = _post('https://paste.kodi.tv/documents', body,
                      {'User-Agent': 'MasterKodiIL', 'Content-Type': 'text/plain'})
@@ -106,20 +184,27 @@ def send_logs():
     prog = xbmcgui.DialogProgress()
     try:
         prog.create('MasterKodi IL', '[COLOR cyan]אוסף ומעלה לוגים...[/COLOR]')
-        prog.update(30)
-        text = _collect()
-        if not text:
+        prog.update(20)
+        info = _device()
+        text = _header(info) + _collect()
+        if not text.strip():
             prog.close()
             dialog.ok('MasterKodi IL', 'לא נמצאו קבצי לוג')
             return
-        prog.update(65, '[COLOR cyan]מעלה...[/COLOR]')
-        url = _upload(text)
+        prog.update(55, '[COLOR cyan]מעלה...[/COLOR]')
+        cf = _upload_cloudflare(text, info)       # our storage (readable directly)
+        prog.update(80)
+        paste = _upload_paste(text)               # always-available public paste
         prog.close()
+        url = cf or paste
         if url:
-            xbmc.log('[wizard] logs uploaded: %s' % url, xbmc.LOGINFO)
+            xbmc.log('[wizard] logs uploaded id=%s cf=%s paste=%s'
+                     % (info.get('device_id'), cf, paste), xbmc.LOGINFO)
             dialog.ok('הלוגים הועלו',
-                      'שלח את הקישור הזה לתמיכה:\n\n[COLOR lime][B]%s[/B][/COLOR]\n\n'
-                      '(מידע רגיש כמו טוקנים הוסתר אוטומטית)' % url)
+                      'מזהה מכשיר: [COLOR yellow]%s[/COLOR]\n\n'
+                      'שלח את הקישור לתמיכה:\n[COLOR lime][B]%s[/B][/COLOR]\n\n'
+                      '(מידע רגיש כמו טוקנים הוסתר אוטומטית)'
+                      % (info.get('device_id', '?'), url))
         else:
             dialog.ok('MasterKodi IL',
                       '[COLOR red]העלאת הלוגים נכשלה[/COLOR]\nבדוק חיבור לאינטרנט ונסה שוב.')
