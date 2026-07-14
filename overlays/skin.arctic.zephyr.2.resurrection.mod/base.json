@@ -4,7 +4,7 @@
   "base_zip_url": "https://github.com/DenDyGH/skin.arctic.zephyr.2.resurrection.mod/releases/download/v1.1.9/skin.arctic.zephyr.2.resurrection.mod-Omega.zip",
   "upstream_releases_api": "https://api.github.com/repos/DenDyGH/skin.arctic.zephyr.2.resurrection.mod/releases/latest",
   "raw_top_folder": "skin.arctic.zephyr.2.resurrection.mod",
-  "overlay_version": "1.0.51.21",
+  "overlay_version": "1.0.51.22",
   "notes": "Omega (Kodi 21) 1.0.51 bundled in tag v1.1.9. Overlay = he_il + Hebrew fontset + Rubik/Noto fonts + power-menu items + GearsAI OSD button + Gears home/search/power shortcuts + hero Label fix. | upstream_tag tracks the RELEASE TAG (v1.1.9) which differs from base_version (1.0.51, the bundled Omega addon); the watcher compares tags. When adopting a new upstream tag, update BOTH base_zip_url (pin the new tag) and upstream_tag.",
   "upstream_tag": "1.1.9"
 }

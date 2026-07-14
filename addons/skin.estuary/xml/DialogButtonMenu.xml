@@ -34,6 +34,11 @@
 						<onclick>RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</onclick>
 					</item>
 					<item>
+						<label>שלח לוגים לתמיכה</label>
+						<onclick>Dialog.Close(shutdownmenu)</onclick>
+						<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)</onclick>
+					</item>
+					<item>
 						<label>$LOCALIZE[13012]</label>
 						<onclick>Quit()</onclick>
 						<visible>System.ShowExitButton</visible>

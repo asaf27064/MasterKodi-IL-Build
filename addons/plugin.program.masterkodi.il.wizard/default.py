@@ -661,6 +661,9 @@ if __name__ == '__main__':
         backup_menu()
     elif mode == 'check_updates':
         check_updates_now()
+    elif mode == 'send_logs':
+        from resources.libs import logs
+        logs.send_logs()
     elif mode == 'status':
         build_status_menu()
     elif mode == 'skins':
