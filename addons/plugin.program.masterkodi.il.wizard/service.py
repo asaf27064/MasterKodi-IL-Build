@@ -108,8 +108,12 @@ def _process_pending_view_rebuild():
             gen = os.path.join(ADDONS_PATH, skin, '1080i',
                                'script-skinvariables-generator-includes-.xml')
             if os.path.isfile(gen):
-                log("post-install: rebuilding skin menu templates (buildtemplate,force)")
-                xbmc.executebuiltin('RunScript(script.skinvariables,action=buildtemplate,force=true)')
+                # no_reload: build silently -- the buildviews right after does the
+                # ONE ReloadSkin that shows everything (each reload replays the
+                # skin splash + widget refresh, so never stack two).
+                log("post-install: rebuilding skin menu templates (buildtemplate,force,no_reload)")
+                xbmc.executebuiltin('RunScript(script.skinvariables,action=buildtemplate,force=true,no_reload=true)')
+                xbmc.Monitor().waitForAbort(3)   # let the template write finish before buildviews
             log("post-install: rebuilding skin views (buildviews)")
             xbmc.executebuiltin('RunScript(script.skinvariables,action=buildviews)')
     except Exception as e:
