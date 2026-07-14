@@ -457,7 +457,7 @@ def _menu_is_broken(inc_path, good_inc_path):
     return False
 
 
-def repair_skin_menu():
+def repair_skin_menu(no_reload=False):
     """Restore a known-good script.skinshortcuts home menu when the active skin's
     generated menu is missing OR empty. Arctic Zephyr uses classic skinshortcuts,
     which builds <res>/script-skinshortcuts-includes.xml from menu DATA in
@@ -527,8 +527,9 @@ def repair_skin_menu():
         if restored:
             try: _write_text(marker, bver)
             except Exception: pass
-            xbmc.sleep(500)
-            xbmc.executebuiltin('ReloadSkin()')
+            if not no_reload:
+                xbmc.sleep(500)
+                xbmc.executebuiltin('ReloadSkin()')
     except Exception as e:
         log('skin-menu repair error: %s' % e, xbmc.LOGERROR)
     return restored
@@ -645,11 +646,14 @@ def _finalize_reload(summary):
             pass
 
 
-def run_update(silent=False, notify=None, force=False):
+def run_update(silent=False, notify=None, force=False, no_reload=False):
     """Check + apply. Returns dict summary.
 
-    notify: optional callable(message) for user-facing status text.
-    force:  repair mode -- reinstall every applicable addon + re-apply config.
+    notify:    optional callable(message) for user-facing status text.
+    force:     repair mode -- reinstall every applicable addon + re-apply config.
+    no_reload: skip the post-config ReloadSkin (used when a full app restart
+               follows anyway, e.g. from the build installer -- avoids reloading
+               the skin out from under the install UI).
     """
     def _say(msg):
         if notify:
@@ -690,12 +694,12 @@ def run_update(silent=False, notify=None, force=False):
         _save_state(state)
         # self-heal an empty skinshortcuts home menu (nothing was re-extracted
         # here, so a missing includes file means the boot build never landed)
-        menu_repaired = repair_skin_menu()
+        menu_repaired = repair_skin_menu(no_reload=no_reload)
         # a real config-version bump can change ACTIVE-skin settings (e.g. home
         # view); reload so Kodi reads them now instead of clobbering settings.xml
         # from stale memory on exit. Gated on a version bump so ordinary wizard
         # updates don't reload the skin.
-        if cfg_applied and cfg_bumped and not menu_repaired:
+        if cfg_applied and cfg_bumped and not menu_repaired and not no_reload:
             xbmc.executebuiltin('ReloadSkin()')
         return {'ok': True, 'applied': [], 'failed': [], 'removed': removed,
                 'enabled': enabled, 'menu_repaired': menu_repaired,
@@ -742,10 +746,10 @@ def run_update(silent=False, notify=None, force=False):
 
     # self-heal an empty skinshortcuts home menu. Runs AFTER any skin re-extract
     # above, so the rebuilt includes are not clobbered.
-    menu_repaired = repair_skin_menu()
+    menu_repaired = repair_skin_menu(no_reload=no_reload)
     # reload so an active-skin settings change from a config bump takes effect now
     # (unless the skin was re-extracted or the menu repaired -> already reloading)
-    if cfg_applied and cfg_bumped and not menu_repaired and not skin_changed:
+    if cfg_applied and cfg_bumped and not menu_repaired and not skin_changed and not no_reload:
         xbmc.executebuiltin('ReloadSkin()')
 
     summary = {

@@ -1046,10 +1046,23 @@ class BuildManager:
                 except Exception as e:
                     log(f"keep restore failed: {e}", xbmc.LOGWARNING)
 
+            # Step 8: Complete the build from the manifest BEFORE we exit, so the
+            # first re-launch already shows our full defaults. The base zip ships
+            # STOCK skins (e.g. vanilla Estuary); our MODIFIED skins -- the power
+            # menu, home arrangement, skin-switch button -- and the config live in
+            # the manifest. Applying it now (while the user is already waiting on
+            # the install) means re-entry is complete, with no extra restart.
+            try:
+                progress.update(97, "[COLOR yellow]מחיל את ברירות המחדל של הבילד...[/COLOR]")
+                from resources.libs import modular_update as mu
+                mu.run_update(silent=True, no_reload=True)
+            except Exception as e:
+                log(f"post-install manifest completion failed: {e}", xbmc.LOGWARNING)
+
             # Save build info
             ADDON.setSetting('buildname', build_name)
             ADDON.setSetting('buildversion', build_info.get('version', '1.0'))
-            
+
             # Create first-run marker (so wizard won't auto-launch again)
             try:
                 home_path = xbmcvfs.translatePath('special://home/')
