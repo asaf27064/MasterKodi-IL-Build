@@ -657,11 +657,18 @@ def run_update(silent=False, notify=None, force=False):
         if not removed and not enabled:
             _say('הבילד מעודכן')
         # still apply config on a version bump even if no addon changed
+        cfg_bumped = _config_version_changed(manifest, state)
         cfg_applied = _maybe_apply_config(manifest, state, force=force)
         _save_state(state)
         # self-heal an empty skinshortcuts home menu (nothing was re-extracted
         # here, so a missing includes file means the boot build never landed)
         menu_repaired = repair_skin_menu()
+        # a real config-version bump can change ACTIVE-skin settings (e.g. home
+        # view); reload so Kodi reads them now instead of clobbering settings.xml
+        # from stale memory on exit. Gated on a version bump so ordinary wizard
+        # updates don't reload the skin.
+        if cfg_applied and cfg_bumped and not menu_repaired:
+            xbmc.executebuiltin('ReloadSkin()')
         return {'ok': True, 'applied': [], 'failed': [], 'removed': removed,
                 'enabled': enabled, 'menu_repaired': menu_repaired,
                 'config_applied': cfg_applied,
@@ -701,12 +708,17 @@ def run_update(silent=False, notify=None, force=False):
     dp.close()
 
     # config payload (default userdata) - applied on version bump only
+    cfg_bumped = _config_version_changed(manifest, state)
     cfg_applied = _maybe_apply_config(manifest, state, force=force)
     _save_state(state)
 
     # self-heal an empty skinshortcuts home menu. Runs AFTER any skin re-extract
     # above, so the rebuilt includes are not clobbered.
     menu_repaired = repair_skin_menu()
+    # reload so an active-skin settings change from a config bump takes effect now
+    # (unless the skin was re-extracted or the menu repaired -> already reloading)
+    if cfg_applied and cfg_bumped and not menu_repaired and not skin_changed:
+        xbmc.executebuiltin('ReloadSkin()')
 
     summary = {
         'ok': not failed,
@@ -723,6 +735,14 @@ def run_update(silent=False, notify=None, force=False):
     }
     log('update summary: %s' % summary)
     return summary
+
+
+def _config_version_changed(manifest, state):
+    """True if the manifest's config version differs from the one last applied on
+    this device. Lets callers reload the skin only on a real config bump, not on
+    every wizard update (config also re-applies when the wizard version changes)."""
+    cfg = manifest.get('config') or {}
+    return state.get('__config__') != ('config:%s' % cfg.get('version'))
 
 
 def _maybe_apply_config(manifest, state, force=False):
