@@ -879,6 +879,10 @@ class BuildManager:
                             'script.module.simplejson', 'script.module.unidecode',
                             'script.module.simpleeval',
                             'script.skinvariables', 'plugin.video.themoviedb.helper',
+                            # TMDbHelper's own module deps -- WITHOUT these its
+                            # service crashes ("No module named 'jurialmunkey'").
+                            'script.module.jurialmunkey', 'script.module.infotagger',
+                            'script.module.addon.signals', 'script.module.qrcode',
                             'resource.images.studios.white',
                             'resource.images.moviegenreicons.transparent',
                             'resource.images.moviecountryicons.maps',

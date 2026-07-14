@@ -131,6 +131,18 @@ def _save_state(state):
 # --------------------------------------------------------------------------- #
 # diff
 # --------------------------------------------------------------------------- #
+# If a "parent" (optional) addon is installed, these companion deps MUST be too --
+# otherwise the parent's service crashes on every startup. e.g. TMDbHelper installed
+# without script.module.jurialmunkey -> "No module named 'jurialmunkey'" forever.
+# Optional deps are normally skipped when missing (line below), but a missing
+# companion of an ALREADY-INSTALLED parent must be repaired.
+DEP_INTEGRITY = {
+    'plugin.video.themoviedb.helper': ('script.module.jurialmunkey', 'script.module.infotagger',
+                                       'script.module.addon.signals', 'script.module.qrcode'),
+    'script.skinvariables': ('script.module.jurialmunkey',),
+}
+
+
 def compute_updates(manifest, force=False):
     """Return the list of addon entries that need (re)installing.
 
@@ -139,19 +151,30 @@ def compute_updates(manifest, force=False):
     fully reinstalled. Optional skins the user never installed are still skipped,
     and NEVER_TOUCH ids are still left alone."""
     state = _load_state()
+    by_id = {a.get('id'): a for a in manifest.get('addons', [])}
+
+    # Repair: any companion dep that is missing while its parent IS installed.
+    needed = set()
+    for parent, deps in DEP_INTEGRITY.items():
+        if _installed_version(parent) is not None:
+            for dep in deps:
+                if _installed_version(dep) is None:
+                    needed.add(dep)
+
     updates = []
     for a in manifest.get('addons', []):
         aid = a.get('id')
         if not aid or aid in NEVER_TOUCH:
             continue
         installed = _installed_version(aid)
-        if a.get('channel') == 'optional' and installed is None:
-            continue  # don't force-install heavy optional skins
+        if a.get('channel') == 'optional' and installed is None and aid not in needed:
+            continue  # don't force-install heavy optional skins (but DO repair a
+                      # missing companion dep of an installed parent)
         if force:
             updates.append(a)                       # repair -> reinstall all
             continue
         if installed is None:
-            updates.append(a)                       # missing core addon -> install
+            updates.append(a)                       # missing core addon (or needed dep) -> install
         elif version_newer(a['version'], installed):
             updates.append(a)                       # manifest is newer -> upgrade
         elif a['version'] == installed and state.get(aid) != a['sha256']:
