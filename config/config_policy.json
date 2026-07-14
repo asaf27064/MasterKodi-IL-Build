@@ -1,5 +1,5 @@
 {
-  "config_version": 17,
+  "config_version": 18,
   "_comment": "Declarative policy for how the wizard applies the shipped build-config onto a device. Bump build.json config_version whenever ANY file under config/ changes. Modes: replace (overwrite whole file), seed_if_absent (write only if missing), merge_id (per <setting id>, build value wins, other user settings kept), merge_name (per <source><name>, add build's, keep user's). exclude_ids protect user credentials on merge. gears_settings enforces critical values in Gears' binary settings.db (fixes fresh-seed staleness + delivers setting changes to existing devices).",
   "files": [
     {
@@ -24,7 +24,7 @@
       "src": "userdata/guisettings.xml",
       "dest": "userdata/guisettings.xml",
       "fresh": "merge_id",
-      "update": "merge_id",
+      "update": "merge_seed",
       "exclude_ids": [
         "services.devicename",
         "services.deviceuuid",
@@ -72,7 +72,7 @@
       "src": "userdata/addon_data/plugin.video.themoviedb.helper/settings.xml",
       "dest": "userdata/addon_data/plugin.video.themoviedb.helper/settings.xml",
       "fresh": "replace",
-      "update": "merge_id",
+      "update": "merge_seed",
       "exclude_ids": [
         "trakt.token",
         "trakt.refreshtoken",
@@ -93,7 +93,7 @@
       "src": "userdata/addon_data/script.module.magneto/settings.xml",
       "dest": "userdata/addon_data/script.module.magneto/settings.xml",
       "fresh": "replace",
-      "update": "merge_id"
+      "update": "merge_seed"
     },
     {
       "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-powermenu.json",

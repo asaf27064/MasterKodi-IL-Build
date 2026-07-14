@@ -162,9 +162,9 @@ class POVHebrewService(xbmc.Monitor):
 
         # Wait for Kodi to settle before touching the network (configurable).
         try:
-            delay = int(ADDON.getSetting('update_check_delay') or '15')
+            delay = int(ADDON.getSetting('update_check_delay') or '8')
         except Exception:
-            delay = 15
+            delay = 8
         delay = max(5, min(delay, 60))
         log("Service started, settling for %ss..." % delay)
         if self.waitForAbort(delay):
