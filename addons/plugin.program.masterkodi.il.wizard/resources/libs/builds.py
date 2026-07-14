@@ -971,9 +971,19 @@ class BuildManager:
             self._ask_and_apply_oled(progress)
             progress.create(ADDON_NAME, "[COLOR cyan]ממשיך בהתקנה...[/COLOR]")
             
-            # Step 5: Install the chosen optional skin (Arctic Fuse / Nimbus)
-            skin_zip_url = build_info.get(skin['url_key']) if skin else None
-            if skin and skin_zip_url:
+            # Step 5: Install the chosen optional skin (Arctic Fuse / Nimbus / Zephyr)
+            skin_zip_url = build_info.get(skin['url_key']) if (skin and skin.get('url_key')) else None
+            if skin and skin.get('manifest_install'):
+                # Zephyr installs from the manifest (skin + its own deps), not from a
+                # bundled build.txt zip like AF3/Nimbus. _install_from_manifest also
+                # enables the addons and applies our config (skin defaults + view rebuild).
+                progress.update(0, f"[COLOR yellow]מתקין {skin['name']}...[/COLOR]")
+                if self._install_from_manifest(skin['id'], skin.get('deps', []), skin['name']):
+                    self.set_default_skin(skin['id'])
+                    ADDON.setSetting('installed_skin', skin['name'])
+                else:
+                    ADDON.setSetting('installed_skin', 'Estuary')
+            elif skin and skin_zip_url:
                 # Small delay between downloads to avoid GitHub rate limiting
                 xbmc.sleep(2000)
 
@@ -1498,6 +1508,9 @@ def builds_menu():
                 skin_options.append(('arctic', 'Arctic Fuse', 'הכי יפה ומעוצב | הכי כבד | למכשירים חזקים', 'af3.jpg'))
             if selected_build.get('nimbus_skin_url'):
                 skin_options.append(('nimbus', 'Nimbus', 'מהיר ויפה יותר מהרגיל | מתאים גם למכשירים חלשים', 'nimbus.jpg'))
+            # Arctic Zephyr installs from the manifest (not a build.txt url), so it's
+            # always offered here.
+            skin_options.append(('zephyr', 'Arctic Zephyr', 'עשיר ומעוצב בסגנון נטפליקס | בינוני-כבד | למכשירים חזקים', 'zephyr.jpg'))
 
             # Custom picker window with a LARGE live preview of the focused skin.
             # Falls back to the old useDetails select if the window fails.
