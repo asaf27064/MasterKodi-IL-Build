@@ -22,6 +22,7 @@ import hashlib
 import io
 import json
 import os
+import re
 import zipfile
 
 import xbmc
@@ -131,16 +132,41 @@ def _save_state(state):
 # --------------------------------------------------------------------------- #
 # diff
 # --------------------------------------------------------------------------- #
-# If a "parent" (optional) addon is installed, these companion deps MUST be too --
-# otherwise the parent's service crashes on every startup. e.g. TMDbHelper installed
-# without script.module.jurialmunkey -> "No module named 'jurialmunkey'" forever.
-# Optional deps are normally skipped when missing (line below), but a missing
-# companion of an ALREADY-INSTALLED parent must be repaired.
-DEP_INTEGRITY = {
-    'plugin.video.themoviedb.helper': ('script.module.jurialmunkey', 'script.module.infotagger',
-                                       'script.module.addon.signals', 'script.module.qrcode'),
-    'script.skinvariables': ('script.module.jurialmunkey',),
-}
+def _addon_requires(aid):
+    """<import addon=..> ids from an INSTALLED addon's addon.xml (on disk)."""
+    try:
+        p = os.path.join(ADDONS_PATH, aid, 'addon.xml')
+        if not os.path.isfile(p):
+            return []
+        t = open(p, 'r', encoding='utf-8', errors='replace').read()
+        t = re.sub(r'<!--.*?-->', '', t, flags=re.S)   # ignore commented-out imports
+        return re.findall(r'<import\s+addon="([^"]+)"', t)
+    except Exception:
+        return []
+
+
+def _missing_deps_of_installed(manifest):
+    """GENERAL dependency self-heal: for every INSTALLED addon, any dependency
+    that IS in our manifest but is NOT installed must be (re)installed. The wizard
+    installs by extracting zips, which BYPASSES Kodi's own dependency resolution --
+    so a manifest dep can silently go missing (e.g. TMDbHelper without
+    script.module.jurialmunkey -> crash on every startup). Binary deps that we
+    deliberately don't ship (script.module.pil) aren't in the manifest, so they
+    are correctly left to the per-platform base build."""
+    manifest_ids = {a.get('id') for a in manifest.get('addons', [])}
+    needed = set()
+    try:
+        for a in manifest.get('addons', []):
+            aid = a.get('id')
+            if not aid or _installed_version(aid) is None:
+                continue
+            for dep in _addon_requires(aid):
+                if dep in manifest_ids and dep not in NEVER_TOUCH \
+                        and _installed_version(dep) is None:
+                    needed.add(dep)
+    except Exception:
+        pass
+    return needed
 
 
 def compute_updates(manifest, force=False):
@@ -153,13 +179,9 @@ def compute_updates(manifest, force=False):
     state = _load_state()
     by_id = {a.get('id'): a for a in manifest.get('addons', [])}
 
-    # Repair: any companion dep that is missing while its parent IS installed.
-    needed = set()
-    for parent, deps in DEP_INTEGRITY.items():
-        if _installed_version(parent) is not None:
-            for dep in deps:
-                if _installed_version(dep) is None:
-                    needed.add(dep)
+    # Repair: any manifest dep that is missing while an addon requiring it IS
+    # installed (the zip-install bypasses Kodi's own dependency resolution).
+    needed = _missing_deps_of_installed(manifest)
 
     updates = []
     for a in manifest.get('addons', []):
