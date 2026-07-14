@@ -169,6 +169,66 @@ def _missing_deps_of_installed(manifest):
     return needed
 
 
+def _jsonrpc(method, params):
+    try:
+        req = json.dumps({'jsonrpc': '2.0', 'id': 1, 'method': method, 'params': params})
+        return json.loads(xbmc.executeJSONRPC(req))
+    except Exception:
+        return {}
+
+
+def _is_enabled(aid):
+    """True if Kodi has the addon ENABLED. A disabled xbmc.python.module is not
+    added to the Python path, so importing it fails even though its files exist."""
+    r = _jsonrpc('Addons.GetAddonDetails', {'addonid': aid, 'properties': ['enabled']})
+    return bool(r.get('result', {}).get('addon', {}).get('enabled'))
+
+
+def _enable_addon(aid):
+    _jsonrpc('Addons.SetAddonEnabled', {'addonid': aid, 'enabled': True})
+
+
+def repair_disabled_deps(manifest):
+    """Re-enable any manifest dependency that Kodi has DISABLED while an addon
+    requiring it is still installed. Kodi's orphan-dependency cleanup disables a
+    module when no addon it *knows about* depends on it -- but our parents
+    (TMDbHelper, skins) are zip-installed, so Kodi's dependency graph never learns
+    they need e.g. script.module.jurialmunkey. Removing a skin then disables it,
+    and TMDbHelper crashes forever with 'No module named jurialmunkey' even though
+    the files are on disk. Re-extracting can't fix this (the disabled flag lives in
+    Addons33.db, not on disk); only SetAddonEnabled clears it. We also restore the
+    files first, in case the module was partially removed too."""
+    by_id = {a.get('id'): a for a in manifest.get('addons', [])}
+    manifest_ids = set(by_id)
+    targets = set()
+    try:
+        for a in manifest.get('addons', []):
+            aid = a.get('id')
+            if not aid or aid in NEVER_TOUCH or _installed_version(aid) is None:
+                continue
+            for dep in _addon_requires(aid):
+                if dep in manifest_ids and dep not in NEVER_TOUCH \
+                        and _installed_version(dep) is not None \
+                        and not _is_enabled(dep):
+                    targets.add(dep)
+    except Exception as e:
+        log('disabled-dep scan error: %s' % e, xbmc.LOGERROR)
+        return []
+
+    fixed = []
+    for dep in sorted(targets):
+        try:
+            if dep in by_id:
+                _apply_one(by_id[dep])          # restore files (harmless if intact)
+        except Exception as e:
+            log('reinstall of disabled dep %s failed: %s' % (dep, e), xbmc.LOGERROR)
+        _enable_addon(dep)
+        if _is_enabled(dep):
+            fixed.append(dep)
+            log('re-enabled disabled dependency: %s' % dep)
+    return fixed
+
+
 def compute_updates(manifest, force=False):
     """Return the list of addon entries that need (re)installing.
 
@@ -493,16 +553,24 @@ def run_update(silent=False, notify=None, force=False):
         _save_state(state)
         xbmc.executebuiltin('UpdateLocalAddons')
 
+    # Re-enable any dependency Kodi disabled out from under an installed parent
+    # (e.g. jurialmunkey disabled after a skin removal -> TMDbHelper crashes).
+    # Runs every check, independent of version updates.
+    enabled = repair_disabled_deps(manifest)
+    if enabled:
+        xbmc.executebuiltin('UpdateLocalAddons')
+
     updates = compute_updates(manifest, force=force)
     if not updates:
-        if not removed:
+        if not removed and not enabled:
             _say('הבילד מעודכן')
         # still apply config on a version bump even if no addon changed
         cfg_applied = _maybe_apply_config(manifest, state, force=force)
         _save_state(state)
         return {'ok': True, 'applied': [], 'failed': [], 'removed': removed,
+                'enabled': enabled,
                 'config_applied': cfg_applied,
-                'up_to_date': not removed,
+                'up_to_date': not removed and not enabled,
                 'manifest_generated': manifest.get('generated_utc')}
 
     applied, failed = [], []
@@ -544,6 +612,7 @@ def run_update(silent=False, notify=None, force=False):
     summary = {
         'ok': not failed,
         'applied': applied,
+        'enabled': enabled,
         'failed': failed,
         'wizard_changed': wizard_changed,
         'skin_changed': skin_changed,
