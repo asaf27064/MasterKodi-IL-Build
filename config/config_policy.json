@@ -1,5 +1,5 @@
 {
-  "config_version": 18,
+  "config_version": 19,
   "_comment": "Declarative policy for how the wizard applies the shipped build-config onto a device. Bump build.json config_version whenever ANY file under config/ changes. Modes: replace (overwrite whole file), seed_if_absent (write only if missing), merge_id (per <setting id>, build value wins - CLOBBERS user changes), merge_seed (per <setting id>, add-if-absent - our value is the DEFAULT but a user's own change is NEVER overwritten), merge_name (per <source><name>, add build's, keep user's). To DELIBERATELY push a changed default to every device with merge_seed: add that id to the file's optional \"force_ids\" list (overwrites even user-set values) and bump config_version; remove it once propagated if you want user changes to stick again. exclude_ids always win over force_ids to protect credentials. gears_settings enforces critical values in Gears' binary settings.db.",
   "files": [
     {
@@ -106,6 +106,12 @@
       "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1102widgets.json",
       "fresh": "replace",
       "update": "replace"
+    },
+    {
+      "src": "userdata/Database/ViewModes6.db",
+      "dest": "userdata/Database/ViewModes6.db",
+      "fresh": "seed_if_absent",
+      "update": "skip"
     }
   ],
   "gears_settings": {

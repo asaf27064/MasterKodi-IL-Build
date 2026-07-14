@@ -5,7 +5,7 @@
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "manifest_schema": 1,
-  "config_version": 18,
+  "config_version": 19,
   "channels": {
     "optional": [
       "skin.arctic.fuse.3",
