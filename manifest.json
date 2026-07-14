@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-14T15:59:47Z",
+  "generated_utc": "2026-07-14T18:48:01Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -45,20 +45,20 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.47",
+      "version": "2.4.48",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.47.zip",
-      "sha256": "777ca46f80358a3e905ff8dfe78e85e031a1fcd2d45eae2ee9a1e42e0ec3a8be",
-      "size": 2334097,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.47.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.48.zip",
+      "sha256": "166e914cfebed45badf6df4bd754d579d247405adc54555224d10fc9b2a6af0f",
+      "size": 2335993,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.48.zip"
     },
     {
       "id": "plugin.video.gears",
       "version": "2.3.4",
       "channel": "core",
       "zip": "plugin.video.gears-2.3.4.zip",
-      "sha256": "6eeb8c08b702b2f3d7fc1359faccbcf5c0fb021d94b6efaec11e23354af8790a",
-      "size": 9127144,
+      "sha256": "be5d389029b8b88265b18294d1d950bf72b3b2f162feb55015f5b71aecd01b85",
+      "size": 8571359,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.gears-2.3.4.zip"
     },
     {
@@ -507,8 +507,8 @@
       "version": "4.0.0",
       "channel": "core",
       "zip": "skin.estuary-4.0.0.zip",
-      "sha256": "a03fa5c2fe03ab0f6f9667dd139ff2112d95ead232e278562521394ba8132e42",
-      "size": 5605472,
+      "sha256": "d9e2f5a3928f3db046a3757f51d964c2b81d79f4a7464ea30229e2f7390d6b8f",
+      "size": 5605800,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.estuary-4.0.0.zip"
     },
     {
@@ -522,10 +522,10 @@
     }
   ],
   "config": {
-    "version": "19",
-    "zip": "config-19.zip",
-    "sha256": "7b2e5ff8787a2d61389baadec1b0fea047e5d2558ee47bb25877fa0977366c70",
-    "size": 27188,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-19.zip"
+    "version": "20",
+    "zip": "config-20.zip",
+    "sha256": "89dd8e71f3b39c94f406b458ac5afae8ea11791fba06e1b6ff27c1ed027ba217",
+    "size": 31474,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-20.zip"
   }
 }
