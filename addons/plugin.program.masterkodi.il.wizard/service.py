@@ -82,6 +82,31 @@ def get_addon_version(addon_id):
     return None
 
 
+def _process_pending_view_rebuild():
+    """First boot after a skin (re)install: Zephyr/AF3 build their skinvariables
+    home views on Home load with `no_reload`, so on a fresh switch the views build
+    but the DISPLAY never refreshes -- the foreground stays showing the pre-build
+    state (looks frozen) while the background updates, until the user manually
+    switches a view. Do that clean rebuild ONCE ourselves (buildviews without
+    no_reload reloads the skin), so a fresh install comes up right."""
+    marker = os.path.join(xbmcvfs.translatePath('special://userdata/addon_data/'),
+                          ADDON_ID, 'pending_view_rebuild')
+    if not os.path.isfile(marker):
+        return
+    try:
+        os.remove(marker)
+    except Exception:
+        pass
+    try:
+        skin = xbmc.getSkinDir() or ''
+        inc = os.path.join(ADDONS_PATH, skin, '1080i', 'script-skinvariables-includes.xml')
+        if skin and os.path.isfile(inc):
+            log("post-install: rebuilding skin views (buildviews)")
+            xbmc.executebuiltin('RunScript(script.skinvariables,action=buildviews)')
+    except Exception as e:
+        log(f"post-install view rebuild failed: {e}", xbmc.LOGWARNING)
+
+
 def _process_pending_skin_removal():
     """Uninstall the skin the user dropped during a skin switch. Deferred from
     the skins menu to now (the old skin is no longer the running one)."""
@@ -189,6 +214,9 @@ class POVHebrewService(xbmc.Monitor):
                 log(f"manifest update error: {e}", xbmc.LOGERROR)
         else:
             log("Auto update check disabled")
+
+        # One-time clean view rebuild after a fresh skin (re)install (see fn doc).
+        _process_pending_view_rebuild()
 
         # Warm gears now that boot + update check are done (nothing else to do).
         _prewarm_gears(self)
