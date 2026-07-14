@@ -1,10 +1,10 @@
 <settings version="2">
     <setting id="homemulti" type="bool">true</setting>
-    <setting id="homemultiflixview" type="bool">false</setting>
+    <setting id="homemultiflixview" type="bool">true</setting>
     <setting id="HomeMultiVertical" type="bool">false</setting>
     <setting id="HomeMultiNetflix" type="bool">false</setting>
     <setting id="HomeMultiHorizontal" type="bool">false</setting>
-    <setting id="HomeBasic" type="bool">true</setting>
+    <setting id="HomeBasic" type="bool">false</setting>
     <setting id="DisabledProfileInfo" type="bool">true</setting>
     <setting id="ExtendedNotification" type="bool">true</setting>
     <setting id="ShowEpisodeRatings" type="bool">true</setting>

@@ -416,6 +416,19 @@ def _active_skin():
         return None
 
 
+def _read_text(path):
+    try:
+        return open(path, 'r', encoding='utf-8', errors='replace').read()
+    except Exception:
+        return ''
+
+
+def _write_text(path, text):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as fh:
+        fh.write(text)
+
+
 def _menu_is_broken(inc_path, good_inc_path):
     """The skinshortcuts home menu is broken if:
       - the generated includes file is missing, OR
@@ -456,8 +469,9 @@ def repair_skin_menu():
     Rather than depend on that build, we SHIP a known-good menu at
     resources/menu_defaults/<skin>/ and lay it down: the skinshortcuts userdata
     (the menu source, so any later rebuild reproduces it) plus the generated
-    includes into the skin (immediate display). Idempotent -- a healthy menu is
-    left untouched. Returns what was restored."""
+    includes into the skin. We re-lay when the on-device menu is broken/empty OR
+    when the bundle VERSION changed (so a cleaned-up menu replaces an older dirty
+    one already on the box). A matching, healthy menu is left untouched."""
     restored = []
     try:
         skin = _active_skin()
@@ -478,20 +492,32 @@ def repair_skin_menu():
             return restored
         inc_disk = os.path.join(sdir, res, 'script-skinshortcuts-includes.xml')
         good_inc = os.path.join(inc_src, 'script-skinshortcuts-includes.xml')
-        if not _menu_is_broken(inc_disk, good_inc):
-            return restored                     # menu already good
-        log('restoring known-good %s home menu (was empty/missing)' % skin)
-        # 1) skinshortcuts userdata = the menu SOURCE -> overwrite the empty cache
-        if os.path.isdir(ss_src):
-            ss_dst = xbmcvfs.translatePath('special://profile/addon_data/script.skinshortcuts/')
-            try:
-                os.makedirs(ss_dst, exist_ok=True)
-                for f in os.listdir(ss_src):
-                    shutil.copy2(os.path.join(ss_src, f), os.path.join(ss_dst, f))
-                restored.append('skinshortcuts-data')
-            except Exception as e:
-                log('menu userdata restore failed: %s' % e, xbmc.LOGERROR)
-        # 2) generated includes into the skin -> immediate correct display
+        bver = _read_text(os.path.join(bundle, 'VERSION')).strip()
+        marker = os.path.join(ADDON_DATA, 'menu_ver_%s.txt' % skin)
+        applied = _read_text(marker).strip()
+        broken = _menu_is_broken(inc_disk, good_inc)
+        stale = bool(bver) and applied != bver
+        if not broken and not stale:
+            return restored                     # menu already good AND current
+        log('re-laying %s home menu (broken=%s stale=%s bundle_ver=%s)'
+            % (skin, broken, stale, bver))
+        ss_dst = xbmcvfs.translatePath('special://profile/addon_data/script.skinshortcuts/')
+        # 1) replace the skinshortcuts userdata cleanly: remove the box's stale
+        #    menu state (so old orphan/dup .DATA files don't linger), then copy ours
+        try:
+            os.makedirs(ss_dst, exist_ok=True)
+            for f in os.listdir(ss_dst):
+                low = f.lower()
+                if low.endswith('.data.xml') or '.bak' in low \
+                        or f.startswith(skin):          # <skin>.hash / <skin>.properties
+                    try: os.remove(os.path.join(ss_dst, f))
+                    except Exception: pass
+            for f in os.listdir(ss_src):
+                shutil.copy2(os.path.join(ss_src, f), os.path.join(ss_dst, f))
+            restored.append('skinshortcuts-data')
+        except Exception as e:
+            log('menu userdata restore failed: %s' % e, xbmc.LOGERROR)
+        # 2) generated includes into the skin
         try:
             for f in os.listdir(inc_src):
                 shutil.copy2(os.path.join(inc_src, f), os.path.join(sdir, res, f))
@@ -499,6 +525,8 @@ def repair_skin_menu():
         except Exception as e:
             log('menu includes restore failed: %s' % e, xbmc.LOGERROR)
         if restored:
+            try: _write_text(marker, bver)
+            except Exception: pass
             xbmc.sleep(500)
             xbmc.executebuiltin('ReloadSkin()')
     except Exception as e:
