@@ -25,7 +25,7 @@ MAX_BYTES = 380 * 1024                       # keep under paste-host limits; tai
 
 # Cloudflare pool Worker (same host the subtitle pool uses). A /v1/logs endpoint
 # stores the upload to R2 under the device id and returns a readable URL.
-CF_LOGS_URL = 'https://masterkodi-subpool.asaf27064.workers.dev/v1/logs'
+CF_LOGS_URL = 'https://masterkodi-logs.asaf27064.workers.dev/v1/logs'
 CF_LOGS_KEY = 'mk-76ed711408c449eda0c5a2d868720b0438e36309'  # shared build key (same as subtitle pool)
 
 
