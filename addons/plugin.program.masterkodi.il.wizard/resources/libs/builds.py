@@ -1122,7 +1122,8 @@ class BuildManager:
             progress.update(95, "[COLOR yellow]מעדכן...[/COLOR]")
             xbmc.executebuiltin('UpdateAddonRepos()')
             xbmc.executebuiltin('UpdateLocalAddons()')
-            
+            self._apply_build_config()
+
             # Save setting
             ADDON.setSetting('installed_skin', 'Arctic Fuse')
             
@@ -1189,12 +1190,31 @@ class BuildManager:
             self.setup_wizard_repo_in_db()
             xbmc.executebuiltin('UpdateAddonRepos()')
             xbmc.executebuiltin('UpdateLocalAddons()')
+            self._apply_build_config()
             progress.update(100, "[COLOR lime]הותקן![/COLOR]")
             xbmc.sleep(400); progress.close()
             return True
         except Exception as e:
             log(f"_install_from_manifest error: {e}", xbmc.LOGERROR)
             return False
+
+    def _apply_build_config(self):
+        """Force-apply the build config (skin settings, gears settings, ...) after
+        a skin install/switch, so a freshly-(re)installed skin lands with all the
+        build defaults -- Flix view, hidden match%/profile info, colorful ratings,
+        detailed notifications, etc. Kodi RESETS a reinstalled skin's settings.xml
+        to the skin's own defaults, and the normal config-apply only runs on a
+        config-version bump -- so without this every skin switch silently loses
+        our customizations. Safe: merge_id keeps user values for ids we don't set,
+        and the policy excludes every credential."""
+        try:
+            from resources.libs import modular_update as mu
+            manifest = mu.fetch_manifest()
+            state = mu._load_state()
+            mu._maybe_apply_config(manifest, state, force=True)
+            mu._save_state(state)
+        except Exception as e:
+            log(f"apply build config on skin install failed: {e}", xbmc.LOGWARNING)
 
     def install_skin(self, skin_key, skin_url=None):
         """Download + install an optional skin (with its deps) WITHOUT switching
@@ -1237,6 +1257,7 @@ class BuildManager:
             self.setup_wizard_repo_in_db()
             xbmc.executebuiltin('UpdateAddonRepos()')
             xbmc.executebuiltin('UpdateLocalAddons()')
+            self._apply_build_config()
             try:
                 os.remove(skin_zip)
             except Exception:
