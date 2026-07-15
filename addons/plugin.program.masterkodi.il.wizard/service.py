@@ -253,6 +253,14 @@ class POVHebrewService(xbmc.Monitor):
         # after boot, before the user starts navigating (running it after the
         # 15s settle yanked mid-navigation users back to home).
         if not self.waitForAbort(2):
+            # Make sure the Gears shortcut folder the default networks widget
+            # points at exists BEFORE the rebuild's reload populates widgets
+            # (no-op after the first successful seed).
+            try:
+                from resources.libs import modular_update
+                modular_update.seed_gears_shortcut_folder()
+            except Exception as e:
+                log(f"gears networks seed error: {e}", xbmc.LOGWARNING)
             _process_pending_view_rebuild()
 
         # Skip the check once right after a build install (the wizard sets this).

@@ -1257,6 +1257,9 @@ class BuildManager:
             state = mu._load_state()
             mu._maybe_apply_config(manifest, state, force=True)
             mu._save_state(state)
+            # Seed the Gears shortcut folder the default networks widget uses,
+            # so a fresh install's FIRST boot already renders it populated.
+            mu.seed_gears_shortcut_folder()
             # Flag a one-time skinvariables view rebuild for the next boot. A freshly
             # (re)installed skin (Zephyr/AF3) builds its views on Home load with
             # no_reload, so the display never refreshes -> foreground looks frozen

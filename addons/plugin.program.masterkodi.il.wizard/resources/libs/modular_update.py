@@ -132,6 +132,68 @@ def _save_state(state):
 
 
 # --------------------------------------------------------------------------- #
+# gears shortcut-folder seed
+# --------------------------------------------------------------------------- #
+
+# The default home menus (Zephyr skinshortcuts bundle + AF3 skinvariables
+# nodes) ship a streaming-networks widget that points at this Gears
+# "shortcut folder". Gears databases are NEVER shipped in the base zip
+# (they'd carry personal data: trakt cache, watched history), so a fresh
+# box has no such folder and the widget renders empty ("Add Content...").
+# Seed it once per marker version; a user who later edits or deletes the
+# folder isn't fought.
+_GEARS_NET_ICON = 'special://home/addons/plugin.video.gears/resources/media/network_icons/%s.png'
+GEARS_NETWORKS_FOLDER = ('SELECTED NETWROKS', [
+    {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '213',  'name': 'Netflix',    'iconImage': _GEARS_NET_ICON % 'jI5c3bw', 'full_list': 'false'},
+    {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '1024', 'name': 'Amazon',     'iconImage': _GEARS_NET_ICON % 'ru9DDlL', 'full_list': 'false'},
+    {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '2552', 'name': 'Apple TV +', 'iconImage': _GEARS_NET_ICON % 'fAQMVNp', 'full_list': 'false'},
+    {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '2739', 'name': 'Disney+',    'iconImage': _GEARS_NET_ICON % 'DVrPgbM', 'full_list': 'false'},
+    {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '49',   'name': 'HBO',        'iconImage': _GEARS_NET_ICON % 'Hyu8ZGq', 'full_list': 'false'},
+    {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '3186', 'name': 'HBO Max',    'iconImage': _GEARS_NET_ICON % 'mmRMG75', 'full_list': 'false'},
+    {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '453',  'name': 'Hulu',       'iconImage': _GEARS_NET_ICON % 'uSD2Cdw', 'full_list': 'false'},
+    {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '4330', 'name': 'Paramount+', 'iconImage': _GEARS_NET_ICON % 'dmUjWmU', 'full_list': 'false'},
+    {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '19',   'name': 'FOX',        'iconImage': _GEARS_NET_ICON % '6vc0Iov', 'full_list': 'false'},
+    {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '71',   'name': 'The CW',     'iconImage': _GEARS_NET_ICON % 'Q8tooeM', 'full_list': 'false'},
+    {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '2',    'name': 'ABC',        'iconImage': _GEARS_NET_ICON % 'qePLxos', 'full_list': 'false'},
+])
+
+
+def seed_gears_shortcut_folder():
+    """Insert the SELECTED NETWROKS folder into Gears' navigator.db if absent.
+    Safe to call every boot: a done-marker (bump its _v suffix to re-seed the
+    fleet) makes it a no-op after the first successful run."""
+    marker = os.path.join(ADDON_DATA, 'gears_networks_seed_v1')
+    if os.path.isfile(marker):
+        return
+    try:
+        import sqlite3
+        dbdir = xbmcvfs.translatePath(
+            'special://profile/addon_data/plugin.video.gears/databases/')
+        os.makedirs(dbdir, exist_ok=True)
+        name, items = GEARS_NETWORKS_FOLDER
+        con = sqlite3.connect(os.path.join(dbdir, 'navigator.db'))
+        # same schema gears itself creates (navigator_cache.py)
+        con.execute('CREATE TABLE IF NOT EXISTS navigator '
+                    '(list_name text, list_type text, list_contents text, '
+                    'unique (list_name, list_type))')
+        have = con.execute(
+            'SELECT 1 FROM navigator WHERE list_name = ? AND list_type = ?',
+            (name, 'shortcut_folder')).fetchone()
+        if not have:
+            # gears reads list_contents with eval() -> store a python repr
+            con.execute('INSERT INTO navigator VALUES (?, ?, ?)',
+                        (name, 'shortcut_folder', repr(items)))
+            con.commit()
+            log('seeded gears shortcut folder: %s (%d networks)' % (name, len(items)))
+        con.close()
+        os.makedirs(ADDON_DATA, exist_ok=True)
+        with open(marker, 'w', encoding='utf-8') as fh:
+            fh.write('1')
+    except Exception as e:
+        log('gears shortcut-folder seed failed: %s' % e, xbmc.LOGWARNING)
+
+
+# --------------------------------------------------------------------------- #
 # diff
 # --------------------------------------------------------------------------- #
 def _addon_requires(aid):
