@@ -118,6 +118,11 @@ def _process_pending_view_rebuild():
                 log("post-install: rebuilding skin menu templates (buildtemplate,no_reload)")
                 xbmc.executebuiltin('RunScript(script.skinvariables,action=buildtemplate,no_reload=true)')
                 xbmc.Monitor().waitForAbort(3)   # let the template write finish before buildviews
+            # buildviews hash-skips (silently, no reload) unless the stored
+            # skinviewtypes hashes are cleared first -- clear them so the
+            # rebuild + its ReloadSkin actually happen on this boot.
+            xbmc.executebuiltin('Skin.SetString(script-skinviewtypes-hash,)')
+            xbmc.executebuiltin('Skin.SetString(script-skinviewtypes-checksum,)')
             log("post-install: rebuilding skin views (buildviews)")
             xbmc.executebuiltin('RunScript(script.skinvariables,action=buildviews)')
     except Exception as e:
@@ -195,7 +200,13 @@ class POVHebrewService(xbmc.Monitor):
         if ADDON.getSetting('skip_update_check') == 'true':
             log("Skipping update check (after build installation)")
             ADDON.setSetting('skip_update_check', 'false')
-            if not self.waitForAbort(20):
+            # The post-install boot is EXACTLY when the view-rebuild marker must
+            # run (Zephyr builds its views no_reload on Home load -> foreground
+            # freezes until a reload). This branch used to return before the
+            # marker processing further down -- that was the frozen-home bug.
+            if not self.waitForAbort(8):
+                _process_pending_view_rebuild()
+            if not self.waitForAbort(12):
                 _prewarm_gears(self)
             while not self.abortRequested():
                 if self.waitForAbort(300):
