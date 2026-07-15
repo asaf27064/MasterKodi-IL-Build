@@ -106,10 +106,9 @@ def _process_pending_view_rebuild():
         log("post-install rebuild deferred: marker is for %s, active skin is %s"
             % (target, cur_skin))
         return
-    try:
-        os.remove(marker)
-    except Exception:
-        pass
+    # NOTE: the marker is removed at the END (or on timeout) -- consuming it
+    # up front meant an abort mid-wait (user quits during first boot) lost
+    # the rebuild forever and the widgets stayed dead on every later boot.
     try:
         skin = cur_skin
         # Only skins that actually DEPEND on script.skinshortcuts (Zephyr)
@@ -127,34 +126,40 @@ def _process_pending_view_rebuild():
             # Until that file exists AND a reload happens, the foreground
             # (hero/menu) is dead while the background moves. Wait for the
             # build so OUR reload below brings everything up at once.
-            # CRITICAL: existence is NOT enough -- skinshortcuts takes seconds
-            # to WRITE the file, and reloading mid-write makes Kodi parse a
+            # CRITICAL: existence is NOT enough -- skinshortcuts writes the
+            # file in place over several seconds (ElementTree tree.write, no
+            # temp+rename), and reloading mid-write makes Kodi parse a
             # truncated include table (menu shows, widgets dead) with nothing
-            # left to reload again. Wait until the size is stable across two
-            # checks AND the closing tag is on disk.
+            # left to reload again. ElementTree emits the root closing tag
+            # LAST, so `</includes>` on disk == document complete -- that one
+            # check is both sufficient and the fastest possible signal.
             mon = xbmc.Monitor()
             waited = 0
-            stable = 0
-            last_size = -1
-            while stable < 2 and waited < 90 and not mon.abortRequested():
+            done = False
+            while not done and waited < 90 and not mon.abortRequested():
                 try:
-                    size = os.path.getsize(ss_inc)
                     with open(ss_inc, 'rb') as fh:
-                        fh.seek(max(0, size - 64))
+                        fh.seek(max(0, os.path.getsize(ss_inc) - 64))
                         done = b'</includes>' in fh.read()
                 except Exception:
-                    size, done = -1, False
-                if done and size == last_size:
-                    stable += 1
-                else:
-                    stable = 0
-                last_size = size
-                if stable < 2:
-                    if mon.waitForAbort(2):
+                    done = False
+                if not done:
+                    # abort (user quitting) keeps the marker -> retried next boot
+                    if mon.waitForAbort(1):
                         return
-                    waited += 2
+                    waited += 1
             log("post-install: skinshortcuts includes %s after %ss"
-                % ('complete' if stable >= 2 else 'STILL INCOMPLETE', waited))
+                % ('complete' if done else 'STILL MISSING', waited))
+            if not done:
+                # something is genuinely wrong with the skin's menu build;
+                # reloading a truncated/missing include table IS the bug we
+                # are here to prevent. Give up (marker removed below) rather
+                # than stall every future boot for 90s.
+                try:
+                    os.remove(marker)
+                except Exception:
+                    pass
+                return
         inc = os.path.join(ADDONS_PATH, skin, '1080i', 'script-skinvariables-includes.xml')
         if skin and os.path.isfile(inc):
             # buildtemplate (force) recompiles the menu/shortcut includes from the
@@ -186,6 +191,10 @@ def _process_pending_view_rebuild():
             xbmc.executebuiltin('RunScript(script.skinvariables,action=buildviews)')
     except Exception as e:
         log(f"post-install view rebuild failed: {e}", xbmc.LOGWARNING)
+    try:
+        os.remove(marker)
+    except Exception:
+        pass
 
 
 def _process_pending_skin_removal():
