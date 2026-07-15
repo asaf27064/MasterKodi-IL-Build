@@ -665,7 +665,7 @@
 
 	<!-- MAIN MENU SUBMENU BUTTONS -->
 	<variable name="HomePowerButtonActionVar">
-		<value condition="Skin.HasSetting(OneClickClose)">Quit()</value>
+		<value condition="Skin.HasSetting(OneClickClose)">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</value>
 		<value>ActivateWindow(shutdownmenu)</value>
 	</variable>
 

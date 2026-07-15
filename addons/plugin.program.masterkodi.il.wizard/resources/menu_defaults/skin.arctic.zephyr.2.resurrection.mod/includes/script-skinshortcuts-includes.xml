@@ -224,11 +224,11 @@
 			<thumb />
 			<property name="labelID">13012</property>
 			<property name="defaultID">13012</property>
-			<visible>[[System.ShowExitButton] + [System.ShowExitButton]] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),powermenu)</visible>
+			<visible>[System.ShowExitButton] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),powermenu)</visible>
 			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
-			<onclick>Quit()</onclick>
-			<property name="path">Quit()</property>
-			<property name="list">Quit()</property>
+			<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</onclick>
+			<property name="path">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</property>
+			<property name="list">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</property>
 			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
 			<property name="group">powermenu</property>
 			<property name="isSubmenu">True</property>
@@ -1428,11 +1428,11 @@
 			<thumb />
 			<property name="labelID">13012</property>
 			<property name="defaultID">13012</property>
-			<visible>[System.ShowExitButton] + [System.ShowExitButton]</visible>
+			<visible>System.ShowExitButton</visible>
 			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
-			<onclick>Quit()</onclick>
-			<property name="path">Quit()</property>
-			<property name="list">Quit()</property>
+			<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</onclick>
+			<property name="path">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</property>
+			<property name="list">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</property>
 			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
 			<property name="group">powermenu</property>
 			<property name="isSubmenu">True</property>
@@ -1610,11 +1610,11 @@
 			<thumb />
 			<property name="labelID">13012</property>
 			<property name="defaultID">13012</property>
-			<visible>[[System.ShowExitButton] + [System.ShowExitButton]] + String.IsEqual(Window(10000).Property(submenuVisibility),powermenu)</visible>
+			<visible>[System.ShowExitButton] + String.IsEqual(Window(10000).Property(submenuVisibility),powermenu)</visible>
 			<onclick condition="Window.IsActive(DialogButtonMenu.xml)">Close</onclick>
-			<onclick>Quit()</onclick>
-			<property name="path">Quit()</property>
-			<property name="list">Quit()</property>
+			<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</onclick>
+			<property name="path">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</property>
+			<property name="list">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</property>
 			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
 			<property name="group">powermenu</property>
 			<property name="isSubmenu">True</property>
