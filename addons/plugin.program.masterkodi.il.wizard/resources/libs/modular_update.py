@@ -640,8 +640,11 @@ def _restart_kodi():
                        'tasklist /FI "PID eq %d" /FI "IMAGENAME eq kodi.exe" 2>nul | '
                        'findstr /I kodi.exe >nul && taskkill /F /PID %d /T >nul 2>&1 & '
                        'start "" "%s"' % (pid, pid, exe))
-                subprocess.Popen(cmd, shell=True,
-                                 creationflags=0x00000008 | 0x08000000)  # DETACHED | NO_WINDOW
+                # CREATE_NO_WINDOW alone: a hidden console the whole chain
+                # (ping/tasklist/findstr) inherits. DETACHED_PROCESS must NOT be
+                # combined with it -- detached cmd has no console, so each child
+                # allocated its own VISIBLE console window on the desktop.
+                subprocess.Popen(cmd, shell=True, creationflags=0x08000000)
                 log('fast restart: relauncher armed (pid %d -> %s)' % (pid, exe))
                 xbmc.executebuiltin('Quit')
                 time.sleep(3.5)
