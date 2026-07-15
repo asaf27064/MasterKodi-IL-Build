@@ -82,6 +82,92 @@ def get_addon_version(addon_id):
     return None
 
 
+def _process_pending_view_rebuild():
+    """First boot after a skin (re)install: Zephyr/AF3 build their skinvariables
+    home views on Home load with `no_reload`, so on a fresh switch the views build
+    but the DISPLAY never refreshes -- the foreground stays showing the pre-build
+    state (looks frozen) while the background updates, until the user manually
+    switches a view. Do that clean rebuild ONCE ourselves (buildviews without
+    no_reload reloads the skin), so a fresh install comes up right."""
+    marker = os.path.join(xbmcvfs.translatePath('special://userdata/addon_data/'),
+                          ADDON_ID, 'pending_view_rebuild')
+    if not os.path.isfile(marker):
+        return
+    try:
+        target = open(marker, encoding='utf-8').read().strip()
+    except Exception:
+        target = ''
+    cur_skin = xbmc.getSkinDir() or ''
+    # The marker names the skin it was written FOR. During a skin install the
+    # service of the STILL-RUNNING old skin can reach this point before the
+    # restart -- consuming the marker on the wrong skin left the new skin's
+    # first boot without its rebuild (the Zephyr frozen-home regression).
+    if target and target.startswith('skin.') and target != cur_skin:
+        log("post-install rebuild deferred: marker is for %s, active skin is %s"
+            % (target, cur_skin))
+        return
+    try:
+        os.remove(marker)
+    except Exception:
+        pass
+    try:
+        skin = cur_skin
+        # Only skins that actually DEPEND on script.skinshortcuts (Zephyr)
+        # compile their menu into script-skinshortcuts-includes.xml on first
+        # Home load. A folder named shortcuts/ is NOT the signal -- AF3 has one
+        # too (skinvariables templates) and would stall the full timeout here.
+        uses_ss = False
+        try:
+            with open(os.path.join(ADDONS_PATH, skin, 'addon.xml'), encoding='utf-8') as fh:
+                uses_ss = 'script.skinshortcuts' in fh.read()
+        except Exception:
+            pass
+        ss_inc = os.path.join(ADDONS_PATH, skin, '1080i', 'script-skinshortcuts-includes.xml')
+        if uses_ss:
+            # Until that file exists AND a reload happens, the foreground
+            # (hero/menu) is dead while the background moves. Wait for the
+            # build so OUR reload below brings everything up at once.
+            mon = xbmc.Monitor()
+            waited = 0
+            while not os.path.isfile(ss_inc) and waited < 90 and not mon.abortRequested():
+                if mon.waitForAbort(3):
+                    return
+                waited += 3
+            log("post-install: skinshortcuts includes %s after %ss"
+                % ('present' if os.path.isfile(ss_inc) else 'STILL MISSING', waited))
+        inc = os.path.join(ADDONS_PATH, skin, '1080i', 'script-skinvariables-includes.xml')
+        if skin and os.path.isfile(inc):
+            # buildtemplate (force) recompiles the menu/shortcut includes from the
+            # skinvariables nodes we deliver via config (e.g. custom home categories);
+            # without it, edited node JSONs never reach the skin. buildviews rebuilds
+            # the view-type includes. Both needed for a config-driven menu change.
+            gen = os.path.join(ADDONS_PATH, skin, '1080i',
+                               'script-skinvariables-generator-includes-.xml')
+            if os.path.isfile(gen):
+                # NOT forced: the generator hashes the node contents, so this
+                # no-ops (no reload, no splash) when the skin's own first-boot
+                # build already compiled everything -- AF3 self-builds on a
+                # fresh install -- and only really rebuilds when a delivered
+                # node change wasn't compiled yet. no_reload keeps it silent;
+                # the buildviews after it does the single visible reload only
+                # when views actually changed.
+                log("post-install: rebuilding skin menu templates (buildtemplate,no_reload)")
+                xbmc.executebuiltin('RunScript(script.skinvariables,action=buildtemplate,no_reload=true)')
+                xbmc.Monitor().waitForAbort(3)   # let the template write finish before buildviews
+            # buildviews hash-skips (silently, no reload) unless the stored
+            # skinviewtypes hashes are cleared. Clear them ONLY for
+            # skinshortcuts-driven skins (Zephyr), whose display genuinely
+            # needs the forced rebuild + reload; AF3/Nimbus self-build and
+            # display fine -- forcing there just adds a redundant splash.
+            if uses_ss:
+                xbmc.executebuiltin('Skin.SetString(script-skinviewtypes-hash,)')
+                xbmc.executebuiltin('Skin.SetString(script-skinviewtypes-checksum,)')
+            log("post-install: rebuilding skin views (buildviews)")
+            xbmc.executebuiltin('RunScript(script.skinvariables,action=buildviews)')
+    except Exception as e:
+        log(f"post-install view rebuild failed: {e}", xbmc.LOGWARNING)
+
+
 def _process_pending_skin_removal():
     """Uninstall the skin the user dropped during a skin switch. Deferred from
     the skins menu to now (the old skin is no longer the running one)."""
@@ -165,10 +251,12 @@ class POVHebrewService(xbmc.Monitor):
             ADDON.setSetting('skip_update_check', 'false')
             # Every install path sets this flag and then restarts, so THIS boot
             # is the deferred-work boot: the dropped previous skin must be
-            # removed here (not two boots later). Only the network update
-            # check is skipped.
+            # removed here (not two boots later), and the view-rebuild marker
+            # must run here (Zephyr's foreground stays frozen until its
+            # rebuild+reload). Only the network update check is skipped.
             if not self.waitForAbort(8):
                 _process_pending_skin_removal()
+                _process_pending_view_rebuild()
             if not self.waitForAbort(12):
                 _prewarm_gears(self)
             while not self.abortRequested():
@@ -205,6 +293,9 @@ class POVHebrewService(xbmc.Monitor):
                 log(f"manifest update error: {e}", xbmc.LOGERROR)
         else:
             log("Auto update check disabled")
+
+        # One-time clean view rebuild after a fresh skin (re)install (see fn doc).
+        _process_pending_view_rebuild()
 
         # Warm gears now that boot + update check are done (nothing else to do).
         _prewarm_gears(self)
