@@ -1257,19 +1257,6 @@ class BuildManager:
             state = mu._load_state()
             mu._maybe_apply_config(manifest, state, force=True)
             mu._save_state(state)
-            # Flag a one-time skinvariables view rebuild for the next boot. A freshly
-            # (re)installed skin (Zephyr/AF3) builds its views on Home load with
-            # no_reload, so the display never refreshes -> foreground looks frozen
-            # while the background updates, until the user manually switches a view.
-            # The service does that clean rebuild for us so a fresh install comes up
-            # right without the manual view-switch workaround.
-            try:
-                marker = os.path.join(ADDON_DATA_PATH, ADDON_ID, 'pending_view_rebuild')
-                os.makedirs(os.path.dirname(marker), exist_ok=True)
-                with open(marker, 'w', encoding='utf-8') as fh:
-                    fh.write(skin_id or '1')
-            except Exception as e:
-                log(f"could not set pending_view_rebuild: {e}", xbmc.LOGWARNING)
         except Exception as e:
             log(f"apply build config on skin install failed: {e}", xbmc.LOGWARNING)
 
