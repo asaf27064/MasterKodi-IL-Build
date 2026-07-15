@@ -9,7 +9,7 @@
     <shortcut>
         <label2>Power Menu Shortcut</label2>
         <label>13012</label>
-        <action>Quit()</action>
+        <action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</action>
         <visible>System.ShowExitButton</visible>
         <icon>special://skin/extras/icons/power.png</icon>
     </shortcut>

@@ -1472,7 +1472,13 @@ class BuildManager:
             xbmc.sleep(1000)
         
         progress.close()
-        os._exit(1)
+        # Fast-exit pattern (see default.fast_exit): normal Quit so settings
+        # save + DB vacuum land (~0.5s), 3.5s grace, then hard exit -- skipping
+        # the 5s-per-python-service teardown wait. The old bare os._exit(1)
+        # skipped the settings save entirely.
+        xbmc.executebuiltin('Quit')
+        time.sleep(3.5)
+        os._exit(0)
 
 
 def builds_menu():

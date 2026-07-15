@@ -44,7 +44,7 @@
  {
   "icon": "special://skin/extras/icons/power.png",
   "label": "$LOCALIZE[13009]",
-  "path": "Quit()",
+  "path": "RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)",
   "target": "",
   "guid": "guid-b214139d"
  }

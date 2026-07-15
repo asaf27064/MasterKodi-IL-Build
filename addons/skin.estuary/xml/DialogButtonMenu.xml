@@ -40,7 +40,7 @@
 					</item>
 					<item>
 						<label>$LOCALIZE[13012]</label>
-						<onclick>Quit()</onclick>
+						<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</onclick>
 						<visible>System.ShowExitButton</visible>
 					</item>
 					<item>

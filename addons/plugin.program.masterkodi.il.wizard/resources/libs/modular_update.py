@@ -616,7 +616,38 @@ class _Progress(object):
 
 
 def _restart_kodi():
-    """Best-effort full app restart (needed to reload the wizard's own code)."""
+    """Full app restart (needed to reload the wizard's own code).
+
+    Windows: RestartApp rides Kodi's native shutdown, which waits 5s PER python
+    service that doesn't stop -- the countdown ends and the window then hangs
+    frozen for 15-25s (or forever). Instead: spawn a detached relauncher that
+    waits for THIS PID to die (force-killing it if the teardown hangs past the
+    grace), then starts kodi.exe fresh; trigger the normal Quit so the settings
+    save + DB vacuum land; hard-exit after 3.5s. Relaunch is guaranteed even if
+    the teardown wedges. Other platforms keep RestartApp (Android's lifecycle
+    is managed by the OS)."""
+    import sys
+    if sys.platform.startswith('win'):
+        try:
+            import subprocess, time
+            pid = os.getpid()
+            exe = sys.executable if str(sys.executable).lower().endswith('kodi.exe') \
+                else os.path.join(xbmcvfs.translatePath('special://xbmc/'), 'kodi.exe')
+            if os.path.isfile(exe):
+                # relauncher: ~8s grace for a clean death; force-kill ONLY if
+                # that PID is still kodi.exe (PID-reuse guard); then relaunch
+                cmd = ('ping -n 9 127.0.0.1 >nul & '
+                       'tasklist /FI "PID eq %d" /FI "IMAGENAME eq kodi.exe" 2>nul | '
+                       'findstr /I kodi.exe >nul && taskkill /F /PID %d /T >nul 2>&1 & '
+                       'start "" "%s"' % (pid, pid, exe))
+                subprocess.Popen(cmd, shell=True,
+                                 creationflags=0x00000008 | 0x08000000)  # DETACHED | NO_WINDOW
+                log('fast restart: relauncher armed (pid %d -> %s)' % (pid, exe))
+                xbmc.executebuiltin('Quit')
+                time.sleep(3.5)
+                os._exit(0)
+        except Exception as e:
+            log('fast restart failed, falling back to RestartApp: %s' % e, xbmc.LOGWARNING)
     try:
         xbmc.executebuiltin('RestartApp')
         return

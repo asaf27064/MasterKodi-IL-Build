@@ -526,12 +526,27 @@ def clear_all():
         dialog.ok('שגיאה', str(e))
 
 
+def fast_exit():
+    """Exit Kodi fast. Kodi's native quit waits 5 SECONDS PER python service
+    that doesn't stop (wizard/nimbus.helper/all_subs = 15-25s of frozen window
+    on every exit, log-measured). Instead: trigger the normal quit -- the
+    critical writes (settings save + DB vacuum) complete within ~0.5s of it --
+    give it a 3.5s grace, then hard-exit the process. time.sleep is native, so
+    Kodi's script-abort cannot interrupt this thread: the os._exit always fires."""
+    import time
+    log("fast_exit: Quit + 3.5s grace, then hard exit")
+    xbmc.executebuiltin('Quit')
+    time.sleep(3.5)
+    log("fast_exit: grace over, hard-exiting now")
+    os._exit(0)
+
+
 def force_close():
     """Force close Kodi"""
     dialog = xbmcgui.Dialog()
-    
+
     if dialog.yesno('סגירת Kodi', 'האם לסגור את Kodi?'):
-        xbmc.executebuiltin('Quit')
+        fast_exit()
 
 
 # ============================================
@@ -702,6 +717,8 @@ if __name__ == '__main__':
         gearsai_menu()
     elif mode == 'maintenance':
         maintenance_menu()
+    elif mode == 'fast_exit':
+        fast_exit()
     elif mode == 'maintenance_folder':
         maintenance_folder()
     elif mode == 'maint_gears':
