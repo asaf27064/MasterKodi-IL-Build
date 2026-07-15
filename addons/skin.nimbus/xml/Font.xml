@@ -264,7 +264,7 @@
 			<size>24</size>
 		</font>
 	</fontset>
-    <fontset id="Hebrew (Rubik)" unicode="true" idloc="15109">
+    <fontset id="Hebrew (Rubik)" unicode="true">
 		<!-- Normal Fonts -->
 		<font>
 			<name>font10</name>
@@ -528,7 +528,7 @@
 			<size>24</size>
 		</font>
 	</fontset>
-    <fontset id="Hebrew (Noto)" unicode="true" idloc="15109">
+    <fontset id="Hebrew (Noto)" unicode="true">
 		<!-- Normal Fonts -->
 		<font>
 			<name>font10</name>
@@ -792,7 +792,7 @@
 			<size>24</size>
 		</font>
 	</fontset>
-    <fontset id="Hebrew (Assistant)" unicode="true" idloc="15109">
+    <fontset id="Hebrew (Assistant)" unicode="true">
 		<!-- Normal Fonts -->
 		<font>
 			<name>font10</name>
@@ -1056,7 +1056,7 @@
 			<size>24</size>
 		</font>
 	</fontset>
-    <fontset id="Hebrew (Heebo)" unicode="true" idloc="15109">
+    <fontset id="Hebrew (Heebo)" unicode="true">
 		<!-- Normal Fonts -->
 		<font>
 			<name>font10</name>

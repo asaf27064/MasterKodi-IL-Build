@@ -620,7 +620,9 @@ def maintenance_folder():
         maintenance_menu()
         return
     base = sys.argv[0]
-    ICON = 'special://skin/extras/icons/%s'
+    # skin-independent icons bundled with the wizard (special://skin/ paths only
+    # resolve on skins that ship those files -- Nimbus doesn't)
+    ICON = 'special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/%s'
     items = [
         ('ניקוי קאש Gears',     'maint_gears',   ICON % 'broom.png'),
         ('ניקוי קאש Gears AI',  'maint_gearsai', ICON % 'broom-ball.png'),

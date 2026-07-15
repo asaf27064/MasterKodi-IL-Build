@@ -11,7 +11,7 @@
     <setting id="homemenunomusicbutton" type="bool">true</setting>
     <setting id="homemenunofavbutton" type="bool">true</setting>
     <setting id="hideumbrellatrakttvresults" type="bool">false</setting>
-    <setting id="enable.smartstatus" type="bool">false</setting>
+    <setting id="enable.smartstatus" type="bool">true</setting>
     <setting id="enable.mainmenuwidgetdimming" type="bool">false</setting>
     <setting id="hidepeopleresults" type="bool">false</setting>
     <setting id="homemenunopicturesbutton" type="bool">true</setting>
@@ -29,7 +29,7 @@
     <setting id="touchmode" type="bool">false</setting>
     <setting id="oneclickclose" type="bool">false</setting>
     <setting id="homemenunomoviebutton" type="bool">false</setting>
-    <setting id="homemenunocustom2button" type="bool">true</setting>
+    <setting id="homemenunocustom2button" type="bool">false</setting>
     <setting id="osdautoclose" type="bool">true</setting>
     <setting id="circle_rating" type="bool">true</setting>
     <setting id="homemenunomusicvideobutton" type="bool">true</setting>
@@ -133,7 +133,7 @@
     <setting id="ratingslot3" type="string">rta</setting>
     <setting id="homelandscapefanart" type="string">0</setting>
     <setting id="landscapefanart.movies" type="string">0</setting>
-    <setting id="MenuCustom1Label" type="string">TorBox</setting>
+    <setting id="MenuCustom1Label" type="string">חיבור שירותים</setting>
     <setting id="listartworkchoice.tvshows" type="string">0</setting>
     <setting id="HomeFanart.name" type="string"></setting>
     <setting id="checking_api_key" type="string"></setting>
@@ -141,7 +141,7 @@
     <setting id="posterflowautoinfodelay" type="string">2</setting>
     <setting id="mdblist_api_key" type="string">0fdzbnn0juoqn5klfk9fxayhb</setting>
     <setting id="nimbus_digital_expired_window" type="string">21</setting>
-    <setting id="MenuCustom2Label" type="string">Custom 2</setting>
+    <setting id="MenuCustom2Label" type="string">תחזוקה</setting>
     <setting id="MenuCustom3Label" type="string">Custom 3</setting>
     <setting id="listartworkchoice.movies" type="string">0</setting>
     <setting id="trailersetting" type="string">0</setting>
@@ -170,7 +170,7 @@
     <setting id="dialogbackgroundsetting" type="string">0</setting>
     <setting id="ratingslot5" type="string">letterboxd</setting>
     <setting id="MenuTVShowLabel" type="string">סדרות</setting>
-    <setting id="onbacksetting" type="string">0</setting>
+    <setting id="onbacksetting" type="string">1</setting>
     <setting id="TrailerPlaybackURL" type="string">plugin://plugin.video.youtube/play/?video_id=n_pEJjq-9xQ</setting>
     <setting id="skin.forcedview.genres" type="string"></setting>
     <setting id="skin.forcedview.sets" type="string"></setting>

@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <includes>
   <include name="Custom2Widgets">
+
+    <include content="WidgetListCategory">
+      <param name="content_path" value="plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder"/>
+      <param name="widget_header" value="תחזוקה"/>
+      <param name="widget_target" value="videos"/>
+      <param name="list_id" value="24011"/>
+    </include>
+
   </include>
 </includes>
