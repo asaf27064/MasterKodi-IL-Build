@@ -16,6 +16,14 @@
 		<action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_tv_trending&amp;iconImage=trending&amp;mode=build_tvshow_list&amp;name=Trending&amp;random_support=true",return)</action>
 		</shortcut>
 	<shortcut>
+		<defaultID>search</defaultID>
+		<label>137</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/search.png</icon>
+		<thumb />
+		<action>Skin.SetString(SearchTerm)</action>
+		</shortcut>
+	<shortcut>
 		<defaultID>mkil_torbox</defaultID>
 		<label>חיבור שירותים</label>
 		<label2>Common Shortcut</label2>
@@ -30,14 +38,6 @@
 		<icon>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</icon>
 		<thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</thumb>
 		<action>ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</action>
-		</shortcut>
-	<shortcut>
-		<defaultID>search</defaultID>
-		<label>137</label>
-		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/search.png</icon>
-		<thumb />
-		<action>Skin.SetString(SearchTerm)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID>mkil_skins</defaultID>
@@ -63,4 +63,4 @@
 		<thumb />
 		<action>ActivateWindow(shutdownmenu)</action>
 		</shortcut>
-	</shortcuts>
+</shortcuts>
