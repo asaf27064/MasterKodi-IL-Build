@@ -179,15 +179,22 @@ def _process_pending_skin_removal():
         sid = open(marker, encoding='utf-8').read().strip()
     except Exception:
         sid = ''
+    if not sid:
+        try:
+            os.remove(marker)
+        except Exception:
+            pass
+        return
+    if xbmc.getSkinDir() == sid:
+        # Somehow still the active skin -> KEEP the marker so the removal is
+        # retried on a later boot instead of being silently lost.
+        log(f"pending skin removal deferred: {sid} is still the active skin")
+        return
     try:
         os.remove(marker)
     except Exception:
         pass
-    if not sid:
-        return
     try:
-        if xbmc.getSkinDir() == sid:      # somehow still active -> leave it
-            return
         from resources.libs.builds import BuildManager
         if BuildManager().remove_skin(sid):
             log(f"Removed previous skin after switch: {sid}")
@@ -230,8 +237,11 @@ class POVHebrewService(xbmc.Monitor):
     def __init__(self):
         super().__init__()
         self.gears_version = get_addon_version('plugin.video.gears')
-        self.skin_version = get_addon_version('skin.arctic.fuse.3')
-        log(f"Service initialized - Gears: {self.gears_version}, Skin: {self.skin_version}")
+        # Log the ACTIVE skin -- a hardcoded AF3 version here once sent a
+        # debugging session down the wrong path.
+        active = xbmc.getSkinDir() or '?'
+        log(f"Service initialized - Gears: {self.gears_version}, "
+            f"Skin: {active} {get_addon_version(active) or ''}")
 
     def run(self):
         """Main service loop: sweep, run one manifest update pass, then idle."""
@@ -239,11 +249,13 @@ class POVHebrewService(xbmc.Monitor):
         if ADDON.getSetting('skip_update_check') == 'true':
             log("Skipping update check (after build installation)")
             ADDON.setSetting('skip_update_check', 'false')
-            # The post-install boot is EXACTLY when the view-rebuild marker must
-            # run (Zephyr builds its views no_reload on Home load -> foreground
-            # freezes until a reload). This branch used to return before the
-            # marker processing further down -- that was the frozen-home bug.
+            # Every install path sets this flag and then restarts, so THIS boot
+            # is the deferred-work boot: the dropped previous skin must be
+            # removed here (not two boots later), and the view-rebuild marker
+            # must run here (Zephyr's foreground stays frozen until its
+            # rebuild+reload). Only the network update check is skipped.
             if not self.waitForAbort(8):
+                _process_pending_skin_removal()
                 _process_pending_view_rebuild()
             if not self.waitForAbort(12):
                 _prewarm_gears(self)
