@@ -112,14 +112,21 @@ def _process_pending_view_rebuild():
         pass
     try:
         skin = cur_skin
-        # Skins whose home is skinshortcuts-driven (Zephyr) compile their menu
-        # into script-skinshortcuts-includes.xml on first Home load. Until that
-        # file exists AND a reload happens, the foreground (hero/menu) is dead
-        # while the background moves. Wait for the build to finish so OUR
-        # reload below is the one that brings everything up.
-        ss_tpl = os.path.join(ADDONS_PATH, skin, 'shortcuts')
+        # Only skins that actually DEPEND on script.skinshortcuts (Zephyr)
+        # compile their menu into script-skinshortcuts-includes.xml on first
+        # Home load. A folder named shortcuts/ is NOT the signal -- AF3 has one
+        # too (skinvariables templates) and would stall the full timeout here.
+        uses_ss = False
+        try:
+            with open(os.path.join(ADDONS_PATH, skin, 'addon.xml'), encoding='utf-8') as fh:
+                uses_ss = 'script.skinshortcuts' in fh.read()
+        except Exception:
+            pass
         ss_inc = os.path.join(ADDONS_PATH, skin, '1080i', 'script-skinshortcuts-includes.xml')
-        if os.path.isdir(ss_tpl):
+        if uses_ss:
+            # Until that file exists AND a reload happens, the foreground
+            # (hero/menu) is dead while the background moves. Wait for the
+            # build so OUR reload below brings everything up at once.
             mon = xbmc.Monitor()
             waited = 0
             while not os.path.isfile(ss_inc) and waited < 90 and not mon.abortRequested():
@@ -148,10 +155,13 @@ def _process_pending_view_rebuild():
                 xbmc.executebuiltin('RunScript(script.skinvariables,action=buildtemplate,no_reload=true)')
                 xbmc.Monitor().waitForAbort(3)   # let the template write finish before buildviews
             # buildviews hash-skips (silently, no reload) unless the stored
-            # skinviewtypes hashes are cleared first -- clear them so the
-            # rebuild + its ReloadSkin actually happen on this boot.
-            xbmc.executebuiltin('Skin.SetString(script-skinviewtypes-hash,)')
-            xbmc.executebuiltin('Skin.SetString(script-skinviewtypes-checksum,)')
+            # skinviewtypes hashes are cleared. Clear them ONLY for
+            # skinshortcuts-driven skins (Zephyr), whose display genuinely
+            # needs the forced rebuild + reload; AF3/Nimbus self-build and
+            # display fine -- forcing there just adds a redundant splash.
+            if uses_ss:
+                xbmc.executebuiltin('Skin.SetString(script-skinviewtypes-hash,)')
+                xbmc.executebuiltin('Skin.SetString(script-skinviewtypes-checksum,)')
             log("post-install: rebuilding skin views (buildviews)")
             xbmc.executebuiltin('RunScript(script.skinvariables,action=buildviews)')
     except Exception as e:
