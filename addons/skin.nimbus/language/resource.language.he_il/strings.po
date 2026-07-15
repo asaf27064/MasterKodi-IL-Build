@@ -747,3 +747,15 @@ msgstr "מערכת"
 #~ msgctxt "#31138"
 #~ msgid "Player process info"
 #~ msgstr "מידע על תהליך הנגן"
+
+msgctxt "#310981"
+msgid "PosterFlow"
+msgstr "זרימת פוסטרים"
+
+msgctxt "#311011"
+msgid "FlixScape"
+msgstr "קיר מידע רחב"
+
+msgctxt "#311021"
+msgid "WallScape"
+msgstr "קיר רחב"
