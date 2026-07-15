@@ -245,18 +245,26 @@ class POVHebrewService(xbmc.Monitor):
 
     def run(self):
         """Main service loop: sweep, run one manifest update pass, then idle."""
+        # First boot after a skin (re)install: the skin compiles its menu on
+        # Home load but the loaded skin still holds the pre-build include stubs,
+        # so WIDGETS don't render until a reload. Run the marker rebuild FIRST,
+        # before any settle/update wait -- the handler itself waits for the
+        # compiled includes to appear, so the one visible reload lands seconds
+        # after boot, before the user starts navigating (running it after the
+        # 15s settle yanked mid-navigation users back to home).
+        if not self.waitForAbort(2):
+            _process_pending_view_rebuild()
+
         # Skip the check once right after a build install (the wizard sets this).
         if ADDON.getSetting('skip_update_check') == 'true':
             log("Skipping update check (after build installation)")
             ADDON.setSetting('skip_update_check', 'false')
             # Every install path sets this flag and then restarts, so THIS boot
             # is the deferred-work boot: the dropped previous skin must be
-            # removed here (not two boots later), and the view-rebuild marker
-            # must run here (Zephyr's foreground stays frozen until its
-            # rebuild+reload). Only the network update check is skipped.
+            # removed here (not two boots later). Only the network update
+            # check is skipped.
             if not self.waitForAbort(8):
                 _process_pending_skin_removal()
-                _process_pending_view_rebuild()
             if not self.waitForAbort(12):
                 _prewarm_gears(self)
             while not self.abortRequested():
@@ -293,9 +301,6 @@ class POVHebrewService(xbmc.Monitor):
                 log(f"manifest update error: {e}", xbmc.LOGERROR)
         else:
             log("Auto update check disabled")
-
-        # One-time clean view rebuild after a fresh skin (re)install (see fn doc).
-        _process_pending_view_rebuild()
 
         # Warm gears now that boot + update check are done (nothing else to do).
         _prewarm_gears(self)
