@@ -1694,7 +1694,10 @@ def _skin_switch_flow():
     picker, meta = [], []
     for key, name, sid, img in _SKIN_CATALOG:
         installed = _skin_installed(sid)
-        if sid == active:
+        # 'active' is the lookandfeel.skin SETTING -- if that skin is missing
+        # on disk Kodi is actually running a fallback, so treat it as not
+        # installed (installable) rather than blocking it as the active skin.
+        if sid == active and installed:
             tag = 'פעיל'
         elif installed:
             tag = 'מותקן'
@@ -1712,7 +1715,7 @@ def _skin_switch_flow():
         return
 
     key, name, sid, installed = meta[idx]
-    if sid == active:
+    if sid == active and installed:
         dialog.ok('סקינים', f'הסקין {name} כבר פעיל.')
         return
     if not dialog.yesno('סקינים', f'להחליף לסקין {name}?', yeslabel='החלף', nolabel='ביטול'):
@@ -1740,7 +1743,7 @@ def _skin_switch_flow():
     # ask what to do with the previous optional skin (never touch Estuary).
     # Removal is DEFERRED to the next startup: the old skin is still the running
     # one until we restart, and deleting a live skin (Windows file locks) fails.
-    if prev_active in _OPTIONAL_SKIN_IDS:
+    if prev_active in _OPTIONAL_SKIN_IDS and prev_active != sid:
         if dialog.yesno('סקינים',
                         f'מה לעשות עם הסקין הקודם ({_skin_name(prev_active)})?',
                         yeslabel='הסר', nolabel='השאר'):
