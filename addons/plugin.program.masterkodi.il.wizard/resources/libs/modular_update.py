@@ -633,13 +633,29 @@ def _restart_kodi():
             pid = os.getpid()
             exe = sys.executable if str(sys.executable).lower().endswith('kodi.exe') \
                 else os.path.join(xbmcvfs.translatePath('special://xbmc/'), 'kodi.exe')
+            # Relaunch with the ORIGINAL command line -- the portable install
+            # runs `kodi.exe -p`; relaunching the bare exe started an EMPTY
+            # default-profile Kodi (%APPDATA%) instead of portable_data.
+            launch = None
+            try:
+                import ctypes
+                ctypes.windll.kernel32.GetCommandLineW.restype = ctypes.c_wchar_p
+                launch = (ctypes.windll.kernel32.GetCommandLineW() or '').strip()
+            except Exception:
+                pass
+            if not launch or 'kodi' not in launch.lower():
+                # fallback: rebuild it -- add -p when running in portable mode
+                # (special://home lives under the app dir in portable installs)
+                portable = xbmcvfs.translatePath('special://home/').lower().startswith(
+                    xbmcvfs.translatePath('special://xbmc/').lower())
+                launch = '"%s"%s' % (exe, ' -p' if portable else '')
             if os.path.isfile(exe):
                 # relauncher: ~8s grace for a clean death; force-kill ONLY if
                 # that PID is still kodi.exe (PID-reuse guard); then relaunch
                 cmd = ('ping -n 9 127.0.0.1 >nul & '
                        'tasklist /FI "PID eq %d" /FI "IMAGENAME eq kodi.exe" 2>nul | '
                        'findstr /I kodi.exe >nul && taskkill /F /PID %d /T >nul 2>&1 & '
-                       'start "" "%s"' % (pid, pid, exe))
+                       'start "" %s' % (pid, pid, launch))
                 # CREATE_NO_WINDOW alone: a hidden console the whole chain
                 # (ping/tasklist/findstr) inherits. DETACHED_PROCESS must NOT be
                 # combined with it -- detached cmd has no console, so each child
