@@ -160,6 +160,7 @@
     <value condition="!String.IsEmpty(ListItem.Genre) + String.StartsWith(ListItem.Genre,Thriller)">Thriller</value>
     <value condition="!String.IsEmpty(ListItem.Genre) + String.StartsWith(ListItem.Genre,War)">War</value>
     <value condition="!String.IsEmpty(ListItem.Genre) + String.StartsWith(ListItem.Genre,Western)">Western</value>
+    <value condition="!String.IsEmpty(ListItem.Genre)">$INFO[ListItem.Genre]</value>
 	</variable>
 
 	<variable name="StatusVar">

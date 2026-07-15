@@ -105,7 +105,7 @@
 							<param name="visible" value="!ListItem.IsCollection + !String.IsEmpty(Container($PARAM[id]).ListItem.Genre) + String.IsEmpty(ListItem.Property(episode_type))"/>
 						</include>
 						<include content="FlixInfoIcon">
-							<param name="flixlabel" value="$INFO[Container($PARAM[id]).ListItem.Rating]★"/>
+							<param name="flixlabel" value="$INFO[Container($PARAM[id]).ListItem.Rating]"/>
 							<param name="visible" value="!String.IsEmpty(Container($PARAM[id]).ListItem.Rating) + !ListItem.IsCollection + [$EXP[isEpisode] | String.StartsWith(Container.PluginName,plugin.video.otaku)]"/>
 						</include>
 						<include content="FlixInfoIcon">

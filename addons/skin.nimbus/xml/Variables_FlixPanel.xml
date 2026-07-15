@@ -153,7 +153,7 @@
 	</variable>
 	<!-- Rating -->
 	<variable name="RI_Rating">
-		<value condition="!String.IsEmpty(ListItem.Rating)"> • [COLOR unfocused_text]$INFO[ListItem.Rating]★[/COLOR]</value>
+		<value condition="!String.IsEmpty(ListItem.Rating)"> • [COLOR unfocused_text]$INFO[ListItem.Rating][/COLOR]</value>
 	</variable>
 	<variable name="RI_Rating_Other">
 		<value condition="!String.IsEmpty(ListItem.Rating) + String.IsEqual(Container.PluginName,plugin.video.otaku)"> [B]•[/B] [COLOR unfocused_text]$INFO[ListItem.Rating][/COLOR]</value>
