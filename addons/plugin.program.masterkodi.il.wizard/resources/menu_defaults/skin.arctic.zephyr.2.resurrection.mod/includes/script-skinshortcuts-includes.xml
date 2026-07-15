@@ -5,7 +5,7 @@
 			<label>סרטים</label>
 			<label2>Common Shortcut</label2>
 			<icon>special://home/media/build_icons/Movies.png</icon>
-			<thumb />
+			<thumb>special://skin/extras/icons/director.png</thumb>
 			<property name="labelID">srtym</property>
 			<property name="defaultID">mkil_movies</property>
 			<onclick>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_movies_trending&amp;iconImage=trending&amp;mode=build_movie_list&amp;name=Trending&amp;random_support=true",return)</onclick>
@@ -21,7 +21,7 @@
 			<label>סדרות</label>
 			<label2>Common Shortcut</label2>
 			<icon>special://home/media/build_icons/TV_Shows.png</icon>
-			<thumb />
+			<thumb>special://skin/extras/icons/tv.png</thumb>
 			<property name="labelID">sdrvt</property>
 			<property name="defaultID">mkil_tvshows</property>
 			<onclick>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_tv_trending&amp;iconImage=trending&amp;mode=build_tvshow_list&amp;name=Trending&amp;random_support=true",return)</onclick>
@@ -34,22 +34,6 @@
 			</item>
 		<item id="3">
 			<property name="id">$NUMBER[3]</property>
-			<label>חיבור TorBox</label>
-			<label2>Common Shortcut</label2>
-			<icon>special://home/media/build_icons/TorBox_Auth.png</icon>
-			<thumb />
-			<property name="labelID">hybvrtorbox</property>
-			<property name="defaultID">mkil_torbox</property>
-			<onclick>RunPlugin(plugin://plugin.video.gears/?mode=torbox.authenticate)</onclick>
-			<property name="path">RunPlugin(plugin://plugin.video.gears/?mode=torbox.authenticate)</property>
-			<property name="list">RunPlugin(plugin://plugin.video.gears/?mode=torbox.authenticate)</property>
-			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
-			<property name="submenuVisibility">hybvrtorbox</property>
-			<property name="group">mainmenu</property>
-			<property name="hasSubmenu">False</property>
-			</item>
-		<item id="4">
-			<property name="id">$NUMBER[4]</property>
 			<label>$LOCALIZE[137]</label>
 			<label2>Common Shortcut</label2>
 			<icon>special://skin/extras/icons/search.png</icon>
@@ -66,12 +50,44 @@
 			<property name="group">mainmenu</property>
 			<property name="hasSubmenu">False</property>
 			</item>
+		<item id="4">
+			<property name="id">$NUMBER[4]</property>
+			<label>חיבור שירותים</label>
+			<label2>Common Shortcut</label2>
+			<icon>special://home/media/build_icons/TorBox_Auth.png</icon>
+			<thumb>special://skin/extras/icons/configure.png</thumb>
+			<property name="labelID">hybvrshyrvtym</property>
+			<property name="defaultID">mkil_torbox</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</property>
+			<property name="list">plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="submenuVisibility">hybvrshyrvtym</property>
+			<property name="group">mainmenu</property>
+			<property name="hasSubmenu">False</property>
+			</item>
 		<item id="5">
 			<property name="id">$NUMBER[5]</property>
+			<label>תחזוקה</label>
+			<label2>Common Shortcut</label2>
+			<icon>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</icon>
+			<thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</thumb>
+			<property name="labelID">thzvkh</property>
+			<property name="defaultID">mkil_maint</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</property>
+			<property name="list">plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="submenuVisibility">thzvkh</property>
+			<property name="group">mainmenu</property>
+			<property name="hasSubmenu">False</property>
+			</item>
+		<item id="6">
+			<property name="id">$NUMBER[6]</property>
 			<label>החלפת סקין</label>
 			<label2>Common Shortcut</label2>
 			<icon>DefaultAddonSkin.png</icon>
-			<thumb />
+			<thumb>special://skin/extras/icons/</thumb>
 			<property name="labelID">hhlptskyn</property>
 			<property name="defaultID">mkil_skins</property>
 			<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</onclick>
@@ -82,8 +98,8 @@
 			<property name="group">mainmenu</property>
 			<property name="hasSubmenu">False</property>
 			</item>
-		<item id="6">
-			<property name="id">$NUMBER[6]</property>
+		<item id="7">
+			<property name="id">$NUMBER[7]</property>
 			<label>$LOCALIZE[5]</label>
 			<label2>Common Shortcut</label2>
 			<icon>special://skin/extras/icons/settings.png</icon>
@@ -98,8 +114,8 @@
 			<property name="group">mainmenu</property>
 			<property name="hasSubmenu">True</property>
 			</item>
-		<item id="7">
-			<property name="id">$NUMBER[7]</property>
+		<item id="8">
+			<property name="id">$NUMBER[8]</property>
 			<label>$LOCALIZE[13012]</label>
 			<label2>Common Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -119,7 +135,7 @@
 	<include name="skinshortcuts-submenu">
 		<item id="1">
 			<property name="id">$NUMBER[1]</property>
-			<property name="mainmenuid">6</property>
+			<property name="mainmenuid">7</property>
 			<label>$LOCALIZE[7]</label>
 			<label2>$ADDON[script.skinshortcuts 32034]</label2>
 			<icon>special://skin/extras/icons/folder.png</icon>
@@ -135,7 +151,7 @@
 			</item>
 		<item id="2">
 			<property name="id">$NUMBER[2]</property>
-			<property name="mainmenuid">6</property>
+			<property name="mainmenuid">7</property>
 			<label>$LOCALIZE[13200]</label>
 			<label2>$ADDON[script.skinshortcuts 32034]</label2>
 			<icon>special://skin/extras/icons/actor.png</icon>
@@ -151,7 +167,7 @@
 			</item>
 		<item id="3">
 			<property name="id">$NUMBER[3]</property>
-			<property name="mainmenuid">6</property>
+			<property name="mainmenuid">7</property>
 			<label>$LOCALIZE[10007]</label>
 			<label2>$ADDON[script.skinshortcuts 32034]</label2>
 			<icon>special://skin/extras/icons/sysinfo.png</icon>
@@ -167,7 +183,7 @@
 			</item>
 		<item id="4">
 			<property name="id">$NUMBER[4]</property>
-			<property name="mainmenuid">6</property>
+			<property name="mainmenuid">7</property>
 			<label>$LOCALIZE[14111]</label>
 			<label2>$ADDON[script.skinshortcuts 32034]</label2>
 			<icon>special://skin/extras/icons/actor.png</icon>
@@ -184,7 +200,7 @@
 			</item>
 		<item id="1">
 			<property name="id">$NUMBER[1]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[20183]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -201,7 +217,7 @@
 			</item>
 		<item id="2">
 			<property name="id">$NUMBER[2]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[13012]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -219,7 +235,7 @@
 			</item>
 		<item id="3">
 			<property name="id">$NUMBER[3]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[13011]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -237,7 +253,7 @@
 			</item>
 		<item id="4">
 			<property name="id">$NUMBER[4]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[31599]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/android.png</icon>
@@ -256,7 +272,7 @@
 			</item>
 		<item id="5">
 			<property name="id">$NUMBER[5]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[20126]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -275,7 +291,7 @@
 			</item>
 		<item id="6">
 			<property name="id">$NUMBER[6]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[20046]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -293,7 +309,7 @@
 			</item>
 		<item id="7">
 			<property name="id">$NUMBER[7]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[13017]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -311,7 +327,7 @@
 			</item>
 		<item id="8">
 			<property name="id">$NUMBER[8]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[13018]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -329,7 +345,7 @@
 			</item>
 		<item id="9">
 			<property name="id">$NUMBER[9]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[20151]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -347,7 +363,7 @@
 			</item>
 		<item id="10">
 			<property name="id">$NUMBER[10]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[5]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -364,7 +380,7 @@
 			</item>
 		<item id="1">
 			<property name="id">$NUMBER[1]</property>
-			<property name="mainmenuid">9</property>
+			<property name="mainmenuid">10</property>
 			<label>סרטים</label>
 			<label2>$LOCALIZE[571]</label2>
 			<icon>special://skin/extras/icons/film.png</icon>
@@ -380,7 +396,7 @@
 			</item>
 		<item id="2">
 			<property name="id">$NUMBER[2]</property>
-			<property name="mainmenuid">9</property>
+			<property name="mainmenuid">10</property>
 			<label>סדרות</label>
 			<label2>$LOCALIZE[571]</label2>
 			<icon>special://skin/extras/icons/tv.png</icon>
@@ -618,7 +634,7 @@
 			</item>
 		<item id="1">
 			<property name="id">$NUMBER[1]</property>
-			<property name="mainmenuid">3</property>
+			<property name="mainmenuid">4</property>
 			<label>שירותי TorBox</label>
 			<label2>הרחבת וידאו</label2>
 			<icon>special://skin/extras/icons/shortcut.png</icon>
@@ -631,8 +647,27 @@
 			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</onclick>
 			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</property>
 			<property name="list">plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder</property>
-			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox)</visible>
-			<property name="group">hybvrtorbox.1</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrshyrvtym)</visible>
+			<property name="group">hybvrshyrvtym.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">5</property>
+			<label>תחזוקה</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</thumb>
+			<property name="labelID">thzvkh</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</property>
+			<property name="list">plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),thzvkh)</visible>
+			<property name="group">thzvkh.1</property>
 			<property name="isSubmenu">True</property>
 			</item>
 		</include>
@@ -1094,16 +1129,28 @@
 			<property name="isSubmenu">True</property>
 			</item>
 		</include>
-	<include name="skinshortcuts-group-hybvrtorbox">
+	<include name="skinshortcuts-group-num-137">
 		<description>No items</description>
 		</include>
-	<include name="skinshortcuts-group-alt-hybvrtorbox">
+	<include name="skinshortcuts-group-alt-num-137">
 		<description>No items</description>
 		</include>
-	<include name="skinshortcuts-group-hybvrtorbox-1">
+	<include name="skinshortcuts-group-num-137-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-num-137-1">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-hybvrshyrvtym">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-alt-hybvrshyrvtym">
+		<description>No items</description>
+		</include>
+	<include name="skinshortcuts-group-hybvrshyrvtym-1">
 		<item id="1">
 			<property name="id">$NUMBER[1]</property>
-			<property name="mainmenuid">3</property>
+			<property name="mainmenuid">4</property>
 			<label>שירותי TorBox</label>
 			<label2>הרחבת וידאו</label2>
 			<icon>special://skin/extras/icons/shortcut.png</icon>
@@ -1117,14 +1164,14 @@
 			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</property>
 			<property name="list">plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder</property>
 			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
-			<property name="group">hybvrtorbox.1</property>
+			<property name="group">hybvrshyrvtym.1</property>
 			<property name="isSubmenu">True</property>
 			</item>
 		</include>
-	<include name="skinshortcuts-group-alt-hybvrtorbox-1">
+	<include name="skinshortcuts-group-alt-hybvrshyrvtym-1">
 		<item id="1">
 			<property name="id">$NUMBER[1]</property>
-			<property name="mainmenuid">3</property>
+			<property name="mainmenuid">4</property>
 			<label>שירותי TorBox</label>
 			<label2>הרחבת וידאו</label2>
 			<icon>special://skin/extras/icons/shortcut.png</icon>
@@ -1137,22 +1184,58 @@
 			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</onclick>
 			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</property>
 			<property name="list">plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder</property>
-			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),hybvrtorbox)</visible>
-			<property name="group">hybvrtorbox.1</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),hybvrshyrvtym)</visible>
+			<property name="group">hybvrshyrvtym.1</property>
 			<property name="isSubmenu">True</property>
 			</item>
 		</include>
-	<include name="skinshortcuts-group-num-137">
+	<include name="skinshortcuts-group-thzvkh">
 		<description>No items</description>
 		</include>
-	<include name="skinshortcuts-group-alt-num-137">
+	<include name="skinshortcuts-group-alt-thzvkh">
 		<description>No items</description>
 		</include>
-	<include name="skinshortcuts-group-num-137-1">
-		<description>No items</description>
+	<include name="skinshortcuts-group-thzvkh-1">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">5</property>
+			<label>תחזוקה</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</thumb>
+			<property name="labelID">thzvkh</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</property>
+			<property name="list">plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder</property>
+			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
+			<property name="group">thzvkh.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
 		</include>
-	<include name="skinshortcuts-group-alt-num-137-1">
-		<description>No items</description>
+	<include name="skinshortcuts-group-alt-thzvkh-1">
+		<item id="1">
+			<property name="id">$NUMBER[1]</property>
+			<property name="mainmenuid">5</property>
+			<label>תחזוקה</label>
+			<label2>הרחבת וידאו</label2>
+			<icon>special://skin/extras/icons/shortcut.png</icon>
+			<thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</thumb>
+			<property name="labelID">thzvkh</property>
+			<property name="defaultID" />
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</property>
+			<property name="widgetTarget">videos</property>
+			<property name="widgetAspect">Square</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</property>
+			<property name="list">plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder</property>
+			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),thzvkh)</visible>
+			<property name="group">thzvkh.1</property>
+			<property name="isSubmenu">True</property>
+			</item>
 		</include>
 	<include name="skinshortcuts-group-hhlptskyn">
 		<description>No items</description>
@@ -1169,7 +1252,7 @@
 	<include name="skinshortcuts-group-num-5">
 		<item id="1">
 			<property name="id">$NUMBER[1]</property>
-			<property name="mainmenuid">6</property>
+			<property name="mainmenuid">7</property>
 			<label>$LOCALIZE[7]</label>
 			<label2>$ADDON[script.skinshortcuts 32034]</label2>
 			<icon>special://skin/extras/icons/folder.png</icon>
@@ -1185,7 +1268,7 @@
 			</item>
 		<item id="2">
 			<property name="id">$NUMBER[2]</property>
-			<property name="mainmenuid">6</property>
+			<property name="mainmenuid">7</property>
 			<label>$LOCALIZE[13200]</label>
 			<label2>$ADDON[script.skinshortcuts 32034]</label2>
 			<icon>special://skin/extras/icons/actor.png</icon>
@@ -1201,7 +1284,7 @@
 			</item>
 		<item id="3">
 			<property name="id">$NUMBER[3]</property>
-			<property name="mainmenuid">6</property>
+			<property name="mainmenuid">7</property>
 			<label>$LOCALIZE[10007]</label>
 			<label2>$ADDON[script.skinshortcuts 32034]</label2>
 			<icon>special://skin/extras/icons/sysinfo.png</icon>
@@ -1217,7 +1300,7 @@
 			</item>
 		<item id="4">
 			<property name="id">$NUMBER[4]</property>
-			<property name="mainmenuid">6</property>
+			<property name="mainmenuid">7</property>
 			<label>$LOCALIZE[14111]</label>
 			<label2>$ADDON[script.skinshortcuts 32034]</label2>
 			<icon>special://skin/extras/icons/actor.png</icon>
@@ -1236,7 +1319,7 @@
 	<include name="skinshortcuts-group-alt-num-5">
 		<item id="1">
 			<property name="id">$NUMBER[1]</property>
-			<property name="mainmenuid">6</property>
+			<property name="mainmenuid">7</property>
 			<label>$LOCALIZE[7]</label>
 			<label2>$ADDON[script.skinshortcuts 32034]</label2>
 			<icon>special://skin/extras/icons/folder.png</icon>
@@ -1252,7 +1335,7 @@
 			</item>
 		<item id="2">
 			<property name="id">$NUMBER[2]</property>
-			<property name="mainmenuid">6</property>
+			<property name="mainmenuid">7</property>
 			<label>$LOCALIZE[13200]</label>
 			<label2>$ADDON[script.skinshortcuts 32034]</label2>
 			<icon>special://skin/extras/icons/actor.png</icon>
@@ -1268,7 +1351,7 @@
 			</item>
 		<item id="3">
 			<property name="id">$NUMBER[3]</property>
-			<property name="mainmenuid">6</property>
+			<property name="mainmenuid">7</property>
 			<label>$LOCALIZE[10007]</label>
 			<label2>$ADDON[script.skinshortcuts 32034]</label2>
 			<icon>special://skin/extras/icons/sysinfo.png</icon>
@@ -1284,7 +1367,7 @@
 			</item>
 		<item id="4">
 			<property name="id">$NUMBER[4]</property>
-			<property name="mainmenuid">6</property>
+			<property name="mainmenuid">7</property>
 			<label>$LOCALIZE[14111]</label>
 			<label2>$ADDON[script.skinshortcuts 32034]</label2>
 			<icon>special://skin/extras/icons/actor.png</icon>
@@ -1321,7 +1404,7 @@
 	<include name="skinshortcuts-group-powermenu">
 		<item id="1">
 			<property name="id">$NUMBER[1]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[20183]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1338,7 +1421,7 @@
 			</item>
 		<item id="2">
 			<property name="id">$NUMBER[2]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[13012]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1356,7 +1439,7 @@
 			</item>
 		<item id="3">
 			<property name="id">$NUMBER[3]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[13011]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1374,7 +1457,7 @@
 			</item>
 		<item id="4">
 			<property name="id">$NUMBER[4]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[31599]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/android.png</icon>
@@ -1393,7 +1476,7 @@
 			</item>
 		<item id="5">
 			<property name="id">$NUMBER[5]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[20126]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1412,7 +1495,7 @@
 			</item>
 		<item id="6">
 			<property name="id">$NUMBER[6]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[20046]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1430,7 +1513,7 @@
 			</item>
 		<item id="7">
 			<property name="id">$NUMBER[7]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[13017]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1448,7 +1531,7 @@
 			</item>
 		<item id="8">
 			<property name="id">$NUMBER[8]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[13018]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1466,7 +1549,7 @@
 			</item>
 		<item id="9">
 			<property name="id">$NUMBER[9]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[20151]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1484,7 +1567,7 @@
 			</item>
 		<item id="10">
 			<property name="id">$NUMBER[10]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[5]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1503,7 +1586,7 @@
 	<include name="skinshortcuts-group-alt-powermenu">
 		<item id="1">
 			<property name="id">$NUMBER[1]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[20183]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1520,7 +1603,7 @@
 			</item>
 		<item id="2">
 			<property name="id">$NUMBER[2]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[13012]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1538,7 +1621,7 @@
 			</item>
 		<item id="3">
 			<property name="id">$NUMBER[3]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[13011]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1556,7 +1639,7 @@
 			</item>
 		<item id="4">
 			<property name="id">$NUMBER[4]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[31599]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/android.png</icon>
@@ -1575,7 +1658,7 @@
 			</item>
 		<item id="5">
 			<property name="id">$NUMBER[5]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[20126]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1594,7 +1677,7 @@
 			</item>
 		<item id="6">
 			<property name="id">$NUMBER[6]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[20046]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1612,7 +1695,7 @@
 			</item>
 		<item id="7">
 			<property name="id">$NUMBER[7]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[13017]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1630,7 +1713,7 @@
 			</item>
 		<item id="8">
 			<property name="id">$NUMBER[8]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[13018]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1648,7 +1731,7 @@
 			</item>
 		<item id="9">
 			<property name="id">$NUMBER[9]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[20151]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1666,7 +1749,7 @@
 			</item>
 		<item id="10">
 			<property name="id">$NUMBER[10]</property>
-			<property name="mainmenuid">8</property>
+			<property name="mainmenuid">9</property>
 			<label>$LOCALIZE[5]</label>
 			<label2>Power Menu Shortcut</label2>
 			<icon>special://skin/extras/icons/power.png</icon>
@@ -1691,7 +1774,7 @@
 	<include name="skinshortcuts-group-searchmenu">
 		<item id="1">
 			<property name="id">$NUMBER[1]</property>
-			<property name="mainmenuid">9</property>
+			<property name="mainmenuid">10</property>
 			<label>סרטים</label>
 			<label2>$LOCALIZE[571]</label2>
 			<icon>special://skin/extras/icons/film.png</icon>
@@ -1707,7 +1790,7 @@
 			</item>
 		<item id="2">
 			<property name="id">$NUMBER[2]</property>
-			<property name="mainmenuid">9</property>
+			<property name="mainmenuid">10</property>
 			<label>סדרות</label>
 			<label2>$LOCALIZE[571]</label2>
 			<icon>special://skin/extras/icons/tv.png</icon>
@@ -1725,7 +1808,7 @@
 	<include name="skinshortcuts-group-alt-searchmenu">
 		<item id="1">
 			<property name="id">$NUMBER[1]</property>
-			<property name="mainmenuid">9</property>
+			<property name="mainmenuid">10</property>
 			<label>סרטים</label>
 			<label2>$LOCALIZE[571]</label2>
 			<icon>special://skin/extras/icons/film.png</icon>
@@ -1741,7 +1824,7 @@
 			</item>
 		<item id="2">
 			<property name="id">$NUMBER[2]</property>
-			<property name="mainmenuid">9</property>
+			<property name="mainmenuid">10</property>
 			<label>סדרות</label>
 			<label2>$LOCALIZE[571]</label2>
 			<icon>special://skin/extras/icons/tv.png</icon>
@@ -2726,17 +2809,17 @@
 				</include>
 			</include>
 		<include content="View_Cast_Toplabel">
-			<param name="groupid" value="37501" />
-			<param name="id" value="33101" />
+			<param name="groupid" value="47501" />
+			<param name="id" value="43101" />
 			<param name="label" value="שירותי TorBox" />
 			<param name="spinner-visible" value="true" />
-			<visible>String.IsEqual(Container(301).ListItem.Property(id),3)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),4)</visible>
 			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
 			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
 			</include>
 		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
 			<param name="controltype" value="list" />
-			<param name="id" value="33101" />
+			<param name="id" value="43101" />
 			<param name="top" value="52" />
 			<param name="left" value="0" />
 			<param name="right" value="-30" />
@@ -2757,11 +2840,11 @@
 			<param name="landscapecondition" value="false" />
 			<param name="iconcondition" value="false" />
 			<param name="bannercondition" value="false" />
-			<onback>SetFocus(33101)</onback>
+			<onback>SetFocus(43101)</onback>
 			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
 			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
-			<visible>Integer.IsGreater(Container(33101).NumItems,0) | Container(33101).IsUpdating</visible>
-			<visible>String.IsEqual(Container(301).ListItem.Property(id),3)</visible>
+			<visible>Integer.IsGreater(Container(43101).NumItems,0) | Container(43101).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),4)</visible>
 			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
 			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
 			<include content="Defs_AutoScroll" condition="False">
@@ -2770,7 +2853,7 @@
 			</include>
 		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
 			<param name="controltype" value="fixedlist" />
-			<param name="id" value="33101" />
+			<param name="id" value="43101" />
 			<param name="top" value="52" />
 			<param name="left" value="0" />
 			<param name="right" value="-30" />
@@ -2791,11 +2874,88 @@
 			<param name="landscapecondition" value="false" />
 			<param name="iconcondition" value="false" />
 			<param name="bannercondition" value="false" />
-			<onback>SetFocus(33101)</onback>
+			<onback>SetFocus(43101)</onback>
 			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
 			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
-			<visible>Integer.IsGreater(Container(33101).NumItems,0) | Container(33101).IsUpdating</visible>
-			<visible>String.IsEqual(Container(301).ListItem.Property(id),3)</visible>
+			<visible>Integer.IsGreater(Container(43101).NumItems,0) | Container(43101).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),4)</visible>
+			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="View_Cast_Toplabel">
+			<param name="groupid" value="57501" />
+			<param name="id" value="53101" />
+			<param name="label" value="תחזוקה" />
+			<param name="spinner-visible" value="true" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),5)</visible>
+			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="list" />
+			<param name="id" value="53101" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="true" />
+			<param name="squarecondition" value="true" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(53101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(53101).NumItems,0) | Container(53101).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),5)</visible>
+			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
+			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
+			<include content="Defs_AutoScroll" condition="False">
+				<param name="condition" value="!ControlGroup(3000).HasFocus() + System.IdleTime(1) + !Skin.HasSetting(DisableAutoScrollWidgets)" />
+				</include>
+			</include>
+		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
+			<param name="controltype" value="fixedlist" />
+			<param name="id" value="53101" />
+			<param name="top" value="52" />
+			<param name="left" value="0" />
+			<param name="right" value="-30" />
+			<param name="height" value="380.5" />
+			<param name="orientation" value="horizontal" />
+			<param name="labelinclude" value="Defs_Null" />
+			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
+			<param name="label2" value="ListItem.TvShowTitle" />
+			<param name="target" value="videos" />
+			<param name="content" value="plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder" />
+			<param name="limit" value="" />
+			<param name="sortby" value="" />
+			<param name="sortorder" value="" />
+			<param name="browse" value="$VAR[Defs_Widgets_Browse]" />
+			<param name="smallsquarecondition" value="true" />
+			<param name="squarecondition" value="true" />
+			<param name="smalllandscapecondition" value="false" />
+			<param name="landscapecondition" value="false" />
+			<param name="iconcondition" value="false" />
+			<param name="bannercondition" value="false" />
+			<onback>SetFocus(53101)</onback>
+			<onback condition="!Skin.HasSetting(HomeMultiFlixView)">301</onback>
+			<onback condition="Skin.HasSetting(HomeMultiFlixView)">AlarmClock(BackDelay,SetFocus(301),00:00,silent)</onback>
+			<visible>Integer.IsGreater(Container(53101).NumItems,0) | Container(53101).IsUpdating</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(id),5)</visible>
 			<onfocus>SetProperty(widgetMovementId,1,Home)</onfocus>
 			<animation effect="fade" start="100" end="0" time="300" reversible="true" easing="inout" condition="Integer.IsGreater(Window(home).Property(widgetMovementId),1) + Skin.HasSetting(HomeMultiFlixView)">Conditional</animation>
 			<include content="Defs_AutoScroll" condition="False">
@@ -2893,7 +3053,7 @@
 			<param name="id" value="993100" />
 			<param name="label" value="$LOCALIZE[31105]" />
 			<param name="spinner-visible" value="String.IsEmpty(Container(993100).ListItem.Label)" />
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrshyrvtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),thzvkh) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
 			<visible>Integer.IsEqual(Container(9989).NumItems,0)</visible>
 			</include>
 		<include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
@@ -2921,7 +3081,7 @@
 				</include>
 			<onback>301</onback>
 			<visible>Integer.IsGreater(Container(993100).NumItems,0) | Container(993100).IsUpdating</visible>
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrshyrvtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),thzvkh) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
 			<visible>Integer.IsEqual(Container(9989).NumItems,0)</visible>
 			</include>
 		<include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
@@ -2949,7 +3109,7 @@
 				</include>
 			<onback>301</onback>
 			<visible>Integer.IsGreater(Container(993100).NumItems,0) | Container(993100).IsUpdating</visible>
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrshyrvtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),thzvkh) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
 			<visible>Integer.IsEqual(Container(9989).NumItems,0)</visible>
 			</include>
 		</include>
@@ -2979,7 +3139,7 @@
 			<param name="titleheight" value="60" />
 			<param name="id" value="33101" />
 			<param name="uid" value="93" />
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137)</visible>
 			</include>
 		<include content="Home_Vertical_Info">
 			<param name="font" value="font_title" />
@@ -2987,7 +3147,7 @@
 			<param name="titleheight" value="60" />
 			<param name="id" value="43101" />
 			<param name="uid" value="94" />
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrshyrvtym)</visible>
 			</include>
 		<include content="Home_Vertical_Info">
 			<param name="font" value="font_title" />
@@ -2995,7 +3155,7 @@
 			<param name="titleheight" value="60" />
 			<param name="id" value="53101" />
 			<param name="uid" value="95" />
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),thzvkh)</visible>
 			</include>
 		<include content="Home_Vertical_Info">
 			<param name="font" value="font_title" />
@@ -3003,7 +3163,7 @@
 			<param name="titleheight" value="60" />
 			<param name="id" value="63101" />
 			<param name="uid" value="96" />
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn)</visible>
 			</include>
 		<include content="Home_Vertical_Info">
 			<param name="font" value="font_title" />
@@ -3011,6 +3171,14 @@
 			<param name="titleheight" value="60" />
 			<param name="id" value="73101" />
 			<param name="uid" value="97" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5)</visible>
+			</include>
+		<include content="Home_Vertical_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="83101" />
+			<param name="uid" value="98" />
 			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
 			</include>
 		</include>
@@ -3040,7 +3208,7 @@
 			<param name="titleheight" value="60" />
 			<param name="id" value="33101" />
 			<param name="uid" value="93" />
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137)</visible>
 			</include>
 		<include content="Home_Flix_Info">
 			<param name="font" value="font_title" />
@@ -3048,7 +3216,7 @@
 			<param name="titleheight" value="60" />
 			<param name="id" value="43101" />
 			<param name="uid" value="94" />
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrshyrvtym)</visible>
 			</include>
 		<include content="Home_Flix_Info">
 			<param name="font" value="font_title" />
@@ -3056,7 +3224,7 @@
 			<param name="titleheight" value="60" />
 			<param name="id" value="53101" />
 			<param name="uid" value="95" />
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),thzvkh)</visible>
 			</include>
 		<include content="Home_Flix_Info">
 			<param name="font" value="font_title" />
@@ -3064,7 +3232,7 @@
 			<param name="titleheight" value="60" />
 			<param name="id" value="63101" />
 			<param name="uid" value="96" />
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn)</visible>
 			</include>
 		<include content="Home_Flix_Info">
 			<param name="font" value="font_title" />
@@ -3072,6 +3240,14 @@
 			<param name="titleheight" value="60" />
 			<param name="id" value="73101" />
 			<param name="uid" value="97" />
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5)</visible>
+			</include>
+		<include content="Home_Flix_Info">
+			<param name="font" value="font_title" />
+			<param name="plotheight" value="160" />
+			<param name="titleheight" value="60" />
+			<param name="id" value="83101" />
+			<param name="uid" value="98" />
 			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
 			</include>
 		</include>
@@ -3092,7 +3268,7 @@
 			<param name="landscapecondition" value="false" />
 			<param name="iconcondition" value="false" />
 			<param name="bannercondition" value="false" />
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrshyrvtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),thzvkh) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
 			<onup>302</onup>
 			<onback condition="Window.IsVisible(Home)">301</onback>
 			<ondown>noop</ondown>
@@ -3117,7 +3293,7 @@
 			<itemlayout />
 			<focusedlayout />
 			<content limit="25" target="$INFO[Skin.String(widgetTarget)]" browse="$VAR[Defs_Widgets_Browse]">$INFO[Skin.String(widgetPath)]</content>
-			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrtorbox) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
+			<visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),srtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-137) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hybvrshyrvtym) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),thzvkh) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),hhlptskyn) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-5) | String.IsEqual(Container(301).ListItem.Property(submenuVisibility),num-13012)</visible>
 			</control>
 		</include>
 	</includes>

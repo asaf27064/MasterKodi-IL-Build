@@ -4,7 +4,7 @@
 		<label>סרטים</label>
 		<label2>Common Shortcut</label2>
 		<icon>special://home/media/build_icons/Movies.png</icon>
-		<thumb />
+		<thumb>special://skin/extras/icons/director.png</thumb>
 		<action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_movies_trending&amp;iconImage=trending&amp;mode=build_movie_list&amp;name=Trending&amp;random_support=true",return)</action>
 		</shortcut>
 	<shortcut>
@@ -12,16 +12,8 @@
 		<label>סדרות</label>
 		<label2>Common Shortcut</label2>
 		<icon>special://home/media/build_icons/TV_Shows.png</icon>
-		<thumb />
+		<thumb>special://skin/extras/icons/tv.png</thumb>
 		<action>ActivateWindow(10025,"plugin://plugin.video.gears/?action=trakt_tv_trending&amp;iconImage=trending&amp;mode=build_tvshow_list&amp;name=Trending&amp;random_support=true",return)</action>
-		</shortcut>
-	<shortcut>
-		<defaultID>mkil_torbox</defaultID>
-		<label>חיבור TorBox</label>
-		<label2>Common Shortcut</label2>
-		<icon>special://home/media/build_icons/TorBox_Auth.png</icon>
-		<thumb />
-		<action>RunPlugin(plugin://plugin.video.gears/?mode=torbox.authenticate)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID>search</defaultID>
@@ -32,11 +24,27 @@
 		<action>Skin.SetString(SearchTerm)</action>
 		</shortcut>
 	<shortcut>
+		<defaultID>mkil_torbox</defaultID>
+		<label>חיבור שירותים</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://home/media/build_icons/TorBox_Auth.png</icon>
+		<thumb>special://skin/extras/icons/configure.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID>mkil_maint</defaultID>
+		<label>תחזוקה</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</icon>
+		<thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</action>
+		</shortcut>
+	<shortcut>
 		<defaultID>mkil_skins</defaultID>
 		<label>החלפת סקין</label>
 		<label2>Common Shortcut</label2>
 		<icon>DefaultAddonSkin.png</icon>
-		<thumb />
+		<thumb>special://skin/extras/icons/</thumb>
 		<action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</action>
 		</shortcut>
 	<shortcut>
@@ -55,4 +63,4 @@
 		<thumb />
 		<action>ActivateWindow(shutdownmenu)</action>
 		</shortcut>
-	</shortcuts>
+</shortcuts>
