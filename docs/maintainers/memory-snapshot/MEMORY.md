@@ -1,0 +1,14 @@
+- [MasterKodi build repo](masterkodi-build-repo.md) — new consolidated auto-update repo + CI-built EXE/APK (the update model as of 2026-07)
+- [Close Kodi before editing live files](close-kodi-before-editing.md) — HARD RULE: Kodi rewrites settings.xml on exit, wiping edits
+- [Log reading workflow](log-reading-workflow.md) — default LOCAL log file; Cloudflare /recent only when Asaf says he sent from another device
+- [GearsAI subtitle windows](gearsai-subtitle-windows.md) — canonical names: "Kodi window" (main.py) vs "Wand window" (sub_window.py)
+- [Local-first workflow](local-first-workflow.md) — no pushes until Asaf tests locally and approves
+- [Moran wizard reference](moran-wizard-reference.md) — POV-IL install path + KEEP-data framework we borrow from
+- [Wizard dep self-heal](wizard-dep-self-heal.md) — zip-install skips Kodi dep resolution; modular_update.py auto-repairs missing manifest deps
+- [Zephyr home performance](zephyr-home-performance.md) — frozen-home ROOT CAUSE: both layout bools true (merge_seed trap) -> stacked layouts; fixed via force_ids (config 24)
+- [Skin settings review workflow](skin-settings-review-workflow.md) — Asaf reviews each skin's defaults; ALWAYS ask before pushing; merge_seed + force_ids mechanics
+- [Fresh install completion](fresh-install-completion.md) — EXE/APK bundle a STALE bootstrap; install now applies current manifest+config before exit (wizard 2.4.47)
+- [Skin zip dep pinning](skin-zip-dep-pinning.md) — AF3/Nimbus zip deps were unpinned (Kodi offered updates); wizard now freezes shipped skin addons on install
+- [AF3 menu generator rebuild](af3-menu-generator-rebuild.md) — AF3/Nimbus home menu is COMPILED; editing node JSON needs forced buildtemplate or category stays empty
+- [Kodi python crash](kodi-python-crash.md) — task #10: python3.8 invoker race (6 dumps, Zephyr widget storm); all mitigations failed+reverted; full doc in repo docs/maintainers/; best lead = newer Kodi
+- [Estuary review changes](estuary-review-changes.md) — the 4-skin defaults review: COMPLETE, all shipped (Estuary/AF3/Nimbus/Zephyr batches, config 26)
