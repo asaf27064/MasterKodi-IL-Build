@@ -31,4 +31,12 @@
     <setting id="homemultinetflix" type="bool">false</setting>
     <setting id="homemultihorizontal" type="bool">false</setting>
     <setting id="homebasic" type="bool">false</setting>
+    <setting id="flipside" type="bool">true</setting>
+    <setting id="flixhidemenu" type="bool">true</setting>
+    <setting id="homeicons" type="bool">true</setting>
+    <setting id="osd.autohideonpause" type="bool">true</setting>
+    <setting id="playerscrollseekbar" type="bool">true</setting>
+    <setting id="alphavalue_highlight" type="string">100</setting>
+    <setting id="background_fade" type="string">20</setting>
+    <setting id="OSD_Timeout" type="string">3 שניות</setting>
 </settings>
