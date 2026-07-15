@@ -1649,12 +1649,12 @@ _OPTIONAL_SKIN_IDS = {'skin.arctic.fuse.3', 'skin.nimbus',
 
 
 def _skin_installed(skin_id):
-    try:
-        if xbmc.getCondVisibility('System.HasAddon(%s)' % skin_id):
-            return True
-    except Exception:
-        pass
-    return os.path.isdir(os.path.join(ADDONS, skin_id))
+    # DISK is the truth here, NOT System.HasAddon: Kodi's in-memory addon
+    # manager keeps a stale "installed" entry after the deferred skin removal
+    # deletes the folder behind its back (UpdateLocalAddons is async), and
+    # trusting it sent the switch flow down the "already installed" path --
+    # switching the active skin to one that no longer exists on disk.
+    return os.path.isfile(os.path.join(ADDONS, skin_id, 'addon.xml'))
 
 
 def _skin_name(skin_id):
