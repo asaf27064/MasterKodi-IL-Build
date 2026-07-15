@@ -742,16 +742,20 @@ class BuildManager:
         progress_dialog.update(0, f"[COLOR yellow]{title}[/COLOR]")
         
         # skip the wizard's own ADDON CODE (addons/<id>/) so the running wizard
-        # isn't overwritten mid-install -- but DO extract its addon_data
-        # (userdata/addon_data/<id>/applied_manifest.json is the state SEED that
-        # lets the post-install completion skip already-correct addons; the old
-        # blanket `ADDON_ID in filename` also matched that path -> seed discarded
-        # -> completion re-downloaded the WHOLE build every install).
+        # isn't overwritten mid-install, and its stale harvested settings.xml --
+        # but DO extract userdata/addon_data/<id>/applied_manifest.json: that's
+        # the state SEED that lets the post-install completion skip addons the
+        # base zip already carries (the old blanket `ADDON_ID in filename` also
+        # matched the seed -> discarded -> completion re-downloaded the WHOLE
+        # build every install).
         _skip_code = ('addons/%s/' % ADDON_ID, 'addons\\%s\\' % ADDON_ID)
         for i, item in enumerate(zin.infolist()):
             filename = item.filename
 
             if filename.startswith(_skip_code):
+                continue
+
+            if ADDON_ID in filename and not filename.endswith('applied_manifest.json'):
                 continue
 
             if '__pycache__' in filename or filename.endswith('.pyc') or filename.endswith('.pyo'):
@@ -1479,12 +1483,14 @@ class BuildManager:
             xbmc.sleep(1000)
         
         progress.close()
-        # Fast-exit pattern (see default.fast_exit): normal Quit so settings
-        # save + DB vacuum land (~0.5s), 3.5s grace, then hard exit -- skipping
-        # the 5s-per-python-service teardown wait. The old bare os._exit(1)
-        # skipped the settings save entirely.
-        xbmc.executebuiltin('Quit')
-        time.sleep(3.5)
+        # HARD exit on purpose -- NO graceful Quit here. The install wrote the
+        # new skin/font/Hebrew baseline directly into guisettings.xml ON DISK;
+        # a graceful Quit makes Kodi re-save guisettings from MEMORY (old skin,
+        # Default font, bootstrap defaults) and wipe everything the install
+        # just wrote. After an install DISK is authoritative -- skip the save.
+        # (fast_exit keeps the graceful Quit: on a normal user exit, memory IS
+        # authoritative.)
+        log("post-install restart: hard exit, skipping Kodi's exit-save (disk is authoritative)")
         os._exit(0)
 
 
