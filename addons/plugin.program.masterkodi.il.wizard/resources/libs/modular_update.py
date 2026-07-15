@@ -918,8 +918,38 @@ def _apply_policy(zf, policy, home, fresh):
     gsc = policy.get('gears_shortcuts')
     if gsc:
         _enforce_gears_shortcuts(home, gsc)
-    log('config policy applied: %d files%s%s' % (len(applied),
-        ' + gears_settings' if gs else '', ' + gears_shortcuts' if gsc else ''))
+    # Kodi 21 stream-buffer settings (GUI filecache.* replaced the old
+    # advancedsettings <cache> block, which Kodi now IGNORES)
+    fc = policy.get('filecache')
+    if fc:
+        _enforce_filecache(fc)
+    log('config policy applied: %d files%s%s%s' % (len(applied),
+        ' + gears_settings' if gs else '', ' + gears_shortcuts' if gsc else '',
+        ' + filecache' if fc else ''))
+
+
+def _enforce_filecache(spec):
+    """Set Kodi 21 GUI stream-buffer settings (filecache.*) via JSON-RPC.
+
+    The stall problem this tunes for was only ever seen on desktop; low-RAM
+    Android boxes are SKIPPED (spec['skip_android']) -- a bigger buffer there
+    only adds memory pressure (Kodi can use ~3x memorysize at peak). Fail-open.
+    """
+    try:
+        if spec.get('skip_android') and xbmc.getCondVisibility('System.Platform.Android'):
+            log('filecache enforcement skipped on Android (by policy)')
+            return
+        import json as _json
+        for sid in ('buffermode', 'memorysize', 'readfactor'):
+            if sid not in spec:
+                continue
+            xbmc.executeJSONRPC(_json.dumps({
+                'jsonrpc': '2.0', 'id': 1, 'method': 'Settings.SetSettingValue',
+                'params': {'setting': 'filecache.%s' % sid, 'value': int(spec[sid])}}))
+        log('filecache enforced: %s' % {k: spec[k] for k in
+            ('buffermode', 'memorysize', 'readfactor') if k in spec})
+    except Exception as e:
+        log('filecache enforcement failed (non-fatal): %s' % e, xbmc.LOGWARNING)
 
 
 def _merge_settings_xml(src_bytes, dest, exclude_ids):
