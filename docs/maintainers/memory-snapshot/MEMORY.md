@@ -12,3 +12,4 @@
 - [AF3 menu generator rebuild](af3-menu-generator-rebuild.md) — AF3/Nimbus home menu is COMPILED; editing node JSON needs forced buildtemplate or category stays empty
 - [Kodi python crash](kodi-python-crash.md) — task #10: python3.8 invoker race (6 dumps, Zephyr widget storm); all mitigations failed+reverted; full doc in repo docs/maintainers/; best lead = newer Kodi
 - [Estuary review changes](estuary-review-changes.md) — the 4-skin defaults review: COMPLETE, all shipped (Estuary/AF3/Nimbus/Zephyr batches, config 26)
+- [Skins bible](skins-bible.md) — THE reference: all 4 skins' architecture, deps, edit-this-file-for-that-change cookbook, no-clobber delivery, all traps
