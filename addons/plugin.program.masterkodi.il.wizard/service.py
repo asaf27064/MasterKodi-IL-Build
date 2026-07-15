@@ -127,14 +127,34 @@ def _process_pending_view_rebuild():
             # Until that file exists AND a reload happens, the foreground
             # (hero/menu) is dead while the background moves. Wait for the
             # build so OUR reload below brings everything up at once.
+            # CRITICAL: existence is NOT enough -- skinshortcuts takes seconds
+            # to WRITE the file, and reloading mid-write makes Kodi parse a
+            # truncated include table (menu shows, widgets dead) with nothing
+            # left to reload again. Wait until the size is stable across two
+            # checks AND the closing tag is on disk.
             mon = xbmc.Monitor()
             waited = 0
-            while not os.path.isfile(ss_inc) and waited < 90 and not mon.abortRequested():
-                if mon.waitForAbort(3):
-                    return
-                waited += 3
+            stable = 0
+            last_size = -1
+            while stable < 2 and waited < 90 and not mon.abortRequested():
+                try:
+                    size = os.path.getsize(ss_inc)
+                    with open(ss_inc, 'rb') as fh:
+                        fh.seek(max(0, size - 64))
+                        done = b'</includes>' in fh.read()
+                except Exception:
+                    size, done = -1, False
+                if done and size == last_size:
+                    stable += 1
+                else:
+                    stable = 0
+                last_size = size
+                if stable < 2:
+                    if mon.waitForAbort(2):
+                        return
+                    waited += 2
             log("post-install: skinshortcuts includes %s after %ss"
-                % ('present' if os.path.isfile(ss_inc) else 'STILL MISSING', waited))
+                % ('complete' if stable >= 2 else 'STILL INCOMPLETE', waited))
         inc = os.path.join(ADDONS_PATH, skin, '1080i', 'script-skinvariables-includes.xml')
         if skin and os.path.isfile(inc):
             # buildtemplate (force) recompiles the menu/shortcut includes from the
