@@ -17,11 +17,19 @@
 		</shortcut>
 	<shortcut>
 		<defaultID>mkil_torbox</defaultID>
-		<label>חיבור TorBox</label>
+		<label>חיבור שירותים</label>
 		<label2>Common Shortcut</label2>
 		<icon>special://home/media/build_icons/TorBox_Auth.png</icon>
 		<thumb>special://skin/extras/icons/configure.png</thumb>
-		<action>RunPlugin(plugin://plugin.video.gears/?mode=torbox.authenticate)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID>mkil_maint</defaultID>
+		<label>תחזוקה</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</icon>
+		<thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID>search</defaultID>
