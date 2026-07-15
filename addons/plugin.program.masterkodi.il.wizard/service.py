@@ -94,11 +94,24 @@ def _process_pending_view_rebuild():
     if not os.path.isfile(marker):
         return
     try:
+        target = open(marker, encoding='utf-8').read().strip()
+    except Exception:
+        target = ''
+    cur_skin = xbmc.getSkinDir() or ''
+    # The marker names the skin it was written FOR. During a skin install the
+    # service of the STILL-RUNNING old skin can reach this point before the
+    # restart -- consuming the marker on the wrong skin left the new skin's
+    # first boot without its rebuild (the Zephyr frozen-home regression).
+    if target and target.startswith('skin.') and target != cur_skin:
+        log("post-install rebuild deferred: marker is for %s, active skin is %s"
+            % (target, cur_skin))
+        return
+    try:
         os.remove(marker)
     except Exception:
         pass
     try:
-        skin = xbmc.getSkinDir() or ''
+        skin = cur_skin
         inc = os.path.join(ADDONS_PATH, skin, '1080i', 'script-skinvariables-includes.xml')
         if skin and os.path.isfile(inc):
             # buildtemplate (force) recompiles the menu/shortcut includes from the
