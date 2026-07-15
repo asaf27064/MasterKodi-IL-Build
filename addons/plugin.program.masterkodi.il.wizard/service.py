@@ -112,6 +112,22 @@ def _process_pending_view_rebuild():
         pass
     try:
         skin = cur_skin
+        # Skins whose home is skinshortcuts-driven (Zephyr) compile their menu
+        # into script-skinshortcuts-includes.xml on first Home load. Until that
+        # file exists AND a reload happens, the foreground (hero/menu) is dead
+        # while the background moves. Wait for the build to finish so OUR
+        # reload below is the one that brings everything up.
+        ss_tpl = os.path.join(ADDONS_PATH, skin, 'shortcuts')
+        ss_inc = os.path.join(ADDONS_PATH, skin, '1080i', 'script-skinshortcuts-includes.xml')
+        if os.path.isdir(ss_tpl):
+            mon = xbmc.Monitor()
+            waited = 0
+            while not os.path.isfile(ss_inc) and waited < 90 and not mon.abortRequested():
+                if mon.waitForAbort(3):
+                    return
+                waited += 3
+            log("post-install: skinshortcuts includes %s after %ss"
+                % ('present' if os.path.isfile(ss_inc) else 'STILL MISSING', waited))
         inc = os.path.join(ADDONS_PATH, skin, '1080i', 'script-skinvariables-includes.xml')
         if skin and os.path.isfile(inc):
             # buildtemplate (force) recompiles the menu/shortcut includes from the
