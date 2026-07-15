@@ -741,23 +741,25 @@ class BuildManager:
         
         progress_dialog.update(0, f"[COLOR yellow]{title}[/COLOR]")
         
+        # skip the wizard's own ADDON CODE (addons/<id>/) so the running wizard
+        # isn't overwritten mid-install -- but DO extract its addon_data
+        # (userdata/addon_data/<id>/applied_manifest.json is the state SEED that
+        # lets the post-install completion skip already-correct addons; the old
+        # blanket `ADDON_ID in filename` also matched that path -> seed discarded
+        # -> completion re-downloaded the WHOLE build every install).
+        _skip_code = ('addons/%s/' % ADDON_ID, 'addons\\%s\\' % ADDON_ID)
         for i, item in enumerate(zin.infolist()):
             filename = item.filename
-            
-            if ADDON_ID in filename:
+
+            if filename.startswith(_skip_code):
                 continue
-            
+
             if '__pycache__' in filename or filename.endswith('.pyc') or filename.endswith('.pyo'):
                 continue
-            
+
             if filename.endswith('.csv'):
                 continue
-            
-            try:
-                filename.encode('ascii')
-            except:
-                continue
-            
+
             try:
                 zin.extract(item, dest)
                 extracted += 1
@@ -1196,6 +1198,7 @@ class BuildManager:
             ids = list(dict.fromkeys(list(deps) + [addon_id]))   # deps first, skin last, unique
             progress = xbmcgui.DialogProgress()
             progress.create(ADDON_NAME, f"[COLOR cyan]מתקין {name}...[/COLOR]")
+            state = mu._load_state()
             for i, aid in enumerate(ids):
                 entry = by_id.get(aid)
                 if not entry:
@@ -1203,8 +1206,12 @@ class BuildManager:
                 progress.update(int(i / max(len(ids), 1) * 100), f"[COLOR yellow]מתקין: {aid}[/COLOR]")
                 try:
                     mu._apply_one(entry)          # sha-verified download + extract to addons/
+                    # record the sha so the post-install completion skips it
+                    # instead of re-downloading what we just installed
+                    state[aid] = entry['sha256']
                 except Exception as e:
                     log(f"manifest install {aid} failed: {e}", xbmc.LOGWARNING)
+            mu._save_state(state)
             # CRITICAL: freshly-extracted addons are added to Kodi as DISABLED.
             # A disabled skin (or disabled dep) can't load -> "failed to load skin
             # / missing files" and Kodi reverts to Estuary. Enable them all (deps
