@@ -109,6 +109,12 @@ jobs:
             echo "manifest unchanged"
           else
             git commit -m "ci: refresh manifest [skip ci]"
-            # explicit HEAD:main so it works under workflow_dispatch too
-            git push origin HEAD:main
+            # both fleet workflows commit manifests to main on the same push --
+            # rebase+retry so the second one doesn't lose the race
+            for i in 1 2 3; do
+              git pull --rebase origin main
+              if git push origin HEAD:main; then break; fi
+              [ "$i" = 3 ] && exit 1
+              sleep 5
+            done
           fi
