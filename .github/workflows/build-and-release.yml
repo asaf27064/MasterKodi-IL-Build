@@ -112,7 +112,7 @@ jobs:
             # both fleet workflows commit manifests to main on the same push --
             # rebase+retry so the second one doesn't lose the race
             for i in 1 2 3; do
-              git pull --rebase origin main
+              git pull --rebase --autostash origin main
               if git push origin HEAD:main; then break; fi
               [ "$i" = 3 ] && exit 1
               sleep 5
