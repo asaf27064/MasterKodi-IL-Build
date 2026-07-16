@@ -164,7 +164,7 @@
     <setting id="CapturedKeyCode" type="string"></setting>
     <setting id="togglelabel" type="string"></setting>
     <setting id="titlesetting" type="string">0</setting>
-    <setting id="skin.forcedview.episodes.outside" type="string"></setting>
+    <setting id="skin.forcedview.episodes.outside" type="string">קיר מידע רחב</setting>
     <setting id="skin.forcedview.mixed" type="string"></setting>
     <setting id="posterflowondownsetting.other" type="string">0</setting>
     <setting id="dialogbackgroundsetting" type="string">0</setting>
@@ -183,7 +183,7 @@
     <setting id="ratingslot6" type="string">mdblist</setting>
     <setting id="listlandscape.episodes" type="string">0</setting>
     <setting id="BlurContainer" type="string"></setting>
-    <setting id="skin.forcedview.episodes.inside" type="string"></setting>
+    <setting id="skin.forcedview.episodes.inside" type="string">קיר מידע רחב</setting>
     <setting id="landscapewidgetsublabelsetting" type="string">1</setting>
     <setting id="ondownsetting.other" type="string">0</setting>
     <setting id="skin.forcedview.albums" type="string"></setting>

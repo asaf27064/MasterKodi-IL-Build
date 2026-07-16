@@ -1187,18 +1187,31 @@ def _merge_named_xml(src_bytes, dest):
 # switch, and Gears then forces the correct view per skin. IDs verified from each
 # skin's own config/live settings (Estuary confirmed on-device by Asaf).
 GEARS_SKIN_VIEWS = {
+    # Estuary: movies/tvshows Poster confirmed on-device by Asaf; seasons/episodes
+    # from the config ViewModes (55 = WideList); main/premium/single = 55.
     'skin.estuary': {
         'view.main': '55', 'view.movies': '51', 'view.tvshows': '51',
         'view.seasons': '55', 'view.episodes': '55',
         'view.episodes_single': '55', 'view.premium': '55'},
+    # Zephyr/AF3: movies/tvshows/seasons/episodes are EXACTLY the config
+    # skinvariables plugin.video.gears viewtypes; single=episodes; main/premium
+    # = that skin's skinvariables 'none' (fallback) view (50 / 506).
     'skin.arctic.zephyr.2.resurrection.mod': {
-        'view.movies': '53', 'view.tvshows': '53',
-        'view.seasons': '52', 'view.episodes': '529'},
+        'view.main': '50', 'view.movies': '53', 'view.tvshows': '53',
+        'view.seasons': '52', 'view.episodes': '529',
+        'view.episodes_single': '529', 'view.premium': '50'},
     'skin.arctic.fuse.3': {
-        'view.movies': '505', 'view.tvshows': '505',
-        'view.seasons': '509', 'view.episodes': '509'},
+        'view.main': '506', 'view.movies': '505', 'view.tvshows': '505',
+        'view.seasons': '509', 'view.episodes': '509',
+        'view.episodes_single': '509', 'view.premium': '506'},
+    # Nimbus: Asaf's on-device choices (its native Skin.ForcedView names,
+    # mapped to view ids): movies/tvshows = Flix (54), seasons = List (50),
+    # episodes = FlixScape (55). Kept in lock-step with Gears use_viewtypes
+    # so the two view mechanisms reinforce instead of fight (flash-revert).
     'skin.nimbus': {
-        'view.movies': '51', 'view.tvshows': '51'},
+        'view.main': '50', 'view.movies': '54', 'view.tvshows': '54',
+        'view.seasons': '50', 'view.episodes': '55',
+        'view.episodes_single': '55', 'view.premium': '50'},
 }
 
 
