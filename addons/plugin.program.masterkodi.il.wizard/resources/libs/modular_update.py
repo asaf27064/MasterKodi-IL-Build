@@ -171,12 +171,27 @@ GEARS_NETWORKS_FOLDER = ('SELECTED NETWROKS', [
     {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '2',    'name': 'ABC',        'iconImage': _GEARS_NET_ICON % 'qePLxos', 'full_list': 'false'},
 ])
 
+# The TorBox Services shortcut folder (חיבור שירותים widget) - the generic
+# auth-flow entry points, NO tokens. Same seed pattern as the networks folder.
+_GEARS_TB_ICON = 'special://home/addons/plugin.video.gears/resources/media/icons/%s.png'
+GEARS_TORBOX_FOLDER = ('TorBox Services', [
+    {'mode': 'torbox.authenticate',           'name': '[B]התחבר ל-TorBox[/B]',   'iconImage': _GEARS_TB_ICON % 'mk_tb_connect',    'isFolder': 'false'},
+    {'mode': 'torbox.tb_account_info',        'name': '[B]פרטי מנוי TorBox[/B]', 'iconImage': _GEARS_TB_ICON % 'mk_tb_info',       'isFolder': 'false'},
+    {'mode': 'torbox.revoke_authentication',  'name': '[B]התנתק מ-TorBox[/B]',   'iconImage': _GEARS_TB_ICON % 'mk_tb_disconnect', 'isFolder': 'false'},
+])
+
+# All shortcut folders the build seeds into Gears' navigator.db.
+GEARS_SEED_FOLDERS = [GEARS_NETWORKS_FOLDER, GEARS_TORBOX_FOLDER]
+
 
 def seed_gears_shortcut_folder():
-    """Insert the SELECTED NETWROKS folder into Gears' navigator.db if absent.
-    Safe to call every boot: a done-marker (bump its _v suffix to re-seed the
-    fleet) makes it a no-op after the first successful run."""
-    marker = os.path.join(ADDON_DATA, 'gears_networks_seed_v1')
+    """Insert the build's Gears shortcut folders (SELECTED NETWROKS +
+    TorBox Services) into Gears' navigator.db if absent. These back the
+    רשתות סטרימינג + חיבור שירותים home widgets, which render empty on a
+    fresh box (Gears databases are never shipped). Each folder is seeded
+    only if absent, so a user who edits one isn't fought. Bump the marker
+    _v suffix to re-seed the fleet."""
+    marker = os.path.join(ADDON_DATA, 'gears_networks_seed_v2')
     if os.path.isfile(marker):
         return
     try:
@@ -184,21 +199,21 @@ def seed_gears_shortcut_folder():
         dbdir = xbmcvfs.translatePath(
             'special://profile/addon_data/plugin.video.gears/databases/')
         os.makedirs(dbdir, exist_ok=True)
-        name, items = GEARS_NETWORKS_FOLDER
         con = sqlite3.connect(os.path.join(dbdir, 'navigator.db'))
         # same schema gears itself creates (navigator_cache.py)
         con.execute('CREATE TABLE IF NOT EXISTS navigator '
                     '(list_name text, list_type text, list_contents text, '
                     'unique (list_name, list_type))')
-        have = con.execute(
-            'SELECT 1 FROM navigator WHERE list_name = ? AND list_type = ?',
-            (name, 'shortcut_folder')).fetchone()
-        if not have:
-            # gears reads list_contents with eval() -> store a python repr
-            con.execute('INSERT INTO navigator VALUES (?, ?, ?)',
-                        (name, 'shortcut_folder', repr(items)))
-            con.commit()
-            log('seeded gears shortcut folder: %s (%d networks)' % (name, len(items)))
+        for name, items in GEARS_SEED_FOLDERS:
+            have = con.execute(
+                'SELECT 1 FROM navigator WHERE list_name = ? AND list_type = ?',
+                (name, 'shortcut_folder')).fetchone()
+            if not have:
+                # gears reads list_contents with eval() -> store a python repr
+                con.execute('INSERT INTO navigator VALUES (?, ?, ?)',
+                            (name, 'shortcut_folder', repr(items)))
+                log('seeded gears shortcut folder: %s (%d items)' % (name, len(items)))
+        con.commit()
         con.close()
         os.makedirs(ADDON_DATA, exist_ok=True)
         with open(marker, 'w', encoding='utf-8') as fh:

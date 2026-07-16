@@ -943,7 +943,8 @@
             <property name="widget">tw-networks</property>
             <property name="widgetLabel">רשתות סטרימינג</property>
             <property name="widgetPath">plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder</property>
-            <property name="widgetType">custom</property>
+            <property name="widgetType">video</property>
+            <property name="widgetAspect">BigSquare</property>
             <property name="widgetTarget">videos</property>
             <property name="widgetSource">addon</property>
         </item>
@@ -981,7 +982,8 @@
             <property name="widget">sw-torbox</property>
             <property name="widgetLabel">שירותי TorBox</property>
             <property name="widgetPath">plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder</property>
-            <property name="widgetType">custom</property>
+            <property name="widgetType">video</property>
+            <property name="widgetAspect">BigSquare</property>
             <property name="widgetTarget">videos</property>
             <property name="widgetSource">addon</property>
         </item>
@@ -992,7 +994,8 @@
             <property name="widget">xw-maint</property>
             <property name="widgetLabel">תחזוקה</property>
             <property name="widgetPath">plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder</property>
-            <property name="widgetType">custom</property>
+            <property name="widgetType">video</property>
+            <property name="widgetAspect">BigSquare</property>
             <property name="widgetTarget">videos</property>
             <property name="widgetSource">addon</property>
         </item>
