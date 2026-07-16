@@ -123,6 +123,13 @@ def check_one(overlay_dir, target=None):
     the auto-detected upstream latest) and classify the update SAFE/MANUAL."""
     base = json.load(open(os.path.join(overlay_dir, 'base.json'), encoding='utf-8'))
     aid = base['addon_id']
+    # Overlays with no watchable upstream: local_committed (Nimbus - the base is
+    # our own committed tree) and kodi_bundled (Estuary - the base ships inside
+    # Kodi itself, refreshed manually with each Kodi version we adopt).
+    if base.get('base_type') in ('local_committed', 'kodi_bundled'):
+        return {'addon_id': aid, 'current': base.get('overlay_version', '?'),
+                'latest': None, 'has_update': False, 'manual': [], 'safe': None,
+                'skipped': 'no watchable upstream (%s)' % base['base_type']}
     # For most upstreams the release tag == the addon version (AF3, gears). For
     # skins where the release TAG differs from the bundled addon version (e.g.
     # Zephyr: tag v1.1.9 bundles the Omega 1.0.51 addon), compare the latest tag
@@ -203,7 +210,10 @@ def main():
 
     out = os.environ.get('GITHUB_OUTPUT')
     if out:
-        sf = os.path.join(os.getcwd(), 'upstream_summary.md')
+        # dir-specific name: the workflow runs this once per overlays dir
+        # (overlays, overlays-piers) and each issue step reads its own file
+        sf = os.path.join(os.getcwd(), 'upstream_summary_%s.md'
+                          % os.path.basename(os.path.normpath(overlays_dir)))
         with open(sf, 'w', encoding='utf-8') as fh:
             fh.write(summary + '\n')
         with open(out, 'a', encoding='utf-8') as fh:

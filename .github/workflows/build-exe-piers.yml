@@ -1,14 +1,13 @@
 name: build-exe-piers
 
 # PIERS (Kodi 22) twin of build-exe. Builds the MasterKodi IL Windows installer
-# on the Kodi 22.0 Piers base (build-inputs-piers release), from the
-# kodi-22-port branch, and uploads to the Asaf-only 'installers-piers' release.
+# on the Kodi 22.0 Piers base (build-inputs-piers release), from main, and uploads to the Asaf-only 'installers-piers' release.
 # The bundled wizard (2.4.78+) detects KODI_MAJOR>=22 and reads manifest-piers.
 
 on:
   workflow_dispatch: {}
   push:
-    branches: [kodi-22-port]
+    branches: [main]
     paths:
       - 'addons/plugin.program.masterkodi.il.wizard/**'
       - 'addons/service.kodi.il.firstrun/**'
@@ -23,8 +22,6 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: kodi-22-port
 
       - name: Set up Python
         uses: actions/setup-python@v5

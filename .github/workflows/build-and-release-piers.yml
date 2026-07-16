@@ -1,16 +1,16 @@
 name: build-and-release-piers
 
-# The PIERS (Kodi 22) fleet twin of build-and-release. Runs from the
-# kodi-22-port branch while the track is Asaf-only. Reconstructs the shared
+# The PIERS (Kodi 22) fleet twin of build-and-release. Both fleets build
+# from main since the restructure. Reconstructs the shared
 # Hebrew addons (overlays/) PLUS the Piers skin variants (overlays-piers/,
 # applied second so the gui-5.18 skins win), swaps in the per-fleet
 # replacements (skinshortcuts 3.0.1), and ships to the 'addons-piers' rolling
-# release with manifest-piers.json committed back to the branch.
+# release with manifest-piers.json committed back to main.
 # The Omega fleet ('addons-latest' + manifest.json on main) is untouched.
 
 on:
   push:
-    branches: [kodi-22-port]
+    branches: [main]
     paths:
       - 'addons/**'
       - 'overlays/**'
@@ -32,10 +32,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout kodi-22-port (with committed manifest)
+      - name: Checkout (with committed manifest)
         uses: actions/checkout@v4
         with:
-          ref: kodi-22-port
           fetch-depth: 0
 
       - name: Set up Python
@@ -81,7 +80,7 @@ jobs:
           if ! gh release view addons-piers >/dev/null 2>&1; then
             gh release create addons-piers \
               --title "MasterKodi IL - Addons (Piers rolling)" \
-              --notes "Rolling release for the Kodi 22 (Piers) fleet. Asaf-only track. Assets managed by CI; see manifest-piers.json on the kodi-22-port branch." \
+              --notes "Rolling release for the Kodi 22 (Piers) fleet. Asaf-only track. Assets managed by CI; see manifest-piers.json on main." \
               --latest=false
           fi
 
@@ -124,5 +123,5 @@ jobs:
             echo "manifest unchanged"
           else
             git commit -m "ci: refresh manifest-piers [skip ci]"
-            git push origin HEAD:kodi-22-port
+            git push origin HEAD:main
           fi

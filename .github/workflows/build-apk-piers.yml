@@ -1,8 +1,7 @@
 name: build-apk-piers
 
 # PIERS (Kodi 22) twin of build-apk. Signed Android bootstrap APKs on the Kodi
-# 22.0 Piers Beta1 base (build-inputs-piers release), from the kodi-22-port
-# branch, uploaded to the Asaf-only 'installers-piers' release. The bundled
+# 22.0 Piers Beta1 base (build-inputs-piers release), from main, uploaded to the Asaf-only 'installers-piers' release. The bundled
 # wizard (2.4.78+) detects KODI_MAJOR>=22 and reads manifest-piers.
 
 on:
@@ -12,7 +11,7 @@ on:
         description: 'Base Kodi version'
         default: '22.0-Piers_beta1'
   push:
-    branches: [kodi-22-port]
+    branches: [main]
     paths:
       - 'addons/plugin.program.masterkodi.il.wizard/**'
       - 'addons/service.kodi.il.firstrun/**'
@@ -34,8 +33,6 @@ jobs:
       APKTOOL_VER: '2.12.1'
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: kodi-22-port
 
       - name: Set up Python
         uses: actions/setup-python@v5
