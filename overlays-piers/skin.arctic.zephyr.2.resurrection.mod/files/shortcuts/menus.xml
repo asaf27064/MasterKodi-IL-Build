@@ -14,11 +14,13 @@
             <label>סרטים</label>
             <action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
             <icon>special://home/media/build_icons/Movies.png</icon>
+            <thumb>special://skin/extras/icons/director.png</thumb>
         </item>
         <item name="mkil-tvshows" submenu="mkil-tvshows">
             <label>סדרות</label>
             <action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
             <icon>special://home/media/build_icons/TV_Shows.png</icon>
+            <thumb>special://skin/extras/icons/tv.png</thumb>
         </item>
         <item name="search" submenu="search">
             <label>$LOCALIZE[137]</label>
@@ -31,11 +33,18 @@
             <label>חיבור שירותים</label>
             <action>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</action>
             <icon>special://home/media/build_icons/TorBox_Auth.png</icon>
+            <thumb>special://skin/extras/icons/configure.png</thumb>
         </item>
         <item name="mkil-maint" submenu="mkil-maint">
             <label>תחזוקה</label>
             <action>ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</action>
             <icon>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</icon>
+            <thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</thumb>
+        </item>
+        <item name="mkil-skins">
+            <label>החלפת סקין</label>
+            <action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</action>
+            <icon>DefaultAddonSkin.png</icon>
         </item>
         <item name="settings" submenu="settings">
             <label>$LOCALIZE[5]</label>
