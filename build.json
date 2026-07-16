@@ -6,6 +6,17 @@
   "release_tag": "addons-latest",
   "manifest_schema": 1,
   "config_version": 27,
+  "piers": {
+    "release_tag": "addons-piers",
+    "manifest": "manifest-piers.json",
+    "replacements": {
+      "script.skinshortcuts": {
+        "version": "3.0.1",
+        "url": "https://mirrors.kodi.tv/addons/piers/script.skinshortcuts/script.skinshortcuts-3.0.1.zip"
+      }
+    },
+    "notes": "Piers (Kodi 22) fleet. Same shared addon zips; skins are rebuilt from overlays-piers/ (gui 5.18 variants); 'replacements' are addons whose PIERS version differs from the source tree - CI downloads these official zips into dist/ instead of zipping our source (skinshortcuts 2.0.3 is the Omega pin, v3.0.1 is the Piers rewrite the ported Zephyr menus.xml needs). he_il needs NO replacement: the piers-repo 11.0.79 zip is byte-identical to ours (verified 2026-07-16)."
+  },
   "channels": {
     "optional": [
       "skin.arctic.fuse.3",

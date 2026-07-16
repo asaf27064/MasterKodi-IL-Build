@@ -58,6 +58,12 @@ KODI_MAJOR = _kodi_major()
 STATE_FILE = os.path.join(ADDON_DATA, 'applied_manifest.json')
 
 MANIFEST_URL = 'https://raw.githubusercontent.com/asaf27064/MasterKodi-IL-Build/main/manifest.json'
+if KODI_MAJOR >= 22:
+    # Piers fleet reads its own manifest (piers skin variants + skinshortcuts
+    # 3.0.1). Lives on the kodi-22-port branch while the track is Asaf-only;
+    # point at main when the repo restructure lands.
+    MANIFEST_URL = ('https://raw.githubusercontent.com/asaf27064/MasterKodi-IL-Build/'
+                    'kodi-22-port/manifest-piers.json')
 
 # The wizard never blind-updates these Kodi-core/system ids even if present.
 NEVER_TOUCH = {'xbmc.python'}

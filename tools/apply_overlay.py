@@ -145,13 +145,43 @@ def _apply_overlay_files(overlay_dir, addon_dir):
     return count
 
 
+def _copy_committed_base(base, overlay_dir, dest):
+    """base_type=local_committed: the clean base is a full addon tree committed
+    in this repo (base_path, relative to the repo root = overlay_dir/../..).
+    Copy it to dest/<addon_id> (skipping junk); overlay files then apply on top.
+    If source and destination are the same directory (building straight into
+    addons/), leave the tree in place."""
+    addon_id = base['addon_id']
+    repo_root = os.path.abspath(os.path.join(overlay_dir, os.pardir, os.pardir))
+    src = os.path.join(repo_root, base['base_path'].replace('/', os.sep))
+    addon_dir = os.path.join(dest, addon_id)
+    if os.path.abspath(src) == os.path.abspath(addon_dir):
+        return addon_dir
+    if os.path.isdir(addon_dir):
+        shutil.rmtree(addon_dir)
+    for root, dirs, files in os.walk(src):
+        dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
+        for fn in files:
+            if _skip_name(fn):
+                continue
+            p = os.path.join(root, fn)
+            dst = os.path.join(addon_dir, os.path.relpath(p, src))
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copy2(p, dst)
+    return addon_dir
+
+
 def build_one(overlay_dir, out_dir, local_zip=None):
     """Reconstruct one merged addon. Returns its addon dir."""
     base = json.load(open(os.path.join(overlay_dir, 'base.json'), encoding='utf-8'))
     _log('%s: base %s + overlay %s'
-         % (base['addon_id'], base['base_version'], base.get('overlay_version', '?')))
-    zip_bytes = _fetch_base_zip(base, local_zip, overlay_dir)
-    addon_dir = _extract_clean_base(zip_bytes, base, out_dir)
+         % (base['addon_id'], base.get('base_version', base.get('base_path', '?')),
+            base.get('overlay_version', '?')))
+    if base.get('base_type') == 'local_committed':
+        addon_dir = _copy_committed_base(base, overlay_dir, out_dir)
+    else:
+        zip_bytes = _fetch_base_zip(base, local_zip, overlay_dir)
+        addon_dir = _extract_clean_base(zip_bytes, base, out_dir)
     n = _apply_overlay_files(overlay_dir, addon_dir)
     _log('%s: applied %d overlay files' % (base['addon_id'], n))
     return addon_dir
