@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- MasterKodi IL: intentionally EMPTY. The stock file re-defines every
+     Exp_View_* expression (all content -> list, custom views = [False]) and
+     collides with the generated script-skinviewtypes-includes.xml, so the
+     configured gears views never take effect (rendered as list / "not saved").
+     Our build always generates the real viewtypes includes, so this fallback
+     is never needed. Empty = the generated file is the ONLY definer. -->
+<includes>
+</includes>
