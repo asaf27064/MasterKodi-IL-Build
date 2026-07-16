@@ -60,14 +60,24 @@ jobs:
       - name: Fetch per-fleet replacement zips (from build.json piers.replacements)
         run: |
           python - <<'EOF'
-          import json, os, urllib.request
+          import json, os, time, urllib.request
           cfg = json.load(open('build.json', encoding='utf-8'))
           for rid, rep in cfg.get('piers', {}).get('replacements', {}).items():
               name = '%s-%s.zip' % (rid, rep['version'])
               dst = os.path.join('dist', name)
-              print('fetching', rep['url'])
-              urllib.request.urlretrieve(rep['url'], dst)
-              print('  ->', dst, os.path.getsize(dst), 'bytes')
+              # mirrors.kodi.tv redirects to rotating mirrors; a single bad one
+              # (expired cert, 5xx) must not fail the build - retry re-rolls it
+              for attempt in range(5):
+                  try:
+                      print('fetching', rep['url'], '(attempt %d)' % (attempt + 1))
+                      urllib.request.urlretrieve(rep['url'], dst)
+                      print('  ->', dst, os.path.getsize(dst), 'bytes')
+                      break
+                  except Exception as e:
+                      print('  failed:', e)
+                      if attempt == 4:
+                          raise
+                      time.sleep(3)
           EOF
 
       - name: Generate manifest-piers + diff
