@@ -165,7 +165,8 @@
       "src": "userdata/addon_data/script.skinvariables/skin.arctic.zephyr.2.resurrection.mod-viewtypes.json",
       "dest": "userdata/addon_data/script.skinvariables/skin.arctic.zephyr.2.resurrection.mod-viewtypes.json",
       "fresh": "replace",
-      "update": "seed_if_absent"
+      "update": "seed_if_absent",
+      "_comment_kodi": "Applies on Piers too: DenDyGH absorbed the custom views keeping the same view-id scheme, so our curated view defaults stay valid (verified 2026-07-16)"
     },
     {
       "src": "userdata/addon_data/script.skinvariables/skin.arctic.fuse.3-viewtypes.json",

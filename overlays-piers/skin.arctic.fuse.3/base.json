@@ -1,0 +1,10 @@
+{
+  "addon_id": "skin.arctic.fuse.3",
+  "base_version": "3.2.13",
+  "base_zip_url": "https://github.com/jurialmunkey/skin.arctic.fuse.3/archive/refs/tags/v{version}.zip",
+  "upstream_releases_api": "https://api.github.com/repos/jurialmunkey/skin.arctic.fuse.3/releases/latest",
+  "raw_top_folder": "skin.arctic.fuse.3-{version}",
+  "overlay_version": "3.2.13.1",
+  "upstream_tag": "v3.2.13",
+  "notes": "KODI 22 (PIERS) SELF-PORT - jurialmunkey has NO piers branch yet, so we port AF3 3.2.13 ourselves: overlay adds our addon.xml with xbmc.gui bumped 5.17->5.18 (the only hard requirement to load on Kodi 22 - AF3 3.2.13 tested loading+rendering stable on 22 Beta1 with just this). Plus our Omega AF3 customizations (Hebrew fonts+Font.xml, he_il, Custom_1147 GearsAI OSD subtitle button, Includes_Info tweak). Menu/widgets come from config script.skinvariables nodes (version-agnostic). Known-minor Piers cosmetics NOT yet fixed: 'unsupported control type 7' x4, 'selectvideoversion' renamed window, keymap setfocus() nit. WHEN jurialmunkey ships an official Piers AF3: drop this self-port, adopt his base + this same overlay (minus the gui-bump addon.xml)."
+}

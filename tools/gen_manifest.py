@@ -38,12 +38,19 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--repo-root', default='.')
     ap.add_argument('--dist', default='dist')
+    ap.add_argument('--fleet', choices=['omega', 'piers'], default='omega',
+                    help="piers: use build.json's piers.release_tag/manifest, and "
+                         "substitute piers.replacements (official zips downloaded "
+                         "into dist/ by CI) for their source-tree versions")
     args = ap.parse_args()
 
     repo_root = args.repo_root
     cfg = load_build_cfg(repo_root)
     repo = cfg['repo']
-    tag = cfg['release_tag']
+    fleet = cfg.get('piers', {}) if args.fleet == 'piers' else {}
+    tag = fleet.get('release_tag', cfg['release_tag'])
+    manifest_name = fleet.get('manifest', 'manifest.json')
+    replacements = fleet.get('replacements', {})
     optional = set(cfg.get('channels', {}).get('optional', []))
     base_url = 'https://github.com/%s/releases/download/%s/' % (repo, tag)
 
@@ -59,6 +66,12 @@ def main():
         aid, ver = read_addon_meta(d)
         if aid and ver:
             id_to_ver[aid] = ver
+
+    # per-fleet replacements: the shipped version differs from the source tree
+    # (e.g. Piers skinshortcuts 3.0.1 vs the Omega-pinned 2.0.3 in addons/).
+    # CI downloads the official zip into dist/ first; we just point at it.
+    for rid, rep in replacements.items():
+        id_to_ver[rid] = rep['version']
 
     addons = []
     missing = []
@@ -107,7 +120,7 @@ def main():
         }
 
     # diff against previously committed manifest to find changed assets
-    old = _load_old_manifest(repo_root)
+    old = _load_old_manifest(repo_root, manifest_name)
     old_sha = {a['zip']: a['sha256'] for a in old.get('addons', [])}
     if 'config' in old:
         old_sha[old['config']['zip']] = old['config']['sha256']
@@ -119,7 +132,7 @@ def main():
     if 'config' in manifest and old_sha.get(manifest['config']['zip']) != manifest['config']['sha256']:
         changed.append(manifest['config']['zip'])
 
-    with open(os.path.join(repo_root, 'manifest.json'), 'w', encoding='utf-8') as fh:
+    with open(os.path.join(repo_root, manifest_name), 'w', encoding='utf-8') as fh:
         json.dump(manifest, fh, indent=2, ensure_ascii=False)
         fh.write('\n')
     with open(os.path.join(dist_dir, 'changed.txt'), 'w', encoding='utf-8') as fh:
@@ -131,7 +144,8 @@ def main():
     with open(os.path.join(dist_dir, 'valid_assets.txt'), 'w', encoding='utf-8') as fh:
         fh.write('\n'.join(sorted(valid)) + '\n')
 
-    print('manifest.json: %d addons (%d core, %d optional)' % (
+    print('%s: %d addons (%d core, %d optional)' % (
+        manifest_name,
         len(addons),
         sum(1 for a in addons if a['channel'] == 'core'),
         sum(1 for a in addons if a['channel'] == 'optional')))
@@ -141,8 +155,8 @@ def main():
     return 0
 
 
-def _load_old_manifest(repo_root):
-    p = os.path.join(repo_root, 'manifest.json')
+def _load_old_manifest(repo_root, manifest_name='manifest.json'):
+    p = os.path.join(repo_root, manifest_name)
     if os.path.isfile(p):
         try:
             with open(p, encoding='utf-8') as fh:

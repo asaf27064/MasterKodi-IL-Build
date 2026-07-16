@@ -1,0 +1,137 @@
+name: build-and-release-piers
+
+# The PIERS (Kodi 22) fleet twin of build-and-release. Both fleets build
+# from main since the restructure. Reconstructs the shared
+# Hebrew addons (overlays/) PLUS the Piers skin variants (overlays-piers/,
+# applied second so the gui-5.18 skins win), swaps in the per-fleet
+# replacements (skinshortcuts 3.0.1), and ships to the 'addons-piers' rolling
+# release with manifest-piers.json committed back to main.
+# The Omega fleet ('addons-latest' + manifest.json on main) is untouched.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'addons/**'
+      - 'overlays/**'
+      - 'overlays-piers/**'
+      - 'config/**'
+      - 'build.json'
+      - 'tools/**'
+      - '.github/workflows/build-and-release-piers.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-and-release-piers
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with committed manifest)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build deps
+        run: pip install requests
+
+      - name: Reconstruct Hebrew addons (clean upstream + overlay)
+        run: python tools/apply_overlay.py overlays addons
+
+      - name: Apply Piers skin overlays (gui 5.18 variants win)
+        run: python tools/apply_overlay.py overlays-piers addons
+
+      - name: Build addon zips (reproducible)
+        run: python tools/build_addons.py --repo-root . --out dist
+
+      - name: Build config zip
+        run: python tools/build_config.py --repo-root . --out dist
+
+      - name: Fetch per-fleet replacement zips (from build.json piers.replacements)
+        run: |
+          python - <<'EOF'
+          import json, os, time, urllib.request
+          cfg = json.load(open('build.json', encoding='utf-8'))
+          for rid, rep in cfg.get('piers', {}).get('replacements', {}).items():
+              name = '%s-%s.zip' % (rid, rep['version'])
+              dst = os.path.join('dist', name)
+              # mirrors.kodi.tv redirects to rotating mirrors; a single bad one
+              # (expired cert, 5xx) must not fail the build - retry re-rolls it
+              for attempt in range(5):
+                  try:
+                      print('fetching', rep['url'], '(attempt %d)' % (attempt + 1))
+                      urllib.request.urlretrieve(rep['url'], dst)
+                      print('  ->', dst, os.path.getsize(dst), 'bytes')
+                      break
+                  except Exception as e:
+                      print('  failed:', e)
+                      if attempt == 4:
+                          raise
+                      time.sleep(3)
+          EOF
+
+      - name: Generate manifest-piers + diff
+        run: python tools/gen_manifest.py --repo-root . --dist dist --fleet piers
+
+      - name: Ensure rolling release exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view addons-piers >/dev/null 2>&1; then
+            gh release create addons-piers \
+              --title "MasterKodi IL - Addons (Piers rolling)" \
+              --notes "Rolling release for the Kodi 22 (Piers) fleet. Asaf-only track. Assets managed by CI; see manifest-piers.json on main." \
+              --latest=false
+          fi
+
+      - name: Upload changed assets (clobber)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload addons-piers manifest-piers.json --clobber
+          if [ -s dist/changed.txt ]; then
+            while IFS= read -r z; do
+              [ -z "$z" ] && continue
+              echo "uploading $z"
+              gh release upload addons-piers "dist/$z" --clobber
+            done < dist/changed.txt
+          else
+            echo "no changed assets to upload"
+          fi
+
+      - name: Prune orphan release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # delete any release asset not referenced by the current manifest
+          # (keep manifest-piers.json itself)
+          gh release view addons-piers --json assets -q '.assets[].name' | while IFS= read -r name; do
+            [ "$name" = "manifest-piers.json" ] && continue
+            if ! grep -qxF "$name" dist/valid_assets.txt; then
+              echo "pruning orphan asset: $name"
+              gh release delete-asset addons-piers "$name" -y || true
+            fi
+          done
+
+      - name: Commit manifest-piers.json
+        run: |
+          git config user.name "masterkodi-ci"
+          git config user.email "ci@masterkodi.local"
+          git add manifest-piers.json
+          # --cached so this also detects a brand-new (untracked) manifest
+          if git diff --cached --quiet; then
+            echo "manifest unchanged"
+          else
+            git commit -m "ci: refresh manifest-piers [skip ci]"
+            git push origin HEAD:main
+          fi

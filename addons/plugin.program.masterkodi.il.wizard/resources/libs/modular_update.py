@@ -41,9 +41,28 @@ ADDON_ID = ADDON.getAddonInfo('id')
 ADDON_PATH = xbmcvfs.translatePath(ADDON.getAddonInfo('path'))
 ADDON_DATA = xbmcvfs.translatePath('special://userdata/addon_data/%s' % ADDON_ID)
 ADDONS_PATH = xbmcvfs.translatePath('special://home/addons/')
+
+
+def _kodi_major():
+    try:
+        return int(xbmc.getInfoLabel('System.BuildVersion').split('.')[0])
+    except Exception:
+        return 0
+
+
+# Kodi major version (21 = Omega, 22 = Piers). Gates the Omega-only machinery:
+# on Piers the Zephyr menu/widget defaults are DECLARED IN THE SKIN
+# (skinshortcuts v3 shortcuts/menus.xml), so the old menu bundle and the
+# config-delivered viewtypes are obsolete there.
+KODI_MAJOR = _kodi_major()
 STATE_FILE = os.path.join(ADDON_DATA, 'applied_manifest.json')
 
 MANIFEST_URL = 'https://raw.githubusercontent.com/asaf27064/MasterKodi-IL-Build/main/manifest.json'
+if KODI_MAJOR >= 22:
+    # Piers fleet reads its own manifest (piers skin variants + skinshortcuts
+    # 3.0.1). Both fleets build from main since the repo restructure.
+    MANIFEST_URL = ('https://raw.githubusercontent.com/asaf27064/MasterKodi-IL-Build/'
+                    'main/manifest-piers.json')
 
 # The wizard never blind-updates these Kodi-core/system ids even if present.
 NEVER_TOUCH = {'xbmc.python'}
@@ -157,12 +176,27 @@ GEARS_NETWORKS_FOLDER = ('SELECTED NETWROKS', [
     {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_networks', 'key_id': '2',    'name': 'ABC',        'iconImage': _GEARS_NET_ICON % 'qePLxos', 'full_list': 'false'},
 ])
 
+# The TorBox Services shortcut folder (חיבור שירותים widget) - the generic
+# auth-flow entry points, NO tokens. Same seed pattern as the networks folder.
+_GEARS_TB_ICON = 'special://home/addons/plugin.video.gears/resources/media/icons/%s.png'
+GEARS_TORBOX_FOLDER = ('TorBox Services', [
+    {'mode': 'torbox.authenticate',           'name': '[B]התחבר ל-TorBox[/B]',   'iconImage': _GEARS_TB_ICON % 'mk_tb_connect',    'isFolder': 'false'},
+    {'mode': 'torbox.tb_account_info',        'name': '[B]פרטי מנוי TorBox[/B]', 'iconImage': _GEARS_TB_ICON % 'mk_tb_info',       'isFolder': 'false'},
+    {'mode': 'torbox.revoke_authentication',  'name': '[B]התנתק מ-TorBox[/B]',   'iconImage': _GEARS_TB_ICON % 'mk_tb_disconnect', 'isFolder': 'false'},
+])
+
+# All shortcut folders the build seeds into Gears' navigator.db.
+GEARS_SEED_FOLDERS = [GEARS_NETWORKS_FOLDER, GEARS_TORBOX_FOLDER]
+
 
 def seed_gears_shortcut_folder():
-    """Insert the SELECTED NETWROKS folder into Gears' navigator.db if absent.
-    Safe to call every boot: a done-marker (bump its _v suffix to re-seed the
-    fleet) makes it a no-op after the first successful run."""
-    marker = os.path.join(ADDON_DATA, 'gears_networks_seed_v1')
+    """Insert the build's Gears shortcut folders (SELECTED NETWROKS +
+    TorBox Services) into Gears' navigator.db if absent. These back the
+    רשתות סטרימינג + חיבור שירותים home widgets, which render empty on a
+    fresh box (Gears databases are never shipped). Each folder is seeded
+    only if absent, so a user who edits one isn't fought. Bump the marker
+    _v suffix to re-seed the fleet."""
+    marker = os.path.join(ADDON_DATA, 'gears_networks_seed_v2')
     if os.path.isfile(marker):
         return
     try:
@@ -170,21 +204,21 @@ def seed_gears_shortcut_folder():
         dbdir = xbmcvfs.translatePath(
             'special://profile/addon_data/plugin.video.gears/databases/')
         os.makedirs(dbdir, exist_ok=True)
-        name, items = GEARS_NETWORKS_FOLDER
         con = sqlite3.connect(os.path.join(dbdir, 'navigator.db'))
         # same schema gears itself creates (navigator_cache.py)
         con.execute('CREATE TABLE IF NOT EXISTS navigator '
                     '(list_name text, list_type text, list_contents text, '
                     'unique (list_name, list_type))')
-        have = con.execute(
-            'SELECT 1 FROM navigator WHERE list_name = ? AND list_type = ?',
-            (name, 'shortcut_folder')).fetchone()
-        if not have:
-            # gears reads list_contents with eval() -> store a python repr
-            con.execute('INSERT INTO navigator VALUES (?, ?, ?)',
-                        (name, 'shortcut_folder', repr(items)))
-            con.commit()
-            log('seeded gears shortcut folder: %s (%d networks)' % (name, len(items)))
+        for name, items in GEARS_SEED_FOLDERS:
+            have = con.execute(
+                'SELECT 1 FROM navigator WHERE list_name = ? AND list_type = ?',
+                (name, 'shortcut_folder')).fetchone()
+            if not have:
+                # gears reads list_contents with eval() -> store a python repr
+                con.execute('INSERT INTO navigator VALUES (?, ?, ?)',
+                            (name, 'shortcut_folder', repr(items)))
+                log('seeded gears shortcut folder: %s (%d items)' % (name, len(items)))
+        con.commit()
         con.close()
         os.makedirs(ADDON_DATA, exist_ok=True)
         with open(marker, 'w', encoding='utf-8') as fh:
@@ -573,6 +607,11 @@ def repair_skin_menu(no_reload=False):
     when the bundle VERSION changed (so a cleaned-up menu replaces an older dirty
     one already on the box). A matching, healthy menu is left untouched."""
     restored = []
+    if KODI_MAJOR >= 22:
+        # Piers: menu/widget defaults live in the skin itself (skinshortcuts v3
+        # shortcuts/menus.xml); the bundled OLD-format DATA would poison the v3
+        # userdata. Never relay it there.
+        return restored
     try:
         skin = _active_skin()
         if not skin:
@@ -1001,6 +1040,10 @@ def _apply_policy(zf, policy, home, fresh):
         mode = entry.get(mode_key, 'replace')
         if mode in (None, '', 'skip'):
             continue
+        # declarative Kodi-version gate (e.g. kodi_max: 21 for Omega-only files)
+        kmin, kmax = entry.get('kodi_min'), entry.get('kodi_max')
+        if KODI_MAJOR and ((kmin and KODI_MAJOR < int(kmin)) or (kmax and KODI_MAJOR > int(kmax))):
+            continue
         try:
             src_bytes = zf.read(src)
         except KeyError:
@@ -1139,6 +1182,68 @@ def _merge_named_xml(src_bytes, dest):
         dst_txt = dst_txt.replace('</video>', '\n'.join(add) + '\n    </video>', 1)
         with open(dest, 'w', encoding='utf-8') as fh:
             fh.write(dst_txt)
+
+
+# Per-skin Gears view IDs. Gears' use_viewtypes forces Container.SetViewMode
+# from these settings, which OVERRIDES Kodi's per-path ViewModes (that's why a
+# ViewMode we set flashes then reverts). The settings are GLOBAL (one Gears
+# settings.db), and view id 500 (Estuary Wall) means something different in each
+# skin -- so the wizard writes the ACTIVE skin's view ids on install + skin
+# switch, and Gears then forces the correct view per skin. IDs verified from each
+# skin's own config/live settings (Estuary confirmed on-device by Asaf).
+GEARS_SKIN_VIEWS = {
+    # Estuary: movies/tvshows Poster confirmed on-device by Asaf; seasons/episodes
+    # from the config ViewModes (55 = WideList); main/premium/single = 55.
+    'skin.estuary': {
+        'view.main': '55', 'view.movies': '51', 'view.tvshows': '51',
+        'view.seasons': '55', 'view.episodes': '55',
+        'view.episodes_single': '55', 'view.premium': '55'},
+    # Zephyr/AF3: movies/tvshows/seasons/episodes are EXACTLY the config
+    # skinvariables plugin.video.gears viewtypes; single=episodes; main/premium
+    # = that skin's skinvariables 'none' (fallback) view (50 / 506).
+    'skin.arctic.zephyr.2.resurrection.mod': {
+        'view.main': '50', 'view.movies': '53', 'view.tvshows': '53',
+        'view.seasons': '52', 'view.episodes': '529',
+        'view.episodes_single': '529', 'view.premium': '50'},
+    'skin.arctic.fuse.3': {
+        'view.main': '506', 'view.movies': '505', 'view.tvshows': '505',
+        'view.seasons': '509', 'view.episodes': '509',
+        'view.episodes_single': '509', 'view.premium': '506'},
+    # Nimbus: Asaf's on-device choices (its native Skin.ForcedView names,
+    # mapped to view ids): movies/tvshows = Flix (54), seasons = List (50),
+    # episodes = FlixScape (55). Kept in lock-step with Gears use_viewtypes
+    # so the two view mechanisms reinforce instead of fight (flash-revert).
+    'skin.nimbus': {
+        'view.main': '50', 'view.movies': '54', 'view.tvshows': '54',
+        'view.seasons': '50', 'view.episodes': '55',
+        'view.episodes_single': '55', 'view.premium': '50'},
+}
+
+
+def apply_gears_views_for_skin(skin_id=None):
+    """Write the active (or given) skin's preferred Gears view ids into Gears'
+    settings.db so use_viewtypes forces the right view per skin. No-op for a skin
+    we don't have a map for (Gears keeps whatever it had)."""
+    import sqlite3
+    skin_id = skin_id or (xbmc.getSkinDir() or '')
+    views = GEARS_SKIN_VIEWS.get(skin_id)
+    if not views:
+        return
+    db = xbmcvfs.translatePath(
+        'special://profile/addon_data/plugin.video.gears/databases/settings.db')
+    if not os.path.isfile(db):
+        return
+    try:
+        c = sqlite3.connect(db)
+        # use_viewtypes must be on for Gears to force the view at all
+        c.execute("UPDATE settings SET setting_value='true' WHERE setting_id='use_viewtypes'")
+        for sid, val in views.items():
+            c.execute('UPDATE settings SET setting_value=? WHERE setting_id=?', (str(val), sid))
+        c.commit()
+        c.close()
+        log('applied gears views for %s (%d ids)' % (skin_id, len(views)))
+    except Exception as e:
+        log('gears views apply failed: %s' % e, xbmc.LOGWARNING)
 
 
 def _enforce_gears_settings(home, gears_settings, exclude):

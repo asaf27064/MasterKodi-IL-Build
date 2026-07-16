@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- MasterKodi IL: intentionally EMPTY. The stock file re-defined every
+     Exp_View_* expression (all content -> list, custom views = [False]) and
+     collided with the generated script-skinviewtypes-includes.xml, forcing
+     gears lists to render as plain list regardless of the configured view.
+     Our build always generates the real viewtypes includes (install runs
+     buildviews + the service re-runs it on first boot), so this fallback is
+     never needed. Empty = the generated file is the ONLY definer. -->
+<includes>
+</includes>

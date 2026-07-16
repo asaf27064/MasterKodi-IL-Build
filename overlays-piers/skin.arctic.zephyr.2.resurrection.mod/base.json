@@ -1,0 +1,10 @@
+{
+  "addon_id": "skin.arctic.zephyr.2.resurrection.mod",
+  "base_version": "1.1.9",
+  "base_zip_url": "https://github.com/DenDyGH/skin.arctic.zephyr.2.resurrection.mod/releases/download/v1.1.9/skin.arctic.zephyr.2.resurrection.mod-Piers.zip",
+  "upstream_releases_api": "https://api.github.com/repos/DenDyGH/skin.arctic.zephyr.2.resurrection.mod/releases/latest",
+  "raw_top_folder": "skin.arctic.zephyr.2.resurrection.mod",
+  "overlay_version": "1.1.9.1",
+  "upstream_tag": "v1.1.9",
+  "notes": "KODI 22 (PIERS) overlay - NOT wired to CI yet (Asaf-only track). Requires script.skinshortcuts >= 3.0.0 (kodi piers repo). Differences vs the Omega overlay: menu/widget defaults now DECLARED in shortcuts/menus.xml (skinshortcuts v3 model) - replaces the old DATA.xml files AND the wizard menu_defaults bundle (not needed on Piers); custom viewtypes + view-name strings absorbed upstream by DenDyGH; templates.xml redirects DefaultSearch Movies/TvShows to gears. Carried from Omega: Hebrew fonts + Font.xml fontsets + Defaults.xml font swap, he_il (updated for Piers msgids + #31600), GearsAI OSD button (Includes_OSD), hero Title->Label fix (Includes_Home), ratings-label fix (Includes_Object), Flix visible-restriction removal (Includes_View), Startup.xml factory defaults (Flix + colorful), DialogPlayerProcessInfo escape fix, powermenu fast_exit + build items + hebrew gears search (menus.xml). Deliberately NOT ported: Home.xml/My*.xml crash gates (kept on branch kodi-21-crash-fixes; decision pending for Piers)."
+}

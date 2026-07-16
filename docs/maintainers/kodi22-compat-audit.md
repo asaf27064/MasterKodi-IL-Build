@@ -32,10 +32,17 @@ Scanned with the exact interpreter Kodi 22 uses (python 3.14): AST-parse of ever
 | script.module.gearsscrapers | **CLEAN** (64 files) | |
 | plugin.program.masterkodi.il.wizard | **CLEAN** (12 files) | service ran live in sandbox (incl. pending_view_rebuild flow) |
 | service.kodi.il.firstrun / skipintro / script.skinhelper / localsubtitle | **CLEAN** | |
-| service.subtitles.gearsai | **1 FIX NEEDED** | bundled `httpx` (auto_translate) does `import cgi` — removed in py3.13. Breaks only the auto-translate import path. Fix: patch vendored httpx `_models.py` (one-liner) or bump httpx. |
-| service.subtitles.all_subs_plus | **1 FIX NEEDED (+2 dead files)** | `aa_subs_api/aa_subs.py` uses `cgi.parse_header` (line 192) — module fails to import on 3.13+. One-line replacement (`email.message` or manual split). `zfile.py`/`zfile_18.py` have py2 syntax but are never imported — dead code, ignore or delete. |
+| service.subtitles.gearsai | **CLEAN (fix applied)** | vendored `httpx` `import cgi` replaced inline in `_models.py`. Deep scan note: vendored `sockshandler.py` calls `ssl.match_hostname` (removed 3.12) but it's a dead path — only reachable via yandexfreetranslate SOCKS proxy, which gearsai never configures (engine.py does yandex with its own HTTP calls; `set_proxy` never called). Identical dead path on Omega. |
+| service.subtitles.all_subs_plus | **CLEAN (fix applied, +2 tolerated files)** | `aa_subs.py` `cgi.parse_header` replaced. `zfile.py`/`zfile_18.py` have py2 syntax; `zfile_18` IS imported (service.py:676) but inside `try/except` with stdlib `zipfile` fallback — equally broken-and-harmless on Omega py3.8, not a Piers regression. |
 | script.module.simplejson | OK | `import imp` is inside a py2-only guard; and only requests' optional try/except touches simplejson |
 | All other script.module.* (requests, urllib3, bs4, six, qrcode, pysubs2, …) | **CLEAN** | full scan, no removed modules, no syntax errors |
+| resource.language.he_il 11.0.79 | **REPLACE in manifest-v22** | it's the Kodi-21 translation set; installs on 22 (requires only kodi.resource 1.0.0) but new K22 core strings show English. Decision (Asaf): ship the Piers he_il 12.x pack in manifest-v22. |
+
+*Deep removed-API scan (2026-07-16, all 11 of our own addons, 865 files — removed
+NAMES inside living modules, not just removed modules): every hit triaged safe
+(version-guarded try/except, py2-only branches, docstrings, or the gearsai
+sockshandler dead path above). Full dependency-graph resolution of all 57 manifest
+addons against Kodi 22 core+bundled: 100% resolve, zero version violations.*
 | script.skinshortcuts 2.0.3 | **PROVEN LIVE** | compiled the full menu on Kodi 22 in 8s, no errors |
 | script.skinvariables 2.2.2 | **PROVEN LIVE** | buildviews/buildtemplate ran fine |
 
