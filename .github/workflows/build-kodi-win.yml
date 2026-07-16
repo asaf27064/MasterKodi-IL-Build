@@ -1,0 +1,87 @@
+name: build-kodi-win
+
+# Builds a PATCHED kodi.exe from official 21.3-Omega sources + our
+# kodi-patches/*.diff (currently the PR 27320 python-crash backport).
+# Output artifact: kodi.exe (+pdb) to overlay onto the official package in
+# build-inputs. Manual dispatch only -- this is a ~2h build.
+
+on:
+  workflow_dispatch:
+    inputs:
+      kodi_tag:
+        description: 'xbmc git tag to build'
+        default: '21.3-Omega'
+
+permissions:
+  contents: write
+
+jobs:
+  kodi:
+    runs-on: windows-latest
+    timeout-minutes: 340
+    env:
+      KODI_TAG: ${{ github.event.inputs.kodi_tag || '21.3-Omega' }}
+    steps:
+      - name: Checkout build repo (patches)
+        uses: actions/checkout@v4
+        with:
+          path: buildrepo
+
+      - name: Checkout xbmc at tag
+        uses: actions/checkout@v4
+        with:
+          repository: xbmc/xbmc
+          ref: ${{ env.KODI_TAG }}
+          path: xbmc
+          fetch-depth: 1
+
+      - name: Apply python-crash patches
+        shell: bash
+        run: |
+          cd xbmc
+          for p in ../buildrepo/kodi-patches/*.diff; do
+            echo "applying $p"
+            git apply --check "$p"
+            git apply "$p"
+          done
+          git diff --stat
+
+      - name: Download dependencies
+        shell: cmd
+        working-directory: xbmc\tools\buildsteps\windows\x64
+        run: download-dependencies.bat
+
+      - name: Download msys2 (ffmpeg toolchain)
+        shell: cmd
+        working-directory: xbmc\tools\buildsteps\windows\x64
+        run: download-msys2.bat
+
+      - name: Build mingw libs (ffmpeg)
+        shell: cmd
+        working-directory: xbmc\tools\buildsteps\windows\x64
+        run: make-mingwlibs.bat noprompt
+
+      - name: Build Kodi (no binary addons)
+        shell: cmd
+        working-directory: xbmc\tools\buildsteps\windows\x64
+        run: BuildSetup.bat clean noprompt nobinaryaddons
+
+      - name: Locate + stage kodi.exe
+        shell: bash
+        run: |
+          set -e
+          exe=$(find xbmc -name kodi.exe -path "*BUILD_WIN32*" | head -1)
+          [ -z "$exe" ] && exe=$(find xbmc/kodi-build* xbmc/build -name kodi.exe 2>/dev/null | head -1)
+          [ -z "$exe" ] && { echo "kodi.exe not found"; find xbmc -name kodi.exe | head; exit 1; }
+          mkdir stage
+          cp "$exe" stage/
+          pdb=$(dirname "$exe")/kodi.pdb
+          [ -f "$pdb" ] && cp "$pdb" stage/ || true
+          sha256sum stage/*
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kodi-exe-patched-${{ env.KODI_TAG }}
+          path: stage/
+          retention-days: 30
