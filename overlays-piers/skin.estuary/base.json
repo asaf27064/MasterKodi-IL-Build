@@ -1,0 +1,9 @@
+{
+  "addon_id": "skin.estuary",
+  "base_type": "kodi_bundled",
+  "base_version": "4.1.0",
+  "base_zip_local": "skin.estuary-4.1.0-kodi22-base.zip",
+  "raw_top_folder": "skin.estuary",
+  "overlay_version": "4.1.0.1",
+  "notes": "KODI 22 (PIERS) RE-MOD - Estuary ships INSIDE Kodi (no upstream release repo), so the base is the Estuary 4.1.0 bundled with Kodi 22 Beta1, committed here as base_zip_local (like the gears base - no stable download URL to fetch per-version). This is a RE-MOD, not a port: our Omega Estuary mod lived in Kodi 21's skin.estuary 4.0.0/gui5.17; Kodi 22 ships a new-generation Estuary 4.1.0/gui5.18, so the mod was three-way merged (base=K21 pristine, ours=addons/skin.estuary, theirs=K22 pristine) onto 22's skin. Overlay = 18 files diffed against pristine K22 Estuary: addon.xml (version 4.1.0->4.1.0.1 only; gui already 5.18), 13 xml (Home menu+widgets, Includes, Font.xml Hebrew fontset, Custom_1107 search, DialogButtonMenu, DialogVideoInfo, VideoOSD GearsAI button, View_50/51/53/54/501/502 tweaks) + 4 Hebrew fonts. Menu/widgets are hardcoded in Home.xml (Estuary has no skinshortcuts/skinvariables). Category-hiding + per-content views come from config (skin.estuary/settings.xml + Gears use_viewtypes map). When a build extracts the base straight from build-inputs-v22's Kodi 22 binaries we can drop the committed base_zip_local; kept now so the overlay is self-contained and CI-verifiable."
+}
