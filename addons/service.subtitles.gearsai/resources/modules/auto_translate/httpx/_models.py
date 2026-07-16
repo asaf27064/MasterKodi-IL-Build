@@ -1,4 +1,5 @@
-import cgi
+# `cgi` was removed in python 3.13 (Kodi 22 ships 3.14); the only use here
+# was cgi.parse_header for the charset param -- replaced inline below.
 import datetime
 import email.message
 import json as jsonlib
@@ -1358,7 +1359,11 @@ class Response:
         if content_type is None:
             return None
 
-        _, params = cgi.parse_header(content_type)
+        params = {}
+        for part in content_type.split(";")[1:]:
+            if "=" in part:
+                k, v = part.split("=", 1)
+                params[k.strip().lower()] = v.strip()
         if "charset" not in params:
             return None
 

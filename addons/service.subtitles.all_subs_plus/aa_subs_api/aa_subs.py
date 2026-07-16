@@ -153,7 +153,7 @@ def aa_subs(item,mode_subtitle,prefix_acat,color_acat):
 
 def Download_aa(url,mode_subtitle):
     import requests
-    import xbmcvfs,shutil,cgi
+    import xbmcvfs,shutil    # cgi removed in py3.13 (Kodi 22); parse_header replaced inline
     from os import path
     from service import MyTmp,unquote_plus,KODI_VERSION
 
@@ -189,7 +189,7 @@ def Download_aa(url,mode_subtitle):
     }
 
     r=requests.get(f_url,headers=headers,stream=True)
-    params = cgi.parse_header(r.headers.get('content-type'))[0]
+    params = (r.headers.get('content-type') or '').split(';')[0].strip()
     server_encoding = ('charset' in params) and params['charset'].strip("'\"") or None
     r.encoding = server_encoding or r.apparent_encoding
     text = r.text
