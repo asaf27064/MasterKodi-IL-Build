@@ -1,0 +1,531 @@
+{
+  "build": "MasterKodi IL",
+  "brand": "MasterKodi",
+  "schema": 1,
+  "generated_utc": "2026-07-16T19:35:33Z",
+  "repo": "asaf27064/MasterKodi-IL-Build",
+  "release_tag": "addons-piers",
+  "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
+  "addons": [
+    {
+      "id": "metadata.common.fanart.tv",
+      "version": "3.6.5",
+      "channel": "core",
+      "zip": "metadata.common.fanart.tv-3.6.5.zip",
+      "sha256": "550d8fa8c7c742d2f37e2aa11b50444427e1b742fd5a3f1da3120e7c3bc8f2d7",
+      "size": 8347,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/metadata.common.fanart.tv-3.6.5.zip"
+    },
+    {
+      "id": "metadata.themoviedb.org.python",
+      "version": "3.2.0",
+      "channel": "core",
+      "zip": "metadata.themoviedb.org.python-3.2.0.zip",
+      "sha256": "707bda294717946e4eccb68e2e80eb6afbc4f0f807386098753baa7b9635171e",
+      "size": 174996,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/metadata.themoviedb.org.python-3.2.0.zip"
+    },
+    {
+      "id": "metadata.tvshows.themoviedb.org.python",
+      "version": "1.7.6",
+      "channel": "core",
+      "zip": "metadata.tvshows.themoviedb.org.python-1.7.6.zip",
+      "sha256": "0d2e47946193bc18b2b0adeeddaf88565fc66ef78d93486111d436ea5af5ce80",
+      "size": 183303,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/metadata.tvshows.themoviedb.org.python-1.7.6.zip"
+    },
+    {
+      "id": "plugin.program.autocompletion",
+      "version": "2.1.3",
+      "channel": "core",
+      "zip": "plugin.program.autocompletion-2.1.3.zip",
+      "sha256": "16a53c155f65cbb8ca68baa563af1f54f5404e62301dc6c1665e53e9228ad9fc",
+      "size": 21389,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.autocompletion-2.1.3.zip"
+    },
+    {
+      "id": "plugin.program.masterkodi.il.wizard",
+      "version": "2.4.78",
+      "channel": "core",
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.78.zip",
+      "sha256": "c4394a7aff8a26dc8e21ea1d70a3eef1b8a3a9ec4e178dd4cbb15b0c0bdeb6d2",
+      "size": 2372000,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.78.zip"
+    },
+    {
+      "id": "plugin.video.gears",
+      "version": "2.3.5",
+      "channel": "core",
+      "zip": "plugin.video.gears-2.3.5.zip",
+      "sha256": "b53994165be943072013f2d96eb3b378fa56f107e622881d670185dc3afcb12e",
+      "size": 9178141,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.gears-2.3.5.zip"
+    },
+    {
+      "id": "plugin.video.themoviedb.helper",
+      "version": "6.16.1",
+      "channel": "optional",
+      "zip": "plugin.video.themoviedb.helper-6.16.1.zip",
+      "sha256": "2b89de4fd6394ed5a327fc2eb81e9dbde7639e4056496736232854bc0a102fdc",
+      "size": 5051224,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.themoviedb.helper-6.16.1.zip"
+    },
+    {
+      "id": "repository.KodiRealDebridIsrael",
+      "version": "1.0.1",
+      "channel": "core",
+      "zip": "repository.KodiRealDebridIsrael-1.0.1.zip",
+      "sha256": "d79d8756fdcef3eedd266b4f4c76e7576a24d92e106869bda937b68b77c6dd6c",
+      "size": 210246,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/repository.KodiRealDebridIsrael-1.0.1.zip"
+    },
+    {
+      "id": "repository.chainsrepo",
+      "version": "0.0.15",
+      "channel": "core",
+      "zip": "repository.chainsrepo-0.0.15.zip",
+      "sha256": "3e6d0c1cc83b4e79e561315f20eae623f8c5faba955f5dcd2ded6f6ccc02d76d",
+      "size": 1044544,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/repository.chainsrepo-0.0.15.zip"
+    },
+    {
+      "id": "repository.cocoscrapers",
+      "version": "1.0.1",
+      "channel": "core",
+      "zip": "repository.cocoscrapers-1.0.1.zip",
+      "sha256": "0dd50ba213f90647b4633281f6d168a47abe5477718fdb25e5d94edff5b0e76b",
+      "size": 68433,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/repository.cocoscrapers-1.0.1.zip"
+    },
+    {
+      "id": "repository.jurialmunkey",
+      "version": "3.5",
+      "channel": "core",
+      "zip": "repository.jurialmunkey-3.5.zip",
+      "sha256": "accf6d151220aad8f4500d106b45162e49bbcddf8e149b40f0712e2623b035c7",
+      "size": 7166,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/repository.jurialmunkey-3.5.zip"
+    },
+    {
+      "id": "repository.kodifitzwell",
+      "version": "0.0.1",
+      "channel": "core",
+      "zip": "repository.kodifitzwell-0.0.1.zip",
+      "sha256": "80b80ac6a41a52aefc34ce42561b712628ee74b25a380ac0c7cc84d015e8fb9d",
+      "size": 13214,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/repository.kodifitzwell-0.0.1.zip"
+    },
+    {
+      "id": "repository.masterkodi.il",
+      "version": "1.0.0",
+      "channel": "core",
+      "zip": "repository.masterkodi.il-1.0.0.zip",
+      "sha256": "9b01291465187f0aba2de1197f96fdc34c8da7b9a196ab14a30f8c28afe844cb",
+      "size": 547,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/repository.masterkodi.il-1.0.0.zip"
+    },
+    {
+      "id": "repository.peno64",
+      "version": "1.5",
+      "channel": "core",
+      "zip": "repository.peno64-1.5.zip",
+      "sha256": "796ccd15706e7640b75b38dc793db8b9c5f40690ecdc62bca1a04a112914b911",
+      "size": 305544,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/repository.peno64-1.5.zip"
+    },
+    {
+      "id": "resource.font.robotocjksc",
+      "version": "0.0.3",
+      "channel": "optional",
+      "zip": "resource.font.robotocjksc-0.0.3.zip",
+      "sha256": "4a1bfb10f1e078fb8a2c7b5099710e37cd943ebf630ccb57b91f62015f20f943",
+      "size": 51599444,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/resource.font.robotocjksc-0.0.3.zip"
+    },
+    {
+      "id": "resource.images.moviecountryicons.maps",
+      "version": "0.0.1",
+      "channel": "optional",
+      "zip": "resource.images.moviecountryicons.maps-0.0.1.zip",
+      "sha256": "b4efa20c031439abbbb4514c036b01ef819bc27234e45a6a2beacef60c489b6f",
+      "size": 2205371,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/resource.images.moviecountryicons.maps-0.0.1.zip"
+    },
+    {
+      "id": "resource.images.moviegenreicons.transparent",
+      "version": "0.0.6",
+      "channel": "optional",
+      "zip": "resource.images.moviegenreicons.transparent-0.0.6.zip",
+      "sha256": "5994e0d46b6f4b22d70bc8e2f9f16d8c7b49b77f6e7369a72e832402310a95f7",
+      "size": 159006,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/resource.images.moviegenreicons.transparent-0.0.6.zip"
+    },
+    {
+      "id": "resource.images.studios.coloured",
+      "version": "0.0.24",
+      "channel": "optional",
+      "zip": "resource.images.studios.coloured-0.0.24.zip",
+      "sha256": "9ec03ca08165aac1627bfe57701cece20aeb19d236d063e734198c7f1cefc018",
+      "size": 60584821,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/resource.images.studios.coloured-0.0.24.zip"
+    },
+    {
+      "id": "resource.images.studios.white",
+      "version": "0.0.34",
+      "channel": "optional",
+      "zip": "resource.images.studios.white-0.0.34.zip",
+      "sha256": "30d4c3d7cd24f577699e017cc06c7f92ac405bf1db3bef0db1b7ca42590ef9b8",
+      "size": 10613553,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/resource.images.studios.white-0.0.34.zip"
+    },
+    {
+      "id": "resource.images.weathericons.white",
+      "version": "0.0.6",
+      "channel": "optional",
+      "zip": "resource.images.weathericons.white-0.0.6.zip",
+      "sha256": "ad0d547794dc7ecceaf8fbafe9f0c5529c88d2930704a43b687525483002d006",
+      "size": 71550,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/resource.images.weathericons.white-0.0.6.zip"
+    },
+    {
+      "id": "resource.language.he_il",
+      "version": "11.0.79",
+      "channel": "core",
+      "zip": "resource.language.he_il-11.0.79.zip",
+      "sha256": "68cf7e08b9c25c9d74e886eed0059e2b9cb84010efa20a5540a71250402fb4b9",
+      "size": 149987,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/resource.language.he_il-11.0.79.zip"
+    },
+    {
+      "id": "script.common.plugin.cache",
+      "version": "3.0.0",
+      "channel": "core",
+      "zip": "script.common.plugin.cache-3.0.0.zip",
+      "sha256": "e60377e1e2d143218aa4e9c5d4380f93c93fef68e346f37c9ded26e6b0f17b42",
+      "size": 82910,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.common.plugin.cache-3.0.0.zip"
+    },
+    {
+      "id": "script.module.addon.signals",
+      "version": "0.0.6+matrix.1",
+      "channel": "optional",
+      "zip": "script.module.addon.signals-0.0.6+matrix.1.zip",
+      "sha256": "fbd5905f633e66f1af341c6fc9d798d8d7c74fb29e144b467d14c7edd813b959",
+      "size": 19835,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.addon.signals-0.0.6+matrix.1.zip"
+    },
+    {
+      "id": "script.module.autocompletion",
+      "version": "2.1.2",
+      "channel": "core",
+      "zip": "script.module.autocompletion-2.1.2.zip",
+      "sha256": "bc8b17354d4a6124d3f6e7b7fb9cb42923ad62542ad73e49af6ce8f2904f4b97",
+      "size": 175596,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.autocompletion-2.1.2.zip"
+    },
+    {
+      "id": "script.module.beautifulsoup4",
+      "version": "4.12.2",
+      "channel": "core",
+      "zip": "script.module.beautifulsoup4-4.12.2.zip",
+      "sha256": "79739034dffff0c2b948919cb268b8ffcd29aa2817c0d35b41bbdb5155a87aa4",
+      "size": 80703,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.beautifulsoup4-4.12.2.zip"
+    },
+    {
+      "id": "script.module.certifi",
+      "version": "2023.5.7",
+      "channel": "core",
+      "zip": "script.module.certifi-2023.5.7.zip",
+      "sha256": "7ed4e959b5118c1cd11d647844fda9cd3a8584708eb29f04d82232090cf2a65a",
+      "size": 10438,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.certifi-2023.5.7.zip"
+    },
+    {
+      "id": "script.module.chardet",
+      "version": "5.1.0",
+      "channel": "core",
+      "zip": "script.module.chardet-5.1.0.zip",
+      "sha256": "abc42f6767061d1a4ccbb8e289b81cd230e97543ad0c7d573490286bb1be7522",
+      "size": 204491,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.chardet-5.1.0.zip"
+    },
+    {
+      "id": "script.module.cocoscrapers",
+      "version": "1.0.39",
+      "channel": "core",
+      "zip": "script.module.cocoscrapers-1.0.39.zip",
+      "sha256": "170e3c665ab16c5cd08837e4818c402d2126d99fc48d07b55260ddcaefc106e2",
+      "size": 341753,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.cocoscrapers-1.0.39.zip"
+    },
+    {
+      "id": "script.module.gearsscrapers",
+      "version": "1.3.4",
+      "channel": "core",
+      "zip": "script.module.gearsscrapers-1.3.4.zip",
+      "sha256": "5c82f673d91ea1dca0c65db82c848a2a0c482e2aa9214c1761dfaec51ce854ed",
+      "size": 1788186,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.gearsscrapers-1.3.4.zip"
+    },
+    {
+      "id": "script.module.idna",
+      "version": "3.10.0",
+      "channel": "core",
+      "zip": "script.module.idna-3.10.0.zip",
+      "sha256": "491608c20c965cb4cd06a7a393380a6c75a33e7a367496a304f54cc3c1fd0610",
+      "size": 73349,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.idna-3.10.0.zip"
+    },
+    {
+      "id": "script.module.infotagger",
+      "version": "0.0.8",
+      "channel": "optional",
+      "zip": "script.module.infotagger-0.0.8.zip",
+      "sha256": "4218922806284fc0a50daf8cca292176f5a9b9b2a3876b8e0ba1f68440883579",
+      "size": 22750,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.infotagger-0.0.8.zip"
+    },
+    {
+      "id": "script.module.jurialmunkey",
+      "version": "0.2.35",
+      "channel": "optional",
+      "zip": "script.module.jurialmunkey-0.2.35.zip",
+      "sha256": "65966f3a49fee7339b66c9d58d16ce714d95d8b5bcb17144e5b9aecc2ce08302",
+      "size": 55792,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.jurialmunkey-0.2.35.zip"
+    },
+    {
+      "id": "script.module.magneto",
+      "version": "6.07.02",
+      "channel": "core",
+      "zip": "script.module.magneto-6.07.02.zip",
+      "sha256": "a548bd6d0bd1ff1d7d93e8653b90e1a4889c6d08a70fc8bbacf1259ff05d3bbd",
+      "size": 477046,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.magneto-6.07.02.zip"
+    },
+    {
+      "id": "script.module.pysubs2",
+      "version": "1.5.0+matrix.1",
+      "channel": "core",
+      "zip": "script.module.pysubs2-1.5.0+matrix.1.zip",
+      "sha256": "6a84a721d5445d173f9c4a6449415fde16ce3dae49af115e2f4bf62cb1ee8f64",
+      "size": 40956,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.pysubs2-1.5.0+matrix.1.zip"
+    },
+    {
+      "id": "script.module.qrcode",
+      "version": "6.1.0+matrix.3",
+      "channel": "optional",
+      "zip": "script.module.qrcode-6.1.0+matrix.3.zip",
+      "sha256": "a7b755b8b387a1ab01f9ca190e61fe9be2975735ae220f9efdfe2618652fdf23",
+      "size": 32990,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.qrcode-6.1.0+matrix.3.zip"
+    },
+    {
+      "id": "script.module.requests",
+      "version": "2.31.0",
+      "channel": "core",
+      "zip": "script.module.requests-2.31.0.zip",
+      "sha256": "0be3fbdf1fb15aa875cb24f996de685ec3d4c5c330de34b1bc702394a9401442",
+      "size": 67576,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.requests-2.31.0.zip"
+    },
+    {
+      "id": "script.module.simpleeval",
+      "version": "0.9.13",
+      "channel": "optional",
+      "zip": "script.module.simpleeval-0.9.13.zip",
+      "sha256": "93ca5d9cb4b8a79b79a6ab9bfd8e3cc16830046462ebc14c52ed2f2ca8c45e7b",
+      "size": 16368,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.simpleeval-0.9.13.zip"
+    },
+    {
+      "id": "script.module.simplejson",
+      "version": "3.19.1+matrix.1",
+      "channel": "optional",
+      "zip": "script.module.simplejson-3.19.1+matrix.1.zip",
+      "sha256": "87bbb1f401acead9e3d46fe19f8106bf7ce83d9fe8bead65b793eb488860fbfd",
+      "size": 32709,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.simplejson-3.19.1+matrix.1.zip"
+    },
+    {
+      "id": "script.module.six",
+      "version": "1.16.0+matrix.1",
+      "channel": "optional",
+      "zip": "script.module.six-1.16.0+matrix.1.zip",
+      "sha256": "bf825f39557da5c458c253caa2ca2ce47d7cbbd86bff091d14aa78449e440a3f",
+      "size": 16999,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.six-1.16.0+matrix.1.zip"
+    },
+    {
+      "id": "script.module.soupsieve",
+      "version": "2.4.1",
+      "channel": "core",
+      "zip": "script.module.soupsieve-2.4.1.zip",
+      "sha256": "9d6b57ff7485a8dfa8314becb0e4ea5f65326040c869d9c246ddf4b57cb59be7",
+      "size": 41348,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.soupsieve-2.4.1.zip"
+    },
+    {
+      "id": "script.module.unidecode",
+      "version": "1.3.6",
+      "channel": "optional",
+      "zip": "script.module.unidecode-1.3.6.zip",
+      "sha256": "26853c86b31a2ddce17acc2792ed032c48fc3f3113621bab978a7e60f18b1f01",
+      "size": 238291,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.unidecode-1.3.6.zip"
+    },
+    {
+      "id": "script.module.urllib3",
+      "version": "2.2.3",
+      "channel": "core",
+      "zip": "script.module.urllib3-2.2.3.zip",
+      "sha256": "83407bc7340e9fd73521f389994c0677bc41eead53a3076834a8aeae6ac9f6bd",
+      "size": 130842,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.urllib3-2.2.3.zip"
+    },
+    {
+      "id": "script.nimbus.helper",
+      "version": "0.0.52",
+      "channel": "optional",
+      "zip": "script.nimbus.helper-0.0.52.zip",
+      "sha256": "8ed463948b6f6c4a903948d86b35f82ebe5664b59c52ed8a86542da81387c3e0",
+      "size": 35866,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.nimbus.helper-0.0.52.zip"
+    },
+    {
+      "id": "script.skinhelper",
+      "version": "0.0.4",
+      "channel": "optional",
+      "zip": "script.skinhelper-0.0.4.zip",
+      "sha256": "673dbd9d5551631b994c2b2449a685004c57fbb2eb94bb2cde006f016e1e708e",
+      "size": 1430,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.skinhelper-0.0.4.zip"
+    },
+    {
+      "id": "script.skinshortcuts",
+      "version": "3.0.1",
+      "channel": "optional",
+      "zip": "script.skinshortcuts-3.0.1.zip",
+      "sha256": "5cb782f3f4be3728effde49bfb9d4b229873f01eab50c32cd943b001a09ce0c6",
+      "size": 628918,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.skinshortcuts-3.0.1.zip"
+    },
+    {
+      "id": "script.skinvariables",
+      "version": "2.2.2",
+      "channel": "optional",
+      "zip": "script.skinvariables-2.2.2.zip",
+      "sha256": "92578e8aae06e53b580074f382092d27c1f1fe02d27842b0b2b4e7a712b38722",
+      "size": 231198,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.skinvariables-2.2.2.zip"
+    },
+    {
+      "id": "script.texturemaker",
+      "version": "0.2.11",
+      "channel": "optional",
+      "zip": "script.texturemaker-0.2.11.zip",
+      "sha256": "a4b8cfe14e15ddc174bcf778c3979b1ed85106edd938428d7510b17955bc134d",
+      "size": 171850,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.texturemaker-0.2.11.zip"
+    },
+    {
+      "id": "service.kodi.il.firstrun",
+      "version": "2.1.3",
+      "channel": "optional",
+      "zip": "service.kodi.il.firstrun-2.1.3.zip",
+      "sha256": "5ca4908af750aca1ae64d7c9cc3a039cd96bcd6dc4ffab27a80213fab111f064",
+      "size": 3554,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/service.kodi.il.firstrun-2.1.3.zip"
+    },
+    {
+      "id": "service.masterkodi.skipintro",
+      "version": "1.3.2",
+      "channel": "core",
+      "zip": "service.masterkodi.skipintro-1.3.2.zip",
+      "sha256": "e0bcd5b2bcffa8c13a9146cc34cb88a4d309ee052a8eacfb208a00aa721ebe3b",
+      "size": 18472,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/service.masterkodi.skipintro-1.3.2.zip"
+    },
+    {
+      "id": "service.subtitles.all_subs_plus",
+      "version": "2.3.1",
+      "channel": "core",
+      "zip": "service.subtitles.all_subs_plus-2.3.1.zip",
+      "sha256": "198686a95d58dc0438bd75a0707bbc08b88daca5769ebdb46a6a99f285a423f4",
+      "size": 609778,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/service.subtitles.all_subs_plus-2.3.1.zip"
+    },
+    {
+      "id": "service.subtitles.gearsai",
+      "version": "1.0.36",
+      "channel": "core",
+      "zip": "service.subtitles.gearsai-1.0.36.zip",
+      "sha256": "1a5615329f0157ca9a65e8405ef0b13805d321d41c14a09ed3e5ca998a8303a9",
+      "size": 2649437,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/service.subtitles.gearsai-1.0.36.zip"
+    },
+    {
+      "id": "service.subtitles.localsubtitle",
+      "version": "1.12.5",
+      "channel": "core",
+      "zip": "service.subtitles.localsubtitle-1.12.5.zip",
+      "sha256": "f0c011aa1b807d0279b35afeef8e5ba895087a49bff017387ac2c76a4f8c49ee",
+      "size": 80450,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/service.subtitles.localsubtitle-1.12.5.zip"
+    },
+    {
+      "id": "service.xbmc.versioncheck",
+      "version": "0.5.30+matrix.1",
+      "channel": "core",
+      "zip": "service.xbmc.versioncheck-0.5.30+matrix.1.zip",
+      "sha256": "2568201e58ae02286993473b8443b25dcb91593a33601ceb2dc4573e0e18e9dc",
+      "size": 216237,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/service.xbmc.versioncheck-0.5.30+matrix.1.zip"
+    },
+    {
+      "id": "skin.arctic.fuse.3",
+      "version": "3.2.13.1",
+      "channel": "optional",
+      "zip": "skin.arctic.fuse.3-3.2.13.1.zip",
+      "sha256": "b25acf27d1a13a1d99fca0115833248cfc2543c2a827e20ec571719e43dfd9fb",
+      "size": 54640043,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.fuse.3-3.2.13.1.zip"
+    },
+    {
+      "id": "skin.arctic.zephyr.2.resurrection.mod",
+      "version": "1.1.9.1",
+      "channel": "optional",
+      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.1.9.1.zip",
+      "sha256": "5baffd85aee4c792d5fb93752bd9dfc258d27f98db0c6911e1a24ebc01b56d47",
+      "size": 18525657,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.2.resurrection.mod-1.1.9.1.zip"
+    },
+    {
+      "id": "skin.estuary",
+      "version": "4.1.0.1",
+      "channel": "core",
+      "zip": "skin.estuary-4.1.0.1.zip",
+      "sha256": "963ccccf030f3c3093c2a97cb0501b691b733333b62a7176e0fccb0f73ac9dcd",
+      "size": 4996555,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.estuary-4.1.0.1.zip"
+    },
+    {
+      "id": "skin.nimbus",
+      "version": "0.1.43.1",
+      "channel": "optional",
+      "zip": "skin.nimbus-0.1.43.1.zip",
+      "sha256": "70b6703870a4bcc4bb2290ba50a6ccfaeea4d7351269625abec704e900a22043",
+      "size": 10587647,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.nimbus-0.1.43.1.zip"
+    }
+  ],
+  "config": {
+    "version": "27",
+    "zip": "config-27.zip",
+    "sha256": "fbf64d3fa4de6925d219600f620d7d7041296370f090914d07cac4e47e0aa644",
+    "size": 34143,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-27.zip"
+  }
+}
