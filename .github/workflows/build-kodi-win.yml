@@ -17,10 +17,7 @@ permissions:
 
 jobs:
   kodi:
-    # NOT windows-latest: that image carries VS2026, which 21.3-Omega's
-    # vswhere.bat doesn't recognize (falls back to a nonexistent VS2017
-    # generator). windows-2025 ships VS2022 = "Visual Studio 17 2022".
-    runs-on: windows-2025
+    runs-on: windows-latest
     timeout-minutes: 340
     env:
       KODI_TAG: ${{ github.event.inputs.kodi_tag || '21.3-Omega' }}
