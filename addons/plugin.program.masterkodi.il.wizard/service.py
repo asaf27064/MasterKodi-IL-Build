@@ -258,6 +258,16 @@ def _prewarm_gears(mon):
             except Exception:
                 pass
         log("gears pre-warm done")
+        # The pre-warm is what CREATES gears' settings.db on a fresh install
+        # (gears fills every setting with defaults on first run). The install-
+        # time apply_gears_views_for_skin() no-oped back then because the db
+        # didn't exist yet -- re-apply now that it does, so a fresh box's first
+        # browse already uses the skin's configured views (not gears' Wall).
+        try:
+            from resources.libs import modular_update as mu
+            mu.apply_gears_views_for_skin()
+        except Exception as e:
+            log("post-prewarm views apply failed: %s" % e, xbmc.LOGDEBUG)
     except Exception as e:
         log("prewarm error: %s" % e, xbmc.LOGDEBUG)
 
