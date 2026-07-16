@@ -1,0 +1,7 @@
+{
+  "addon_id": "skin.nimbus",
+  "base_type": "local_committed",
+  "base_path": "addons/skin.nimbus",
+  "overlay_version": "0.1.43.1",
+  "notes": "KODI 22 (PIERS) - Nimbus is our COMMITTED FULL fork (addons/skin.nimbus, gui 5.17, Hebrew+menu/widgets baked in), NOT a thin upstream overlay like Zephyr/AF3. So the Piers 'overlay' is just addon.xml with xbmc.gui 5.17->5.18 (verified: our Nimbus loads+renders+Hebrew on Kodi 22 with only this; Asaf added a Movies category + Trending widget via UI -> works, poster content shows, list scrolling fine). The build for the PIERS manifest ships addons/skin.nimbus with THIS addon.xml swapped in. Known cosmetic-only Piers noise: Control.HasFocus($PARAM[list_id]) parse errors (~150, invisible - focus-dimming silently no-ops), dialogbusy renamed window, control type 7. Delivery = per-fleet addon.xml (Omega 5.17 / Piers 5.18), like the skinshortcuts 2.0.3-vs-3.0.1 split. NOTE our committed Nimbus also carries device-generated script-nimbus-* / script-skinshortcuts-includes.xml that should ideally be pruned (regenerated on-device) - existing Omega debt, not Piers-specific."
+}
