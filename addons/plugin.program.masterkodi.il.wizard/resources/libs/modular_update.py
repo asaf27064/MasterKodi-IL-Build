@@ -41,6 +41,20 @@ ADDON_ID = ADDON.getAddonInfo('id')
 ADDON_PATH = xbmcvfs.translatePath(ADDON.getAddonInfo('path'))
 ADDON_DATA = xbmcvfs.translatePath('special://userdata/addon_data/%s' % ADDON_ID)
 ADDONS_PATH = xbmcvfs.translatePath('special://home/addons/')
+
+
+def _kodi_major():
+    try:
+        return int(xbmc.getInfoLabel('System.BuildVersion').split('.')[0])
+    except Exception:
+        return 0
+
+
+# Kodi major version (21 = Omega, 22 = Piers). Gates the Omega-only machinery:
+# on Piers the Zephyr menu/widget defaults are DECLARED IN THE SKIN
+# (skinshortcuts v3 shortcuts/menus.xml), so the old menu bundle and the
+# config-delivered viewtypes are obsolete there.
+KODI_MAJOR = _kodi_major()
 STATE_FILE = os.path.join(ADDON_DATA, 'applied_manifest.json')
 
 MANIFEST_URL = 'https://raw.githubusercontent.com/asaf27064/MasterKodi-IL-Build/main/manifest.json'
@@ -573,6 +587,11 @@ def repair_skin_menu(no_reload=False):
     when the bundle VERSION changed (so a cleaned-up menu replaces an older dirty
     one already on the box). A matching, healthy menu is left untouched."""
     restored = []
+    if KODI_MAJOR >= 22:
+        # Piers: menu/widget defaults live in the skin itself (skinshortcuts v3
+        # shortcuts/menus.xml); the bundled OLD-format DATA would poison the v3
+        # userdata. Never relay it there.
+        return restored
     try:
         skin = _active_skin()
         if not skin:
@@ -1000,6 +1019,10 @@ def _apply_policy(zf, policy, home, fresh):
             continue
         mode = entry.get(mode_key, 'replace')
         if mode in (None, '', 'skip'):
+            continue
+        # declarative Kodi-version gate (e.g. kodi_max: 21 for Omega-only files)
+        kmin, kmax = entry.get('kodi_min'), entry.get('kodi_max')
+        if KODI_MAJOR and ((kmin and KODI_MAJOR < int(kmin)) or (kmax and KODI_MAJOR > int(kmax))):
             continue
         try:
             src_bytes = zf.read(src)

@@ -1647,6 +1647,17 @@ _SKIN_CATALOG = [
 _OPTIONAL_SKIN_IDS = {'skin.arctic.fuse.3', 'skin.nimbus',
                       'skin.arctic.zephyr.2.resurrection.mod'}
 
+# Skins with NO Piers (Kodi 22) build upstream yet -- hidden from the picker
+# there so a user can't install a skin that cannot load (gui API 5.17 vs 5.18).
+_NO_PIERS_SKIN_IDS = {'skin.arctic.fuse.3', 'skin.nimbus'}
+
+
+def _kodi_major():
+    try:
+        return int(xbmc.getInfoLabel('System.BuildVersion').split('.')[0])
+    except Exception:
+        return 0
+
 
 def _skin_installed(skin_id):
     # DISK is the truth here, NOT System.HasAddon: Kodi's in-memory addon
@@ -1692,7 +1703,9 @@ def _skin_switch_flow():
         active = ''
 
     picker, meta = [], []
-    for key, name, sid, img in _SKIN_CATALOG:
+    catalog = [row for row in _SKIN_CATALOG
+               if not (_kodi_major() >= 22 and row[2] in _NO_PIERS_SKIN_IDS)]
+    for key, name, sid, img in catalog:
         installed = _skin_installed(sid)
         # 'active' is the lookandfeel.skin SETTING -- if that skin is missing
         # on disk Kodi is actually running a fallback, so treat it as not
