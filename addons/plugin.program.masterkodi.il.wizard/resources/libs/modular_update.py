@@ -1179,6 +1179,55 @@ def _merge_named_xml(src_bytes, dest):
             fh.write(dst_txt)
 
 
+# Per-skin Gears view IDs. Gears' use_viewtypes forces Container.SetViewMode
+# from these settings, which OVERRIDES Kodi's per-path ViewModes (that's why a
+# ViewMode we set flashes then reverts). The settings are GLOBAL (one Gears
+# settings.db), and view id 500 (Estuary Wall) means something different in each
+# skin -- so the wizard writes the ACTIVE skin's view ids on install + skin
+# switch, and Gears then forces the correct view per skin. IDs verified from each
+# skin's own config/live settings (Estuary confirmed on-device by Asaf).
+GEARS_SKIN_VIEWS = {
+    'skin.estuary': {
+        'view.main': '55', 'view.movies': '51', 'view.tvshows': '51',
+        'view.seasons': '55', 'view.episodes': '55',
+        'view.episodes_single': '55', 'view.premium': '55'},
+    'skin.arctic.zephyr.2.resurrection.mod': {
+        'view.movies': '53', 'view.tvshows': '53',
+        'view.seasons': '52', 'view.episodes': '529'},
+    'skin.arctic.fuse.3': {
+        'view.movies': '505', 'view.tvshows': '505',
+        'view.seasons': '509', 'view.episodes': '509'},
+    'skin.nimbus': {
+        'view.movies': '51', 'view.tvshows': '51'},
+}
+
+
+def apply_gears_views_for_skin(skin_id=None):
+    """Write the active (or given) skin's preferred Gears view ids into Gears'
+    settings.db so use_viewtypes forces the right view per skin. No-op for a skin
+    we don't have a map for (Gears keeps whatever it had)."""
+    import sqlite3
+    skin_id = skin_id or (xbmc.getSkinDir() or '')
+    views = GEARS_SKIN_VIEWS.get(skin_id)
+    if not views:
+        return
+    db = xbmcvfs.translatePath(
+        'special://profile/addon_data/plugin.video.gears/databases/settings.db')
+    if not os.path.isfile(db):
+        return
+    try:
+        c = sqlite3.connect(db)
+        # use_viewtypes must be on for Gears to force the view at all
+        c.execute("UPDATE settings SET setting_value='true' WHERE setting_id='use_viewtypes'")
+        for sid, val in views.items():
+            c.execute('UPDATE settings SET setting_value=? WHERE setting_id=?', (str(val), sid))
+        c.commit()
+        c.close()
+        log('applied gears views for %s (%d ids)' % (skin_id, len(views)))
+    except Exception as e:
+        log('gears views apply failed: %s' % e, xbmc.LOGWARNING)
+
+
 def _enforce_gears_settings(home, gears_settings, exclude):
     """Write critical Gears values into its settings.db without touching creds."""
     import sqlite3

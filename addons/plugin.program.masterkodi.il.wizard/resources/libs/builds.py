@@ -1260,6 +1260,10 @@ class BuildManager:
             # Seed the Gears shortcut folder the default networks widget uses,
             # so a fresh install's FIRST boot already renders it populated.
             mu.seed_gears_shortcut_folder()
+            # Point Gears' use_viewtypes at THIS skin's view ids, so gears movie/
+            # tvshow lists open in the skin's intended view (else Gears forces its
+            # global default -- e.g. Estuary showed Wall instead of Poster).
+            mu.apply_gears_views_for_skin(skin_id)
             # Flag a one-time skinvariables view rebuild for the next boot. A freshly
             # (re)installed skin (Zephyr/AF3) builds its views on Home load with
             # no_reload, so the display never refreshes -> foreground looks frozen
