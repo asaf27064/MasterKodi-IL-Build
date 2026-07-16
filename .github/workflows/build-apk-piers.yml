@@ -1,0 +1,117 @@
+name: build-apk-piers
+
+# PIERS (Kodi 22) twin of build-apk. Signed Android bootstrap APKs on the Kodi
+# 22.0 Piers Beta1 base (build-inputs-piers release), from the kodi-22-port
+# branch, uploaded to the Asaf-only 'installers-piers' release. The bundled
+# wizard (2.4.78+) detects KODI_MAJOR>=22 and reads manifest-piers.
+
+on:
+  workflow_dispatch:
+    inputs:
+      kodi_version:
+        description: 'Base Kodi version'
+        default: '22.0-Piers_beta1'
+  push:
+    branches: [kodi-22-port]
+    paths:
+      - 'addons/plugin.program.masterkodi.il.wizard/**'
+      - 'addons/service.kodi.il.firstrun/**'
+      - 'installers/android/**'
+      - '.github/workflows/build-apk-piers.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [arm64-v8a, armeabi-v7a]
+      fail-fast: false
+    env:
+      KODI_VER: ${{ github.event.inputs.kodi_version || '22.0-Piers_beta1' }}
+      APKTOOL_VER: '2.12.1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: kodi-22-port
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK (build-tools for zipalign/apksigner)
+        uses: android-actions/setup-android@v3
+
+      - name: Install build-tools 34.0.0
+        run: sdkmanager "build-tools;34.0.0"
+
+      - name: Install Pillow (icon resizing)
+        run: python -m pip install --quiet pillow
+
+      - name: Build addon zips (wizard/firstrun/repo + deps)
+        run: python tools/build_addons.py --repo-root . --out dist
+
+      - name: Fetch base Kodi APK + apktool (from build-inputs-piers release)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          ARCH="${{ matrix.arch }}"
+          gh release download build-inputs-piers --pattern "kodi-${KODI_VER}-${ARCH}.apk" --output base.apk --clobber
+          gh release download build-inputs-piers --pattern "apktool_${APKTOOL_VER}.jar" --output apktool.jar --clobber
+          ls -la base.apk apktool.jar
+
+      - name: Decode keystore
+        env:
+          KS: ${{ secrets.KEYSTORE_B64 }}
+        run: echo "$KS" | base64 -d > kodi-il.keystore
+
+      - name: Resolve zip paths
+        id: zips
+        run: |
+          echo "wizard=$(ls dist/plugin.program.masterkodi.il.wizard-*.zip)" >> "$GITHUB_OUTPUT"
+          echo "service=$(ls dist/service.kodi.il.firstrun-*.zip)" >> "$GITHUB_OUTPUT"
+          echo "repo=$(ls dist/repository.masterkodi.il-*.zip)" >> "$GITHUB_OUTPUT"
+          echo "bt=$ANDROID_SDK_ROOT/build-tools/34.0.0" >> "$GITHUB_OUTPUT"
+
+      - name: Build + sign APK
+        run: |
+          python installers/android/build_kodi_il_apk_v3.py \
+            --kodi-apk base.apk \
+            --apktool-jar apktool.jar \
+            --wizard-zip "${{ steps.zips.outputs.wizard }}" \
+            --service-zip "${{ steps.zips.outputs.service }}" \
+            --repo-zip "${{ steps.zips.outputs.repo }}" \
+            --kodi-addons-dir addons \
+            --build-tools-dir "${{ steps.zips.outputs.bt }}" \
+            --keystore kodi-il.keystore \
+            --alias "${{ secrets.KEYSTORE_ALIAS }}" \
+            --storepass "${{ secrets.KEYSTORE_PASS }}" \
+            --keypass "${{ secrets.KEYSTORE_PASS }}" \
+            --icon installers/android/icon.png \
+            --banner installers/android/banner.png \
+            --splash installers/android/splash.png \
+            --output "MasterKodiIL-Piers-${{ matrix.arch }}.apk"
+
+      - name: Cleanup keystore
+        if: always()
+        run: rm -f kodi-il.keystore
+
+      - name: Upload APK to installers-piers release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view installers-piers >/dev/null 2>&1; then
+            gh release create installers-piers --title "MasterKodi IL - Installers (Piers / Kodi 22)" \
+              --notes "Kodi 22 (Piers) EXE/APK bootstraps. Asaf-only track - NOT linked on the download page." --latest=false
+          fi
+          gh release upload installers-piers "MasterKodiIL-Piers-${{ matrix.arch }}.apk" --clobber

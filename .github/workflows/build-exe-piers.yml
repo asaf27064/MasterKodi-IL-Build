@@ -1,0 +1,79 @@
+name: build-exe-piers
+
+# PIERS (Kodi 22) twin of build-exe. Builds the MasterKodi IL Windows installer
+# on the Kodi 22.0 Piers base (build-inputs-piers release), from the
+# kodi-22-port branch, and uploads to the Asaf-only 'installers-piers' release.
+# The bundled wizard (2.4.78+) detects KODI_MAJOR>=22 and reads manifest-piers.
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [kodi-22-port]
+    paths:
+      - 'addons/plugin.program.masterkodi.il.wizard/**'
+      - 'addons/service.kodi.il.firstrun/**'
+      - 'installers/windows/**'
+      - '.github/workflows/build-exe-piers.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: kodi-22-port
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build addon zips (wizard/firstrun/repo)
+        run: python tools/build_addons.py --repo-root . --out dist
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Fetch + extract Piers build inputs (KodiFiles, portable_data)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download build-inputs-piers --pattern "KodiFiles.tar.gz" --output KodiFiles.tar.gz --clobber
+          gh release download build-inputs-piers --pattern "portable_data_template.tar.gz" --output portable_data_template.tar.gz --clobber
+          mkdir inputs
+          tar -xzf KodiFiles.tar.gz -C inputs
+          tar -xzf portable_data_template.tar.gz -C inputs
+          dir inputs
+
+      - name: Rebrand ISS for Piers (own AppId/dir - installs ALONGSIDE the Omega build)
+        run: |
+          $iss = "installers/windows/MasterKodiIL.iss"
+          $t = Get-Content $iss -Raw
+          $t = $t -replace 'AppId=\{\{A7B2D9C1-2F4E-4C11-9B6E-7D91A1FBC001\}', 'AppId={{B8C3EAD2-3A5F-4D22-AC7F-8EA2B2FCD102}'
+          $t = $t -replace 'AppName=MasterKodi IL', 'AppName=MasterKodi IL Piers'
+          $t = $t -replace 'DefaultDirName=C:\\MasterKodi IL', 'DefaultDirName=C:\MasterKodi IL Piers'
+          Set-Content $iss $t -Encoding utf8
+          Select-String -Path $iss -Pattern 'AppId=|AppName=|DefaultDirName='
+
+      - name: Build installer
+        run: |
+          python installers/windows/build_exe.py `
+            --kodifiles inputs/KodiFiles `
+            --portable inputs/portable_data `
+            --dist dist `
+            --assets installers/windows `
+            --iscc "C:/Program Files (x86)/Inno Setup 6/ISCC.exe" `
+            --sevenzip "C:/Program Files/7-Zip/7z.exe"
+
+      - name: Upload EXE to installers-piers release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if (-not (gh release view installers-piers 2>$null)) {
+            gh release create installers-piers --title "MasterKodi IL - Installers (Piers / Kodi 22)" --notes "Kodi 22 (Piers) EXE/APK bootstraps. Asaf-only track - NOT linked on the download page." --latest=false
+          }
+          Copy-Item "installers/windows/Output/MasterKodiIL_Setup.exe" "MasterKodiIL_Setup_Piers.exe"
+          gh release upload installers-piers "MasterKodiIL_Setup_Piers.exe" --clobber
