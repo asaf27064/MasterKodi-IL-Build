@@ -14,11 +14,6 @@
     <files>
         <default pathversion="1"></default>
         <source>
-            <name>repository.burekasKodi</name>
-            <path pathversion="1">https://burekaskodi.github.io/repository.burekasKodi/</path>
-            <allowsharing>true</allowsharing>
-        </source>
-        <source>
             <name>repository.coco</name>
             <path pathversion="1">https://cocojoe2411.github.io/</path>
             <allowsharing>true</allowsharing>
@@ -41,6 +36,11 @@
         <source>
             <name>repository.jurialmunkey</name>
             <path pathversion="1">https://jurialmunkey.github.io/repository.jurialmunkey/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+        <source>
+            <name>repository.dendygh</name>
+            <path pathversion="1">https://dendygh.github.io/</path>
             <allowsharing>true</allowsharing>
         </source>
         <source>
