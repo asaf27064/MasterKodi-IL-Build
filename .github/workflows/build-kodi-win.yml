@@ -24,6 +24,8 @@ jobs:
     timeout-minutes: 340
     env:
       KODI_TAG: ${{ github.event.inputs.kodi_tag || '21.3-Omega' }}
+      # runner CMake is 4.x now; Kodi 21.3's bundled deps declare <3.5 minimums
+      CMAKE_POLICY_VERSION_MINIMUM: '3.5'
     steps:
       - name: Checkout build repo (patches)
         uses: actions/checkout@v4
