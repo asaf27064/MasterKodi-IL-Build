@@ -129,16 +129,26 @@ jobs:
         if: vars.AUTO_ADOPT == 'true' && steps.check.outputs.has_update == 'true'
         run: python tools/adopt_upstream.py --all-safe --yes --no-build
 
+      - name: Auto-adopt SAFE PIERS updates (gated by AUTO_ADOPT var)
+        id: adoptpiers
+        if: vars.AUTO_ADOPT == 'true' && steps.checkpiers.outputs.has_update == 'true'
+        run: python tools/adopt_upstream.py --all-safe --yes --no-build --overlays-root overlays-piers
+
+      - name: Auto-adopt whitelisted dep updates (gated by AUTO_ADOPT var)
+        id: adoptdeps
+        if: vars.AUTO_ADOPT == 'true'
+        run: python tools/adopt_deps.py
+
       - name: Commit & push adopted bases
-        if: vars.AUTO_ADOPT == 'true' && steps.adopt.outputs.adopted == 'true'
+        if: vars.AUTO_ADOPT == 'true' && (steps.adopt.outputs.adopted == 'true' || steps.adoptpiers.outputs.adopted == 'true' || steps.adoptdeps.outputs.adopted == 'true')
         run: |
           git config user.name "masterkodi-ci"
           git config user.email "ci@masterkodi.local"
-          git add overlays/
+          git add overlays/ overlays-piers/ addons/
           if git diff --cached --quiet; then
             echo "nothing to commit"
           else
-            git commit -m "ci: auto-adopt SAFE upstream update(s): ${{ steps.adopt.outputs.adopted_list }}"
+            git commit -m "ci: auto-adopt upstream update(s): ${{ steps.adopt.outputs.adopted_list }} ${{ steps.adoptpiers.outputs.adopted_list }} ${{ steps.adoptdeps.outputs.adopted_list }}"
             git push origin HEAD:main
             # build-and-release triggers on overlays/** and reships the merged addon
           fi
