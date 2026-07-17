@@ -186,6 +186,10 @@ def check_one(overlay_dir, target=None):
 # versions meant for a newer Kodi.
 _JURIAL_OMEGA = 'https://raw.githubusercontent.com/jurialmunkey/repository.jurialmunkey/master/omega/zips/addons.xml'
 DEPS_WATCH = [
+    # skin.nimbus is our committed FORK (no base.json) -> the overlay watcher
+    # never sees ivarbrandt move; he publishes no releases, so watch master.
+    ('skin.nimbus',
+     'https://raw.githubusercontent.com/ivarbrandt/skin.nimbus/master/addon.xml', 'github_addon_xml'),
     ('plugin.video.themoviedb.helper', _JURIAL_OMEGA, 'addons_xml'),
     ('script.skinvariables', _JURIAL_OMEGA, 'addons_xml'),
     ('script.module.jurialmunkey', _JURIAL_OMEGA, 'addons_xml'),
@@ -204,6 +208,9 @@ def _dep_latest(aid, url, kind):
         m = re.search(r'id="%s"[^>]*version="([^"]+)"' % re.escape(aid), data)
         if not m:
             m = re.search(r'version="([^"]+)"[^>]*id="%s"' % re.escape(aid), data)
+        return m.group(1) if m else None
+    if kind == 'github_addon_xml':
+        m = re.search(r'<addon[^>]*?version="([0-9][0-9.]*)"', data, re.S)
         return m.group(1) if m else None
     if kind == 'kodi_dir':
         vers = re.findall(r'%s-([0-9][0-9.]*)\.zip' % re.escape(aid), data)
