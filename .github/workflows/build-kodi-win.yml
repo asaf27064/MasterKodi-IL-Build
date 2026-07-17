@@ -98,6 +98,10 @@ jobs:
         run: make-mingwlibs.bat noprompt
 
       - name: Build Kodi (no binary addons)
+        # continue-on-error: the FINAL step of BuildSetup.bat packages an NSIS
+        # installer we do not need (no NSIS on the runner -> nonzero exit) AFTER
+        # kodi.exe is already built. The locate step below is the real gate.
+        continue-on-error: true
         shell: cmd
         working-directory: xbmc\tools\buildsteps\windows\x64
         run: BuildSetup.bat clean noprompt nobinaryaddons
