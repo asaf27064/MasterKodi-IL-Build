@@ -527,6 +527,38 @@ def _apply_removals(manifest, state):
     return removed
 
 
+# Legacy third-party repos left behind by OLD builds users migrated from.
+# All are broken on Kodi 21 (pre-<dir> schema / no 21.3 directory) so they can't
+# serve addons -- but Kodi still scans them every boot/update pass, spawning
+# python invokers and log spam at the worst moments (seen in the Android crash
+# window). Exact ids only; anything not listed is never touched.
+JUNK_REPOS = (
+    'repository.burekasKodi',
+    'repository.funstersplace',      # also plain-HTTP = insecure
+    'repository.jenrepo',
+    'repository.universalscrapers',
+)
+
+
+def remove_junk_repos():
+    """Remove known-dead legacy repos (folder + DB rows). Idempotent, runs every
+    update check; returns the list of ids actually removed this pass."""
+    removed = []
+    for aid in JUNK_REPOS:
+        folder = os.path.join(ADDONS_PATH, aid)
+        present = os.path.isdir(folder)
+        if present:
+            import shutil
+            shutil.rmtree(folder, ignore_errors=True)
+        # DB rows can outlive the folder (or exist for a packaged install) --
+        # clear them whenever either exists.
+        if present:
+            _db_remove_addon(aid)
+            removed.append(aid)
+            log('removed junk legacy repo: %s' % aid)
+    return removed
+
+
 def _db_remove_addon(aid):
     import sqlite3
     dbdir = xbmcvfs.translatePath('special://database/')
@@ -862,7 +894,10 @@ def run_update(silent=False, notify=None, force=False, no_reload=False):
     # Uninstall addons we previously installed that are no longer in the build
     # (e.g. DarkSubs removed) - runs even when everything else is up to date.
     removed = _apply_removals(manifest, state)
-    if removed:
+    # Purge broken legacy repos old builds left behind (they can't serve addons
+    # on 21 but Kodi scans them every pass -- python-invoker noise + insecure).
+    junk = remove_junk_repos()
+    if removed or junk:
         _save_state(state)
         xbmc.executebuiltin('UpdateLocalAddons')
 
