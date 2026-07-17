@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-16T20:18:07Z",
+  "generated_utc": "2026-07-17T08:07:30Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -54,12 +54,12 @@
     },
     {
       "id": "plugin.video.gears",
-      "version": "2.3.5",
+      "version": "2.3.6",
       "channel": "core",
-      "zip": "plugin.video.gears-2.3.5.zip",
-      "sha256": "b53994165be943072013f2d96eb3b378fa56f107e622881d670185dc3afcb12e",
-      "size": 9178141,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.gears-2.3.5.zip"
+      "zip": "plugin.video.gears-2.3.6.zip",
+      "sha256": "04ae13a7a444570109c94714f05d7d2f36a71338c0e35c3d5641bc807da100a6",
+      "size": 9178314,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.gears-2.3.6.zip"
     },
     {
       "id": "plugin.video.themoviedb.helper",
@@ -522,10 +522,10 @@
     }
   ],
   "config": {
-    "version": "27",
-    "zip": "config-27.zip",
+    "version": "28",
+    "zip": "config-28.zip",
     "sha256": "fbf64d3fa4de6925d219600f620d7d7041296370f090914d07cac4e47e0aa644",
     "size": 34143,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-27.zip"
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-28.zip"
   }
 }
