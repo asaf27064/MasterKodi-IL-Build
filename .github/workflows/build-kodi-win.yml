@@ -59,7 +59,7 @@ jobs:
           echo '@"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -products * -version "[17.0,18.0)" %*' > /c/kodivs/vswhere.cmd
           cat /c/kodivs/vswhere.cmd
           f=xbmc/tools/buildsteps/windows/vswhere.bat
-          sed -i 's|^SET vswhere=.*|SET vswhere=C:\kodivs\vswhere.cmd|' "$f"
+          sed -i 's|^SET vswhere=.*|SET vswhere="C:/kodivs/vswhere.cmd"|' "$f"
           grep -n "kodivs" "$f"
 
       - name: Apply python-crash patches
