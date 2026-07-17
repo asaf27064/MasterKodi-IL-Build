@@ -176,7 +176,85 @@ def check_one(overlay_dir, target=None):
     return res
 
 
+# --------------------------------------------------------------------------- #
+# plain-dep watch (alert-only)
+# --------------------------------------------------------------------------- #
+# Deps we ship in addons/ that have NO overlay/base.json, so the main watcher
+# never sees them age. Alert-only: adoption is always a human decision (bump
+# the tree in addons/, CI reships via the manifest). Sources are per-Kodi-branch
+# where upstream offers one (jurialmunkey omega endpoint) so we never alert on
+# versions meant for a newer Kodi.
+_JURIAL_OMEGA = 'https://raw.githubusercontent.com/jurialmunkey/repository.jurialmunkey/master/omega/zips/addons.xml'
+DEPS_WATCH = [
+    ('plugin.video.themoviedb.helper', _JURIAL_OMEGA, 'addons_xml'),
+    ('script.skinvariables', _JURIAL_OMEGA, 'addons_xml'),
+    ('script.module.jurialmunkey', _JURIAL_OMEGA, 'addons_xml'),
+    ('script.module.infotagger', _JURIAL_OMEGA, 'addons_xml'),
+    ('script.skinshortcuts', 'https://mirrors.kodi.tv/addons/omega/script.skinshortcuts/', 'kodi_dir'),
+    ('script.module.cocoscrapers',
+     'https://raw.githubusercontent.com/not-coco-joe/repository.cocoscrapers/master/zips/addons.xml', 'addons_xml'),
+    ('script.module.gearsscrapers',
+     'https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/addons.xml', 'addons_xml'),
+]
+
+
+def _dep_latest(aid, url, kind):
+    data = _get(url).decode('utf-8', 'replace')
+    if kind == 'addons_xml':
+        m = re.search(r'id="%s"[^>]*version="([^"]+)"' % re.escape(aid), data)
+        if not m:
+            m = re.search(r'version="([^"]+)"[^>]*id="%s"' % re.escape(aid), data)
+        return m.group(1) if m else None
+    if kind == 'kodi_dir':
+        vers = re.findall(r'%s-([0-9][0-9.]*)\.zip' % re.escape(aid), data)
+        return max(vers, key=_semver) if vers else None
+    return None
+
+
+def _dep_current(addons_root, aid):
+    import xml.etree.ElementTree as ET
+    try:
+        return ET.parse(os.path.join(addons_root, aid, 'addon.xml')).getroot().get('version')
+    except Exception:
+        return None
+
+
+def check_deps(addons_root='addons'):
+    lines = ['# MasterKodi IL - dep watch (informational)', '']
+    has_update = False
+    for aid, url, kind in DEPS_WATCH:
+        cur = _dep_current(addons_root, aid)
+        if not cur:
+            lines.append('- **%s**: not in addons/ (skipped)' % aid)
+            continue
+        try:
+            latest = _dep_latest(aid, url, kind)
+        except Exception as e:
+            lines.append('- **%s**: error - %s' % (aid, e))
+            continue
+        if not latest:
+            lines.append('- **%s**: could not determine upstream latest' % aid)
+        elif _semver(latest) > _semver(cur):
+            has_update = True
+            lines.append('- **%s**: %s -> **%s available**' % (aid, cur, latest))
+        else:
+            lines.append('- **%s**: up to date (%s)' % (aid, cur))
+    summary = '\n'.join(lines)
+    print(summary)
+    out = os.environ.get('GITHUB_OUTPUT')
+    if out:
+        sf = os.path.join(os.getcwd(), 'upstream_summary_deps.md')
+        with open(sf, 'w', encoding='utf-8') as fh:
+            fh.write(summary + '\n')
+        with open(out, 'a', encoding='utf-8') as fh:
+            fh.write('has_update=%s\n' % ('true' if has_update else 'false'))
+            fh.write('summary_file=%s\n' % sf)
+    return 0
+
+
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == '--deps':
+        return check_deps()
     overlays_dir = sys.argv[1] if len(sys.argv) > 1 else 'overlays'
     results = []
     for name in sorted(os.listdir(overlays_dir)):
