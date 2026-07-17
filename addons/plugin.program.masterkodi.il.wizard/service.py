@@ -111,6 +111,30 @@ def _process_pending_view_rebuild():
     # the rebuild forever and the widgets stayed dead on every later boot.
     try:
         skin = cur_skin
+        # Deferred skin-visual config (armed by _maybe_apply_config): re-apply
+        # the stashed active-skin settings BEFORE the rebuild+reload below.
+        # Mid-session apply gets clobbered by Kodi's exit-save; boot-time apply
+        # + the single reload below is the safe path.
+        stash_applied = False
+        force_hash_clear = False
+        base = xbmcvfs.translatePath('special://userdata/addon_data/')
+        try:
+            fflag = os.path.join(base, ADDON_ID, 'pending_view_rebuild_force')
+            if os.path.isfile(fflag):
+                force_hash_clear = True
+                os.remove(fflag)
+            sdir = os.path.join(base, ADDON_ID, 'pending_skin_config')
+            sfile = os.path.join(sdir, 'settings.xml')
+            tfile = os.path.join(sdir, 'target.txt')
+            if os.path.isfile(sfile) and os.path.isfile(tfile):
+                target_path = open(tfile, encoding='utf-8').read().strip()
+                if target_path:
+                    shutil.copy2(sfile, target_path)
+                    stash_applied = True
+                    log("applied deferred skin settings from config stash")
+                shutil.rmtree(sdir, ignore_errors=True)
+        except Exception as e:
+            log(f"config stash apply failed: {e}", xbmc.LOGWARNING)
         # Only skins that actually DEPEND on script.skinshortcuts (Zephyr)
         # compile their menu into script-skinshortcuts-includes.xml on first
         # Home load. A folder named shortcuts/ is NOT the signal -- AF3 has one
@@ -180,15 +204,23 @@ def _process_pending_view_rebuild():
                 xbmc.executebuiltin('RunScript(script.skinvariables,action=buildtemplate,no_reload=true)')
                 xbmc.Monitor().waitForAbort(3)   # let the template write finish before buildviews
             # buildviews hash-skips (silently, no reload) unless the stored
-            # skinviewtypes hashes are cleared. Clear them ONLY for
-            # skinshortcuts-driven skins (Zephyr), whose display genuinely
-            # needs the forced rebuild + reload; AF3/Nimbus self-build and
-            # display fine -- forcing there just adds a redundant splash.
-            if uses_ss:
+            # skinviewtypes hashes are cleared. Clear them for skinshortcuts-
+            # driven skins (Zephyr) whose display needs the forced rebuild +
+            # reload -- and ALSO whenever the marker came from a config-driven
+            # viewtypes change (force flag): the hash covers only the SKIN's
+            # json, so a new config-delivered userdata viewtypes.json never
+            # triggers a rebuild on its own (the 'views not applied via update'
+            # bug on the Xiaomi).
+            if uses_ss or force_hash_clear:
                 xbmc.executebuiltin('Skin.SetString(script-skinviewtypes-hash,)')
                 xbmc.executebuiltin('Skin.SetString(script-skinviewtypes-checksum,)')
             log("post-install: rebuilding skin views (buildviews)")
             xbmc.executebuiltin('RunScript(script.skinvariables,action=buildviews)')
+        elif stash_applied:
+            # non-skinvariables skin (Estuary/Nimbus): nothing to rebuild, but
+            # the deferred settings need ONE boot-time reload to take effect
+            xbmc.sleep(1000)
+            xbmc.executebuiltin('ReloadSkin()')
     except Exception as e:
         log(f"post-install view rebuild failed: {e}", xbmc.LOGWARNING)
     try:

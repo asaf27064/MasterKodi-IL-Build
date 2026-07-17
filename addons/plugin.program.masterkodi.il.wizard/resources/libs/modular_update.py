@@ -860,11 +860,10 @@ def _finalize_reload(summary):
         except Exception:
             pass
     elif need_config_reload:
-        # config-only change that may have touched the active skin -> quiet reload
-        try:
-            xbmc.executebuiltin('ReloadSkin()')
-        except Exception:
-            pass
+        # config-only change: NO mid-session reload (crash window). Skin-visual
+        # parts are deferred to the boot-time rebuild flow; everything else is
+        # already live on disk.
+        pass
 
 
 def run_update(silent=False, notify=None, force=False, no_reload=False):
@@ -919,12 +918,11 @@ def run_update(silent=False, notify=None, force=False, no_reload=False):
         # self-heal an empty skinshortcuts home menu (nothing was re-extracted
         # here, so a missing includes file means the boot build never landed)
         menu_repaired = repair_skin_menu(no_reload=no_reload)
-        # a real config-version bump can change ACTIVE-skin settings (e.g. home
-        # view); reload so Kodi reads them now instead of clobbering settings.xml
-        # from stale memory on exit. Gated on a version bump so ordinary wizard
-        # updates don't reload the skin.
-        if cfg_applied and cfg_bumped and not menu_repaired and not no_reload:
-            xbmc.executebuiltin('ReloadSkin()')
+        # NOTE (2026-07-17): the old post-config ReloadSkin here was REMOVED --
+        # a mid-session reload is the CPythonInvoker crash window (it killed the
+        # Xiaomi mid-stop tonight the moment config 29 landed). Skin-visual
+        # changes are now deferred+stashed by _maybe_apply_config and applied by
+        # the boot-time pending_view_rebuild flow with ONE safe reload.
         return {'ok': True, 'applied': [], 'failed': [], 'removed': removed,
                 'enabled': enabled, 'menu_repaired': menu_repaired,
                 'config_applied': cfg_applied,
@@ -971,10 +969,8 @@ def run_update(silent=False, notify=None, force=False, no_reload=False):
     # self-heal an empty skinshortcuts home menu. Runs AFTER any skin re-extract
     # above, so the rebuilt includes are not clobbered.
     menu_repaired = repair_skin_menu(no_reload=no_reload)
-    # reload so an active-skin settings change from a config bump takes effect now
-    # (unless the skin was re-extracted or the menu repaired -> already reloading)
-    if cfg_applied and cfg_bumped and not menu_repaired and not skin_changed and not no_reload:
-        xbmc.executebuiltin('ReloadSkin()')
+    # NOTE (2026-07-17): post-config ReloadSkin removed here too (crash window;
+    # see the note in the no-updates path above). Deferred to boot.
 
     summary = {
         'ok': not failed,
@@ -1068,6 +1064,7 @@ def _apply_policy(zf, policy, home, fresh):
     import tempfile, shutil
     mode_key = 'fresh' if fresh else 'update'
     applied = []
+    _defer = {'viewtypes': False, 'skin_settings': False}
     for entry in policy.get('files', []):
         src = entry.get('src'); dest_rel = entry.get('dest')
         if not src or not dest_rel:
@@ -1086,6 +1083,12 @@ def _apply_policy(zf, policy, home, fresh):
         dest = os.path.join(home, dest_rel.replace('/', os.sep))
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         exclude = set(entry.get('exclude_ids', []))
+        prev_bytes = None
+        try:
+            with open(dest, 'rb') as fh:
+                prev_bytes = fh.read()
+        except Exception:
+            pass
         if mode == 'replace':
             with open(dest, 'wb') as fh:
                 fh.write(src_bytes)
@@ -1100,6 +1103,48 @@ def _apply_policy(zf, policy, home, fresh):
         elif mode == 'merge_name':
             _merge_named_xml(src_bytes, dest)
         applied.append('%s(%s)' % (dest_rel, mode))
+        # --- detect skin-VISUAL config changes for deferred handling. A
+        # mid-session ReloadSkin is the CPythonInvoker crash window (16 dumps,
+        # lab-proven: any reload during widget/plugin activity can kill Kodi
+        # 21.3), and viewtypes changes need a forced includes-rebuild the
+        # normal flow never does. Both are handled at NEXT BOOT by the
+        # pending_view_rebuild flow instead. ---
+        if not fresh:
+            try:
+                cur_bytes = None
+                try:
+                    with open(dest, 'rb') as fh:
+                        cur_bytes = fh.read()
+                except Exception:
+                    pass
+                changed = (cur_bytes is not None and cur_bytes != prev_bytes)
+                if changed and dest_rel.endswith('-viewtypes.json') \
+                        and 'script.skinvariables' in dest_rel:
+                    _defer['viewtypes'] = True
+                askin = _active_skin()
+                if changed and askin \
+                        and dest_rel == 'userdata/addon_data/%s/settings.xml' % askin:
+                    # Kodi's exit-save clobbers this file from memory; stash the
+                    # post-merge result so the boot flow can re-apply it and do
+                    # ONE safe boot-time reload.
+                    sdir = os.path.join(ADDON_DATA, 'pending_skin_config')
+                    os.makedirs(sdir, exist_ok=True)
+                    shutil.copy2(dest, os.path.join(sdir, 'settings.xml'))
+                    _write_text(os.path.join(sdir, 'target.txt'), dest)
+                    _defer['skin_settings'] = True
+            except Exception as e:
+                log('skin-visual defer detect failed: %s' % e, xbmc.LOGWARNING)
+    if (not fresh) and (_defer['viewtypes'] or _defer['skin_settings']):
+        try:
+            _write_text(os.path.join(ADDON_DATA, 'pending_view_rebuild'),
+                        _active_skin() or '')
+            # config-driven viewtypes need the hash-clear on EVERY skinvariables
+            # skin (not just skinshortcuts ones) -- flag it for the boot flow
+            _write_text(os.path.join(ADDON_DATA, 'pending_view_rebuild_force'), '1')
+            log('deferred skin-visual config to next boot (%s)' %
+                ','.join(k for k, v in _defer.items() if v))
+        except Exception as e:
+            log('could not arm view-rebuild marker: %s' % e, xbmc.LOGWARNING)
     # Gears settings.db enforcement (our extension)
     gs = policy.get('gears_settings')
     if gs:
