@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-17T14:31:38Z",
+  "generated_utc": "2026-07-17T15:56:02Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -45,12 +45,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.83",
+      "version": "2.4.84",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.83.zip",
-      "sha256": "61eac8e1e1b41d957c7f0d5ebac21216792d31dba9528bd87031f502538f4ad9",
-      "size": 2374063,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.83.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.84.zip",
+      "sha256": "e5b7b5dabe084790ecb6ae294b72be33ebd3a598a9305a77904dd2dce81a6cb8",
+      "size": 2373433,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.84.zip"
     },
     {
       "id": "plugin.video.gears",
@@ -246,8 +246,8 @@
       "version": "2023.5.7",
       "channel": "core",
       "zip": "script.module.certifi-2023.5.7.zip",
-      "sha256": "7ed4e959b5118c1cd11d647844fda9cd3a8584708eb29f04d82232090cf2a65a",
-      "size": 10438,
+      "sha256": "76423abc9bd55a65040f1ca0590375528b933f5f9392e9cdd8431537e6a63326",
+      "size": 162689,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.certifi-2023.5.7.zip"
     },
     {
@@ -533,8 +533,8 @@
   "config": {
     "version": "29",
     "zip": "config-29.zip",
-    "sha256": "c57664c9d1410fdbd5289f432dca5ac32410cf4546f1a8bcf61512f63851dfbb",
-    "size": 34137,
+    "sha256": "e7c060e8a2cac408de3ba290191c747b6f62fdec5620dec218c739dcc427fb86",
+    "size": 34123,
     "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-29.zip"
   }
 }
