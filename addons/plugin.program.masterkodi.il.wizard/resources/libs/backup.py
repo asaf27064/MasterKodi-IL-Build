@@ -57,8 +57,12 @@ class BackupManager:
              f'addon_data/{C.GEARS_ADDON_ID}/settings.xml'),
             ('מפתח Gemini + כתוביות AI', _addon_settings_file(C.GEARSAI_ADDON_ID),
              f'addon_data/{C.GEARSAI_ADDON_ID}/settings.xml'),
-            ('הגדרות סקין', _addon_settings_file(C.ARCTIC_FUSE_SKIN_ID),
-             f'addon_data/{C.ARCTIC_FUSE_SKIN_ID}/settings.xml'),
+            # ALL optional skins' settings, not just AF3 (pre-multi-skin residue
+            # backed up AF3 even when the user ran Zephyr/Nimbus)
+            *[(f'הגדרות סקין ({sid})', _addon_settings_file(sid),
+               f'addon_data/{sid}/settings.xml')
+              for sid in ('skin.arctic.fuse.3', 'skin.nimbus',
+                          'skin.arctic.zephyr.2.resurrection.mod', 'skin.estuary')],
             ('מצב האשף (גרסאות עברית)', _addon_settings_file(C.ADDON_ID),
              f'addon_data/{C.ADDON_ID}/settings.xml'),
             ('guisettings.xml', C.GUISETTINGS, 'guisettings.xml'),

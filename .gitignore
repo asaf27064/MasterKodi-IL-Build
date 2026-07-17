@@ -14,6 +14,9 @@ addons/skin.arctic.zephyr.2.resurrection.mod/
 *.keystore
 *.jks
 *.pem
+# certifi CA bundle is ADDON CONTENT, not a secret -- without it
+# certifi.where() points at a missing file and SSL verify breaks
+!addons/script.module.certifi/lib/certifi/cacert.pem
 *.key
 secrets.json
 **/tokens.json

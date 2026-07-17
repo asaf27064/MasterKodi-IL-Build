@@ -1,3 +1,0 @@
-- [MasterKodi build repo](masterkodi-build-repo.md) — new consolidated auto-update repo + CI-built EXE/APK (the update model as of 2026-07)
-- [Local-first workflow](local-first-workflow.md) — no pushes until Asaf tests locally and approves
-- [Moran wizard reference](moran-wizard-reference.md) — POV-IL install path + KEEP-data framework we borrow from

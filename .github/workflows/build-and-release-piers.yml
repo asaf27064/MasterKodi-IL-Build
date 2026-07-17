@@ -98,7 +98,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload addons-piers manifest-piers.json --clobber
+          # zips FIRST, manifest LAST: a mid-loop failure must never leave a
+          # published manifest advertising hashes the release doesn't hold yet
           if [ -s dist/changed.txt ]; then
             while IFS= read -r z; do
               [ -z "$z" ] && continue
@@ -108,20 +109,7 @@ jobs:
           else
             echo "no changed assets to upload"
           fi
-
-      - name: Prune orphan release assets
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          # delete any release asset not referenced by the current manifest
-          # (keep manifest-piers.json itself)
-          gh release view addons-piers --json assets -q '.assets[].name' | while IFS= read -r name; do
-            [ "$name" = "manifest-piers.json" ] && continue
-            if ! grep -qxF "$name" dist/valid_assets.txt; then
-              echo "pruning orphan asset: $name"
-              gh release delete-asset addons-piers "$name" -y || true
-            fi
-          done
+          gh release upload addons-piers manifest-piers.json --clobber
 
       - name: Commit manifest-piers.json
         run: |
@@ -142,3 +130,19 @@ jobs:
               sleep 5
             done
           fi
+
+      - name: Prune orphan release assets
+        # AFTER the manifest commit on purpose: pruning first meant a lost
+        # push race left main's manifest pointing at freshly-deleted zips
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # delete any release asset not referenced by the current manifest
+          # (keep manifest-piers.json itself)
+          gh release view addons-piers --json assets -q '.assets[].name' | while IFS= read -r name; do
+            [ "$name" = "manifest-piers.json" ] && continue
+            if ! grep -qxF "$name" dist/valid_assets.txt; then
+              echo "pruning orphan asset: $name"
+              gh release delete-asset addons-piers "$name" -y || true
+            fi
+          done

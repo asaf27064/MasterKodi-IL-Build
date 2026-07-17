@@ -71,6 +71,7 @@
         "script.module.infotagger",
         "script.module.addon.signals",
         "script.module.qrcode",
+        "script.module.six",
         "resource.images.studios.white",
         "resource.images.moviegenreicons.transparent",
         "resource.images.moviecountryicons.maps",

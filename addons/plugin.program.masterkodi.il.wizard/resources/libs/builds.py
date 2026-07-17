@@ -326,10 +326,19 @@ class BuildManager:
             db_path = xbmcvfs.translatePath('special://database/')
             addon_db = None
             
-            # Find latest Addons database
+            # Find latest Addons database -- pick the HIGHEST schema number,
+            # not whatever os.listdir happens to yield last (a box migrated
+            # across Kodi majors can have several Addons*.db side by side)
+            best = -1
             for f in os.listdir(db_path):
                 if f.startswith('Addons') and f.endswith('.db'):
-                    addon_db = os.path.join(db_path, f)
+                    try:
+                        num = int(f[len('Addons'):-len('.db')])
+                    except ValueError:
+                        continue
+                    if num > best:
+                        best = num
+                        addon_db = os.path.join(db_path, f)
             
             if not addon_db or not os.path.exists(addon_db):
                 log("Addons database not found", xbmc.LOGWARNING)
@@ -775,8 +784,15 @@ class BuildManager:
                 progress_dialog.update(pct, f"[COLOR yellow]{title}[/COLOR]\n{extracted}/{total} קבצים")
         
         zin.close()
-        
+
         log(f"Extraction complete. Extracted: {extracted}, Errors: {errors}")
+        # A handful of per-file errors (locked thumbnail etc.) is survivable;
+        # a burst means disk-full/permissions AFTER the wipe already ran --
+        # reporting success there ends with a "complete" install on a gutted
+        # box. Fail loudly instead so the caller shows the error path.
+        if errors and (extracted == 0 or errors >= max(10, total // 50)):
+            log(f"Extraction FAILED: {errors} errors out of {total} entries", xbmc.LOGERROR)
+            return False, errors
         return True, errors
 
     def set_default_skin(self, skin_id):
@@ -873,10 +889,31 @@ class BuildManager:
     # Optional skins the build can switch to. Estuary is the baked-in default.
     # url_key = the field name in build_info (from build.txt) holding the zip URL.
     OPTIONAL_SKINS = {
+        # AF3/Nimbus: Omega installs the one-zip CI bundle (url_key); on Piers
+        # the bundle carries gui-5.17 skins + skinshortcuts 2.0.3 which CANNOT
+        # load on Kodi 22 -- manifest_install routes Piers to manifest-piers
+        # (gui-5.18 overlays), same gate Zephyr uses. deps = the skin's full
+        # import closure inside the manifest (verified against manifest-piers).
         'arctic': {'id': 'skin.arctic.fuse.3', 'name': 'Arctic Fuse',
-                   'url_key': 'skin_url', 'zip': 'arctic_fuse.zip'},
+                   'url_key': 'skin_url', 'zip': 'arctic_fuse.zip',
+                   'manifest_install': True,
+                   'deps': ['script.skinvariables', 'script.texturemaker',
+                            'plugin.video.themoviedb.helper',
+                            'script.module.jurialmunkey', 'script.module.infotagger',
+                            'script.module.addon.signals', 'script.module.qrcode',
+                            'script.module.requests', 'script.module.urllib3',
+                            'script.module.certifi', 'script.module.chardet',
+                            'script.module.idna', 'script.module.six',
+                            'resource.images.weathericons.white',
+                            'resource.images.studios.coloured',
+                            'resource.font.robotocjksc']},
         'nimbus': {'id': 'skin.nimbus', 'name': 'Nimbus',
-                   'url_key': 'nimbus_skin_url', 'zip': 'nimbus.zip'},
+                   'url_key': 'nimbus_skin_url', 'zip': 'nimbus.zip',
+                   'manifest_install': True,
+                   'deps': ['script.nimbus.helper', 'script.module.requests',
+                            'script.module.urllib3', 'script.module.certifi',
+                            'script.module.chardet', 'script.module.idna',
+                            'script.module.six']},
         # Zephyr's deps aren't bundled in a single build.txt zip like AF3/Nimbus,
         # so it installs the skin + its deps straight from the manifest.
         'zephyr': {'id': 'skin.arctic.zephyr.2.resurrection.mod', 'name': 'Arctic Zephyr',
@@ -893,6 +930,9 @@ class BuildManager:
                             # service crashes ("No module named 'jurialmunkey'").
                             'script.module.jurialmunkey', 'script.module.infotagger',
                             'script.module.addon.signals', 'script.module.qrcode',
+                            # qrcode hard-requires six -- without it a fresh
+                            # Zephyr install crashes until the next update pass
+                            'script.module.six',
                             'resource.images.studios.white',
                             'resource.images.moviegenreicons.transparent',
                             'resource.images.moviecountryicons.maps',
@@ -1100,6 +1140,18 @@ class BuildManager:
 
     def install_skin_only(self, skin_url):
         """Install Arctic Fuse skin on existing build (no wipe)"""
+        # Kodi 22: the build.txt bundle is the OMEGA one (gui 5.17 +
+        # skinshortcuts 2.0.3) -- installing it here would reboot the box into
+        # an unloadable skin. Route through the manifest like every other
+        # Piers skin install.
+        if _kodi_major() >= 22:
+            cfg = self.OPTIONAL_SKINS['arctic']
+            if not self._install_from_manifest(cfg['id'], cfg.get('deps', []), cfg['name']):
+                return False
+            self.set_default_skin(cfg['id'])
+            ADDON.setSetting('installed_skin', cfg['name'])
+            self._countdown_restart(self.get_installed_build_name(), cfg['name'])
+            return True
         progress = xbmcgui.DialogProgress()
         progress.create(ADDON_NAME, "[COLOR cyan]מתקין סקין Arctic Fuse...[/COLOR]")
         
@@ -1207,9 +1259,17 @@ class BuildManager:
             progress = xbmcgui.DialogProgress()
             progress.create(ADDON_NAME, f"[COLOR cyan]מתקין {name}...[/COLOR]")
             state = mu._load_state()
+            # A swallowed failure here used to still return True -- the caller
+            # would then switch lookandfeel.skin to a skin that never landed on
+            # disk and restart into an unloadable skin. Track failures: the skin
+            # itself (or a missing manifest entry for it) is fatal; a failed dep
+            # is fatal too -- a skin whose dep is missing can't load either.
+            failed = []
             for i, aid in enumerate(ids):
                 entry = by_id.get(aid)
                 if not entry:
+                    if aid == addon_id:
+                        failed.append(aid)
                     continue
                 progress.update(int(i / max(len(ids), 1) * 100), f"[COLOR yellow]מתקין: {aid}[/COLOR]")
                 try:
@@ -1219,7 +1279,18 @@ class BuildManager:
                     state[aid] = entry['sha256']
                 except Exception as e:
                     log(f"manifest install {aid} failed: {e}", xbmc.LOGWARNING)
+                    # already-installed addons are fine even if the re-download
+                    # failed -- only count it when nothing usable is on disk
+                    if not os.path.isfile(os.path.join(ADDONS, aid, 'addon.xml')):
+                        failed.append(aid)
             mu._save_state(state)
+            if failed:
+                progress.close()
+                log(f"manifest install of {addon_id} FAILED, missing: {failed}", xbmc.LOGERROR)
+                self.dialog.ok(ADDON_NAME,
+                               f"[COLOR {COLOR_ERROR}]התקנת {name} נכשלה![/COLOR]\n"
+                               "לא בוצע שינוי סקין. נסו שוב מאוחר יותר.")
+                return False
             # CRITICAL: freshly-extracted addons are added to Kodi as DISABLED.
             # A disabled skin (or disabled dep) can't load -> "failed to load skin
             # / missing files" and Kodi reverts to Estuary. Enable them all (deps
@@ -1656,9 +1727,10 @@ _SKIN_CATALOG = [
 _OPTIONAL_SKIN_IDS = {'skin.arctic.fuse.3', 'skin.nimbus',
                       'skin.arctic.zephyr.2.resurrection.mod'}
 
-# Skins with NO Piers (Kodi 22) build upstream yet -- hidden from the picker
-# there so a user can't install a skin that cannot load (gui API 5.17 vs 5.18).
-_NO_PIERS_SKIN_IDS = {'skin.arctic.fuse.3', 'skin.nimbus'}
+# (AF3/Nimbus used to be hidden on Kodi 22 -- no loadable Piers build existed.
+# manifest-piers now ships gui-5.18 variants of all four skins and every
+# install path routes Piers through the manifest, so the picker offers them
+# everywhere.)
 
 
 def _kodi_major():
@@ -1712,9 +1784,7 @@ def _skin_switch_flow():
         active = ''
 
     picker, meta = [], []
-    catalog = [row for row in _SKIN_CATALOG
-               if not (_kodi_major() >= 22 and row[2] in _NO_PIERS_SKIN_IDS)]
-    for key, name, sid, img in catalog:
+    for key, name, sid, img in _SKIN_CATALOG:
         installed = _skin_installed(sid)
         # 'active' is the lookandfeel.skin SETTING -- if that skin is missing
         # on disk Kodi is actually running a fallback, so treat it as not

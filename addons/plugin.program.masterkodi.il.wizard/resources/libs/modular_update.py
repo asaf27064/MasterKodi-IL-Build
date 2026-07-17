@@ -509,6 +509,23 @@ def _apply_removals(manifest, state):
     """
     manifest_ids = {a['id'] for a in manifest.get('addons', [])}
     tracked = [k for k in list(state.keys()) if not k.startswith('__')]
+    # SANITY GATE: a manifest is trusted for REMOVALS only if it looks like a
+    # real build manifest. A truncated-but-valid-JSON publish (half-written
+    # addons array, missing config) must never strip the fleet -- installs are
+    # additive and safe, removals are not. Real removals arrive one or two at
+    # a time; a burst is a glitch, not a decision.
+    would_remove = [aid for aid in tracked
+                    if aid not in manifest_ids and aid not in NEVER_REMOVE]
+    if would_remove:
+        if len(manifest_ids) < 30 or not manifest.get('config'):
+            log('removals SKIPPED: manifest looks implausible (%d addons, config=%s)'
+                % (len(manifest_ids), bool(manifest.get('config'))), xbmc.LOGWARNING)
+            return []
+        if len(would_remove) > 5:
+            log('removals SKIPPED: %d tracked addons vanished at once (%s...) -- '
+                'refusing mass removal' % (len(would_remove), would_remove[:5]),
+                xbmc.LOGWARNING)
+            return []
     removed = []
     for aid in tracked:
         if aid in manifest_ids or aid in NEVER_REMOVE:
@@ -551,9 +568,10 @@ def remove_junk_repos():
             import shutil
             shutil.rmtree(folder, ignore_errors=True)
         # DB rows can outlive the folder (or exist for a packaged install) --
-        # clear them whenever either exists.
+        # always clear them, folder or not (a folderless DB row still shows the
+        # junk repo in Kodi's addon list).
+        _db_remove_addon(aid)
         if present:
-            _db_remove_addon(aid)
             removed.append(aid)
             log('removed junk legacy repo: %s' % aid)
     return removed
@@ -879,6 +897,14 @@ def run_update(silent=False, notify=None, force=False, no_reload=False):
         if notify:
             try: notify(msg)
             except Exception: pass
+
+    # Unknown Kodi major (BuildVersion parse failed) would silently fall back
+    # to the OMEGA manifest + skip every kodi_min/kodi_max gate -- on a Piers
+    # box that's the wrong fleet. Do nothing this pass; the next boot resolves.
+    if KODI_MAJOR == 0:
+        log('run_update skipped: could not determine Kodi major version', xbmc.LOGWARNING)
+        return {'ok': False, 'skipped': 'unknown kodi version',
+                'applied': [], 'failed': [], 'removed': []}
 
     try:
         manifest = fetch_manifest()

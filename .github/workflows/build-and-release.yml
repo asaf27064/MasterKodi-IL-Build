@@ -96,8 +96,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # manifest is always refreshed on the release for clients that prefer it there
-          gh release upload addons-latest manifest.json --clobber
+          # zips FIRST, manifest LAST: a mid-loop failure must never leave a
+          # published manifest advertising hashes the release doesn't hold yet
           if [ -s dist/changed.txt ]; then
             while IFS= read -r z; do
               [ -z "$z" ] && continue
@@ -107,21 +107,8 @@ jobs:
           else
             echo "no changed assets to upload"
           fi
-
-      - name: Prune orphan release assets
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          # delete any release asset not referenced by the current manifest
-          # (keep manifest.json itself)
-          keep=$(cat dist/valid_assets.txt)
-          gh release view addons-latest --json assets -q '.assets[].name' | while IFS= read -r name; do
-            [ "$name" = "manifest.json" ] && continue
-            if ! grep -qxF "$name" dist/valid_assets.txt; then
-              echo "pruning orphan asset: $name"
-              gh release delete-asset addons-latest "$name" -y || true
-            fi
-          done
+          # manifest is always refreshed on the release for clients that prefer it there
+          gh release upload addons-latest manifest.json --clobber
 
       - name: Commit manifest.json
         run: |
@@ -142,3 +129,20 @@ jobs:
               sleep 5
             done
           fi
+
+      - name: Prune orphan release assets
+        # AFTER the manifest commit on purpose: pruning first meant a lost
+        # push race left main's manifest pointing at freshly-deleted zips
+        # (fleet 404s with no scheduled run to self-heal)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # delete any release asset not referenced by the current manifest
+          # (keep manifest.json itself)
+          gh release view addons-latest --json assets -q '.assets[].name' | while IFS= read -r name; do
+            [ "$name" = "manifest.json" ] && continue
+            if ! grep -qxF "$name" dist/valid_assets.txt; then
+              echo "pruning orphan asset: $name"
+              gh release delete-asset addons-latest "$name" -y || true
+            fi
+          done

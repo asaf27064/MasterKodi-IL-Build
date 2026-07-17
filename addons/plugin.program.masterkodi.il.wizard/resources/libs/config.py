@@ -29,30 +29,12 @@ FAVOURITES = os.path.join(USERDATA, 'favourites.xml')
 # Wizard folders
 BACKUPS_FOLDER = os.path.join(ADDON_DATA, 'backups')
 TEMP_FOLDER = os.path.join(ADDON_DATA, 'temp')
-POV_BACKUP_FOLDER = os.path.join(ADDON_DATA, 'pov_backup')
-FENLIGHT_BACKUP_FOLDER = os.path.join(ADDON_DATA, 'fenlight_backup')
-SKIN_BACKUP_FOLDER = os.path.join(ADDON_DATA, 'skin_backup')
 
 # GitHub Pages URL (for builds)
 GITHUB_PAGES_URL = "https://asaf27064.github.io/"
 BUILD_TXT_URL = GITHUB_PAGES_URL + "assets/build.txt"
 
-# GitHub URLs for Hebrew files
-GITHUB_BASE_URL = "https://raw.githubusercontent.com/asaf27064/pov-modified-heb/main"
-POV_VERSION_URL = f"{GITHUB_BASE_URL}/version.json"
-POV_ZIP_URL = f"{GITHUB_BASE_URL}/pov_hebrew_subtitles.zip"
-
-FENLIGHT_GITHUB_URL = "https://raw.githubusercontent.com/asaf27064/FenLight-Hebrew/main"
-FENLIGHT_VERSION_URL = f"{FENLIGHT_GITHUB_URL}/version.json"
-FENLIGHT_ZIP_URL = f"{FENLIGHT_GITHUB_URL}/fenlight_hebrew.zip"
-
-SKIN_GITHUB_URL = "https://raw.githubusercontent.com/asaf27064/arctic-fuse-hebrew/main"
-SKIN_VERSION_URL = f"{SKIN_GITHUB_URL}/version.json"
-SKIN_ZIP_URL = f"{SKIN_GITHUB_URL}/skin_hebrew.zip"
-
 # Addon IDs
-POV_ADDON_ID = 'plugin.video.pov'
-FENLIGHT_ADDON_ID = 'plugin.video.fenlight'
 GEARS_ADDON_ID = 'plugin.video.gears'
 GEARSAI_ADDON_ID = 'service.subtitles.gearsai'
 ARCTIC_FUSE_SKIN_ID = 'skin.arctic.fuse.3'
@@ -95,7 +77,7 @@ COLOR_ERROR = 'red'
 COLOR_WARNING = 'yellow'
 
 def ensure_folders():
-    for folder in [ADDON_DATA, BACKUPS_FOLDER, TEMP_FOLDER, POV_BACKUP_FOLDER, FENLIGHT_BACKUP_FOLDER, SKIN_BACKUP_FOLDER]:
+    for folder in [ADDON_DATA, BACKUPS_FOLDER, TEMP_FOLDER]:
         if not os.path.exists(folder):
             os.makedirs(folder)
 

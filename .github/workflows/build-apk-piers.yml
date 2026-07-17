@@ -21,6 +21,12 @@ on:
 permissions:
   contents: write
 
+# two rapid pushes must not clobber-upload out of order (an older
+# installer landing LAST on the release) -- queue runs instead
+concurrency:
+  group: build-apk-piers
+  cancel-in-progress: false
+
 jobs:
   apk:
     runs-on: ubuntu-latest

@@ -103,6 +103,20 @@ def _process_pending_view_rebuild():
     # restart -- consuming the marker on the wrong skin left the new skin's
     # first boot without its rebuild (the Zephyr frozen-home regression).
     if target and target.startswith('skin.') and target != cur_skin:
+        # If the marker's skin is GONE from disk (user removed/switched away
+        # for good), waiting is pointless and a months-later switch-back would
+        # apply a stale stash over newer settings -- drop marker + stash now.
+        if not os.path.isfile(os.path.join(ADDONS_PATH, target, 'addon.xml')):
+            log("post-install rebuild dropped: marker skin %s no longer installed" % target)
+            base_ = xbmcvfs.translatePath('special://userdata/addon_data/')
+            shutil.rmtree(os.path.join(base_, ADDON_ID, 'pending_skin_config'),
+                          ignore_errors=True)
+            for f in ('pending_view_rebuild', 'pending_view_rebuild_force'):
+                try:
+                    os.remove(os.path.join(base_, ADDON_ID, f))
+                except Exception:
+                    pass
+            return
         log("post-install rebuild deferred: marker is for %s, active skin is %s"
             % (target, cur_skin))
         return
@@ -178,7 +192,14 @@ def _process_pending_view_rebuild():
                 # something is genuinely wrong with the skin's menu build;
                 # reloading a truncated/missing include table IS the bug we
                 # are here to prevent. Give up (marker removed below) rather
-                # than stall every future boot for 90s.
+                # than stall every future boot for 90s. BUT: if we already
+                # copied deferred settings onto disk, they only survive Kodi's
+                # exit-save if the skin re-reads them -- without this reload
+                # the change is silently lost forever (__config__ is already
+                # bumped, so it would never retry).
+                if stash_applied:
+                    xbmc.sleep(1000)
+                    xbmc.executebuiltin('ReloadSkin()')
                 try:
                     os.remove(marker)
                 except Exception:
@@ -223,6 +244,14 @@ def _process_pending_view_rebuild():
             xbmc.executebuiltin('ReloadSkin()')
     except Exception as e:
         log(f"post-install view rebuild failed: {e}", xbmc.LOGWARNING)
+        # same rescue as the timeout path: applied-but-never-reloaded settings
+        # get reverted by Kodi's exit-save -- reload so they stick
+        try:
+            if stash_applied:
+                xbmc.sleep(1000)
+                xbmc.executebuiltin('ReloadSkin()')
+        except Exception:
+            pass
     try:
         os.remove(marker)
     except Exception:

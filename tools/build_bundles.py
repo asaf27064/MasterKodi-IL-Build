@@ -70,8 +70,13 @@ def dist_zip(dist_dir, aid, shas_by_id, manifest):
 
 
 def bundle_fingerprint(spec, addon_ids, shas, original_sha):
+    # NOTE: original_sha is deliberately NOT part of the fingerprint. For a
+    # repack the "original" is the bundle CI itself published last time, and
+    # zip output isn't byte-reproducible -- hashing it meant every run saw a
+    # "changed" input and rebuilt+re-uploaded hundreds of MB forever. The
+    # real inputs are the addon contents (manifest shas) + the spec; a
+    # deliberate skeleton swap ships with --force.
     parts = ['%s=%s' % (i, shas.get(i, '?')) for i in sorted(addon_ids)]
-    parts.append('orig=%s' % (original_sha or '-'))
     parts.append('spec=%s' % json.dumps(spec, sort_keys=True))
     return hashlib.sha256('|'.join(parts).encode()).hexdigest()
 

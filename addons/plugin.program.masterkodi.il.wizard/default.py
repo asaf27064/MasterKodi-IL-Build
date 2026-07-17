@@ -54,12 +54,17 @@ from resources.libs.ui import menu_item, wizard_select  # noqa: E402
 def get_gearsai_status():
     """AI Subs (service.subtitles.gearsai) install status."""
     try:
-        from resources.libs.installer import GearsaiInstaller
-        ai = GearsaiInstaller()
-        if not ai.is_installed():
+        # disk truth: gearsai ships via the manifest, its version lives in its
+        # own addon.xml (the legacy pov-modified-heb installer is retired)
+        import re
+        xml = os.path.join(xbmcvfs.translatePath('special://home/addons/'),
+                           'service.subtitles.gearsai', 'addon.xml')
+        if not os.path.isfile(xml):
             return {'addon': False, 'hebrew': False, 'version': None}
-        v = ai.get_installed_version()
-        return {'addon': True, 'hebrew': True, 'version': (None if v in ('0', '') else v)}
+        with open(xml, 'r', encoding='utf-8', errors='replace') as fh:
+            head = fh.read(4000)
+        m = re.search(r'<addon\s+[^>]*version="([^"]+)"', head)
+        return {'addon': True, 'hebrew': True, 'version': (m.group(1) if m else None)}
     except Exception as e:
         log(f"Error getting AI Subs status: {e}")
         return {'addon': False, 'hebrew': False, 'version': None}
@@ -211,8 +216,23 @@ def install_gearsai():
     progress = xbmcgui.DialogProgress()
     progress.create('כתוביות AI', 'מתקין...')
     try:
-        from resources.libs.installer import GearsaiInstaller
-        ok = GearsaiInstaller().install(progress_callback=lambda m, p: progress.update(p, m))
+        # manifest install: sha-verified zip from the fleet's own manifest --
+        # the legacy pov-modified-heb zip (unhashed, could diverge) is retired
+        from resources.libs import modular_update as mu
+        manifest = mu.fetch_manifest()
+        entry = next((a for a in manifest.get('addons', [])
+                      if a['id'] == 'service.subtitles.gearsai'), None)
+        ok = False
+        if entry:
+            progress.update(30, 'מוריד ומתקין...')
+            mu._apply_one(entry)
+            state = mu._load_state()
+            state['service.subtitles.gearsai'] = entry['sha256']
+            mu._save_state(state)
+            from resources.libs.builds import BuildManager
+            BuildManager().enable_addons_in_db(['service.subtitles.gearsai'])
+            xbmc.executebuiltin('UpdateLocalAddons()')
+            ok = True
         progress.close()
         dialog.ok('כתוביות AI',
                   color('הותקנו בהצלחה!', COLOR_SUCCESS) if ok else color('ההתקנה נכשלה!', COLOR_ERROR))
