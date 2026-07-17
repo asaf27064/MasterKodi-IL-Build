@@ -190,6 +190,10 @@ DEPS_WATCH = [
     # never sees ivarbrandt move; he publishes no releases, so watch master.
     ('skin.nimbus',
      'https://raw.githubusercontent.com/ivarbrandt/skin.nimbus/master/addon.xml', 'github_addon_xml'),
+    # script.skinhelper is DenDyGH's (we ship a lightly-modded 0.0.4 - a bump
+    # means re-applying the PIL-requirement removal, so alert-only).
+    ('script.skinhelper',
+     'https://raw.githubusercontent.com/DenDyGH/dendygh.github.io/main/omega/zips/addons.xml', 'addons_xml'),
     ('plugin.video.themoviedb.helper', _JURIAL_OMEGA, 'addons_xml'),
     ('script.skinvariables', _JURIAL_OMEGA, 'addons_xml'),
     ('script.module.jurialmunkey', _JURIAL_OMEGA, 'addons_xml'),
