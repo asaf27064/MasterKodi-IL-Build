@@ -41,7 +41,7 @@ jobs:
       - name: Ensure VS2022 Build Tools (images now default to VS2026)
         shell: pwsh
         run: |
-          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installerswhere.exe"
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
           $vs22 = & $vswhere -products * -version "[17.0,18.0)" -property installationPath
           if ($vs22) { Write-Host "VS2022 present: $vs22"; exit 0 }
           Write-Host "VS2022 missing - installing Build Tools (VCTools workload)..."
