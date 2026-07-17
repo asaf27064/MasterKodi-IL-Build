@@ -17,9 +17,9 @@ permissions:
 
 jobs:
   kodi:
-    # NOT windows-latest: that image carries VS2026, which 21.3-Omega's
-    # vswhere.bat doesn't recognize (falls back to a nonexistent VS2017
-    # generator). windows-2025 ships VS2022 = "Visual Studio 17 2022".
+    # GitHub images now ship VS2026 everywhere (windows-2025 upgraded too),
+    # which 21.3-Omega's vswhere.bat doesn't recognize. We install VS2022 Build
+    # Tools if absent and pin xbmc's vswhere.bat to VS 17 explicitly below.
     runs-on: windows-2025
     timeout-minutes: 340
     env:
@@ -37,6 +37,25 @@ jobs:
           ref: ${{ env.KODI_TAG }}
           path: xbmc
           fetch-depth: 1
+
+      - name: Ensure VS2022 Build Tools (images now default to VS2026)
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installerswhere.exe"
+          $vs22 = & $vswhere -products * -version "[17.0,18.0)" -property installationPath
+          if ($vs22) { Write-Host "VS2022 present: $vs22"; exit 0 }
+          Write-Host "VS2022 missing - installing Build Tools (VCTools workload)..."
+          choco install visualstudio2022buildtools --no-progress -y --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --quiet --norestart"
+          $vs22 = & $vswhere -products * -version "[17.0,18.0)" -property installationPath
+          if (-not $vs22) { Write-Error "VS2022 Build Tools install failed"; exit 1 }
+          Write-Host "VS2022 installed: $vs22"
+
+      - name: Pin xbmc vswhere.bat to VS2022 (vswhere -latest grabs VS2026)
+        shell: bash
+        run: |
+          f=xbmc/tools/buildsteps/windows/vswhere.bat
+          sed -i 's/%vswhere% -latest -property installationPath/%vswhere% -products * -version "[17.0,18.0)" -property installationPath/' "$f"
+          grep -n '17.0,18.0' "$f"
 
       - name: Apply python-crash patches
         shell: bash
