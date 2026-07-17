@@ -144,8 +144,37 @@ def _process_pending_view_rebuild():
                 target_path = open(tfile, encoding='utf-8').read().strip()
                 if target_path:
                     shutil.copy2(sfile, target_path)
+                    # CRITICAL (learned from the Xiaomi, 2026-07-17): the file
+                    # copy alone is NOT enough for the ACTIVE skin. Kodi saves
+                    # the running skin's in-memory settings back to settings.xml
+                    # during skin UNLOAD -- so the very ReloadSkin/buildviews
+                    # reload below overwrites the stash with the old values a
+                    # moment before re-reading them, silently reverting the
+                    # config. Push the stashed values into the LIVE skin via
+                    # Skin.* builtins: then unload-save writes OUR values and
+                    # the reload compiles against them.
+                    applied_n = 0
+                    try:
+                        import xml.etree.ElementTree as ET
+                        for s in ET.parse(sfile).getroot().findall('setting'):
+                            sid = s.get('id')
+                            if not sid:
+                                continue
+                            val = (s.text or '').strip()
+                            if val == 'true':
+                                xbmc.executebuiltin('Skin.SetBool(%s)' % sid)
+                            elif val == 'false':
+                                xbmc.executebuiltin('Skin.Reset(%s)' % sid)
+                            else:
+                                # quoted so commas in values don't split params
+                                xbmc.executebuiltin('Skin.SetString(%s,"%s")'
+                                                    % (sid, val.replace('"', '')))
+                            applied_n += 1
+                    except Exception as e:
+                        log(f"in-memory skin settings apply failed: {e}", xbmc.LOGWARNING)
                     stash_applied = True
-                    log("applied deferred skin settings from config stash")
+                    log("applied deferred skin settings from config stash "
+                        "(%d pushed into live skin)" % applied_n)
                 shutil.rmtree(sdir, ignore_errors=True)
         except Exception as e:
             log(f"config stash apply failed: {e}", xbmc.LOGWARNING)
