@@ -66,7 +66,9 @@ jobs:
           existing=$(gh issue list --state open --search "in:title $title" --json number -q '.[0].number')
           if [ -n "$existing" ]; then
             gh issue edit "$existing" --body-file "$body_file"
-            echo "updated issue #$existing"
+            # body edits are SILENT on GitHub - comment so watchers get an email
+            gh issue comment "$existing" --body-file "$body_file"
+            echo "updated issue #$existing (+notification comment)"
           else
             gh issue create --title "$title" --body-file "$body_file"
           fi
@@ -88,7 +90,9 @@ jobs:
           existing=$(gh issue list --state open --search "in:title $title" --json number -q '.[0].number')
           if [ -n "$existing" ]; then
             gh issue edit "$existing" --body-file "$body_file"
-            echo "updated issue #$existing"
+            # body edits are SILENT on GitHub - comment so watchers get an email
+            gh issue comment "$existing" --body-file "$body_file"
+            echo "updated issue #$existing (+notification comment)"
           else
             gh issue create --title "$title" --body-file "$body_file"
           fi
@@ -110,7 +114,9 @@ jobs:
           existing=$(gh issue list --state open --search "in:title $title" --json number -q '.[0].number')
           if [ -n "$existing" ]; then
             gh issue edit "$existing" --body-file "$body_file"
-            echo "updated issue #$existing"
+            # body edits are SILENT on GitHub - comment so watchers get an email
+            gh issue comment "$existing" --body-file "$body_file"
+            echo "updated issue #$existing (+notification comment)"
           else
             gh issue create --title "$title" --body-file "$body_file"
           fi
