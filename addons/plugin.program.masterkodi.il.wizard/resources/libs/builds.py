@@ -880,6 +880,10 @@ class BuildManager:
         # Zephyr's deps aren't bundled in a single build.txt zip like AF3/Nimbus,
         # so it installs the skin + its deps straight from the manifest.
         'zephyr': {'id': 'skin.arctic.zephyr.2.resurrection.mod', 'name': 'Arctic Zephyr',
+                   # Omega: fast one-zip install (CI-built bundle, never stale).
+                   # Piers: manifest_install fallback (bundle carries OMEGA
+                   # gui-5.17 skins + skinshortcuts 2.0.3 - wrong for Kodi 22).
+                   'url_key': 'zephyr_skin_url', 'zip': 'zephyr_skin.zip',
                    'manifest_install': True,
                    'deps': ['script.skinshortcuts', 'script.skinhelper',
                             'script.module.simplejson', 'script.module.unidecode',
@@ -979,7 +983,7 @@ class BuildManager:
             
             # Step 5: Install the chosen optional skin (Arctic Fuse / Nimbus / Zephyr)
             skin_zip_url = build_info.get(skin['url_key']) if (skin and skin.get('url_key')) else None
-            if skin and skin.get('manifest_install'):
+            if skin and skin.get('manifest_install') and (_kodi_major() >= 22 or not skin_zip_url):
                 # Zephyr installs from the manifest (skin + its own deps), not from a
                 # bundled build.txt zip like AF3/Nimbus. _install_from_manifest also
                 # enables the addons and applies our config (skin defaults + view rebuild).
@@ -1287,7 +1291,8 @@ class BuildManager:
         skin = self.OPTIONAL_SKINS.get(skin_key)
         if not skin:
             return False
-        if skin.get('manifest_install'):
+        if skin.get('manifest_install') and (_kodi_major() >= 22 or not skin_url):
+            # Piers always; Omega only when no bundle URL is available
             return self._install_from_manifest(skin['id'], skin.get('deps', []), skin['name'])
         if not skin_url:
             return False
@@ -1742,16 +1747,15 @@ def _skin_switch_flow():
     # install if it's an optional skin that isn't present yet
     if not installed and key != 'estuary':
         skin_cfg = BuildManager.OPTIONAL_SKINS.get(key, {})
-        if skin_cfg.get('manifest_install'):
-            if not manager.install_skin(key):           # skin + deps from manifest
-                return
-        else:
-            url = manager.get_optional_skin_url(skin_cfg.get('url_key'))
-            if not url:
-                dialog.ok('סקינים', f'לא נמצא קישור להורדת {name}.')
-                return
-            if not manager.install_skin(key, url):
-                return
+        # fetch the bundle URL when one exists; install_skin decides zip vs
+        # manifest (Piers always manifest; Omega prefers the bundle zip)
+        url = (manager.get_optional_skin_url(skin_cfg.get('url_key'))
+               if skin_cfg.get('url_key') else None)
+        if not url and not skin_cfg.get('manifest_install'):
+            dialog.ok('סקינים', f'לא נמצא קישור להורדת {name}.')
+            return
+        if not manager.install_skin(key, url):
+            return
 
     # switch active skin
     manager.set_default_skin(sid)

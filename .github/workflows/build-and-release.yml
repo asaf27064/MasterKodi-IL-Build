@@ -57,6 +57,30 @@ jobs:
       - name: Generate manifest + diff
         run: python tools/gen_manifest.py --repo-root . --dist dist
 
+      - name: Build install bundles (repack from fresh zips)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p originals
+          for f in FenLight_Estuary.zip Arctic_Fuse_Skin.zip nimbus.zip; do
+            gh release download base-builds --pattern "$f" --output "originals/$f" --clobber
+          done
+          python tools/build_bundles.py --repo-root . --dist dist --originals originals --out dist/bundles
+
+      - name: Upload changed bundles to base-builds
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -s dist/bundles/bundles_changed.txt ]; then
+            while IFS= read -r b; do
+              [ -z "$b" ] && continue
+              echo "uploading bundle $b"
+              gh release upload base-builds "dist/bundles/$b" --clobber
+            done < dist/bundles/bundles_changed.txt
+          else
+            echo "no bundle changes"
+          fi
+
       - name: Ensure rolling release exists
         env:
           GH_TOKEN: ${{ github.token }}
@@ -103,7 +127,7 @@ jobs:
         run: |
           git config user.name "masterkodi-ci"
           git config user.email "ci@masterkodi.local"
-          git add manifest.json
+          git add manifest.json bundles_state.json
           # --cached so this also detects a brand-new (untracked) manifest
           if git diff --cached --quiet; then
             echo "manifest unchanged"
