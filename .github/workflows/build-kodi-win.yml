@@ -53,9 +53,14 @@ jobs:
       - name: Pin xbmc vswhere.bat to VS2022 (vswhere -latest grabs VS2026)
         shell: bash
         run: |
+          # A wrapper avoids cmd-quoting hell: extra quoted args inside the
+          # bat's backquoted FOR command break when the exe path is quoted.
+          mkdir -p /c/kodivs
+          echo '@"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -products * -version "[17.0,18.0)" %*' > /c/kodivs/vswhere.cmd
+          cat /c/kodivs/vswhere.cmd
           f=xbmc/tools/buildsteps/windows/vswhere.bat
-          sed -i 's/%vswhere% -latest -property installationPath/%vswhere% -products * -version "[17.0,18.0)" -property installationPath/' "$f"
-          grep -n '17.0,18.0' "$f"
+          sed -i 's|^SET vswhere=.*|SET vswhere=C:\kodivs\vswhere.cmd|' "$f"
+          grep -n "kodivs" "$f"
 
       - name: Apply python-crash patches
         shell: bash
