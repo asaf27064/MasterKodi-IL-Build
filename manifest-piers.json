@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-17T11:03:01Z",
+  "generated_utc": "2026-07-17T11:07:09Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -96,6 +96,15 @@
       "sha256": "0dd50ba213f90647b4633281f6d168a47abe5477718fdb25e5d94edff5b0e76b",
       "size": 68433,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/repository.cocoscrapers-1.0.1.zip"
+    },
+    {
+      "id": "repository.dendygh",
+      "version": "1.3",
+      "channel": "core",
+      "zip": "repository.dendygh-1.3.zip",
+      "sha256": "6c8f395387e5e617b0b471e9c4526055d73e1673af8a79218ef9c4a3db20b1d6",
+      "size": 608,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/repository.dendygh-1.3.zip"
     },
     {
       "id": "repository.jurialmunkey",
@@ -261,12 +270,12 @@
     },
     {
       "id": "script.module.gearsscrapers",
-      "version": "1.3.4",
+      "version": "1.4.8",
       "channel": "core",
-      "zip": "script.module.gearsscrapers-1.3.4.zip",
-      "sha256": "5c82f673d91ea1dca0c65db82c848a2a0c482e2aa9214c1761dfaec51ce854ed",
-      "size": 1788186,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.gearsscrapers-1.3.4.zip"
+      "zip": "script.module.gearsscrapers-1.4.8.zip",
+      "sha256": "0cacff6abb61ab811fbdd0e85f09967f683b89e96b41e3dc83ae307717f2576a",
+      "size": 1683112,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.gearsscrapers-1.4.8.zip"
     },
     {
       "id": "script.module.idna",
