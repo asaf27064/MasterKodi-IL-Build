@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-17T18:57:06Z",
+  "generated_utc": "2026-07-17T19:20:00Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -54,12 +54,12 @@
     },
     {
       "id": "plugin.video.gears",
-      "version": "2.3.6",
+      "version": "2.3.7",
       "channel": "core",
-      "zip": "plugin.video.gears-2.3.6.zip",
-      "sha256": "04ae13a7a444570109c94714f05d7d2f36a71338c0e35c3d5641bc807da100a6",
-      "size": 9178314,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.gears-2.3.6.zip"
+      "zip": "plugin.video.gears-2.3.7.zip",
+      "sha256": "c92dc5654dab93f58991fce24b7b5d035fe4258122f93cbef6a073dd0b191921",
+      "size": 8366166,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.gears-2.3.7.zip"
     },
     {
       "id": "plugin.video.themoviedb.helper",
@@ -270,12 +270,12 @@
     },
     {
       "id": "script.module.gearsscrapers",
-      "version": "1.4.8",
+      "version": "1.4.9",
       "channel": "core",
-      "zip": "script.module.gearsscrapers-1.4.8.zip",
-      "sha256": "0cacff6abb61ab811fbdd0e85f09967f683b89e96b41e3dc83ae307717f2576a",
-      "size": 1683112,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.gearsscrapers-1.4.8.zip"
+      "zip": "script.module.gearsscrapers-1.4.9.zip",
+      "sha256": "b3441409aa7acbea36e5c47fc5c033de6e2aa87b829f81f446ba84df15518ca3",
+      "size": 1059135,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.gearsscrapers-1.4.9.zip"
     },
     {
       "id": "script.module.idna",
