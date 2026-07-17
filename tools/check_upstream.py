@@ -250,6 +250,26 @@ def check_deps(addons_root='addons'):
             lines.append('- **%s**: %s -> **%s available**' % (aid, cur, latest))
         else:
             lines.append('- **%s**: up to date (%s)' % (aid, cur))
+    # PIERS-pinned replacements (build.json piers.replacements): watch the
+    # kodi piers repo so a piers-side bump (e.g. skinshortcuts 3.0.2) is seen.
+    try:
+        cfg = json.load(open('build.json', encoding='utf-8'))
+        for rid, rep in cfg.get('piers', {}).get('replacements', {}).items():
+            cur = rep.get('version')
+            url = 'https://mirrors.kodi.tv/addons/piers/%s/' % rid
+            try:
+                latest = _dep_latest(rid, url, 'kodi_dir')
+            except Exception as e:
+                lines.append('- **%s (PIERS pin)**: error - %s' % (rid, e))
+                continue
+            if latest and _semver(latest) > _semver(cur):
+                has_update = True
+                lines.append('- **%s (PIERS pin)**: %s -> **%s available** (bump build.json piers.replacements)' % (rid, cur, latest))
+            else:
+                lines.append('- **%s (PIERS pin)**: up to date (%s)' % (rid, cur))
+    except Exception as e:
+        lines.append('- piers replacements check error: %s' % e)
+
     summary = '\n'.join(lines)
     print(summary)
     out = os.environ.get('GITHUB_OUTPUT')
