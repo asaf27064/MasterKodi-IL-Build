@@ -56,8 +56,8 @@ jobs:
         shell: pwsh
         run: |
           choco install cmake --version=3.31.6 --force -y --no-progress --installargs 'ADD_CMAKE_TO_PATH=System'
-          "C:\Program Files\CMakein" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          & "C:\Program Files\CMakein\cmake.exe" --version
+          "C:\Program Files\CMake\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          & "C:\Program Files\CMake\bin\cmake.exe" --version
 
       - name: Pin xbmc vswhere.bat to VS2022 (vswhere -latest grabs VS2026)
         shell: bash
