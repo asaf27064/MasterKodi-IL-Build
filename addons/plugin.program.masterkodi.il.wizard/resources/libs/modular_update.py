@@ -1546,7 +1546,11 @@ def apply_gears_views_for_skin(skin_id=None):
             baseline = json.load(fh)
     except Exception:
         pass
-    if baseline.get(skin_id) == views:
+    # skip ONLY if this skin's map is unchanged AND it was also the LAST map
+    # written into gears' db. Per-skin memory alone was wrong (2.4.99 bug):
+    # after a skin switch the db holds the OTHER skin's values, and skipping
+    # left e.g. AF3's views forced while Zephyr was active.
+    if baseline.get(skin_id) == views and baseline.get('__last_skin__') == skin_id:
         return                       # nothing we ship changed -- user values stand
     db = xbmcvfs.translatePath(
         'special://profile/addon_data/plugin.video.gears/databases/settings.db')
@@ -1574,6 +1578,7 @@ def apply_gears_views_for_skin(skin_id=None):
             pass
         try:
             baseline[skin_id] = views
+            baseline['__last_skin__'] = skin_id
             with open(base_file, 'w', encoding='utf-8') as fh:
                 json.dump(baseline, fh)
         except Exception:
