@@ -57,12 +57,21 @@ def _kodi_major():
 KODI_MAJOR = _kodi_major()
 STATE_FILE = os.path.join(ADDON_DATA, 'applied_manifest.json')
 
-MANIFEST_URL = 'https://raw.githubusercontent.com/asaf27064/MasterKodi-IL-Build/main/manifest.json'
+# PRIMARY = the RELEASE-hosted manifest: uploaded by CI after the zips (so it
+# never references assets that aren't there yet) and served uncached -- a
+# 'check updates' right after a publish sees it immediately. raw.github's CDN
+# serves up to ~5-min-stale copies and (verified 2026-07-18) ignores query
+# cache-busting, so raw is only the FALLBACK.
+MANIFEST_URL = ('https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/'
+                'addons-latest/manifest.json')
+MANIFEST_URL_FALLBACK = 'https://raw.githubusercontent.com/asaf27064/MasterKodi-IL-Build/main/manifest.json'
 if KODI_MAJOR >= 22:
     # Piers fleet reads its own manifest (piers skin variants + skinshortcuts
     # 3.0.1). Both fleets build from main since the repo restructure.
-    MANIFEST_URL = ('https://raw.githubusercontent.com/asaf27064/MasterKodi-IL-Build/'
-                    'main/manifest-piers.json')
+    MANIFEST_URL = ('https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/'
+                    'addons-piers/manifest-piers.json')
+    MANIFEST_URL_FALLBACK = ('https://raw.githubusercontent.com/asaf27064/MasterKodi-IL-Build/'
+                             'main/manifest-piers.json')
 
 # The wizard never blind-updates these Kodi-core/system ids even if present.
 NEVER_TOUCH = {'xbmc.python'}
@@ -109,16 +118,18 @@ def _download(url, timeout=120, attempts=4):
     raise Exception('download failed after %d attempts: %s' % (attempts, last))
 
 
-def fetch_manifest(url=MANIFEST_URL):
-    # cache-bust: raw.githubusercontent's CDN serves a stale manifest for up
-    # to ~5 minutes after a publish; a unique query string makes every check
-    # see the current one (a user clicking 'check updates' right after we
-    # ship should GET the update, not a cached miss)
-    import time
-    bust = '%s%st=%d' % (url, '&' if '?' in url else '?', int(time.time()))
-    raw = _download(bust, timeout=30)
-    # utf-8-sig tolerates a stray BOM from raw.githubusercontent
-    return json.loads(raw.decode('utf-8-sig'))
+def fetch_manifest(url=None):
+    urls = [url] if url else [MANIFEST_URL, MANIFEST_URL_FALLBACK]
+    last = None
+    for u in urls:
+        try:
+            raw = _download(u, timeout=30)
+            # utf-8-sig tolerates a stray BOM from raw.githubusercontent
+            return json.loads(raw.decode('utf-8-sig'))
+        except Exception as e:
+            last = e
+            log('manifest fetch failed from %s: %s' % (u, e), xbmc.LOGWARNING)
+    raise last
 
 
 # --------------------------------------------------------------------------- #
