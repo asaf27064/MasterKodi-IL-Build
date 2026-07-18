@@ -1063,6 +1063,14 @@ class BuildManager:
                         ADDON.setSetting('installed_skin', skin['name'])
                         # don't re-download what the bundle just delivered
                         self._seed_state_from_manifest(skin_addons)
+                        # Same post-skin-install config the switch-flow does:
+                        # applies skin defaults, seeds gears views/shortcuts,
+                        # and ARMS pending_view_rebuild so the first boot does
+                        # the one clean includes-rebuild (without it the new
+                        # skin self-builds with no_reload -> frozen home).
+                        # Also records __config__ so step 8 won't re-apply the
+                        # config in fresh mode over the choices made here.
+                        self._apply_build_config(skin['id'])
 
                     try:
                         os.remove(skin_zip)
