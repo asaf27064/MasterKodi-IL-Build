@@ -110,7 +110,13 @@ def _download(url, timeout=120, attempts=4):
 
 
 def fetch_manifest(url=MANIFEST_URL):
-    raw = _download(url, timeout=30)
+    # cache-bust: raw.githubusercontent's CDN serves a stale manifest for up
+    # to ~5 minutes after a publish; a unique query string makes every check
+    # see the current one (a user clicking 'check updates' right after we
+    # ship should GET the update, not a cached miss)
+    import time
+    bust = '%s%st=%d' % (url, '&' if '?' in url else '?', int(time.time()))
+    raw = _download(bust, timeout=30)
     # utf-8-sig tolerates a stray BOM from raw.githubusercontent
     return json.loads(raw.decode('utf-8-sig'))
 
@@ -1054,6 +1060,10 @@ def _maybe_apply_config(manifest, state, force=False):
     already = state.get('__config__') == key and state.get('__config_wizard__') == wiz_ver
     if already and not force:
         return False                           # already applied by THIS wizard version
+    # a NEW config version on an existing device (vs a wizard-change/force
+    # re-apply of the same one, or the install-time first apply which has its
+    # own UI) is user-visible news -- toast it so delivery isn't a black box
+    version_advanced = (not fresh) and state.get('__config__') != key
     try:
         data = _download(cfg['url'])
         if hashlib.sha256(data).hexdigest() != cfg['sha256']:
@@ -1080,6 +1090,16 @@ def _maybe_apply_config(manifest, state, force=False):
                 log('applied config %s (no policy, full extract)' % cfg['version'])
         state['__config__'] = key
         state['__config_wizard__'] = wiz_ver
+        if version_advanced:
+            try:
+                deferred = os.path.isfile(os.path.join(ADDON_DATA, 'pending_view_rebuild'))
+                msg = 'הגדרות הבילד עודכנו (v%s)' % cfg['version']
+                if deferred:
+                    msg += ' - שינויים חזותיים יחולו באתחול הבא'
+                xbmcgui.Dialog().notification('MasterKodi IL', msg,
+                                              xbmcgui.NOTIFICATION_INFO, 6000)
+            except Exception:
+                pass
         return True
     except Exception as e:
         log('config apply failed: %s' % e, xbmc.LOGWARNING)
@@ -1364,13 +1384,40 @@ def apply_gears_views_for_skin(skin_id=None):
     # Gears re-forces these views every boot, so a viewtypes.json change
     # alone can never move a Gears list -- THIS map is the lever.
     views = None
+    # SINGLE SOURCE OF TRUTH for skinvariables skins (Zephyr/AF3): derive the
+    # forcing map from the skin's viewtypes json 'plugin.video.gears' section
+    # -- the SAME key that gates which views the compiled include loads for
+    # gears lists. One key edited in config, both mechanisms move together
+    # (maintaining them separately is how the movies=501 test silently
+    # no-oped: forcing said 501 while the include only loaded 53).
     try:
-        vf = os.path.join(ADDON_DATA, 'gears_views.json')
-        if os.path.isfile(vf):
-            with open(vf, encoding='utf-8-sig') as fh:
-                views = json.load(fh).get(skin_id)
+        vt = xbmcvfs.translatePath(
+            'special://userdata/addon_data/script.skinvariables/%s-viewtypes.json' % skin_id)
+        if os.path.isfile(vt):
+            with open(vt, encoding='utf-8-sig') as fh:
+                sec = json.load(fh).get('plugin.video.gears') or {}
+            if sec.get('movies') and sec.get('tvshows'):
+                fallback = sec.get('none') or sec.get('movies')
+                views = {
+                    'view.main': fallback,
+                    'view.movies': sec['movies'],
+                    'view.tvshows': sec['tvshows'],
+                    'view.seasons': sec.get('seasons', sec['tvshows']),
+                    'view.episodes': sec.get('episodes', sec['tvshows']),
+                    'view.episodes_single': sec.get('episodes', sec['tvshows']),
+                    'view.premium': fallback,
+                }
     except Exception as e:
-        log('gears_views.json unreadable (%s), using built-in map' % e, xbmc.LOGWARNING)
+        log('viewtypes-derived gears views failed (%s)' % e, xbmc.LOGWARNING)
+    # non-skinvariables skins (Estuary/Nimbus) + fallback: config-shipped map
+    if not views:
+        try:
+            vf = os.path.join(ADDON_DATA, 'gears_views.json')
+            if os.path.isfile(vf):
+                with open(vf, encoding='utf-8-sig') as fh:
+                    views = json.load(fh).get(skin_id)
+        except Exception as e:
+            log('gears_views.json unreadable (%s), using built-in map' % e, xbmc.LOGWARNING)
     if not views:
         views = GEARS_SKIN_VIEWS.get(skin_id)
     if not views:
