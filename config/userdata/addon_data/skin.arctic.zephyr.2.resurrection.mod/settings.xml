@@ -31,7 +31,7 @@
     <setting id="homemultinetflix" type="bool">false</setting>
     <setting id="homemultihorizontal" type="bool">false</setting>
     <setting id="homebasic" type="bool">false</setting>
-    <setting id="flipside" type="bool">true</setting>
+    <setting id="flipside" type="bool">false</setting>
     <setting id="flixhidemenu" type="bool">true</setting>
     <setting id="homeicons" type="bool">true</setting>
     <setting id="osd.autohideonpause" type="bool">true</setting>

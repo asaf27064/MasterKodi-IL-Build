@@ -93,7 +93,7 @@ msgstr "התאם המלצות אישית"
 #: /1080i/SkinSettings.xml
 msgctxt "#31016"
 msgid "Mirror mediainfo viewtypes"
-msgstr "שקף סוגי תצוגה של מידע מדיה"
+msgstr "פרטי המדיה בצד שמאל"
 
 #: /shortcuts/overrides.xml
 msgctxt "#31017"
