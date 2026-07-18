@@ -1118,6 +1118,31 @@ def _apply_policy(zf, policy, home, fresh):
         if mode == 'replace':
             with open(dest, 'wb') as fh:
                 fh.write(src_bytes)
+        elif mode == 'replace_on_change':
+            # Replace ONLY when the SHIPPED file changed since our last
+            # delivery (baseline copy in addon_data). Files like the skin
+            # viewtypes json hold BOTH our curated defaults and the user's
+            # manual choices -- plain replace would reset user customization
+            # on every config bump. With a baseline: user changes survive
+            # every update, until we deliberately push a change to this
+            # file -- then ours wins (whole file) and the baseline advances.
+            bdir = os.path.join(ADDON_DATA, 'config_baseline')
+            bpath = os.path.join(bdir, dest_rel.replace('/', '_'))
+            prev_src = None
+            try:
+                with open(bpath, 'rb') as fh:
+                    prev_src = fh.read()
+            except Exception:
+                pass
+            if prev_src != src_bytes or not os.path.exists(dest):
+                with open(dest, 'wb') as fh:
+                    fh.write(src_bytes)
+            try:
+                os.makedirs(bdir, exist_ok=True)
+                with open(bpath, 'wb') as fh:
+                    fh.write(src_bytes)
+            except Exception:
+                pass
         elif mode == 'seed_if_absent':
             if not os.path.exists(dest):
                 with open(dest, 'wb') as fh:
