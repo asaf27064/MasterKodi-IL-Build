@@ -446,15 +446,22 @@ class POVHebrewService(xbmc.Monitor):
             # Every install path sets this flag and then restarts, so THIS boot
             # is the deferred-work boot: the dropped previous skin must be
             # removed here (not two boots later). Only the network update
-            # check is skipped.
-            if not self.waitForAbort(8):
-                _process_pending_skin_removal()
+            # check is skipped. Removal runs IMMEDIATELY -- it's local disk
+            # work, and a user who quits early must not carry it another boot.
+            _process_pending_skin_removal()
             if not self.waitForAbort(12):
                 _prewarm_gears(self)
             while not self.abortRequested():
                 if self.waitForAbort(300):
                     break
             return
+
+        # Remove a previous skin the user chose to drop when switching skins
+        # (deferred to this boot so it's not the running skin anymore).
+        # BEFORE the settle wait: it's local disk work with no network, and a
+        # fast quit (the 2026-07-18 test: exit 1s before the settle ended)
+        # must not postpone it yet another boot.
+        _process_pending_skin_removal()
 
         # Wait for Kodi to settle before touching the network (configurable).
         try:
@@ -468,10 +475,6 @@ class POVHebrewService(xbmc.Monitor):
 
         # Sweep stale '<addon>_old_<timestamp>' backup dirs from past updates.
         _cleanup_old_addon_dirs()
-
-        # Remove a previous skin the user chose to drop when switching skins
-        # (deferred here so it's not the running skin anymore).
-        _process_pending_skin_removal()
 
         # Manifest-driven update: ONE pass updates every addon (Gears + overlay,
         # AI subs, skins, and the wizard itself) from the MasterKodi-IL-Build
