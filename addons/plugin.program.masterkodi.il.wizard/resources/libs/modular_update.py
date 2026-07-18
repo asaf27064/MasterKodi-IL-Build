@@ -1422,6 +1422,22 @@ def apply_gears_views_for_skin(skin_id=None):
         views = GEARS_SKIN_VIEWS.get(skin_id)
     if not views:
         return
+    # USER-CHOICE POLICY: apply only when OUR map for this skin CHANGED since
+    # the last apply. Re-forcing every boot silently reset views a user set
+    # through Gears' own 'Set Views' menu -- the build's values should win
+    # exactly once per change we ship, then leave the user alone. (On
+    # Zephyr/AF3 a user's skin-dialog choice edits the viewtypes json the map
+    # is DERIVED from, so their choice changes the map -> re-sync keeps the
+    # two mechanisms in lock-step with the USER's pick too.)
+    base_file = os.path.join(ADDON_DATA, 'gears_views_applied.json')
+    baseline = {}
+    try:
+        with open(base_file, encoding='utf-8-sig') as fh:
+            baseline = json.load(fh)
+    except Exception:
+        pass
+    if baseline.get(skin_id) == views:
+        return                       # nothing we ship changed -- user values stand
     db = xbmcvfs.translatePath(
         'special://profile/addon_data/plugin.video.gears/databases/settings.db')
     if not os.path.isfile(db):
@@ -1444,6 +1460,12 @@ def apply_gears_views_for_skin(skin_id=None):
             home_win.setProperty('gears.use_viewtypes', 'true')
             for sid, val in views.items():
                 home_win.setProperty('gears.%s' % sid, str(val))
+        except Exception:
+            pass
+        try:
+            baseline[skin_id] = views
+            with open(base_file, 'w', encoding='utf-8') as fh:
+                json.dump(baseline, fh)
         except Exception:
             pass
         log('applied gears views for %s (%d ids)' % (skin_id, len(views)))
