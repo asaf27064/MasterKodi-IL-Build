@@ -399,6 +399,10 @@ def _prewarm_gears(mon):
         try:
             from resources.libs import modular_update as mu
             mu.apply_gears_views_for_skin()
+            # scraper lifecycle: keep only the SELECTED external scraper
+            # enabled; neutralize the unused standby (its settings-monitor
+            # service is dead weight). gearsscrapers is never touched.
+            mu.sync_scraper_stack()
         except Exception as e:
             log("post-prewarm views apply failed: %s" % e, xbmc.LOGDEBUG)
     except Exception as e:

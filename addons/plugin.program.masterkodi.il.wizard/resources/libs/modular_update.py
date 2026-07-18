@@ -303,6 +303,58 @@ def _enable_addon(aid):
     _jsonrpc('Addons.SetAddonEnabled', {'addonid': aid, 'enabled': True})
 
 
+def _set_addon_enabled(aid, flag):
+    _jsonrpc('Addons.SetAddonEnabled', {'addonid': aid, 'enabled': bool(flag)})
+
+
+# Manifest-shipped EXTERNAL scrapers a user can switch between inside Gears.
+# script.module.gearsscrapers is NOT here and never will be: it's a hard
+# <import> of plugin.video.gears -- disabling it kills Gears itself.
+STANDBY_SCRAPERS = ('script.module.magneto', 'script.module.cocoscrapers')
+
+
+def sync_scraper_stack():
+    """Scraper lifecycle (Asaf's policy, 2026-07-18): only the scraper the
+    user actually SELECTED in Gears (external_scraper.module) stays enabled;
+    the other standby scrapers are neutralized -- each runs a persistent
+    settings-monitor service, so an unused one is pure background weight.
+    Safe by construction: Gears' scraper-picker only offers ENABLED modules,
+    so a disabled standby can't be selected mid-session; to switch, enable it
+    in Kodi's addon manager, pick it in Gears, and this sync adopts the new
+    choice at the next boot. Records intent in state (__scraper_disabled__)
+    so the update repair pass leaves it alone."""
+    try:
+        import sqlite3
+        db = xbmcvfs.translatePath(
+            'special://profile/addon_data/plugin.video.gears/databases/settings.db')
+        if not os.path.isfile(db):
+            return
+        c = sqlite3.connect(db)
+        row = c.execute("SELECT setting_value FROM settings WHERE setting_id='external_scraper.module'").fetchone()
+        c.close()
+        sel = (row[0] if row else '') or ''
+        if sel in ('empty_setting',):
+            sel = ''
+        disabled = []
+        for aid in STANDBY_SCRAPERS:
+            if _installed_version(aid) is None:
+                continue
+            if aid == sel:
+                if not _is_enabled(aid):
+                    _set_addon_enabled(aid, True)
+            else:
+                if _is_enabled(aid):
+                    _set_addon_enabled(aid, False)
+                disabled.append(aid)
+        state = _load_state()
+        if state.get('__scraper_disabled__') != disabled:
+            state['__scraper_disabled__'] = disabled
+            _save_state(state)
+        log('scraper stack synced: selected=%s, neutralized=%s' % (sel or 'none', disabled))
+    except Exception as e:
+        log('sync_scraper_stack failed: %s' % e, xbmc.LOGWARNING)
+
+
 def repair_disabled_deps(manifest):
     """Re-enable any manifest dependency that Kodi has DISABLED while an addon
     requiring it is still installed. Kodi's orphan-dependency cleanup disables a
@@ -315,9 +367,11 @@ def repair_disabled_deps(manifest):
     files first, in case the module was partially removed too."""
     by_id = {a.get('id'): a for a in manifest.get('addons', [])}
     manifest_ids = set(by_id)
-    # ids the skin-stack lifecycle disabled ON PURPOSE (inactive skins' UI
-    # stacks) -- repairing them would re-enable dead weight every update
-    skin_disabled = set(_load_state().get('__skin_disabled__', []))
+    # ids the skin-stack / scraper lifecycles disabled ON PURPOSE (inactive
+    # skins' UI stacks, unselected standby scrapers) -- repairing them would
+    # re-enable dead weight every update
+    _st = _load_state()
+    skin_disabled = set(_st.get('__skin_disabled__', [])) | set(_st.get('__scraper_disabled__', []))
     targets = set()
     try:
         for a in manifest.get('addons', []):
