@@ -757,14 +757,26 @@ def sub_from_main(arg):
         # Avoid f_result=None error if no subs found.
         f_result = [] if not f_result else f_result
         xbmc.executebuiltin('Dialog.Close(all,true)')
-        xbmc.Player().pause()
-        
+        # Player().pause() is a TOGGLE: opening the window while ALREADY paused
+        # used to RESUME playback behind the dialog (and pause when playing).
+        # Correct behavior: the window always opens onto a PAUSED video; on
+        # close, restore the state from before -- resume only if WE paused.
+        was_paused = xbmc.getCondVisibility('Player.Paused')
+        if not was_paused:
+            xbmc.Player().pause()
+
         # Add embbeded subtitles to subtitles list
         f_result = add_embedded_subs_to_subs_list(video_data, f_result)
         ############################################################
-        
+
         last_sub_name_in_cache,last_sub_language_in_cache,all_subs=get_db_data(video_data)
         window = MySubs('MasterKodi · בחירת כתוביות' ,f_result,f_result,video_data,all_subs,last_sub_name_in_cache,last_sub_language_in_cache)
+        # window closed (modal) -- restore: if the user was WATCHING before
+        # opening, resume; if they had paused themselves, stay paused. A user
+        # who resumed manually while the window was open is left alone.
+        if not was_paused and xbmc.getCondVisibility('Player.Paused'):
+            try: xbmc.Player().pause()
+            except Exception: pass
         return_result=json.dumps(action)
     elif action=='sub_window_unpause':
         # Search for subs in cache, pop unneeded values.
