@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-18T14:45:07Z",
+  "generated_utc": "2026-07-18T14:50:12Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -45,12 +45,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.95",
+      "version": "2.4.96",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.95.zip",
-      "sha256": "8c16f2e5f3324a26744f215df8774c42db3de82fcdbaf1c06d8759efb2a7f1a2",
-      "size": 2377079,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.95.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.96.zip",
+      "sha256": "a1e1970dc76cf72794316989b6fc7c3781c21e79002a86c946f83f49ecf557a8",
+      "size": 2377279,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.96.zip"
     },
     {
       "id": "plugin.video.gears",
@@ -495,39 +495,39 @@
     },
     {
       "id": "skin.arctic.fuse.3",
-      "version": "3.2.13.1",
+      "version": "3.2.13.102",
       "channel": "optional",
-      "zip": "skin.arctic.fuse.3-3.2.13.1.zip",
-      "sha256": "b25acf27d1a13a1d99fca0115833248cfc2543c2a827e20ec571719e43dfd9fb",
-      "size": 54640043,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.fuse.3-3.2.13.1.zip"
+      "zip": "skin.arctic.fuse.3-3.2.13.102.zip",
+      "sha256": "d39b31ba69f5f4dd4ea9f2d1fc919725ec1974a4f8808e1a83fbfeb254cb4ee0",
+      "size": 54640046,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.fuse.3-3.2.13.102.zip"
     },
     {
       "id": "skin.arctic.zephyr.2.resurrection.mod",
-      "version": "1.1.9.1",
+      "version": "1.1.9.109",
       "channel": "optional",
-      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.1.9.1.zip",
-      "sha256": "ea1a7a29ab743a1cc9ac7e83601402a2af2a80c04cd9941b8605dc904be151e8",
-      "size": 18525657,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.2.resurrection.mod-1.1.9.1.zip"
+      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.1.9.109.zip",
+      "sha256": "f48cd43460af53877288d53c331cb6d9b137a37641c18299a6c24c6b16d7cf24",
+      "size": 18525659,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.2.resurrection.mod-1.1.9.109.zip"
     },
     {
       "id": "skin.estuary",
-      "version": "4.1.0.1",
+      "version": "4.1.0.102",
       "channel": "core",
-      "zip": "skin.estuary-4.1.0.1.zip",
-      "sha256": "963ccccf030f3c3093c2a97cb0501b691b733333b62a7176e0fccb0f73ac9dcd",
-      "size": 4996555,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.estuary-4.1.0.1.zip"
+      "zip": "skin.estuary-4.1.0.102.zip",
+      "sha256": "264fba9ddd2433ee800ae07608824605c103dbb0f3954cab7d103289e56049c2",
+      "size": 4996557,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.estuary-4.1.0.102.zip"
     },
     {
       "id": "skin.nimbus",
-      "version": "0.1.43.1",
+      "version": "0.1.43.103",
       "channel": "optional",
-      "zip": "skin.nimbus-0.1.43.1.zip",
-      "sha256": "70b6703870a4bcc4bb2290ba50a6ccfaeea4d7351269625abec704e900a22043",
-      "size": 10587647,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.nimbus-0.1.43.1.zip"
+      "zip": "skin.nimbus-0.1.43.103.zip",
+      "sha256": "2ab349e18ee1dad609de181795d51ba271c1281d11a85329b1ea56823f929568",
+      "size": 10587648,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.nimbus-0.1.43.103.zip"
     }
   ],
   "config": {
