@@ -363,6 +363,17 @@ def _prewarm_gears(mon):
     try:
         if not xbmc.getCondVisibility('System.HasAddon(plugin.video.gears)'):
             return
+        # Apply the view map BEFORE the prewarm too: gears caches its settings
+        # in the warm interpreter on first touch, so writing the db only AFTER
+        # priming left the whole session on the OLD views (config-delivered
+        # view change looked like a no-op until the next restart). The post-
+        # prewarm apply below still covers the fresh-install case where the
+        # db is only created by the prewarm itself.
+        try:
+            from resources.libs import modular_update as _mu
+            _mu.apply_gears_views_for_skin()
+        except Exception:
+            pass
         paths = (
             'plugin://plugin.video.gears/?name=Trending&mode=build_movie_list'
             '&action=trakt_movies_trending&random_support=true&iconImage=trending',
