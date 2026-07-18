@@ -184,7 +184,37 @@ def build_one(overlay_dir, out_dir, local_zip=None):
         addon_dir = _extract_clean_base(zip_bytes, base, out_dir)
     n = _apply_overlay_files(overlay_dir, addon_dir)
     _log('%s: applied %d overlay files' % (base['addon_id'], n))
+    if base.get('auto_build_suffix'):
+        _stamp_build_suffix(overlay_dir, addon_dir, base['addon_id'])
     return addon_dir
+
+
+def _stamp_build_suffix(overlay_dir, addon_dir, addon_id):
+    """Rewrite the merged addon version's 4th segment to 100 + the overlay
+    dir's git commit count. Every committed overlay change (even a text-only
+    string fix) then shows as a visibly NEWER version in the update dialog --
+    the wizard updates by sha, so same-number updates worked but looked like
+    no-ops to the user. Deterministic per commit; the +100 offset keeps the
+    number above the historical hand-bumped 4th segments. Fail-open: no git /
+    any error -> version left untouched."""
+    import re
+    import subprocess
+    try:
+        count = int(subprocess.check_output(
+            ['git', 'rev-list', '--count', 'HEAD', '--', overlay_dir],
+            text=True).strip())
+        xml = os.path.join(addon_dir, 'addon.xml')
+        t = open(xml, encoding='utf-8').read()
+        m = re.search(r'(<addon\s[^>]*?version=")([0-9.]+)(")', t, re.S)
+        if not m:
+            return
+        base3 = '.'.join(m.group(2).split('.')[:3])
+        new_ver = '%s.%d' % (base3, 100 + count)
+        t = t[:m.start(2)] + new_ver + t[m.end(2):]
+        open(xml, 'w', encoding='utf-8', newline='\n').write(t)
+        _log('%s: version stamped %s (auto build suffix)' % (addon_id, new_ver))
+    except Exception as e:
+        _log('%s: build-suffix stamp skipped (%s)' % (addon_id, e))
 
 
 def _tree_hashes(base_dir):

@@ -31,7 +31,13 @@ WIZARD_ID = 'plugin.program.masterkodi.il.wizard'
 STAGE = os.path.join(ADDON_DATA, WIZARD_ID, '_keep_backup')   # survives the wipe
 
 # Never treated as a "user extra" (part of our own build machinery).
-_PROTECTED = {WIZARD_ID, 'service.kodi.il.firstrun', 'repository.masterkodi.il', 'packages'}
+_PROTECTED = {WIZARD_ID, 'service.kodi.il.firstrun', 'repository.masterkodi.il', 'packages',
+              # known-dead legacy repos (JUNK_REPOS in modular_update): never
+              # offer to carry them across a reinstall -- the keep step used to
+              # resurrect them onto FRESH installs, and the junk purge then had
+              # to re-delete them (seen on the 2026-07-18 Windows install)
+              'repository.burekasKodi', 'repository.funstersplace',
+              'repository.jenrepo', 'repository.universalscrapers'}
 
 
 def detect_extras(manifest_ids):

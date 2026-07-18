@@ -7,5 +7,6 @@
   "raw_top_folder": "skin.arctic.fuse.3-{version}",
   "overlay_version": "3.2.13",
   "note": "GitHub source archives are permanent per tag, so no committed base is needed; CI fetches base_zip_url at build time.",
-  "changelog": "Hebrew skin overlay: Rubik/NotoSansHebrew fonts, gearsai subtitle OSD button (Custom_1147), Hebrew info labels."
+  "changelog": "Hebrew skin overlay: Rubik/NotoSansHebrew fonts, gearsai subtitle OSD button (Custom_1147), Hebrew info labels.",
+  "auto_build_suffix": true
 }
