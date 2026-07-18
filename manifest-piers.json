@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-18T15:51:22Z",
+  "generated_utc": "2026-07-18T15:54:35Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -45,12 +45,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.102",
+      "version": "2.4.103",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.102.zip",
-      "sha256": "b077072b3a0c413ed0c98823bd2f48e35fb53698a2753660062a4b26726a95c4",
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.103.zip",
+      "sha256": "2f3694a6a86641b20192694bf222174fd74814a0f0e5188918d71f17e72772b8",
       "size": 2381441,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.102.zip"
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.103.zip"
     },
     {
       "id": "plugin.video.gears",
@@ -69,15 +69,6 @@
       "sha256": "2b89de4fd6394ed5a327fc2eb81e9dbde7639e4056496736232854bc0a102fdc",
       "size": 5051224,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.themoviedb.helper-6.16.1.zip"
-    },
-    {
-      "id": "repository.KodiRealDebridIsrael",
-      "version": "1.0.1",
-      "channel": "core",
-      "zip": "repository.KodiRealDebridIsrael-1.0.1.zip",
-      "sha256": "d79d8756fdcef3eedd266b4f4c76e7576a24d92e106869bda937b68b77c6dd6c",
-      "size": 210246,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/repository.KodiRealDebridIsrael-1.0.1.zip"
     },
     {
       "id": "repository.chainsrepo",
