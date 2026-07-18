@@ -1294,6 +1294,12 @@ def _apply_policy(zf, policy, home, fresh):
     gs = policy.get('gears_settings')
     if gs:
         _enforce_gears_settings(home, gs, set(policy.get('gears_settings_exclude', [])))
+        # the enforced values can change the scraper SELECTION (magneto default)
+        # -- re-sync enablement in the same pass instead of one boot later
+        try:
+            sync_scraper_stack()
+        except Exception:
+            pass
     # Gears navigator.db shortcut-folder enforcement (delete/replace debrid folders)
     gsc = policy.get('gears_shortcuts')
     if gsc:
@@ -1589,12 +1595,42 @@ def apply_gears_views_for_skin(skin_id=None):
         log('gears views apply failed: %s' % e, xbmc.LOGWARNING)
 
 
+def apply_pending_gears_settings():
+    """Fresh-install catch-up: the config's gears_settings enforcement no-ops
+    while gears' settings.db doesn't exist yet (it's created by the first
+    prewarm). The enforce step stashes the dict when that happens; this runs
+    post-prewarm and lands it -- so shipped defaults like the magneto
+    external-scraper selection are live from the very first boot."""
+    pending = os.path.join(ADDON_DATA, 'gears_settings_pending.json')
+    if not os.path.isfile(pending):
+        return
+    try:
+        with open(pending, encoding='utf-8-sig') as fh:
+            data = json.load(fh)
+        home = xbmcvfs.translatePath('special://home/')
+        _enforce_gears_settings(home, data.get('settings', {}),
+                                set(data.get('exclude', [])))
+        os.remove(pending)
+        log('applied pending gears settings (fresh-install catch-up)')
+    except Exception as e:
+        log('pending gears settings apply failed: %s' % e, xbmc.LOGWARNING)
+
+
 def _enforce_gears_settings(home, gears_settings, exclude):
     """Write critical Gears values into its settings.db without touching creds."""
     import sqlite3
     db = os.path.join(home, 'userdata', 'addon_data', 'plugin.video.gears',
                       'databases', 'settings.db')
     if not os.path.isfile(db):
+        # db not born yet (fresh install, pre-prewarm) -- stash for the
+        # post-prewarm catch-up so shipped defaults land on the FIRST boot
+        try:
+            with open(os.path.join(ADDON_DATA, 'gears_settings_pending.json'),
+                      'w', encoding='utf-8') as fh:
+                json.dump({'settings': gears_settings, 'exclude': sorted(exclude)}, fh,
+                          ensure_ascii=False)
+        except Exception:
+            pass
         return
     try:
         c = sqlite3.connect(db)

@@ -406,6 +406,10 @@ def _prewarm_gears(mon):
         # browse already uses the skin's configured views (not gears' Wall).
         try:
             from resources.libs import modular_update as mu
+            # fresh-install catch-up: land any gears settings the config
+            # enforcement stashed while the db didn't exist yet (e.g. the
+            # magneto default selection) -- BEFORE the scraper sync reads it
+            mu.apply_pending_gears_settings()
             mu.apply_gears_views_for_skin()
             # scraper lifecycle: keep only the SELECTED external scraper
             # enabled; neutralize the unused standby (its settings-monitor
