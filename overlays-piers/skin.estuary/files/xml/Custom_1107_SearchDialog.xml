@@ -33,7 +33,7 @@
 					</item>
 					<!-- Separator -->
 					<item>
-						<label>[COLOR gray]─────────────────[/COLOR]</label>
+						<label>[COLOR gray]—————————————————[/COLOR]</label>
 						<onclick>SetProperty(mk.separator.noop,1,home)</onclick>
 					</item>
 					<!-- Global Search -->
