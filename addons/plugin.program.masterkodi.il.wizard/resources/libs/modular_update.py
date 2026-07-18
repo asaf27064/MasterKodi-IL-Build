@@ -315,14 +315,21 @@ def repair_disabled_deps(manifest):
     files first, in case the module was partially removed too."""
     by_id = {a.get('id'): a for a in manifest.get('addons', [])}
     manifest_ids = set(by_id)
+    # ids the skin-stack lifecycle disabled ON PURPOSE (inactive skins' UI
+    # stacks) -- repairing them would re-enable dead weight every update
+    skin_disabled = set(_load_state().get('__skin_disabled__', []))
     targets = set()
     try:
         for a in manifest.get('addons', []):
             aid = a.get('id')
             if not aid or aid in NEVER_TOUCH or _installed_version(aid) is None:
                 continue
+            # a DISABLED parent (e.g. an inactive skin) doesn't need its deps
+            if not _is_enabled(aid):
+                continue
             for dep in _addon_requires(aid):
                 if dep in manifest_ids and dep not in NEVER_TOUCH \
+                        and dep not in skin_disabled \
                         and _installed_version(dep) is not None \
                         and not _is_enabled(dep):
                     targets.add(dep)

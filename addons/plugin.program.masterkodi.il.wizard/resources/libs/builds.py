@@ -478,46 +478,34 @@ class BuildManager:
             source_cursor = source_conn.cursor()
             target_cursor = target_conn.cursor()
             
-            # Get all tables from source
-            source_cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
-            tables = [row[0] for row in source_cursor.fetchall()]
-            
+            # ONLY the addonID-keyed tables, matched BY addonID -- never by the
+            # integer primary key. The old whole-table INSERT OR REPLACE keyed
+            # on the bundle's OWN row ids overwrote UNRELATED rows in the
+            # device db (the bundle's rows 108-119 wiped gears/gearsai/
+            # skipintro/... on the 2026-07-18 AF3 switch: Kodi then re-found
+            # them as new addons, DISABLED -> dead widgets, dead services).
             merged_count = 0
-            
-            for table in tables:
-                if table.startswith('sqlite_'):
-                    continue
-                
+            for table in ('installed', 'update_rules'):
                 try:
-                    # Get all rows from source table
-                    source_cursor.execute(f"SELECT * FROM {table}")
-                    rows = source_cursor.fetchall()
-                    
-                    if not rows:
-                        continue
-                    
-                    # Get column names
                     source_cursor.execute(f"PRAGMA table_info({table})")
                     columns = [col[1] for col in source_cursor.fetchall()]
-                    
-                    if not columns:
+                    if 'addonID' not in columns:
                         continue
-                    
-                    # Insert or replace into target
-                    placeholders = ','.join(['?' for _ in columns])
-                    columns_str = ','.join(columns)
-                    
+                    cols = [c for c in columns if c.lower() != 'id']
+                    cols_str = ','.join(cols)
+                    source_cursor.execute(f"SELECT {cols_str} FROM {table}")
+                    rows = source_cursor.fetchall()
+                    aid_idx = cols.index('addonID')
+                    placeholders = ','.join('?' for _ in cols)
                     for row in rows:
                         try:
                             target_cursor.execute(
-                                f"INSERT OR REPLACE INTO {table} ({columns_str}) VALUES ({placeholders})",
-                                row
-                            )
+                                f"DELETE FROM {table} WHERE addonID=?", (row[aid_idx],))
+                            target_cursor.execute(
+                                f"INSERT INTO {table} ({cols_str}) VALUES ({placeholders})", row)
                             merged_count += 1
-                        except Exception as e:
-                            # Table might not exist in target, that's ok
+                        except Exception:
                             pass
-                            
                 except Exception as e:
                     log(f"Error merging table {table}: {e}", xbmc.LOGWARNING)
             
@@ -696,14 +684,22 @@ class BuildManager:
             except Exception as e:
                 log(f"Error extracting/merging ViewModes database: {e}", xbmc.LOGWARNING)
         
-        # Now extract all other files (skip database)
+        # Now extract all other files (skip database). ALSO skip the bundle's
+        # guisettings snapshot: on a no-wipe skin install it would overwrite
+        # the LIVE install's global Kodi settings (colours, prefs, everything)
+        # with the state of whatever machine the bundle was packed on -- the
+        # config policy owns guisettings, not skin bundles.
+        _SKIP_MERGE_FILES = ('userdata/guisettings.xml', 'userdata\\guisettings.xml')
         for i, item in enumerate(zin.infolist()):
             filename = item.filename
             
             # Skip database files (we already merged)
             if 'Database' in filename and filename.endswith('.db'):
                 continue
-            
+
+            if filename in _SKIP_MERGE_FILES:
+                continue
+
             if ADDON_ID in filename:
                 continue
             
@@ -1120,6 +1116,12 @@ class BuildManager:
                 log(f"post-install manifest completion failed: {e}", xbmc.LOGWARNING)
 
             # Save build info
+            # step 8 installed the FULL manifest (incl. other skins' stacks,
+            # enabled) -- align enablement to the chosen skin's stack
+            try:
+                self.sync_skin_stacks(skin['id'] if skin else 'skin.estuary')
+            except Exception as e:
+                log(f"post-install stack sync failed: {e}", xbmc.LOGWARNING)
             ADDON.setSetting('buildname', build_name)
             ADDON.setSetting('buildversion', build_info.get('version', '1.0'))
 
@@ -1147,6 +1149,88 @@ class BuildManager:
             log(f"Install error: {e}", xbmc.LOGERROR)
             self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]שגיאה:[/COLOR] {str(e)}")
             return False
+
+    # ------------------------------------------------------------------ #
+    # Skin-stack lifecycle (Asaf's policy, 2026-07-18): the ACTIVE skin's
+    # UI stack is enabled; every other skin's EXCLUSIVE stack is disabled
+    # (neutralized, not removed -- switching back re-enables instantly).
+    # Core stays on everywhere: gears+scrapers+magneto, the subtitle/skip
+    # services, wizard/firstrun/repos, requests/urllib3/certifi/chardet/
+    # idna/six, languages -- none of those may EVER appear in these sets.
+    # skin.estuary is never disabled (Kodi's fallback skin).
+    # ------------------------------------------------------------------ #
+    SKIN_STACKS = {
+        'skin.estuary': set(),
+        'skin.arctic.zephyr.2.resurrection.mod': {
+            'script.skinshortcuts', 'script.skinhelper',
+            'script.module.simplejson', 'script.module.unidecode',
+            'script.module.simpleeval', 'script.skinvariables',
+            'plugin.video.themoviedb.helper', 'script.module.jurialmunkey',
+            'script.module.infotagger', 'script.module.addon.signals',
+            'script.module.qrcode', 'resource.images.studios.white',
+            'resource.images.moviegenreicons.transparent',
+            'resource.images.moviecountryicons.maps',
+            'resource.images.weathericons.white'},
+        'skin.arctic.fuse.3': {
+            'script.skinvariables', 'script.texturemaker',
+            'plugin.video.themoviedb.helper', 'script.module.jurialmunkey',
+            'script.module.infotagger', 'script.module.addon.signals',
+            'script.module.qrcode', 'resource.images.weathericons.white',
+            'resource.images.studios.coloured', 'resource.font.robotocjksc'},
+        'skin.nimbus': {'script.nimbus.helper'},
+    }
+
+    def _disable_addons_in_db(self, addon_ids):
+        if not addon_ids:
+            return
+        try:
+            import sqlite3
+            db_path = xbmcvfs.translatePath('special://database/')
+            best, addon_db = -1, None
+            for f in os.listdir(db_path):
+                if f.startswith('Addons') and f.endswith('.db'):
+                    try:
+                        num = int(f[len('Addons'):-len('.db')])
+                    except ValueError:
+                        continue
+                    if num > best:
+                        best, addon_db = num, os.path.join(db_path, f)
+            if not addon_db:
+                return
+            conn = sqlite3.connect(addon_db)
+            for aid in addon_ids:
+                conn.execute('UPDATE installed SET enabled=0 WHERE addonID=?', (aid,))
+            conn.commit(); conn.close()
+        except Exception as e:
+            log(f"disable_addons_in_db failed: {e}", xbmc.LOGWARNING)
+
+    def sync_skin_stacks(self, active_skin_id):
+        """Enable the active skin + its stack; disable every OTHER skin's
+        exclusive stack (and the inactive optional skins themselves). Records
+        the intentionally-disabled set in the wizard state so the update
+        repair pass doesn't re-enable them behind our back."""
+        try:
+            stacks = self.SKIN_STACKS
+            keep = stacks.get(active_skin_id, set()) | {active_skin_id}
+            everything = set().union(*stacks.values())
+            disable = (everything - keep)
+            for sid in stacks:
+                if sid != active_skin_id and sid != 'skin.estuary':
+                    disable.add(sid)
+            # only touch what's actually installed
+            disable = sorted(d for d in disable
+                             if os.path.isfile(os.path.join(ADDONS, d, 'addon.xml')))
+            enable = sorted(k for k in keep
+                            if os.path.isfile(os.path.join(ADDONS, k, 'addon.xml')))
+            self.enable_addons_in_db(enable)
+            self._disable_addons_in_db(disable)
+            from resources.libs import modular_update as mu
+            state = mu._load_state()
+            state['__skin_disabled__'] = disable
+            mu._save_state(state)
+            log(f"skin stacks synced for {active_skin_id}: +{len(enable)} on, -{len(disable)} off")
+        except Exception as e:
+            log(f"sync_skin_stacks failed: {e}", xbmc.LOGWARNING)
 
     def _seed_state_from_manifest(self, addon_ids):
         """After a bundle-zip skin install: record the manifest shas for the
@@ -1183,6 +1267,7 @@ class BuildManager:
                 return False
             self.set_default_skin(cfg['id'])
             ADDON.setSetting('installed_skin', cfg['name'])
+            self.sync_skin_stacks(cfg['id'])
             self._countdown_restart(self.get_installed_build_name(), cfg['name'])
             return True
         progress = xbmcgui.DialogProgress()
@@ -1237,6 +1322,7 @@ class BuildManager:
             # Set as default skin
             progress.update(90, "[COLOR yellow]מגדיר סקין ברירת מחדל...[/COLOR]")
             self.set_default_skin('skin.arctic.fuse.3')
+            self.sync_skin_stacks('skin.arctic.fuse.3')
             
             # Update
             progress.update(95, "[COLOR yellow]מעדכן...[/COLOR]")
@@ -1865,6 +1951,8 @@ def _skin_switch_flow():
     # switch active skin
     manager.set_default_skin(sid)
     ADDON.setSetting('installed_skin', name)
+    # activate the new skin's stack, neutralize the other skins' stacks
+    manager.sync_skin_stacks(sid)
 
     # ask what to do with the previous optional skin (never touch Estuary).
     # Removal is DEFERRED to the next startup: the old skin is still the running
