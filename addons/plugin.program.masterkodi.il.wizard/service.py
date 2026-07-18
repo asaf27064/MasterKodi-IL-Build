@@ -142,6 +142,13 @@ def _process_pending_view_rebuild():
             tfile = os.path.join(sdir, 'target.txt')
             if os.path.isfile(sfile) and os.path.isfile(tfile):
                 target_path = open(tfile, encoding='utf-8').read().strip()
+                # the stash was captured from the skin ACTIVE at defer time --
+                # after a skin switch that's NOT the running skin. Pushing it
+                # into the live skin injected 175 Zephyr ids into AF3's
+                # settings (harmless junk, but junk). Apply in-memory ONLY
+                # when the stash belongs to the CURRENT skin; the file copy
+                # below still lands it for the skin it belongs to.
+                stash_is_for_cur = ('/%s/' % cur_skin) in target_path.replace('\\', '/')
                 if target_path:
                     shutil.copy2(sfile, target_path)
                     # CRITICAL (learned from the Xiaomi, 2026-07-17): the file
@@ -156,7 +163,8 @@ def _process_pending_view_rebuild():
                     applied_n = 0
                     try:
                         import xml.etree.ElementTree as ET
-                        for s in ET.parse(sfile).getroot().findall('setting'):
+                        for s in (ET.parse(sfile).getroot().findall('setting')
+                                  if stash_is_for_cur else []):
                             sid = s.get('id')
                             if not sid:
                                 continue

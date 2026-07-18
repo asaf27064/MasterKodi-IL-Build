@@ -632,7 +632,7 @@ JUNK_REPOS = (
     'repository.funstersplace',      # also plain-HTTP = insecure
     'repository.jenrepo',
     'repository.universalscrapers',
-)
+, 'repository.KodiRealDebridIsrael'  # dead kodi7rd endpoint (404), legacy KodiRD-IL era)
 
 
 def remove_junk_repos():

@@ -700,6 +700,15 @@ class BuildManager:
             if filename in _SKIP_MERGE_FILES:
                 continue
 
+            # The bundle's harvested SKIN settings snapshot (whatever state the
+            # packing machine was in -- e.g. the January blue accent) must not
+            # override the build's curated defaults: the CONFIG owns skin
+            # settings. Everything else in addon_data (skinshortcuts menus
+            # etc.) still extracts.
+            _norm = filename.replace('\\', '/')
+            if _norm.startswith('userdata/addon_data/skin.') and _norm.endswith('/settings.xml'):
+                continue
+
             if ADDON_ID in filename:
                 continue
             
@@ -1694,6 +1703,37 @@ class BuildManager:
         # just wrote. After an install DISK is authoritative -- skip the save.
         # (fast_exit keeps the graceful Quit: on a normal user exit, memory IS
         # authoritative.)
+        # Windows: arm a relauncher first so Kodi actually COMES BACK -- the
+        # skin-switch restart used to just exit and wait for the user to
+        # reopen (2026-07-18). Same relauncher as the update flow, minus the
+        # graceful Quit (disk is authoritative here).
+        import sys
+        if sys.platform.startswith('win'):
+            try:
+                import subprocess
+                pid = os.getpid()
+                exe = sys.executable if str(sys.executable).lower().endswith('kodi.exe') \
+                    else os.path.join(xbmcvfs.translatePath('special://xbmc/'), 'kodi.exe')
+                launch = None
+                try:
+                    import ctypes
+                    ctypes.windll.kernel32.GetCommandLineW.restype = ctypes.c_wchar_p
+                    launch = (ctypes.windll.kernel32.GetCommandLineW() or '').strip()
+                except Exception:
+                    pass
+                if not launch or 'kodi' not in launch.lower():
+                    portable = xbmcvfs.translatePath('special://home/').lower().startswith(
+                        xbmcvfs.translatePath('special://xbmc/').lower())
+                    launch = '"%s"%s' % (exe, ' -p' if portable else '')
+                if os.path.isfile(exe):
+                    cmd = ('ping -n 6 127.0.0.1 >nul & '
+                           'tasklist /FI "PID eq %d" /FI "IMAGENAME eq kodi.exe" 2>nul | '
+                           'findstr /I kodi.exe >nul && taskkill /F /PID %d /T >nul 2>&1 & '
+                           'start "" %s' % (pid, pid, launch))
+                    subprocess.Popen(cmd, shell=True, creationflags=0x08000000)
+                    log("post-install restart: relauncher armed")
+            except Exception as e:
+                log(f"relauncher arm failed (manual relaunch needed): {e}", xbmc.LOGWARNING)
         log("post-install restart: hard exit, skipping Kodi's exit-save (disk is authoritative)")
         os._exit(0)
 
