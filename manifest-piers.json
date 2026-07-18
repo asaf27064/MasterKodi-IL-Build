@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-18T16:48:57Z",
+  "generated_utc": "2026-07-18T17:02:08Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -504,12 +504,12 @@
     },
     {
       "id": "skin.estuary",
-      "version": "4.1.0.102",
+      "version": "4.1.0.104",
       "channel": "core",
-      "zip": "skin.estuary-4.1.0.102.zip",
-      "sha256": "264fba9ddd2433ee800ae07608824605c103dbb0f3954cab7d103289e56049c2",
-      "size": 4996557,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.estuary-4.1.0.102.zip"
+      "zip": "skin.estuary-4.1.0.104.zip",
+      "sha256": "5462e1f1f8793d7e1082771aad0f58a3c152b224d7df2288d647738323db2a92",
+      "size": 4996582,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.estuary-4.1.0.104.zip"
     },
     {
       "id": "skin.nimbus",
