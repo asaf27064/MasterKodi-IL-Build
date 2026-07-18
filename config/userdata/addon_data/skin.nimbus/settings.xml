@@ -87,7 +87,7 @@
     <setting id="onleftsetting" type="string">0</setting>
     <setting id="listlandscape.seasons" type="string">1</setting>
     <setting id="listartworkchoice.videos" type="string">0</setting>
-    <setting id="skin.forcedview.seasons" type="string">רשימה</setting>
+    <setting id="skin.forcedview.seasons" type="string">קיר סמלילים</setting>
     <setting id="hideosd" type="string"></setting>
     <setting id="HomeFanart.ext" type="string"></setting>
     <setting id="skin.forcedview.favourites" type="string"></setting>
