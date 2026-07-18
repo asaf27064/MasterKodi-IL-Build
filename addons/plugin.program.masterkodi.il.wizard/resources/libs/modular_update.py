@@ -1181,7 +1181,8 @@ def _apply_policy(zf, policy, home, fresh):
         elif mode == 'merge_id':
             _merge_settings_xml(src_bytes, dest, exclude)
         elif mode == 'merge_seed':
-            _seed_settings_xml(src_bytes, dest, exclude, set(entry.get('force_ids', [])))
+            _seed_settings_xml(src_bytes, dest, exclude, set(entry.get('force_ids', [])),
+                               dest_rel=dest_rel)
         elif mode == 'merge_name':
             _merge_named_xml(src_bytes, dest)
         applied.append('%s(%s)' % (dest_rel, mode))
@@ -1293,21 +1294,52 @@ def _merge_settings_xml(src_bytes, dest, exclude_ids):
         fh.write(dst_txt)
 
 
-def _seed_settings_xml(src_bytes, dest, exclude_ids, force_ids=()):
+def _settings_baseline_path():
+    return os.path.join(ADDON_DATA, 'config_baseline', 'settings_ids.json')
+
+
+def _settings_baseline_load():
+    try:
+        with open(_settings_baseline_path(), encoding='utf-8-sig') as fh:
+            return json.load(fh)
+    except Exception:
+        return {}
+
+
+def _settings_baseline_save(data):
+    try:
+        os.makedirs(os.path.dirname(_settings_baseline_path()), exist_ok=True)
+        with open(_settings_baseline_path(), 'w', encoding='utf-8') as fh:
+            json.dump(data, fh, ensure_ascii=False)
+    except Exception as e:
+        log('settings baseline save failed: %s' % e, xbmc.LOGWARNING)
+
+
+def _seed_settings_xml(src_bytes, dest, exclude_ids, force_ids=(), dest_rel=None):
     """Per <setting id=X>: add ONLY ids the user doesn't already have; NEVER
     overwrite an existing value -- so our values are the DEFAULT while a user's own
     change sticks across updates (unlike merge_id, which clobbers on every apply).
 
-    ESCAPE HATCH: ids listed in `force_ids` ARE overwritten (build value wins), even
-    if the user set them. That's how we deliberately PUSH a changed default to every
-    device: add the id to the file's "force_ids" in config_policy.json and bump
-    config_version. exclude_ids always wins over force_ids (credentials stay safe)."""
+    PUSH-ON-CHANGE (2.4.97, the skin-settings policy): the wizard remembers the
+    value it LAST SHIPPED for every id (per-id baseline). When OUR shipped value
+    for an id changes, the new value is pushed once -- overwriting the user's --
+    and the baseline advances; on every other apply the user's value stands.
+    So a deliberately changed default reaches the whole fleet with just a
+    config bump, while nothing is ever locked: users regain control the moment
+    the push lands. The old static `force_ids` still force (kept as an escape
+    hatch for permanent enforcement), but routine pushes no longer need it.
+    exclude_ids always wins over everything (credentials stay safe)."""
     import re
     src_txt = src_bytes.decode('utf-8', 'replace')
     build_vals = dict(re.findall(r'<setting id="([^"]+)"[^>]*>([^<]*)</setting>', src_txt))
+    bl_key = dest_rel or dest
+    baseline = _settings_baseline_load()
+    file_bl = baseline.get(bl_key, {})
     if not os.path.exists(dest):
         with open(dest, 'wb') as fh:
             fh.write(src_bytes)
+        baseline[bl_key] = build_vals
+        _settings_baseline_save(baseline)
         return
     with open(dest, 'r', encoding='utf-8', errors='replace') as fh:
         dst_txt = fh.read()
@@ -1315,15 +1347,21 @@ def _seed_settings_xml(src_bytes, dest, exclude_ids, force_ids=()):
     for sid, val in build_vals.items():
         if sid in exclude_ids:
             continue
-        if sid in force_ids and sid in dst_ids:
+        # push when: statically forced, OR our shipped value changed since the
+        # last delivery the baseline knows about (first run with no baseline
+        # recorded does NOT force -- it only seeds, then records)
+        push = sid in force_ids or (sid in file_bl and file_bl[sid] != val)
+        if push and sid in dst_ids:
             dst_txt = re.sub(r'(<setting id="%s"[^>]*>)[^<]*(</setting>)' % re.escape(sid),
                              lambda m: m.group(1) + val + m.group(2), dst_txt, count=1)
         elif sid not in dst_ids:
             dst_txt = dst_txt.replace('</settings>',
                                       '    <setting id="%s">%s</setting>\n</settings>' % (sid, val), 1)
-        # else: user already has it and it's not forced -> leave it
+        # else: user already has it, not forced, our default unchanged -> theirs
     with open(dest, 'w', encoding='utf-8') as fh:
         fh.write(dst_txt)
+    baseline[bl_key] = build_vals
+    _settings_baseline_save(baseline)
 
 
 def _merge_named_xml(src_bytes, dest):

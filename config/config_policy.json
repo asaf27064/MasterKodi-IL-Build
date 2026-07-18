@@ -1,5 +1,5 @@
 {
-  "config_version": 37,
+  "config_version": 38,
   "_comment": "Declarative policy for how the wizard applies the shipped build-config onto a device. Bump build.json config_version whenever ANY file under config/ changes. Modes: replace (overwrite whole file), seed_if_absent (write only if missing), merge_id (per <setting id>, build value wins - CLOBBERS user changes), merge_seed (per <setting id>, add-if-absent - our value is the DEFAULT but a user's own change is NEVER overwritten), merge_name (per <source><name>, add build's, keep user's). To DELIBERATELY push a changed default to every device with merge_seed: add that id to the file's optional \"force_ids\" list (overwrites even user-set values) and bump config_version; remove it once propagated if you want user changes to stick again. exclude_ids always win over force_ids to protect credentials. gears_settings enforces critical values in Gears' binary settings.db.",
   "files": [
     {
@@ -50,13 +50,7 @@
       "dest": "userdata/addon_data/skin.nimbus/settings.xml",
       "fresh": "replace",
       "update": "merge_seed",
-      "force_ids": [
-        "MenuCustom1Label",
-        "MenuCustom2Label",
-        "homemenunocustom2button",
-        "enable.smartstatus",
-        "onbacksetting"
-      ],
+      "force_ids": [],
       "exclude_ids": [
         "mdblist_api_key",
         "valid_api_key"
@@ -67,37 +61,14 @@
       "dest": "userdata/addon_data/skin.arctic.fuse.3/settings.xml",
       "fresh": "replace",
       "update": "merge_seed",
-      "force_ids": [
-        "homeswitcher.1102.name",
-        "homeswitcher.1103.name",
-        "homeswitcher.1103.toggle",
-        "homeswitcher.1103.icon",
-        "labels.autoscroll",
-        "startup.enablehubpreloading"
-      ]
+      "force_ids": []
     },
     {
       "src": "userdata/addon_data/skin.arctic.zephyr.2.resurrection.mod/settings.xml",
       "dest": "userdata/addon_data/skin.arctic.zephyr.2.resurrection.mod/settings.xml",
       "fresh": "replace",
       "update": "merge_seed",
-      "force_ids": [
-        "HomeMultiVertical",
-        "Icons",
-        "OSD_Timeout",
-        "alphavalue_highlight",
-        "background_fade",
-        "flipside",
-        "flixhidemenu",
-        "homebasic",
-        "homeicons",
-        "homemulti",
-        "homemultiflixview",
-        "homemultihorizontal",
-        "homemultinetflix",
-        "osd.autohideonpause",
-        "playerscrollseekbar"
-      ]
+      "force_ids": []
     },
     {
       "src": "userdata/addon_data/plugin.video.themoviedb.helper/settings.xml",
