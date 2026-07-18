@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-18T14:28:11Z",
+  "generated_utc": "2026-07-18T14:39:12Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -507,7 +507,7 @@
       "version": "1.1.9.1",
       "channel": "optional",
       "zip": "skin.arctic.zephyr.2.resurrection.mod-1.1.9.1.zip",
-      "sha256": "5baffd85aee4c792d5fb93752bd9dfc258d27f98db0c6911e1a24ebc01b56d47",
+      "sha256": "ea1a7a29ab743a1cc9ac7e83601402a2af2a80c04cd9941b8605dc904be151e8",
       "size": 18525657,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.2.resurrection.mod-1.1.9.1.zip"
     },
@@ -531,10 +531,10 @@
     }
   ],
   "config": {
-    "version": "36",
-    "zip": "config-36.zip",
-    "sha256": "a0db78184dd758a28d4be56123b9c5c053bc72eb9a164e26ea04b02ff32790eb",
-    "size": 34735,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-36.zip"
+    "version": "37",
+    "zip": "config-37.zip",
+    "sha256": "6e2590e67e41631a46113d6da426449a4f83c2bdc2c773aae8a4375eda9159c4",
+    "size": 34731,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-37.zip"
   }
 }
