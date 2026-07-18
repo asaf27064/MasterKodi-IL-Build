@@ -6,7 +6,7 @@ from resources.modules import log
 from resources.modules.engine import download_sub
 from resources.modules.general import CachedSubFolder
 from urllib.parse import parse_qsl
-from resources.modules.general import user_dataDir,MySubFolder,save_file_name,get_db_data,Thread,TransFolder
+from resources.modules.general import user_dataDir,MySubFolder,save_file_name,get_db_data,Thread,TransFolder,get_last_sub_source,norm_site_token
 import urllib.parse
 
 unque=urllib.parse.unquote_plus
@@ -71,13 +71,54 @@ def _clean_name(items, video_data, strip_title=True, max_len=0):
     return raw
 
 
+def _current_index(list_o, last_name, last_lang, cur_source):
+    """Index of the row that is the CURRENTLY playing sub, or -1.
+
+    Identity is (release name, language, source-site). Name+lang alone
+    collided: a native Hebrew sub and a foreign-site source sharing one
+    release name both matched, and the wrong row wore [ נוכחית ].
+
+    Pass 1 -- exact (name, lang, site) when the placement recorded its source.
+    Pass 2 -- (name, site): the placed file is a DERIVATIVE saved under the
+              source row's name with a different recorded language (AI/pool
+              translation of an English source); its source row is truthfully
+              'the row whose sub is playing'.
+    Legacy  -- meta without a source (old installs / stale sidecar): the
+              original name+lang first-match, unchanged behavior.
+    Pure in-memory pre-pass over ~a screenful of tuples -- zero I/O."""
+    if cur_source:
+        for i, it in enumerate(list_o):
+            if (it[8] == last_name and it[0] == last_lang
+                    and norm_site_token(it[9]) == cur_source):
+                return i
+        for i, it in enumerate(list_o):
+            if it[8] == last_name and norm_site_token(it[9]) == cur_source:
+                return i
+        return -1
+    for i, it in enumerate(list_o):
+        if it[8] == last_name and it[0] == last_lang:
+            return i
+    return -1
+
+
 def _build_rows(list_o, video_data, all_subs, last_name, last_lang, two_line):
     """Format the subtitle rows. Returns a list of (line1, line2) tuples --
     line2 is '' in single-line (classic) mode where line1 carries a shortened
     name instead."""
     rows = []
-    current_marked = False
-    for items in list_o:
+    # -- per-build state, hoisted OUT of the row loop (no per-row I/O) --
+    cur_source = get_last_sub_source(video_data, last_name, last_lang)
+    cur_idx = _current_index(list_o, last_name, last_lang, cur_source)
+    try:
+        _synced_now = xbmcgui.Window(10000).getProperty('gearsai.current_synced') == '1'
+    except Exception:
+        _synced_now = False
+    try:
+        _trans_names = set(os.listdir(TransFolder))
+    except Exception:
+        _trans_names = set()
+    _origin_cache = {}
+    for idx, items in enumerate(list_o):
         try:
             val = all_subs.get(items[8])
         except Exception:
@@ -87,35 +128,46 @@ def _build_rows(list_o, video_data, all_subs, last_name, last_lang, two_line):
         except Exception:
             pct = 0
         mcolor = 'springgreen' if pct >= 85 else ('gold' if pct >= 60 else 'darkorange')
+        # embedded/derived rows carry a magic >100 sort value -- '101%' on
+        # screen reads like a bug; say what it actually is
+        pct_txt = ('מוטמע' if pct > 100 else '{0}%'.format(pct))
         lang = "עברית" if "Hebrew" in items[0] else _LANG_HE.get(items[0], items[0])
 
-        is_current = ((not current_marked)
-                      and (last_name == items[8]) and (last_lang == items[0]))
         is_downloaded = bool(val and items[0] in val)
-        if is_current:
-            current_marked = True
-            status = "[COLOR gold][B][ נוכחית ][/B][/COLOR]  "
+        if idx == cur_idx:
+            status = ("[COLOR gold][B][ נוכחית · סונכרן ][/B][/COLOR]  " if _synced_now
+                      else "[COLOR gold][B][ נוכחית ][/B][/COLOR]  ")
         elif is_downloaded:
             status = "[COLOR springgreen][B][ ירדה ][/B][/COLOR]  "
         else:
             status = ""
 
         # Machine-translated to Hebrew? say so + from where (.origin marker).
-        trans_file = os.path.join(TransFolder, items[8])
-        if os.path.exists(trans_file):
-            origin = ''
-            try:
-                with open(trans_file + '.origin', encoding='utf-8') as f_o:
-                    origin = f_o.read().strip()
-            except Exception:
-                pass
+        if items[8] in _trans_names:
+            if items[8] in _origin_cache:
+                origin = _origin_cache[items[8]]
+            else:
+                origin = ''
+                try:
+                    with open(os.path.join(TransFolder, items[8] + '.origin'),
+                              encoding='utf-8') as f_o:
+                        origin = f_o.read().strip()
+                except Exception:
+                    pass
+                _origin_cache[items[8]] = origin
             # a SYNC of a native Hebrew sub is not a translation -- say what
             # actually happened (the .origin text), no misleading 'תורגם'
-            if origin and ('סונכרן' in origin) and ('Gemini' not in origin) and ('Google' not in origin):
-                tag = origin
-            else:
-                tag = 'תורגם' + (' · ' + origin if origin else ' לעברית')
-            status += "[COLOR magenta][B][ " + tag + " ][/B][/COLOR]  "
+            # trans files (Gemini / pool / pool-synced) are ALWAYS keyed to the
+            # ENGLISH SOURCE's release name -- the badge belongs on source rows
+            # ("this English sub has a Hebrew derivative"). A NATIVE Hebrew row
+            # (KT/WZ) sharing the release name inherits it only by collision:
+            # a Hebrew sub can never be 'תורגם', so never badge Hebrew rows.
+            _row_is_hebrew = 'Hebrew' in str(items[0])
+            if not _row_is_hebrew:
+                _is_sync_origin = bool(origin and ('סונכרן' in origin)
+                                       and ('Gemini' not in origin) and ('Google' not in origin))
+                tag = origin if _is_sync_origin else ('תורגם' + (' · ' + origin if origin else ' לעברית'))
+                status += "[COLOR magenta][B][ " + tag + " ][/B][/COLOR]  "
 
         # SDH / hearing-impaired flag (speaker tags) -- these translate to
         # BETTER Hebrew gender, so surface it; the auto-pick already prefers
@@ -145,18 +197,18 @@ def _build_rows(list_o, video_data, all_subs, last_name, last_lang, two_line):
             # whose first strong character is Latin (e.g. "[ SDH ]") flips to
             # LTR and its segments render on the opposite side of the others
             line1 = ("‏{st}[COLOR deepskyblue][B]{lang}[/B][/COLOR]"
-                     "  [COLOR {mc}][B]{pct}%[/B][/COLOR]"
+                     "  [COLOR {mc}][B]{pct}[/B][/COLOR]"
                      "  [COLOR {bc}][B]{badge}[/B][/COLOR]  {name}").format(
-                         st=status, lang=lang, mc=mcolor, pct=pct,
+                         st=status, lang=lang, mc=mcolor, pct=pct_txt,
                          bc=bcolor, badge=badge, name=name1)
             line2 = _clean_name(items, video_data, strip_title=False)
             rows.append((line1, line2))
         else:
             name = _clean_name(items, video_data, strip_title=True, max_len=58)
             line1 = ("‏{st}[COLOR deepskyblue][B]{lang}[/B][/COLOR]"
-                     "  [COLOR {mc}][B]{pct}%[/B][/COLOR]"
+                     "  [COLOR {mc}][B]{pct}[/B][/COLOR]"
                      "  [COLOR {bc}][B]{badge}[/B][/COLOR]  {name}").format(
-                         st=status, lang=lang, mc=mcolor, pct=pct,
+                         st=status, lang=lang, mc=mcolor, pct=pct_txt,
                          bc=bcolor, badge=badge, name=name)
             rows.append((line1, ''))
     return rows
@@ -180,13 +232,13 @@ def _download_row(items_row, video_data):
             general.ai_manual = False
         xbmc.sleep(100)
         if sub_file == 'EmbeddedSubSelected':
-            save_file_name(unque(filename), language, video_data)
+            save_file_name(unque(filename), language, video_data, source=source)
             return 'embedded', filename, language
         if sub_file == 'FaultSubException' or not sub_file or sub_file == '0':
             return 'fault', filename, language
         xbmc.Player().setSubtitles(sub_file)
         log.warning('My Window Sub result:' + str(sub_file))
-        save_file_name(filename, language, video_data)
+        save_file_name(filename, language, video_data, source=source)
         # Keep a copy in Cached_subs (respecting the cache-size setting).
         try:
             max_sub_cache = int(Addon.getSetting("subtitle_trans_cache"))

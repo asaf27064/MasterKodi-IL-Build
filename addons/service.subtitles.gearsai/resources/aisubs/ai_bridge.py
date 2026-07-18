@@ -615,6 +615,12 @@ def sync_current_sub():
         out = _write_synced_srt(retimed)
         if out:
             _notify('הכתובית סונכרנה!')
+            # remember that the CURRENT sub is the synced version, so the
+            # window can show [ נוכחית · סונכרן ] instead of a silent state
+            try:
+                xbmcgui.Window(10000).setProperty('gearsai.current_synced', '1')
+            except Exception:
+                pass
         return out
     except Exception as e:
         xbmc.log('[gearsai-ai] sync_current_sub failed: {0}'.format(e), xbmc.LOGWARNING)

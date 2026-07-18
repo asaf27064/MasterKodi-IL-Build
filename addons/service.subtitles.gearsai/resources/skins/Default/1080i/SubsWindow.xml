@@ -127,7 +127,7 @@
 				<textcolor>FF5E6B7C</textcolor>
 				<align>center</align><aligny>center</aligny>
 				<visible>!Control.HasFocus(105)</visible>
-				<label>התאמה: [COLOR FF54D169]85%+[/COLOR]  ·  [COLOR FFE5C25A]60%+[/COLOR]  ·  [COLOR FFDF8A45]נמוכה[/COLOR]</label>
+				<label>התאמה: [COLOR FF54D169]85%+[/COLOR] · [COLOR FFE5C25A]60%+[/COLOR] · [COLOR FFDF8A45]נמוכה[/COLOR]   ·   [COLOR FF7FD4E8]SDH[/COLOR] = לכבדי שמיעה</label>
 			</control>
 			<control type="label">
 				<left>996</left><top>944</top><width>888</width><height>28</height>

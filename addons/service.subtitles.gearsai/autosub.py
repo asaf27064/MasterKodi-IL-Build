@@ -257,7 +257,7 @@ def set_embedded_hebrew_sub(video_data):
         xbmc.Player().setSubtitleStream(index_sub)
         
         save_data='HebrewSubEmbedded'+video_data['imdb']+str(video_data['season'])+str(video_data['episode'])+video_data['OriginalTitle']+video_data['Tagline']
-        save_file_name(que(save_data),"Hebrew",video_data)
+        save_file_name(que(save_data),"Hebrew",video_data,source='loc')
             
         xbmc.sleep(300)
     
@@ -474,8 +474,8 @@ def place_sub(video_data,f_result,last_sub_name_in_cache,last_sub_language_in_ca
             log.warning('Auto Sub result:'+str(sub_file))
             xbmc.sleep(200)
             xbmc.Player().setSubtitles(sub_file)        
-            save_file_name(params["filename"],language,video_data)
-            
+            save_file_name(params["filename"],language,video_data,source=source)
+
             f_count=0
             max_sub_cache=int(Addon.getSetting("subtitle_trans_cache"))
             for filename_o in os.listdir(CachedSubFolder):
@@ -690,7 +690,7 @@ def sub_from_main(arg):
         if sub_file=='EmbeddedSubSelected': # embedded subtitle
             notify( 'התרגום המובנה יופיע בעוד 10 שניות' )
             log.warning(filename)
-            save_file_name(filename,language,video_data)
+            save_file_name(filename,language,video_data,source=source)
         elif sub_file=='FaultSubException':
             notify( 'תקלה בהורדה נסה שנית' )
         else: # External subtitle
@@ -704,7 +704,7 @@ def sub_from_main(arg):
                     xbmcgui.Window(10000).setProperty('gearsai.current_heb_sub', sub_file)
             except Exception:
                 pass
-            save_file_name(filename,language,video_data)
+            save_file_name(filename,language,video_data,source=source)
             f_count=0
             max_sub_cache=int(Addon.getSetting("subtitle_trans_cache"))
             for filename_o in os.listdir(CachedSubFolder):
@@ -843,8 +843,8 @@ def sub_from_main(arg):
             general.show_msg="מוכן"
             if (sub_file!='EmbeddedSubSelected') and (sub_file!='FaultSubException'):
                 xbmc.Player().setSubtitles(sub_file)
-            save_file_name(filename,language,video_data)
-            
+            save_file_name(filename,language,video_data,source=source)
+
         else:
             general.show_msg="סוף הכתוביות"
             
@@ -903,9 +903,9 @@ def sub_from_main(arg):
             xbmc.sleep(100)
             if (sub_file!='EmbeddedSubSelected') and (sub_file!='FaultSubException'):
                 xbmc.Player().setSubtitles(sub_file)
-                save_file_name(filename,language,video_data)
+                save_file_name(filename,language,video_data,source=source)
             else:
-                save_file_name(unque(filename),language,video_data)
+                save_file_name(unque(filename),language,video_data,source=source)
                 
         else:
             general.show_msg="זאת הכתובית הראשונה"

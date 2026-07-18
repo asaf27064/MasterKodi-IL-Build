@@ -690,10 +690,49 @@ def get_video_data():
     log.warning(f"DEBUG | get_video_data | FINAL | video_data={video_data}")
     return video_data
 
-def save_file_name(filename,language,video_data):
+def norm_site_token(s):
+    """Fold a site marker ('[OpenSubtitles]') or a download source param
+    ('opensubtitles', 'subdl_ai', 'HebrewSubEmbedded') to one shared token so
+    the two vocabularies compare equal. '' stays '' (= source unknown)."""
+    try:
+        t = ''.join(c for c in str(s or '').lower() if c.isalnum())
+    except Exception:
+        return ''
+    if t.startswith('hebrewsubembedded') or t.startswith('englishsubembedded') or t == 'loc':
+        return 'loc'
+    if t.startswith('subdl'):
+        return 'subdl'
+    return t
+
+
+def save_file_name(filename,language,video_data,source=''):
+    # a NEW sub was placed -> the 'current is synced' marker no longer applies
+    try:
+        xbmcgui.Window(10000).clearProperty('gearsai.current_synced')
+    except Exception:
+        pass
 
     video_data_tagline = quote(video_data['Tagline'])
     video_data_file_original_path = quote(video_data['file_original_path'])
+
+    # Sidecar identity for the placed sub. The DB row is only (name, lang),
+    # which collides when two sites offer the same release name -- the meta
+    # adds WHERE it came from without touching the legacy schema (autosub's
+    # next/previous walkers unpack fixed 4-tuples from that table).
+    try:
+        import json as _json, time as _time
+        meta = {'name': filename, 'lang': language,
+                'source': norm_site_token(source),
+                'tagline': video_data_tagline,
+                'path': video_data_file_original_path,
+                'ts': int(_time.time())}
+        meta_file = os.path.join(user_dataDir, 'last_sub_meta.json')
+        tmp = meta_file + '.tmp'
+        with open(tmp, 'w', encoding='utf-8') as f_m:
+            f_m.write(_json.dumps(meta))
+        os.replace(tmp, meta_file)
+    except Exception:
+        pass
     
     try:
         from sqlite3 import dbapi2 as database
@@ -716,6 +755,26 @@ def save_file_name(filename,language,video_data):
 
     dbcon.commit()
     dbcon.close()
+
+
+def get_last_sub_source(video_data, last_name, last_lang):
+    """Source token of the LAST placed sub, or '' when unknown. Trusted only
+    when the sidecar meta agrees with the DB's last record for THIS video --
+    a stale/foreign meta must never flip which row shows [ נוכחית ]."""
+    try:
+        import json as _json
+        meta_file = os.path.join(user_dataDir, 'last_sub_meta.json')
+        with open(meta_file, encoding='utf-8') as f_m:
+            meta = _json.loads(f_m.read())
+        if (meta.get('name') == last_name and meta.get('lang') == last_lang
+                and (meta.get('tagline') == quote(video_data['Tagline'])
+                     or meta.get('path') == quote(video_data['file_original_path']))):
+            return meta.get('source') or ''
+    except Exception:
+        pass
+    return ''
+
+
 def get_db_data(video_data):
 
     video_data_tagline = quote(video_data['Tagline'])
