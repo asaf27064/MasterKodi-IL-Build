@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-18T17:02:05Z",
+  "generated_utc": "2026-07-18T17:23:47Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -459,12 +459,12 @@
     },
     {
       "id": "service.subtitles.gearsai",
-      "version": "1.0.36",
+      "version": "1.0.37",
       "channel": "core",
-      "zip": "service.subtitles.gearsai-1.0.36.zip",
-      "sha256": "1a5615329f0157ca9a65e8405ef0b13805d321d41c14a09ed3e5ca998a8303a9",
-      "size": 2649437,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/service.subtitles.gearsai-1.0.36.zip"
+      "zip": "service.subtitles.gearsai-1.0.37.zip",
+      "sha256": "6dbfc57380ef63b1977ec30c570674bb6f0ed1ad0c5244b8d51e07cb1310b234",
+      "size": 2649759,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/service.subtitles.gearsai-1.0.37.zip"
     },
     {
       "id": "service.subtitles.localsubtitle",
