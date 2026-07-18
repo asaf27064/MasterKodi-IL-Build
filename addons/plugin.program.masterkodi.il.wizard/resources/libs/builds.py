@@ -1061,6 +1061,8 @@ class BuildManager:
                     if success:
                         self.set_default_skin(skin['id'])
                         ADDON.setSetting('installed_skin', skin['name'])
+                        # don't re-download what the bundle just delivered
+                        self._seed_state_from_manifest(skin_addons)
 
                     try:
                         os.remove(skin_zip)
@@ -1138,6 +1140,29 @@ class BuildManager:
             self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]שגיאה:[/COLOR] {str(e)}")
             return False
 
+    def _seed_state_from_manifest(self, addon_ids):
+        """After a bundle-zip skin install: record the manifest shas for the
+        addons the bundle just delivered, so the post-install completion pass
+        doesn't re-download the identical zips (the Windows fresh-install
+        re-fetched all 18 Zephyr addons it had just extracted). Only ids whose
+        INSTALLED version matches the manifest version are recorded -- a stale
+        bundle still gets refreshed by the update pass as before."""
+        try:
+            from resources.libs import modular_update as mu
+            manifest = mu.fetch_manifest()
+            by_id = {a['id']: a for a in manifest.get('addons', [])}
+            state = mu._load_state()
+            n = 0
+            for aid in addon_ids:
+                entry = by_id.get(aid)
+                if entry and mu._installed_version(aid) == entry.get('version'):
+                    state[aid] = entry['sha256']
+                    n += 1
+            mu._save_state(state)
+            log(f"seeded manifest state for {n}/{len(addon_ids)} bundle-installed addons")
+        except Exception as e:
+            log(f"state seed after bundle install failed: {e}", xbmc.LOGWARNING)
+
     def install_skin_only(self, skin_url):
         """Install Arctic Fuse skin on existing build (no wipe)"""
         # Kodi 22: the build.txt bundle is the OMEGA one (gui 5.17 +
@@ -1199,7 +1224,8 @@ class BuildManager:
             self.enable_addons_in_db(skin_addons)
             self._pin_addons_in_db(skin_addons)
             self.setup_wizard_repo_in_db()
-            
+            self._seed_state_from_manifest(skin_addons)
+
             # Set as default skin
             progress.update(90, "[COLOR yellow]מגדיר סקין ברירת מחדל...[/COLOR]")
             self.set_default_skin('skin.arctic.fuse.3')
@@ -1396,6 +1422,7 @@ class BuildManager:
             self.enable_addons_in_db(skin_addons)
             self._pin_addons_in_db(skin_addons)
             self.setup_wizard_repo_in_db()
+            self._seed_state_from_manifest(skin_addons)
             xbmc.executebuiltin('UpdateAddonRepos()')
             xbmc.executebuiltin('UpdateLocalAddons()')
             self._apply_build_config(skin.get('id'))
