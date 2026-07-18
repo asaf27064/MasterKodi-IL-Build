@@ -265,7 +265,39 @@ def _process_pending_view_rebuild():
                 xbmc.executebuiltin('Skin.SetString(script-skinviewtypes-hash,)')
                 xbmc.executebuiltin('Skin.SetString(script-skinviewtypes-checksum,)')
             log("post-install: rebuilding skin views (buildviews)")
-            xbmc.executebuiltin('RunScript(script.skinvariables,action=buildviews)')
+            # no_reload=true + explicit reload BELOW. Relying on buildviews'
+            # own reload raced with the skin's first-boot self-build (fresh
+            # install, Windows 2026-07-18): the skin re-set the hashes between
+            # our clear and buildviews' check, buildviews early-returned
+            # WITHOUT reloading, and the home stayed frozen (menu loaded from
+            # a pre-viewtypes state, widgets dead). One reload, always ours.
+            xbmc.executebuiltin('RunScript(script.skinvariables,action=buildviews,no_reload=true)')
+            # wait for the viewtypes include write to settle (spawn + compile
+            # take a few seconds; file may also already be complete)
+            vt_inc = os.path.join(ADDONS_PATH, skin, '1080i',
+                                  'script-skinviewtypes-includes.xml')
+            mon2 = xbmc.Monitor()
+            if not mon2.waitForAbort(3):
+                last = -1
+                stable = 0
+                waited2 = 0
+                while waited2 < 20 and not mon2.abortRequested():
+                    try:
+                        cur = os.path.getsize(vt_inc)
+                    except Exception:
+                        cur = -1
+                    if cur > 0 and cur == last:
+                        stable += 1
+                        if stable >= 2:      # unchanged for 2s -> write done
+                            break
+                    else:
+                        stable = 0
+                    last = cur
+                    if mon2.waitForAbort(1):
+                        return
+                    waited2 += 1
+            log("post-install: views compiled, reloading skin")
+            xbmc.executebuiltin('ReloadSkin()')
         elif stash_applied:
             # non-skinvariables skin (Estuary/Nimbus): nothing to rebuild, but
             # the deferred settings need ONE boot-time reload to take effect
