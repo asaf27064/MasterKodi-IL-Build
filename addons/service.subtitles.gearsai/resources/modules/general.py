@@ -22,6 +22,7 @@ MyScriptName = xbmcaddon.Addon().getAddonInfo('name')
 addonPath = xbmc_tranlate_path(xbmcaddon.Addon().getAddonInfo("path"))
 global with_dp,show_msg,progress_msg
 show_msg=""
+ai_cancel=False   # set by the subtitle window STOP button; abort_cb reads it
 progress_msg=0
 # Which sub the auto path picked (release name / match% / site), so the AI
 # translate step can show what it's working from in the progress bar.

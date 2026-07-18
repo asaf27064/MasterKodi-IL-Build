@@ -78,6 +78,13 @@ def _step(msg, pct=None):
         general.show_msg = 'MasterKodi AI · ' + msg
     except Exception:
         pass
+    # window property = visible across interpreters (the wand window runs in
+    # the plugin invoker; auto-translations run in the SERVICE invoker)
+    try:
+        import xbmcgui as _xg
+        _xg.Window(10000).setProperty('gearsai.ai_status', 'MasterKodi AI · ' + msg)
+    except Exception:
+        pass
 
 
 def _pick_info():
@@ -305,6 +312,27 @@ def translate_now():
             pass
 
     stats = {}
+    # reset any stale STOP request from a previous run before we begin
+    try:
+        from resources.modules import general as _gen
+        _gen.ai_cancel = False
+    except Exception:
+        _gen = None
+    try:
+        import xbmcgui as _xg
+        _xg.Window(10000).clearProperty('gearsai.ai_cancel')
+    except Exception:
+        pass
+
+    def _user_cancelled():
+        if _gen and getattr(_gen, 'ai_cancel', False):
+            return True
+        try:
+            import xbmcgui as _xg
+            return _xg.Window(10000).getProperty('gearsai.ai_cancel') == '1'
+        except Exception:
+            return False
+
     try:
         hebrew = translate.translate_srt(
             english_srt=english_txt, source_lang='en',
@@ -313,7 +341,14 @@ def translate_now():
             tvshow=info['tvshow'], season=info['season'], episode=info['episode'],
             api_key=kodi_utils.get_setting('api_key', ''),
             model=kodi_utils.get_setting('model', gemini.DEFAULT_MODEL),
-            progress_cb=_pct, stats_out=stats)
+            progress_cb=_pct, stats_out=stats,
+            abort_cb=_user_cancelled)
+    except translate.TranslationAborted:
+        _close(prog)
+        if _gen:
+            _gen.ai_cancel = False
+        xbmcgui.Dialog().notification('MasterKodi AI', 'התרגום בוטל', time=4000)
+        return None
     except gemini.RateLimited:
         _close(prog)
         xbmcgui.Dialog().notification('MasterKodi AI', 'יותר מדי בקשות - נסה שוב בעוד דקה', time=5000)
@@ -329,6 +364,7 @@ def translate_now():
         return None
 
     _close(prog)
+    hebrew = _heb_punct(hebrew) if hebrew else hebrew
     if not hebrew or not hebrew.strip():
         return None
     # Share it back so the next user gets it free. Record the ENGLISH SUB's
@@ -445,6 +481,27 @@ def translate_english_text(english_text):
         _step(_hdr, 0)
 
     stats = {}
+    # reset any stale STOP request from a previous run before we begin
+    try:
+        from resources.modules import general as _gen
+        _gen.ai_cancel = False
+    except Exception:
+        _gen = None
+    try:
+        import xbmcgui as _xg
+        _xg.Window(10000).clearProperty('gearsai.ai_cancel')
+    except Exception:
+        pass
+
+    def _user_cancelled():
+        if _gen and getattr(_gen, 'ai_cancel', False):
+            return True
+        try:
+            import xbmcgui as _xg
+            return _xg.Window(10000).getProperty('gearsai.ai_cancel') == '1'
+        except Exception:
+            return False
+
     try:
         hebrew = translate.translate_srt(
             english_srt=english_text, source_lang='en',
@@ -453,12 +510,27 @@ def translate_english_text(english_text):
             tvshow=info['tvshow'], season=info['season'], episode=info['episode'],
             api_key=kodi_utils.get_setting('api_key', ''),
             model=kodi_utils.get_setting('model', gemini.DEFAULT_MODEL),
-            progress_cb=_pct, stats_out=stats)
+            progress_cb=_pct, stats_out=stats,
+            abort_cb=_user_cancelled)
+    except translate.TranslationAborted:
+        # user pressed STOP in the subtitle window -- clean, deliberate end
+        if _gen:
+            _gen.ai_cancel = False
+        _step('התרגום בוטל', 0)
+        xbmc.log('[gearsai-ai] translation cancelled by user', xbmc.LOGINFO)
+        return None
     except Exception as e:
         xbmc.log('[gearsai-ai] auto_translate failed: {0}'.format(e), xbmc.LOGERROR)
         return None
     finally:
         _hb['run'] = False
+        try:
+            import xbmcgui as _xg
+            _xg.Window(10000).clearProperty('gearsai.ai_status')
+            _xg.Window(10000).clearProperty('gearsai.ai_cancel')
+        except Exception:
+            pass
+    hebrew = _heb_punct(hebrew) if hebrew else hebrew
     if not hebrew or not hebrew.strip():
         return None
     # Share it back so the next user gets this episode free. The release we
@@ -480,8 +552,33 @@ def translate_english_text(english_text):
     else:
         _pool_share(hebrew, english_text, info, sub_release or release, _mdl)
         _notify('תורגם עם {0}'.format(gemini.label(_mdl)))
+    # reset the status: without END the last step text ('משתף את התרגום
+    # במאגר…') stayed on the window's status line forever, reading as stuck
+    try:
+        from resources.modules import general as _g2
+        _g2.show_msg = 'END'
+    except Exception:
+        pass
     return hebrew
 
+
+def _heb_punct(srt_text):
+    """Trailing SDH interruption dashes -> ellipsis at the logical FRONT,
+    matching rtl.fix_lines' visual-reorder convention (Kodi renders lines
+    LTR-base; front punctuation displays LEFT = the Hebrew sentence end).
+    Hebrew lines only; mechanical; translation content untouched."""
+    import re as _r
+    def _line(ln):
+        try:
+            if _r.search(r'-{2,}\s*$', ln) and any(0x590 <= ord(c) <= 0x5FF for c in ln):
+                return chr(0x2026) + _r.sub(r'-{2,}\s*$', '', ln).rstrip()
+            return ln
+        except Exception:
+            return ln
+    try:
+        return chr(10).join(_line(l) for l in srt_text.split(chr(10)))
+    except Exception:
+        return srt_text
 
 def pool_should_share():
     try:

@@ -30,10 +30,26 @@ def _get_params(url):
     return dict(parse_qsl(url.replace('?','')))
 
 
+def _sanitize_glyphs(s):
+    """Drop characters the UI font can't draw (Rubik: Hebrew+Latin+Cyrillic).
+    Foreign-script names (CJK/Thai/Arabic release tags from OpenSubtitles)
+    rendered as tofu boxes -- strip those runs; if nothing readable remains
+    the caller falls back to a generic label."""
+    try:
+        import unicodedata
+        s = unicodedata.normalize('NFKC', s)   # fold styled unicode to plain
+    except Exception:
+        pass
+    out = _re.sub('[^\u0020-\u04FF\u0590-\u05FF\u2010-\u2027\u20AA\u200E\u200F]+', ' ', s)
+    out = _re.sub(r'\[\s*\]|\(\s*\)', '', out)   # husks left by stripped runs
+    return _re.sub(r'\s{2,}', ' ', out).strip(' -—·')
+
+
 def _clean_name(items, video_data, strip_title=True, max_len=0):
     """Release name without colour codes / site prefix. Optionally strips the
     playing title's redundant prefix and middle-truncates to max_len."""
     raw = _re.sub(r'\[/?COLOR[^\]]*\]', '', items[1]).strip()
+    raw = _sanitize_glyphs(raw)
     site = str(items[9] or '')
     if site and raw.startswith(site):
         raw = raw[len(site):].strip()
@@ -49,6 +65,9 @@ def _clean_name(items, video_data, strip_title=True, max_len=0):
             pass
     if max_len and len(raw) > max_len:
         raw = raw[:int(max_len*0.6)] + '…' + raw[-int(max_len*0.38):]
+    if not raw.strip():
+        # nothing renderable survived (foreign-script-only name)
+        raw = 'כתובית ' + ("עברית" if "Hebrew" in str(items[0]) else str(items[0]))
     return raw
 
 
@@ -90,7 +109,12 @@ def _build_rows(list_o, video_data, all_subs, last_name, last_lang, two_line):
                     origin = f_o.read().strip()
             except Exception:
                 pass
-            tag = 'תורגם' + (' · ' + origin if origin else ' לעברית')
+            # a SYNC of a native Hebrew sub is not a translation -- say what
+            # actually happened (the .origin text), no misleading 'תורגם'
+            if origin and ('סונכרן' in origin) and ('Gemini' not in origin) and ('Google' not in origin):
+                tag = origin
+            else:
+                tag = 'תורגם' + (' · ' + origin if origin else ' לעברית')
             status += "[COLOR magenta][B][ " + tag + " ][/B][/COLOR]  "
 
         # SDH / hearing-impaired flag (speaker tags) -- these translate to
@@ -111,8 +135,16 @@ def _build_rows(list_o, video_data, all_subs, last_name, last_lang, two_line):
         site = str(items[9] or '')
         badge, bcolor = SITE_BADGES.get(site, (site.strip('[]') or '--', 'white'))
         if two_line:
-            name1 = _clean_name(items, video_data, strip_title=True, max_len=64)
-            line1 = ("{st}[COLOR deepskyblue][B]{lang}[/B][/COLOR]"
+            # name budget SHRINKS by the visible width of the status badges --
+            # a fixed budget overflowed on badge-heavy rows and the ellipsis
+            # swallowed the [ נוכחית ] marker itself
+            _vis_status = _re.sub(r'\[/?(?:COLOR|B)[^\]]*\]', '', status)
+            _budget = max(20, 42 - len(_vis_status))
+            name1 = _clean_name(items, video_data, strip_title=True, max_len=_budget)
+            # ‏ (RLM) pins EVERY row to RTL layout -- without it a row
+            # whose first strong character is Latin (e.g. "[ SDH ]") flips to
+            # LTR and its segments render on the opposite side of the others
+            line1 = ("‏{st}[COLOR deepskyblue][B]{lang}[/B][/COLOR]"
                      "  [COLOR {mc}][B]{pct}%[/B][/COLOR]"
                      "  [COLOR {bc}][B]{badge}[/B][/COLOR]  {name}").format(
                          st=status, lang=lang, mc=mcolor, pct=pct,
@@ -121,7 +153,7 @@ def _build_rows(list_o, video_data, all_subs, last_name, last_lang, two_line):
             rows.append((line1, line2))
         else:
             name = _clean_name(items, video_data, strip_title=True, max_len=58)
-            line1 = ("{st}[COLOR deepskyblue][B]{lang}[/B][/COLOR]"
+            line1 = ("‏{st}[COLOR deepskyblue][B]{lang}[/B][/COLOR]"
                      "  [COLOR {mc}][B]{pct}%[/B][/COLOR]"
                      "  [COLOR {bc}][B]{badge}[/B][/COLOR]  {name}").format(
                          st=status, lang=lang, mc=mcolor, pct=pct,
@@ -194,10 +226,19 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         self.close_window = False
         self.header_text = str(video_data.get('Tagline') or video_data.get('file_original_path') or '')
 
+
+    def _status_ctrl(self, text):
+        c = self.getControl(103)
+        try:
+            c.setText(text)      # textbox (wrapping, 2 lines)
+        except Exception:
+            try: c.setLabel(text)
+            except Exception: pass
+
     def onInit(self):
         try:
             self.getControl(102).setLabel('[B]{0}[/B]'.format(self.title))
-            self.getControl(103).setLabel(self.header_text)
+            self._status_ctrl(self.header_text)
             self.getControl(104).setLabel(
                 '[COLOR gold][B]{0}[/B][/COLOR] כתוביות · מסודר לפי אחוז התאמה'.format(len(self.list_o)))
             self._fill_list()
@@ -216,6 +257,9 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         # screen onto the playing file's real timing (embedded-English oracle
         # first, release-matched external English fallback). Shown only while a
         # Hebrew sub placed by us is active.
+        # MASTERKODI: sync is an ACTION, not a result -- it lives as footer
+        # button 105 (visible only while a placed Hebrew sub is showing), not
+        # as a pinned row inside the results (Asaf, 2026-07-18).
         self._has_sync_row = False
         try:
             if Addon.getSetting('manual_sync_row') != 'false':
@@ -223,10 +267,11 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
                 self._has_sync_row = bool(cur)
         except Exception:
             pass
-        if self._has_sync_row:
-            items.append(xbmcgui.ListItem(
-                label='[COLOR springgreen][B]סנכרון[/B][/COLOR]  ·  סנכרן את הכתובית שמוצגת כעת',
-                label2='מיישר את התזמון לפי הקובץ המתנגן (אנגלית מוטמעת / חיצונית תואמת)'))
+        try:
+            self.getControl(105).setVisible(self._has_sync_row)
+        except Exception:
+            pass
+        # stop-button visibility is XML-driven (Window(home) property)
         for line1, line2 in rows:
             items.append(xbmcgui.ListItem(label=line1, label2=line2))
         ctl.addItems(items)
@@ -238,12 +283,18 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         showing = False
         while not self.close_window:
             msg = general.show_msg
+            if not msg or msg == 'END':
+                # service-side translations publish via the window property
+                try:
+                    msg = xbmcgui.Window(10000).getProperty('gearsai.ai_status') or msg
+                except Exception:
+                    pass
             try:
                 if ('מתרגם' in msg) or ('MasterKodi' in msg):
-                    self.getControl(103).setLabel('[COLOR gold][B]{0}[/B][/COLOR]'.format(msg))
+                    self._status_ctrl('[COLOR gold][B]{0}[/B][/COLOR]'.format(msg))
                     showing = True
                 elif showing and (msg == 'END' or msg == ''):
-                    self.getControl(103).setLabel(self.header_text)
+                    self._status_ctrl(self.header_text)
                     showing = False
             except Exception:
                 pass
@@ -251,7 +302,7 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
 
     def _set_status(self, text, color='gold'):
         try:
-            self.getControl(103).setLabel('[COLOR {0}][B]{1}[/B][/COLOR]'.format(color, text))
+            self._status_ctrl('[COLOR {0}][B]{1}[/B][/COLOR]'.format(color, text))
         except Exception:
             pass
 
@@ -260,33 +311,63 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
             self.close_window = True
             self.close()
             return
+        if control_id == 105:
+            self._run_sync()
+            return
+        if control_id == 106:
+            try:
+                from resources.modules import general
+                general.ai_cancel = True
+            except Exception:
+                pass
+            try:
+                xbmcgui.Window(10000).setProperty('gearsai.ai_cancel', '1')
+            except Exception:
+                pass
+            self._set_status('מבטל תרגום…', 'orange')
+            return
         if control_id != 100:
             return
         idx = self.getControl(100).getSelectedPosition()
-        # MASTERKODI: pinned sync row sits at index 0 when present.
-        if getattr(self, '_has_sync_row', False):
-            if idx == 0:
-                self._run_sync()
-                return
-            idx -= 1
         if idx < 0 or idx >= len(self.full_list):
             return
-        self._set_status('מוריד…')
-        status, filename, language = _download_row(self.full_list[idx], self.video_data)
-        if status == 'fault':
-            self._set_status('תקלה בהורדה, נסה שנית', 'red')
+        # download (and a possible AI translation) run in a BACKGROUND thread:
+        # inline they blocked Kodi's serialized event loop for this window, so
+        # nothing -- not even CLOSE -- responded until the translation ended
+        # (Asaf, 2026-07-18). One at a time; closing mid-way is fine, the
+        # work continues exactly like a service-side translation.
+        if getattr(self, '_dl_busy', False):
+            self._set_status('הורדה כבר רצה…', 'orange')
             return
-        if status == 'embedded':
-            self._set_status('נבחר תרגום מובנה, יופיע בעוד 10 שניות', 'deepskyblue')
-        else:
-            self._set_status('מוכן', 'springgreen')
-        try:
-            self.last_name, self.last_lang, self.all_subs = get_db_data(self.video_data)
-        except Exception:
-            pass
-        self._fill_list(keep_pos=True)
-        from resources.modules import general
-        general.show_msg = "END"
+        self._dl_busy = True
+        self._set_status('מוריד…')
+        row = self.full_list[idx]
+
+        def _bg_download():
+            try:
+                status, filename, language = _download_row(row, self.video_data)
+                if self.close_window:
+                    return
+                if status == 'fault':
+                    self._set_status('תקלה בהורדה, נסה שנית', 'red')
+                    return
+                if status == 'embedded':
+                    self._set_status('נבחר תרגום מובנה, יופיע בעוד 10 שניות', 'deepskyblue')
+                else:
+                    self._set_status('מוכן', 'springgreen')
+                try:
+                    self.last_name, self.last_lang, self.all_subs = get_db_data(self.video_data)
+                except Exception:
+                    pass
+                try:
+                    self._fill_list(keep_pos=True)
+                except Exception:
+                    pass
+                from resources.modules import general
+                general.show_msg = "END"
+            finally:
+                self._dl_busy = False
+        Thread(target=_bg_download).start()
 
     def _run_sync(self):
         """MASTERKODI: run the sync-current-sub flow (embedded-English oracle ->
@@ -428,7 +509,8 @@ def MySubs(title,list,f_list,video_data,all_subs,last_sub_name_in_cache,last_sub
     Any problem opening the new window falls back to classic automatically."""
     if Addon.getSetting('classic_window') != 'true':
         try:
-            w = SubsXMLWindow('SubsWindow.xml', ADDON_PATH, 'Default', '1080i')
+            _xml = 'SubsWindow.xml' if Addon.getSetting('window_style') != '1' else 'SubsWindowCenter.xml'
+            w = SubsXMLWindow(_xml, ADDON_PATH, 'Default', '1080i')
             w.setup(title, list, f_list, video_data, all_subs,
                     last_sub_name_in_cache, last_sub_language_in_cache)
             w.doModal()

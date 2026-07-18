@@ -111,6 +111,7 @@
 	
 	<category label="חלון הכתוביות">
 		<setting label="סגנון החלון" type="lsep"/>
+		<setting id="window_style" label="עיצוב חלון הכתוביות" type="enum" values="צדדי (חדש)|מרכזי (מקורי)" default="1"/>
 		<setting id="classic_window" label="חלון קלאסי (העיצוב הישן)" type="bool" default="false"/>
 		<setting label="מיקום וגודל החלון (רלוונטי לחלון הקלאסי)" type="lsep"/>
 		<setting id="subs_width" label="רוחב חלון" type="number" default="1190"/>

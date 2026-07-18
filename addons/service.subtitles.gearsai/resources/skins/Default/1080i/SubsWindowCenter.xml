@@ -6,102 +6,92 @@
 		<top>0</top>
 	</coordinates>
 	<controls>
-		<!-- gentle dim: the movie stays part of the scene -->
+		<!-- dim the video behind -->
 		<control type="image">
 			<left>0</left><top>0</top><width>1920</width><height>1080</height>
-			<texture colordiffuse="66000000">white.png</texture>
-			<animation effect="fade" start="0" end="100" time="200">WindowOpen</animation>
-			<animation effect="fade" start="100" end="0" time="150">WindowClose</animation>
+			<texture colordiffuse="99000000">white.png</texture>
+			<animation effect="fade" start="0" end="100" time="150">WindowOpen</animation>
+			<animation effect="fade" start="100" end="0" time="120">WindowClose</animation>
 		</control>
-		<!-- side sheet (right, RTL) -->
 		<control type="group">
-			<left>0</left><top>0</top>
-			<animation effect="slide" start="900,0" end="0,0" time="260" tween="cubic" easing="out">WindowOpen</animation>
-			<animation effect="slide" start="0,0" end="900,0" time="200" tween="cubic" easing="in">WindowClose</animation>
-			<!-- soft shadow cast onto the video -->
+			<left>160</left><top>70</top>
+			<animation effect="fade" start="0" end="100" time="150">WindowOpen</animation>
+			<animation effect="fade" start="100" end="0" time="120">WindowClose</animation>
+			<!-- panel -->
 			<control type="image">
-				<left>864</left><top>0</top><width>96</width><height>1080</height>
-				<texture>hshadow.png</texture>
+				<left>0</left><top>0</top><width>1600</width><height>940</height>
+				<texture colordiffuse="F80F1219" border="18">rounded.png</texture>
 			</control>
-			<!-- panel base -->
+			<!-- header bar -->
 			<control type="image">
-				<left>960</left><top>0</top><width>960</width><height>1080</height>
-				<texture colordiffuse="FF0F1219">white.png</texture>
+				<left>0</left><top>0</top><width>1600</width><height>64</height>
+				<texture colordiffuse="FF0E2434" border="18">rounded.png</texture>
 			</control>
-			<!-- depth gradient at the bottom -->
 			<control type="image">
-				<left>960</left><top>680</top><width>960</width><height>400</height>
-				<texture colordiffuse="66000000">vgrad.png</texture>
-			</control>
-			<!-- cyan accent edge -->
-			<control type="image">
-				<left>960</left><top>0</top><width>3</width><height>1080</height>
+				<left>0</left><top>64</top><width>1600</width><height>2</height>
 				<texture colordiffuse="FF00AEEF">white.png</texture>
 			</control>
-			<!-- header -->
+			<!-- window title -->
 			<control type="label" id="102">
-				<left>996</left><top>34</top><width>888</width><height>54</height>
-				<font>font45_title</font>
-				<textcolor>FFF2F7FC</textcolor>
-				<align>right</align><aligny>center</aligny>
+				<left>40</left><top>0</top><width>1520</width><height>64</height>
+				<font>font32_title</font>
+				<textcolor>FF00D8FF</textcolor>
+				<align>center</align><aligny>center</aligny>
 				<label></label>
 			</control>
+			<!-- playing file / live status -->
 			<control type="label" id="103">
-				<left>996</left><top>92</top><width>888</width><height>36</height>
+				<left>40</left><top>74</top><width>1520</width><height>42</height>
 				<font>font12</font>
-				<textcolor>FF7E8B9C</textcolor>
-				<align>right</align><aligny>center</aligny>
+				<textcolor>FFB8C7D9</textcolor>
+				<align>center</align><aligny>center</aligny>
 				<label></label>
 			</control>
-			<control type="image">
-				<left>996</left><top>144</top><width>888</width><height>2</height>
-				<texture colordiffuse="3300AEEF">white.png</texture>
-			</control>
-			<!-- subtitle rows -->
+			<!-- subtitles list: two lines per row, full release name on line 2 -->
 			<control type="list" id="100">
-				<left>984</left><top>158</top><width>912</width><height>736</height>
+				<left>30</left><top>126</top><width>1540</width><height>688</height>
 				<onup>101</onup>
 				<ondown>101</ondown>
 				<onleft>101</onleft>
 				<onright>101</onright>
 				<scrolltime tween="cubic" easing="out">220</scrolltime>
-				<itemlayout height="92" width="912">
+				<itemlayout height="86" width="1540">
 					<control type="image">
-						<left>8</left><top>4</top><width>896</width><height>84</height>
+						<left>4</left><top>3</top><width>1532</width><height>80</height>
 						<texture colordiffuse="0AFFFFFF" border="14">rounded.png</texture>
 					</control>
 					<control type="label">
-						<left>28</left><top>10</top><width>856</width><height>40</height>
+						<left>28</left><top>6</top><width>1484</width><height>40</height>
 						<font>font13</font>
 						<align>right</align><aligny>center</aligny>
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
-						<left>28</left><top>50</top><width>856</width><height>30</height>
+						<left>28</left><top>46</top><width>1484</width><height>32</height>
 						<font>font12</font>
 						<textcolor>FF6B7889</textcolor>
 						<align>right</align><aligny>center</aligny>
 						<label>$INFO[ListItem.Label2]</label>
 					</control>
 				</itemlayout>
-				<focusedlayout height="92" width="912">
+				<focusedlayout height="86" width="1540">
 					<control type="image">
-						<left>8</left><top>4</top><width>896</width><height>84</height>
+						<left>4</left><top>3</top><width>1532</width><height>80</height>
 						<texture colordiffuse="2E00AEEF" border="14">rounded.png</texture>
 					</control>
 					<control type="image">
-						<left>8</left><top>4</top><width>896</width><height>84</height>
+						<left>4</left><top>3</top><width>1532</width><height>80</height>
 						<texture colordiffuse="FF00AEEF" border="14">rounded_line.png</texture>
 					</control>
 					<control type="label">
-						<left>28</left><top>10</top><width>856</width><height>40</height>
+						<left>28</left><top>6</top><width>1484</width><height>40</height>
 						<font>font13</font>
 						<textcolor>FFFFFFFF</textcolor>
 						<align>right</align><aligny>center</aligny>
 						<label>$INFO[ListItem.Label]</label>
 					</control>
 					<control type="label">
-						<left>28</left><top>50</top><width>856</width><height>30</height>
+						<left>28</left><top>46</top><width>1484</width><height>32</height>
 						<font>font12</font>
 						<textcolor>FFD5E2F0</textcolor>
 						<align>right</align><aligny>center</aligny>
@@ -109,20 +99,21 @@
 					</control>
 				</focusedlayout>
 			</control>
-			<!-- footer -->
+			<!-- footer accent (mirrors the header line) -->
 			<control type="image">
-				<left>996</left><top>906</top><width>888</width><height>2</height>
-				<texture colordiffuse="3300AEEF">white.png</texture>
+				<left>0</left><top>820</top><width>1600</width><height>2</height>
+				<texture colordiffuse="FF00AEEF">white.png</texture>
 			</control>
+			<!-- count line + legend -->
 			<control type="label" id="104">
-				<left>996</left><top>914</top><width>888</width><height>30</height>
+				<left>40</left><top>824</top><width>1520</width><height>28</height>
 				<font>font12</font>
 				<textcolor>FF8A97A8</textcolor>
 				<align>center</align><aligny>center</aligny>
 				<label></label>
 			</control>
 			<control type="label">
-				<left>996</left><top>944</top><width>888</width><height>28</height>
+				<left>40</left><top>852</top><width>1520</width><height>26</height>
 				<font>font12</font>
 				<textcolor>FF5E6B7C</textcolor>
 				<align>center</align><aligny>center</aligny>
@@ -130,7 +121,7 @@
 				<label>התאמה: [COLOR FF54D169]85%+[/COLOR]  ·  [COLOR FFE5C25A]60%+[/COLOR]  ·  [COLOR FFDF8A45]נמוכה[/COLOR]</label>
 			</control>
 			<control type="label">
-				<left>996</left><top>944</top><width>888</width><height>28</height>
+				<left>40</left><top>852</top><width>1520</width><height>26</height>
 				<font>font12</font>
 				<textcolor>FF5E6B7C</textcolor>
 				<align>center</align><aligny>center</aligny>
@@ -139,7 +130,7 @@
 			</control>
 			<!-- close -->
 			<control type="button" id="106">
-				<left>1000</left><top>986</top><width>240</width><height>54</height>
+				<left>400</left><top>884</top><width>240</width><height>48</height>
 				<font>font13</font>
 				<textcolor>FFF3C1B6</textcolor>
 				<focusedcolor>FFFFFFFF</focusedcolor>
@@ -154,7 +145,7 @@
 				<onright>105</onright>
 			</control>
 			<control type="button" id="105">
-				<left>1270</left><top>986</top><width>240</width><height>54</height>
+				<left>680</left><top>884</top><width>240</width><height>48</height>
 				<font>font13</font>
 				<textcolor>FFB9F0CE</textcolor>
 				<focusedcolor>FFFFFFFF</focusedcolor>
@@ -168,7 +159,7 @@
 				<onright>101</onright>
 			</control>
 			<control type="button" id="101">
-				<left>1540</left><top>986</top><width>240</width><height>54</height>
+				<left>960</left><top>884</top><width>240</width><height>48</height>
 				<font>font13</font>
 				<textcolor>FFDDE6EF</textcolor>
 				<focusedcolor>FFFFFFFF</focusedcolor>

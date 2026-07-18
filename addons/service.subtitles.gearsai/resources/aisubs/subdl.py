@@ -84,6 +84,14 @@ def search_english(imdb_id='', title='', media_type='movie', season=0, episode=0
             continue
         link = u if u.startswith('http') else (DL_BASE + u)
         name = it.get('release_name') or it.get('name') or ''
+        # uploaders style names with Unicode math-alphanumerics (e.g.
+        # 'CoffeePrison' in bold codepoints): unreadable in the UI font AND
+        # invisible to the match scorer (false 0%). NFKC folds them to ASCII.
+        try:
+            import unicodedata
+            name = unicodedata.normalize('NFKC', name)
+        except Exception:
+            pass
         out.append({
             'name': name,
             'download_link': link,

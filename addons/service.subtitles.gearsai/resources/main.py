@@ -109,8 +109,16 @@ def start():
                 all_d.append(('plugin://service.subtitles.gearsai/?action=download&gearsai_sync=1', sync_li, False))
 
             for items in response:
+                # foreign-script names (CJK etc.) render as tofu boxes in the
+                # skin's subtitle dialog (Rubik has no such glyphs) -- reuse
+                # the wand window's sanitizer for the KODI window too
+                try:
+                    from resources.modules.sub_window import _sanitize_glyphs
+                    _lbl2 = _sanitize_glyphs(items['label2']) or ('כתובית ' + str(items['label']))
+                except Exception:
+                    _lbl2 = items['label2']
                 listitem = xbmcgui.ListItem(label          = items['label'],
-                                            label2         = items['label2'],
+                                            label2         = _lbl2,
                                             
                                             )
                 listitem.setArt({'thumb' : items['thumbnailImage'], 'icon': items['iconImage']})
