@@ -1387,6 +1387,18 @@ def apply_gears_views_for_skin(skin_id=None):
             c.execute('UPDATE settings SET setting_value=? WHERE setting_id=?', (str(val), sid))
         c.commit()
         c.close()
+        # The db alone is NOT enough mid-session: gears' set_view_mode reads
+        # WINDOW PROPERTIES (gears.<id>), mirrored from the db only by gears'
+        # own boot sync -- so a db-only write stayed invisible until the NEXT
+        # restart. Mirror the values into the properties ourselves and the
+        # change is live for the very next list the user opens.
+        try:
+            home_win = xbmcgui.Window(10000)
+            home_win.setProperty('gears.use_viewtypes', 'true')
+            for sid, val in views.items():
+                home_win.setProperty('gears.%s' % sid, str(val))
+        except Exception:
+            pass
         log('applied gears views for %s (%d ids)' % (skin_id, len(views)))
     except Exception as e:
         log('gears views apply failed: %s' % e, xbmc.LOGWARNING)
