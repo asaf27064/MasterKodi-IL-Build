@@ -1357,7 +1357,22 @@ def apply_gears_views_for_skin(skin_id=None):
     we don't have a map for (Gears keeps whatever it had)."""
     import sqlite3
     skin_id = skin_id or (xbmc.getSkinDir() or '')
-    views = GEARS_SKIN_VIEWS.get(skin_id)
+    # CONFIG-DRIVEN since 2.4.90: the map ships as gears_views.json in the
+    # config (a view change = config bump, visible after one restart). The
+    # hardcoded GEARS_SKIN_VIEWS below is only the fallback for a device
+    # whose config predates the file. Learned the hard way (2026-07-18):
+    # Gears re-forces these views every boot, so a viewtypes.json change
+    # alone can never move a Gears list -- THIS map is the lever.
+    views = None
+    try:
+        vf = os.path.join(ADDON_DATA, 'gears_views.json')
+        if os.path.isfile(vf):
+            with open(vf, encoding='utf-8-sig') as fh:
+                views = json.load(fh).get(skin_id)
+    except Exception as e:
+        log('gears_views.json unreadable (%s), using built-in map' % e, xbmc.LOGWARNING)
+    if not views:
+        views = GEARS_SKIN_VIEWS.get(skin_id)
     if not views:
         return
     db = xbmcvfs.translatePath(

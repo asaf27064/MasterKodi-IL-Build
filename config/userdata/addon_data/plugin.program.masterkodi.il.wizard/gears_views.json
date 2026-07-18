@@ -1,0 +1,38 @@
+{
+  "skin.estuary": {
+    "view.main": "55",
+    "view.movies": "51",
+    "view.tvshows": "51",
+    "view.seasons": "55",
+    "view.episodes": "55",
+    "view.episodes_single": "55",
+    "view.premium": "55"
+  },
+  "skin.arctic.zephyr.2.resurrection.mod": {
+    "view.main": "50",
+    "view.movies": "52",
+    "view.tvshows": "53",
+    "view.seasons": "52",
+    "view.episodes": "529",
+    "view.episodes_single": "529",
+    "view.premium": "50"
+  },
+  "skin.arctic.fuse.3": {
+    "view.main": "506",
+    "view.movies": "505",
+    "view.tvshows": "505",
+    "view.seasons": "509",
+    "view.episodes": "509",
+    "view.episodes_single": "509",
+    "view.premium": "506"
+  },
+  "skin.nimbus": {
+    "view.main": "50",
+    "view.movies": "54",
+    "view.tvshows": "54",
+    "view.seasons": "50",
+    "view.episodes": "55",
+    "view.episodes_single": "55",
+    "view.premium": "50"
+  }
+}
