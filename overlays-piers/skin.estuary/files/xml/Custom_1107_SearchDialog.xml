@@ -34,7 +34,7 @@
 					<!-- Separator -->
 					<item>
 						<label>[COLOR gray]─────────────────[/COLOR]</label>
-						<onclick>noop</onclick>
+						<onclick>SetProperty(mk.separator.noop,1,home)</onclick>
 					</item>
 					<!-- Global Search -->
 					<item>
