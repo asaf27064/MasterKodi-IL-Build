@@ -79,7 +79,7 @@
     },
     "plugin.video.gears": {
         "none": "506",
-        "movies": "506",
+        "movies": "505",
         "tvshows": "505",
         "episodes": "509",
         "seasons": "509"
