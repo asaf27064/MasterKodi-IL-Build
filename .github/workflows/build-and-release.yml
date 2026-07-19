@@ -119,11 +119,19 @@ jobs:
           if git diff --cached --quiet; then
             echo "manifest unchanged"
           else
-            git commit -m "ci: refresh manifest [skip ci]"
-            # both fleet workflows commit manifests to main on the same push --
-            # rebase+retry so the second one doesn't lose the race
+            # The manifest is GENERATED output -- the newest build must win.
+            # 'pull --rebase' died on content conflicts when another manifest
+            # commit landed mid-build (watch-dispatched vs push-triggered runs);
+            # instead: stash the generated files, hard-sync to origin/main,
+            # restore, commit on top. Retried for push races.
             for i in 1 2 3; do
-              git pull --rebase --autostash origin main
+              mkdir -p /tmp/gen && cp manifest.json bundles_state.json /tmp/gen/ 2>/dev/null || true
+              git fetch origin main
+              git reset --hard origin/main
+              cp /tmp/gen/* . 2>/dev/null || true
+              git add manifest.json bundles_state.json
+              if git diff --cached --quiet; then echo "manifest already current"; break; fi
+              git commit -m "ci: refresh manifest [skip ci]"
               if git push origin HEAD:main; then break; fi
               [ "$i" = 3 ] && exit 1
               sleep 5
