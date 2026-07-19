@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.skinhelper" name="SkinHelper" version="0.0.4" provider-name="heppen">
+<addon id="script.skinhelper" name="SkinHelper" version="0.0.4.1" provider-name="heppen">
 	<requires>
 		<import addon="xbmc.python" version="3.0.0"/>
 	</requires>
