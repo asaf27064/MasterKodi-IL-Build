@@ -1,6 +1,6 @@
 {
   "addon_id": "skin.arctic.fuse.3",
-  "base_version": "3.2.13",
+  "base_version": "3.2.14",
   "base_zip_url": "https://github.com/jurialmunkey/skin.arctic.fuse.3/archive/refs/tags/v{version}.zip",
   "upstream_zip_url": "https://github.com/jurialmunkey/skin.arctic.fuse.3/archive/refs/tags/v{version}.zip",
   "upstream_releases_api": "https://api.github.com/repos/jurialmunkey/skin.arctic.fuse.3/releases/latest",
