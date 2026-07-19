@@ -137,9 +137,9 @@
 				<visible>Control.HasFocus(105)</visible>
 				<label>[COLOR FF54D169]מיישר את התזמון לפי הקובץ המתנגן (אנגלית מוטמעת / חיצונית תואמת)[/COLOR]</label>
 			</control>
-			<!-- close -->
+			<!-- footer buttons (RTL order: close · sync · style · stop) -->
 			<control type="button" id="106">
-				<left>1000</left><top>986</top><width>240</width><height>54</height>
+				<left>1000</left><top>986</top><width>206</width><height>54</height>
 				<font>font13</font>
 				<textcolor>FFF3C1B6</textcolor>
 				<focusedcolor>FFFFFFFF</focusedcolor>
@@ -151,10 +151,24 @@
 				<onup>100</onup>
 				<ondown>100</ondown>
 				<onleft>101</onleft>
+				<onright>107</onright>
+			</control>
+			<control type="button" id="107">
+				<left>1226</left><top>986</top><width>206</width><height>54</height>
+				<font>font13</font>
+				<textcolor>FFBFE6F5</textcolor>
+				<focusedcolor>FFFFFFFF</focusedcolor>
+				<align>center</align><aligny>center</aligny>
+				<texturenofocus colordiffuse="1E00AEEF" border="16">rounded.png</texturenofocus>
+				<texturefocus colordiffuse="FF0084C8" border="16">rounded.png</texturefocus>
+				<label>עיצוב</label>
+				<onup>100</onup>
+				<ondown>100</ondown>
+				<onleft>106</onleft>
 				<onright>105</onright>
 			</control>
 			<control type="button" id="105">
-				<left>1270</left><top>986</top><width>240</width><height>54</height>
+				<left>1452</left><top>986</top><width>206</width><height>54</height>
 				<font>font13</font>
 				<textcolor>FFB9F0CE</textcolor>
 				<focusedcolor>FFFFFFFF</focusedcolor>
@@ -164,11 +178,11 @@
 				<label>סנכרון</label>
 				<onup>100</onup>
 				<ondown>100</ondown>
-				<onleft>106</onleft>
+				<onleft>107</onleft>
 				<onright>101</onright>
 			</control>
 			<control type="button" id="101">
-				<left>1540</left><top>986</top><width>240</width><height>54</height>
+				<left>1678</left><top>986</top><width>206</width><height>54</height>
 				<font>font13</font>
 				<textcolor>FFDDE6EF</textcolor>
 				<focusedcolor>FFFFFFFF</focusedcolor>

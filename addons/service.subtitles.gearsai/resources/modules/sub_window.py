@@ -226,6 +226,11 @@ def _download_row(items_row, video_data):
         # Manual pick = explicit consent; the AI confirmation prompt is skipped.
         from resources.modules import general
         general.ai_manual = True
+        # the search-progress dialog leaves break_all=True when it closes, and
+        # engine.py gates its translated-file WRITES on it -- a manual English
+        # pick then 'succeeds' downloading but never writes the Hebrew file
+        # (ENOENT -> 'נכשל'). A fresh explicit pick is never aborted.
+        general.break_all = False
         try:
             sub_file = download_sub(source, download_data, MySubFolder, language, filename)
         finally:
@@ -294,6 +299,14 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
             self.getControl(104).setLabel(
                 '[COLOR gold][B]{0}[/B][/COLOR] כתוביות · מסודר לפי אחוז התאמה'.format(len(self.list_o)))
             self._fill_list()
+            # results are ON SCREEN -> the search phase is over. Publish END so
+            # show_results' top overlay ('מסדר כתוביות X/Y') closes instead of
+            # lingering behind the window / style panel until its 120s timeout.
+            try:
+                from resources.modules import general
+                general.show_msg = 'END'
+            except Exception:
+                pass
             Thread(target=self._background_task).start()
         except Exception as e:
             log.warning('SubsXMLWindow onInit error: %s' % e)
@@ -360,6 +373,12 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
 
     def onClick(self, control_id):
         if control_id == 101:
+            self.close_window = True
+            self.close()
+            return
+        if control_id == 107:
+            # open the live style panel; MySubs reopens this window after it
+            self._open_style = True
             self.close_window = True
             self.close()
             return
@@ -447,6 +466,405 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         if action.getId() in (10, 92, 216, 247, 257, 275, 61467, 61448):
             self.close_window = True
             self.close()
+
+
+####################### LIVE SUBTITLE STYLE PANEL #######################
+# Kodi has NO in-player UI for subtitle appearance (font size/color/etc live
+# in Settings>Player). These are ordinary settings though, and for TEXT subs
+# a JSON-RPC change restyles the subtitle ON SCREEN immediately -- so this
+# compact top-right panel edits them live while the movie (and the subtitle,
+# bottom-center) stays fully visible. Settings are GLOBAL and persist for all
+# playbacks (guisettings.xml); 'שחזר ברירת מחדל' restores the look captured
+# the first time the panel ever opened. Bitmap subs (VobSub/PGS) are baked
+# pixels and ignore styling -- known, by design.
+
+def _jrpc_setting(method, params):
+    try:
+        q = json.dumps({'jsonrpc': '2.0', 'id': 1, 'method': method, 'params': params})
+        return json.loads(xbmc.executeJSONRPC(q)).get('result')
+    except Exception as e:
+        log.warning('style jrpc error: %s' % e)
+        return None
+
+
+def _style_get(sid):
+    r = _jrpc_setting('Settings.GetSettingValue', {'setting': sid})
+    return r.get('value') if isinstance(r, dict) else None
+
+
+def _style_set(sid, val):
+    _jrpc_setting('Settings.SetSettingValue', {'setting': sid, 'value': val})
+
+
+# family -> ordered variations (label, internal family name as Kodi lists it).
+# TWO rows (גופן + וריאציה) instead of one flat 25-entry cycle (Asaf,
+# 2026-07-19). Internal names are the ones we baked into the bundled statics.
+_FONT_FAMILIES = [
+    ('ברירת מחדל', [('רגיל', 'DEFAULT')]),
+    ('Heebo', [('דק', 'Heebo Light'), ('רגיל', 'Heebo'), ('בינוני', 'Heebo Medium'),
+               ('מודגש', 'Heebo Bold')]),
+    ('Assistant', [('דק', 'Assistant Light'), ('רגיל', 'Assistant'),
+                   ('חצי מודגש', 'Assistant SemiBold'), ('מודגש', 'Assistant Bold')]),
+    ('Rubik', [('דק', 'Rubik Light'), ('רגיל', 'Rubik'), ('בינוני', 'Rubik Medium'),
+               ('חצי מודגש', 'Rubik SemiBold'), ('מודגש', 'Rubik Bold'),
+               ('מודגש מאוד', 'Rubik ExtraBold')]),
+    ('Noto Hebrew', [('דק', 'Noto Sans Hebrew Light'), ('רגיל', 'Noto Sans Hebrew'),
+                     ('חצי מודגש', 'Noto Sans Hebrew SemiBold'),
+                     ('מודגש', 'Noto Sans Hebrew Bold'), ('מודגש מאוד', 'Noto Sans Hebrew ExtraBold')]),
+    ('Open Sans', [('דק', 'Open Sans Light'), ('רגיל', 'Open Sans'), ('מודגש', 'Open Sans Bold')]),
+    ('Google Sans', [('רגיל', 'Google Sans'), ('בינוני', 'Google Sans Medium'),
+                     ('מודגש', 'Google Sans Bold')]),
+    ('Varela Round', [('רגיל', 'Varela Round')]),
+    ('David', [('רגיל', 'David')]),
+    ('Tahoma', [('רגיל', 'Tahoma')]),
+    ('Arial', [('רגיל', 'Arial')]),
+]
+
+_STYLE_COLORS = [('לבן', 'FFFFFFFF'), ('לבן רך', 'FFD8D8D8'), ('צהוב', 'FFFFFF00'),
+                 ('תכלת', 'FF7FD4E8'), ('ירוק', 'FF54D169'), ('כתום', 'FFFFA500'),
+                 ('שחור', 'FF000000')]
+_STYLE_WEIGHTS = [('רגיל', 0), ('מודגש', 1), ('נטוי', 2), ('מודגש נטוי', 3)]
+_STYLE_BGTYPES = [('ללא', 0), ('הצללה', 1), ('קופסה', 2), ('קופסה מרובעת', 3)]
+_STYLE_SETTINGS = ('subtitles.fontname', 'subtitles.fontsize', 'subtitles.colorpick',
+                   'subtitles.style', 'subtitles.bordersize', 'subtitles.shadowsize',
+                   'subtitles.backgroundtype', 'subtitles.marginvertical',
+                   'subtitles.opacity', 'subtitles.bgopacity', 'subtitles.shadowopacity')
+
+
+class SubsStyleWindow(xbmcgui.WindowXMLDialog):
+    """Live subtitle-appearance editor (SubsStyleWindow.xml). 12 rows in ROWS
+    order; focus a row, arrows change the value (RTL: left=+) and the on-screen
+    subtitle restyles instantly. 210 = reset to captured defaults, 101 = close."""
+
+    ROWS = (208, 209, 201, 202, 211, 203, 204, 205, 213, 206, 212, 207)
+
+    def onInit(self):
+        self._defaults = self._load_or_capture_defaults()
+        self._refresh_all()
+        try:
+            self.setFocusId(self.ROWS[0])
+        except Exception:
+            pass
+
+    # -- defaults snapshot: the shipped look, captured once, forever the
+    #    thing 'שחזר ברירת מחדל' returns to --
+    def _load_or_capture_defaults(self):
+        p = os.path.join(user_dataDir, 'style_defaults.json')
+        snap = {}
+        try:
+            with open(p, encoding='utf-8') as f:
+                snap = json.loads(f.read())
+        except Exception:
+            snap = {}
+        # capture any setting the stored snapshot doesn't cover yet (e.g. the
+        # font row was added after a snapshot was already written)
+        changed = False
+        for sid in _STYLE_SETTINGS:
+            if sid not in snap:
+                v = _style_get(sid)
+                if v is not None:
+                    snap[sid] = v
+                    changed = True
+        if changed:
+            try:
+                tmp = p + '.tmp'
+                with open(tmp, 'w', encoding='utf-8') as f:
+                    f.write(json.dumps(snap))
+                os.replace(tmp, p)
+            except Exception:
+                pass
+        return snap
+
+    def _families(self):
+        """The registry filtered to fonts Kodi actually lists right now.
+        Built once per window open; if introspection fails, trust the registry
+        (the self-heal installs the bundled fonts before this window opens)."""
+        fams = getattr(self, '_fams', None)
+        if fams:
+            return fams
+        avail = None
+        try:
+            r = _jrpc_setting('Settings.GetSettings', {'level': 'expert'})
+            for st in (r or {}).get('settings', []):
+                if st.get('id') == 'subtitles.fontname':
+                    vals = [o.get('value') for o in st.get('options', []) if o.get('value')]
+                    if vals:
+                        avail = set(vals)
+                    break
+        except Exception as e:
+            log.warning('font options: %s' % e)
+        fams = []
+        for fam, variations in _FONT_FAMILIES:
+            if avail is None:
+                keep = list(variations)
+            else:
+                keep = [v for v in variations if v[1] == 'DEFAULT' or v[1] in avail]
+            if keep:
+                fams.append((fam, keep))
+        self._fams = fams
+        return fams
+
+    def _font_pos(self):
+        """(family_idx, variation_idx) of the current fontname, or (-1, -1)."""
+        cur = _style_get('subtitles.fontname') or 'DEFAULT'
+        for fi, (_fam, variations) in enumerate(self._families()):
+            for vi, (_lbl, val) in enumerate(variations):
+                if val == cur:
+                    return fi, vi
+        return -1, -1
+
+    def _row_state(self, cid):
+        """(title, value-label) for a row from the LIVE setting value."""
+        if cid == 208:
+            fi, _vi = self._font_pos()
+            return 'גופן', (self._families()[fi][0] if fi >= 0 else 'מותאם')
+        if cid == 209:
+            fi, vi = self._font_pos()
+            return 'וריאציה', (self._families()[fi][1][vi][0] if fi >= 0 else '-')
+        if cid == 201:
+            return 'גודל', str(_style_get('subtitles.fontsize') or '?')
+        if cid == 202:
+            v = _style_get('subtitles.colorpick') or ''
+            name = next((n for n, h in _STYLE_COLORS if h == v), 'מותאם')
+            return 'צבע', name
+        if cid == 203:
+            v = _style_get('subtitles.style')
+            name = next((n for n, i in _STYLE_WEIGHTS if i == v), 'רגיל')
+            return 'משקל', name
+        if cid == 204:
+            return 'קו מתאר', '%s%%' % (_style_get('subtitles.bordersize') or 0)
+        if cid == 205:
+            return 'צל', '%s%%' % (_style_get('subtitles.shadowsize') or 0)
+        if cid == 206:
+            v = _style_get('subtitles.backgroundtype')
+            name = next((n for n, i in _STYLE_BGTYPES if i == v), 'ללא')
+            return 'רקע', name
+        if cid == 211:
+            return 'שקיפות טקסט', '%s%%' % (_style_get('subtitles.opacity') or 0)
+        if cid == 213:
+            return 'שקיפות צל', '%s%%' % (_style_get('subtitles.shadowopacity') or 0)
+        if cid == 212:
+            return 'שקיפות רקע', '%s%%' % (_style_get('subtitles.bgopacity') or 0)
+        if cid == 207:
+            try:
+                v = int(round(float(_style_get('subtitles.marginvertical') or 0)))
+            except Exception:
+                v = 0
+            return 'גובה מהתחתית', '%s%%' % v
+        return '', ''
+
+    def _refresh_row(self, cid):
+        title, val = self._row_state(cid)
+        try:
+            # title on the button (right, RTL); value on its OWN label control
+            # (cid+100, left side) -- button label2 renders at the same edge as
+            # a right-aligned label and the two overlapped
+            self.getControl(cid).setLabel('[B]%s[/B]' % title)
+            self.getControl(cid + 100).setLabel('[B]%s[/B]' % val)
+        except Exception as e:
+            log.warning('style row %s: %s' % (cid, e))
+
+    def _refresh_all(self):
+        for cid in self.ROWS:
+            self._refresh_row(cid)
+
+    @staticmethod
+    def _cycle(options, current, step):
+        idx = next((i for i, (_, v) in enumerate(options) if v == current), -1)
+        return options[(idx + step) % len(options)][1]
+
+    def _adjust(self, cid, step):
+        if cid == 208:
+            fams = self._families()
+            fi, vi = self._font_pos()
+            cur_lbl = fams[fi][1][vi][0] if fi >= 0 else 'רגיל'
+            nfam, nvars = fams[(fi + step) % len(fams)]
+            # keep the same variation feel across families when possible
+            nval = dict((l, v) for l, v in nvars).get(cur_lbl)
+            if nval is None:
+                nval = dict((l, v) for l, v in nvars).get('רגיל', nvars[0][1])
+            _style_set('subtitles.fontname', nval)
+            self._refresh_row(209)
+        elif cid == 209:
+            fams = self._families()
+            fi, vi = self._font_pos()
+            if fi < 0:
+                _style_set('subtitles.fontname', fams[0][1][0][1])
+            else:
+                variations = fams[fi][1]
+                _style_set('subtitles.fontname', variations[(vi + step) % len(variations)][1])
+            self._refresh_row(208)
+        elif cid == 201:
+            v = int(_style_get('subtitles.fontsize') or 42) + step * 2
+            _style_set('subtitles.fontsize', max(12, min(74, v)))
+        elif cid == 202:
+            cur = _style_get('subtitles.colorpick') or 'FFFFFFFF'
+            _style_set('subtitles.colorpick',
+                       self._cycle(_STYLE_COLORS, cur, step))
+        elif cid == 203:
+            _style_set('subtitles.style',
+                       self._cycle(_STYLE_WEIGHTS, _style_get('subtitles.style'), step))
+        elif cid == 204:
+            v = int(_style_get('subtitles.bordersize') or 0) + step * 5
+            _style_set('subtitles.bordersize', max(0, min(100, v)))
+        elif cid == 205:
+            v = int(_style_get('subtitles.shadowsize') or 0) + step * 5
+            _style_set('subtitles.shadowsize', max(0, min(100, v)))
+        elif cid == 206:
+            _style_set('subtitles.backgroundtype',
+                       self._cycle(_STYLE_BGTYPES, _style_get('subtitles.backgroundtype'), step))
+        elif cid == 211:
+            v = int(_style_get('subtitles.opacity') or 100) + step * 5
+            _style_set('subtitles.opacity', max(0, min(100, v)))
+        elif cid == 213:
+            v = int(_style_get('subtitles.shadowopacity') or 0) + step * 5
+            _style_set('subtitles.shadowopacity', max(0, min(100, v)))
+        elif cid == 212:
+            v = int(_style_get('subtitles.bgopacity') or 0) + step * 5
+            _style_set('subtitles.bgopacity', max(0, min(100, v)))
+        elif cid == 207:
+            try:
+                v = float(_style_get('subtitles.marginvertical') or 0) + step * 1.0
+            except Exception:
+                v = 0.0
+            _style_set('subtitles.marginvertical', max(0.0, min(50.0, round(v, 2))))
+            # KODI LIMITATION (OverlayRenderer.cpp): vertical margin is NOT
+            # applied mid-playback (libass rewind side effect) -- it takes
+            # effect on the next playback. Say so once per window.
+            if not getattr(self, '_margin_note', False):
+                self._margin_note = True
+                try:
+                    from resources.modules.general import notify
+                    notify('גובה מהתחתית יוחל בניגון הבא', times=4500)
+                except Exception:
+                    pass
+        else:
+            return
+        self._refresh_row(cid)
+
+    def onClick(self, control_id):
+        if control_id == 101:
+            self.close()
+        elif control_id == 210:
+            for sid, val in (self._defaults or {}).items():
+                _style_set(sid, val)
+            self._refresh_all()
+        elif control_id in self.ROWS:
+            # SELECT on a row steps forward too (touch/mouse friendliness)
+            self._adjust(control_id, 1)
+
+    def onAction(self, action):
+        aid = action.getId()
+        if aid in (1, 2):     # ACTION_MOVE_LEFT / ACTION_MOVE_RIGHT
+            cid = self.getFocusId()
+            if cid in self.ROWS:
+                # RTL: LEFT increases, RIGHT decreases (Asaf, 2026-07-19)
+                self._adjust(cid, 1 if aid == 1 else -1)
+                return
+        if aid in (10, 92, 216, 247, 257, 275, 61467, 61448):
+            self.close()
+
+
+# Bump when the bundled font pack changes -- triggers one removal+overwrite
+# sync pass per device (Kodi only lists special://home/media/Fonts for
+# subtitles.fontname; the skins' font folders are invisible to it).
+_FONT_PACK_VERSION = '7'   # v6: OFFICIAL Google static builds (fonts.google.com
+                           # static/ folder), name-table-only rebrand -- the
+                           # instancer-generated v4/v5 files rendered weights
+                           # inconsistently vs Google's own statics (Asaf).
+                           # v7: + Google Sans (open-sourced 2025, OFL, no RFN,
+                           # HAS Hebrew) subset to Hebrew+Latin, 3 weights.
+# Internal FAMILY names whose files the pack removes -- if the user's active
+# subtitles.fontname points at one of these, migrate it to the build default
+# ('Rubik') instead of letting Kodi silently fall back on a missing font.
+# (Asaf's own device: legacy default was NarkisDVD @70 -- real case, 2026-07-19.)
+_FONT_MIGRATE = ('NarkisDVD', 'NarkisTam Light', 'NarkisTamKODI Light',
+                 'Assistant ExtraLight', 'Alef', 'Alef Bold', 'IBM Plex Hebrew',
+                 'IBM Plex Hebrew Bold', 'Secular One', 'David Libre')
+_FONT_MIGRATE_TO = 'Rubik'
+# Legacy files to REMOVE: Narkis set (Asaf, 2026-07-19) + the AF3-sourced
+# variable-font copies whose broken internal names ('Assistant ExtraLight' on
+# every weight) merged whole families into one wrong list entry + the pack-2
+# families Asaf swapped for Open Sans.
+_FONT_REMOVE = ('NarkisDVD.ttf', 'NarkisTamLight.ttf', 'NarkisTamLightKodi.ttf',
+                'NTAMLI.ttf', 'Heebo-Regular.ttf', 'Heebo-Bold.ttf',
+                'Heebo-Light.ttf', 'Assistant-Regular.ttf', 'Assistant-Bold.ttf',
+                'Assistant-Light.ttf', 'Alef.ttf', 'AlefBold.ttf',
+                'IBMPlexHebrew.ttf', 'IBMPlexHebrewBold.ttf', 'SecularOne.ttf',
+                'DavidLibre.ttf')
+
+
+def _ensure_subtitle_fonts():
+    """One-shot font-pack sync into Kodi's font folder: remove the legacy/broken
+    files, install/overwrite the clean Google-Fonts statics (unique internal
+    family per file so Kodi's family-dedup never merges them), drop the stale
+    fontcache. Runs the full pass only when the pack version changes; otherwise
+    it's a single setting read."""
+    try:
+        if Addon.getSetting('font_pack_v') == _FONT_PACK_VERSION:
+            return
+        import xbmcvfs
+        src = os.path.join(ADDON_PATH, 'resources', 'fonts')
+        dst = xbmcvfs.translatePath('special://home/media/Fonts')
+        if not os.path.isdir(src):
+            return
+        os.makedirs(dst, exist_ok=True)
+        changed = False
+        for f in _FONT_REMOVE:
+            try:
+                p = os.path.join(dst, f)
+                if os.path.exists(p):
+                    os.remove(p)
+                    changed = True
+                    log.warning('removed legacy subtitle font: %s' % f)
+            except Exception:
+                pass
+        for f in os.listdir(src):
+            if f.lower().endswith(('.ttf', '.otf')):
+                try:
+                    sp, tp = os.path.join(src, f), os.path.join(dst, f)
+                    if (not os.path.exists(tp)
+                            or os.path.getsize(tp) != os.path.getsize(sp)):
+                        shutil.copy2(sp, tp)
+                        changed = True
+                except Exception:
+                    pass
+        try:
+            cache = os.path.join(dst, 'fontcache.xml')
+            if os.path.exists(cache):
+                os.remove(cache)
+        except Exception:
+            pass
+        try:
+            cur = _style_get('subtitles.fontname')
+            if cur in _FONT_MIGRATE:
+                _style_set('subtitles.fontname', _FONT_MIGRATE_TO)
+                log.warning('migrated subtitle font %s -> %s (file removed by pack)'
+                            % (cur, _FONT_MIGRATE_TO))
+        except Exception:
+            pass
+        Addon.setSetting('font_pack_v', _FONT_PACK_VERSION)
+        log.warning('subtitle font pack synced to v%s' % _FONT_PACK_VERSION)
+        if changed:
+            # Kodi enumerates fonts ONCE at startup (GUIFontManager::Initialize
+            # -> LoadUserFonts); swapped files are invisible until then.
+            try:
+                from resources.modules.general import notify
+                notify('גופני הכתוביות עודכנו - יש להפעיל מחדש את קודי', times=6000)
+            except Exception:
+                pass
+    except Exception as e:
+        log.warning('font install failed: %s' % e)
+
+
+def open_style_window():
+    try:
+        _ensure_subtitle_fonts()
+        w = SubsStyleWindow('SubsStyleWindow.xml', ADDON_PATH, 'Default', '1080i')
+        w.doModal()
+        del w
+    except Exception as e:
+        log.warning('style window failed: %s' % e)
 
 
 ########################## CLASSIC (pyxbmct) ###########################
@@ -559,15 +977,22 @@ def MySubs(title,list,f_list,video_data,all_subs,last_sub_name_in_cache,last_sub
     """Subtitle picker entry point. Default = the new XML window (two-line rows,
     full release names). Setting classic_window=true -> the old pyxbmct window.
     Any problem opening the new window falls back to classic automatically."""
+    _ensure_subtitle_fonts()
     if Addon.getSetting('classic_window') != 'true':
         try:
             _xml = 'SubsWindow.xml' if Addon.getSetting('window_style') != '1' else 'SubsWindowCenter.xml'
-            w = SubsXMLWindow(_xml, ADDON_PATH, 'Default', '1080i')
-            w.setup(title, list, f_list, video_data, all_subs,
-                    last_sub_name_in_cache, last_sub_language_in_cache)
-            w.doModal()
-            del w
-            return
+            while True:
+                w = SubsXMLWindow(_xml, ADDON_PATH, 'Default', '1080i')
+                w.setup(title, list, f_list, video_data, all_subs,
+                        last_sub_name_in_cache, last_sub_language_in_cache)
+                w.doModal()
+                _style = getattr(w, '_open_style', False)
+                del w
+                if not _style:
+                    return
+                # picker closes so the MOVIE + subtitle are visible while
+                # styling live; when the panel closes the picker comes back
+                open_style_window()
         except Exception as e:
             log.warning('XML window failed (%s) -> falling back to classic' % e)
     _classic_window(title, list, f_list, video_data, all_subs,

@@ -681,9 +681,11 @@ def sub_from_main(arg):
         log.warning(return_result)
     
     elif action=='download':
-        
-        
-        
+        # Manual pick from the Kodi window: same stale-break_all trap as the
+        # wand window -- the search dialog's END left break_all=True and
+        # engine.py then skips writing the translated file. Explicit pick =
+        # never aborted.
+        general.break_all=False
         log.warning(params["filename"])
         sub_file=download_sub(source,download_data,MySubFolder,language,filename)
         fault=False
