@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-19T10:59:07Z",
+  "generated_utc": "2026-07-19T11:03:26Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -396,12 +396,12 @@
     },
     {
       "id": "script.skinhelper",
-      "version": "0.0.4",
+      "version": "0.0.4.1",
       "channel": "optional",
-      "zip": "script.skinhelper-0.0.4.zip",
-      "sha256": "673dbd9d5551631b994c2b2449a685004c57fbb2eb94bb2cde006f016e1e708e",
-      "size": 1430,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.skinhelper-0.0.4.zip"
+      "zip": "script.skinhelper-0.0.4.1.zip",
+      "sha256": "cba9cdfba57075c75eafa570f90514b7c3206c9ad4e01d8c052483f152af2834",
+      "size": 1885,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.skinhelper-0.0.4.1.zip"
     },
     {
       "id": "script.skinshortcuts",
