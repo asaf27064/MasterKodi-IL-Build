@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-19T11:20:47Z",
+  "generated_utc": "2026-07-19T11:25:00Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -297,12 +297,12 @@
     },
     {
       "id": "script.module.magneto",
-      "version": "6.07.02",
+      "version": "6.07.04",
       "channel": "core",
-      "zip": "script.module.magneto-6.07.02.zip",
-      "sha256": "a548bd6d0bd1ff1d7d93e8653b90e1a4889c6d08a70fc8bbacf1259ff05d3bbd",
-      "size": 477046,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.magneto-6.07.02.zip"
+      "zip": "script.module.magneto-6.07.04.zip",
+      "sha256": "822da798a9f1d8bfb8e76615d9ded345a31c33da0d383f9513fec33df871297c",
+      "size": 479244,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.magneto-6.07.04.zip"
     },
     {
       "id": "script.module.pysubs2",
