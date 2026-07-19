@@ -25,7 +25,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: build-and-release-piers
+  group: fleet-release
   cancel-in-progress: false
 
 jobs:

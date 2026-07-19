@@ -20,7 +20,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: build-and-release
+  group: fleet-release
   cancel-in-progress: false
 
 jobs:
