@@ -50,7 +50,39 @@ AUTO_DEPS = {
     'script.skinshortcuts': (
         'https://mirrors.kodi.tv/addons/omega/script.skinshortcuts/', 'kodi_dir',
         'https://mirrors.kodi.tv/addons/omega/{id}/{id}-{ver}.zip'),
+    # Asaf's active scraper (kodifitzwell / yashimaru mirror)
+    'script.module.magneto': (
+        'https://kodiyashimaru.github.io/repo/packages/addons.xml', 'addons_xml',
+        'https://kodiyashimaru.github.io/repo/{id}/{id}-{ver}.zip'),
+    'script.texturemaker': (
+        _JURIAL + '/addons.xml', 'addons_xml', _JURIAL + '/{id}/{id}-{ver}.zip'),
+    'resource.font.robotocjksc': (
+        _JURIAL + '/addons.xml', 'addons_xml', _JURIAL + '/{id}/{id}-{ver}.zip'),
+    'service.subtitles.localsubtitle': (
+        'https://raw.githubusercontent.com/peno64/repository.peno64/master/repo/zips/addons.xml', 'addons_xml',
+        'https://raw.githubusercontent.com/peno64/repository.peno64/master/repo/zips/{id}/{id}-{ver}.zip'),
 }
+
+# Kodi-official addons we ship verbatim from the OMEGA repo. Both fleets run
+# these same builds (python modules/metadata/resources are branch-agnostic in
+# practice and Piers has shipped the omega set from day one) -- adopting from
+# the omega mirror keeps the shared tree at the lowest common denominator.
+_KODI_OFFICIAL = (
+    'metadata.common.fanart.tv', 'metadata.themoviedb.org.python',
+    'metadata.tvshows.themoviedb.org.python', 'resource.language.he_il',
+    'resource.images.moviecountryicons.maps',
+    'resource.images.moviegenreicons.transparent', 'resource.images.studios.coloured',
+    'resource.images.studios.white', 'resource.images.weathericons.white',
+    'script.common.plugin.cache', 'script.module.addon.signals',
+    'script.module.beautifulsoup4', 'script.module.certifi', 'script.module.chardet',
+    'script.module.idna', 'script.module.pysubs2', 'script.module.qrcode',
+    'script.module.requests', 'script.module.simpleeval', 'script.module.simplejson',
+    'script.module.six', 'script.module.soupsieve', 'script.module.unidecode',
+    'script.module.urllib3', 'service.xbmc.versioncheck',
+)
+for _aid in _KODI_OFFICIAL:
+    AUTO_DEPS[_aid] = ('https://mirrors.kodi.tv/addons/omega/%s/' % _aid, 'kodi_dir',
+                       'https://mirrors.kodi.tv/addons/omega/{id}/{id}-{ver}.zip')
 
 
 def adopt_one(aid, src_url, kind, zip_tpl, dry=False):

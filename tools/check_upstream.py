@@ -203,6 +203,17 @@ DEPS_WATCH = [
      'https://raw.githubusercontent.com/not-coco-joe/repository.cocoscrapers/master/zips/addons.xml', 'addons_xml'),
     ('script.module.gearsscrapers',
      'https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/addons.xml', 'addons_xml'),
+    # Asaf's active scraper -- was shipping with ZERO watch coverage (found
+    # 2 versions behind, 2026-07-19)
+    ('script.module.magneto',
+     'https://kodiyashimaru.github.io/repo/packages/addons.xml', 'addons_xml'),
+    ('script.texturemaker', _JURIAL_OMEGA, 'addons_xml'),
+    ('service.subtitles.localsubtitle',
+     'https://raw.githubusercontent.com/peno64/repository.peno64/master/repo/zips/addons.xml', 'addons_xml'),
+    # nimbus's helper script: GitHub master only (no zip repo) -> alert-only,
+    # updated together with the skin.nimbus fork.
+    ('script.nimbus.helper',
+     'https://raw.githubusercontent.com/ivarbrandt/script.nimbus.helper/master/addon.xml', 'github_addon_xml'),
 ]
 
 
