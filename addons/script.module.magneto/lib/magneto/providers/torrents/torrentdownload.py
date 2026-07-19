@@ -1,17 +1,13 @@
+# created by Venom for Fenomscrapers
 """
-	Cocoscrapers Project
+	Fenomscrapers Project
 """
 
 import re
-from html import unescape
-from urllib.parse import quote_plus, parse_qs, urlparse
-from magneto.modules import cache
+from urllib.parse import quote_plus, unquote_plus
 from magneto.modules import client
 from magneto.modules import source_utils
 from magneto.modules import workers
-
-
-RE_MAGNET = re.compile(r'href\s*=\s*["\'](magnet:[^"\']+)["\']', re.I)
 
 
 class source:
@@ -21,31 +17,9 @@ class source:
 	hasEpisodes = True
 	def __init__(self):
 		self.language = ['en']
-		self.domains = [
-			'knaben.org', # 'knaben.eu'
-		]
-		self._base_link = None
-		self.moviesearch = '/search/index.php?cat=003000000&q={0}&search=fast'
-		self.tvsearch = '/search/index.php?cat=002000000&q={0}&search=fast'
+		self.base_link = "https://www.torrentdownload.info"
+		self.search_link = '/search?q=%s'
 		self.min_seeders = 0
-
-	@property
-	def base_link(self):
-		if not self._base_link:
-			self._base_link = cache.get(self.__get_base_url, 120, 'https://%s' % self.domains[0])
-		return self._base_link
-
-	def __get_base_url(self, fallback):
-		for domain in self.domains:
-			try:
-				url = 'https://%s' % domain
-				result = client.request(url, limit=1, timeout=5)
-				try: result = re.search(r'<title>(.+?)</title>', result, re.I).group(1)
-				except: result = None
-				if result and 'Knaben' in result: return url
-			except:
-				source_utils.scraper_error('KNABEN')
-		return fallback
 
 	def sources(self, data, hostDict):
 		self.sources = []
@@ -58,21 +32,19 @@ class source:
 				self.title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
 				self.episode_title = data['title']
 				self.hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode']))
-				search_link = self.tvsearch
 			else:
 				self.title = data['title'].replace('&', 'and').replace('/', ' ').replace('$', 's')
 				self.episode_title = None
 				self.hdlr = self.year
-				search_link = self.moviesearch
-			query = '%s %s' % (re.sub(r'[^A-Za-z0-9\s\.-]+', '', self.title), self.hdlr)
-			urls = []
-			url = '%s%s' % (self.base_link, search_link.format(quote_plus(query)))
-			urls.append(url)
-			# if url.endswith('field=size&sorder=desc'): urls.append(url.rsplit("/", 1)[0] + '/2/')
-			# else: urls.append(url + '/2/')
-			# log_utils.log('urls = %s' % urls)
 			self.undesirables = source_utils.get_undesirables()
 			self.check_foreign_audio = source_utils.check_foreign_audio()
+
+			query = '%s %s' % (re.sub(r'[^A-Za-z0-9\s\.-]+', '', self.title), self.hdlr)
+			urls = []
+			url = '%s%s' % (self.base_link, self.search_link % quote_plus(query))
+			urls.append(url)
+			urls.append(url + '&p=2')
+			# log_utils.log('urls = %s' % urls)
 			threads = []
 			append = threads.append
 			for url in urls:
@@ -81,31 +53,26 @@ class source:
 			[i.join() for i in threads]
 			return self.sources
 		except:
-			source_utils.scraper_error('KNABEN')
+			source_utils.scraper_error('TORRENTDOWNLOAD')
 			return self.sources
 
 	def get_sources(self, url):
-		# log_utils.log('url = %s' % url)
 		try:
-			results = client.request(url, timeout=7)
+			results = client.request(url, timeout=5)
 			if not results: return
-			rows = client.parseDOM(results, 'tr', attrs={'class': 'text-nowrap border-start'})
+			rows = client.parseDOM(results, 'tr')
 		except:
-			source_utils.scraper_error('KNABEN')
+			source_utils.scraper_error('TORRENTDOWNLOAD')
 			return
+
 		for row in rows:
 			try:
+				if any(value in row for value in ('<th', 'nofollow')): continue
 				columns = re.findall(r'<td.*?>(.+?)</td>', row, re.DOTALL)
 
-				magnet_match = RE_MAGNET.search(columns[1])
-				if not magnet_match: continue
-				magnet_url = unescape(magnet_match.group(1))
-				parsed_query = parse_qs(urlparse(magnet_url).query)
-				xt_param = parsed_query.get('xt', [''])[-1]
-				if not xt_param: continue
-				hash = xt_param.split(':')[-1]
-				title = parsed_query.get('dn', ['Unknown'])[-1]
-				name = source_utils.clean_name(title)
+				link = re.search(r'href\s*=\s*["\']/(.+?)["\']>', columns[0], re.I).group(1).split('/')
+				hash = link[0]
+				name = source_utils.clean_name(unquote_plus(link[1]).replace('&amp;', '&'))
 
 				if not source_utils.check_title(self.title, self.aliases, name, self.hdlr, self.year): continue
 				name_info = source_utils.info_from_name(name, self.title, self.year, self.hdlr, self.episode_title)
@@ -118,22 +85,22 @@ class source:
 					if any(re.search(item, name_lower) for item in ep_strings): continue
 
 				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
-
 				try:
-					seeders = int(columns[4].replace(',', ''))
+					seeders = int(columns[3].replace(',', ''))
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 
 				quality, info = source_utils.get_release_quality(name_info, url)
 				try:
-					dsize, isize = source_utils._size(columns[2].split('<')[0])
+					dsize, isize = source_utils._size(columns[2])
 					info.insert(0, isize)
 				except: dsize = 0
 				info = ' | '.join(info)
-				self.sources_append({'provider': 'knaben', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info,
-												'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
+
+				self.sources_append({'provider': 'torrentdownload', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info,
+													'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
 			except:
-				source_utils.scraper_error('KNABEN')
+				source_utils.scraper_error('TORRENTDOWNLOAD')
 
 	def sources_packs(self, data, hostDict, search_series=False, total_seasons=None, bypass_filter=False):
 		self.sources = []
@@ -156,12 +123,12 @@ class source:
 			query = re.sub(r'[^A-Za-z0-9\s\.-]+', '', self.title)
 			if search_series:
 				queries = [
-						self.tvsearch.format(quote_plus(query + ' Season')),
-						self.tvsearch.format(quote_plus(query + ' Complete'))]
+						self.search_link % quote_plus(query + ' Season'),
+						self.search_link % quote_plus(query + ' Complete')]
 			else:
 				queries = [
-							self.tvsearch.format(quote_plus(query + ' S%s' % self.season_xx)),
-							self.tvsearch.format(quote_plus(query + ' Season %s' % self.season_x))]
+						self.search_link % quote_plus(query + ' S%s' % self.season_xx),
+						self.search_link % quote_plus(query + ' Season %s' % self.season_x)]
 			threads = []
 			append = threads.append
 			for url in queries:
@@ -171,30 +138,26 @@ class source:
 			[i.join() for i in threads]
 			return self.sources
 		except:
-			source_utils.scraper_error('KNABEN')
+			source_utils.scraper_error('TORRENTDOWNLOAD')
 			return self.sources
 
 	def get_sources_packs(self, link):
 		try:
-			results = client.request(link, timeout=7)
+			results = client.request(link, timeout=5)
 			if not results: return
-			rows = client.parseDOM(results, 'tr', attrs={'class': 'text-nowrap border-start'})
+			rows = client.parseDOM(results, 'tr')
 		except:
-			source_utils.scraper_error('KNABEN')
+			source_utils.scraper_error('TORRENTDOWNLOAD')
 			return
+
 		for row in rows:
 			try:
+				if any(value in row for value in ('<th', 'nofollow')): continue
 				columns = re.findall(r'<td.*?>(.+?)</td>', row, re.DOTALL)
 
-				magnet_match = RE_MAGNET.search(columns[1])
-				if not magnet_match: continue
-				magnet_url = unescape(magnet_match.group(1))
-				parsed_query = parse_qs(urlparse(magnet_url).query)
-				xt_param = parsed_query.get('xt', [''])[-1]
-				if not xt_param: continue
-				hash = xt_param.split(':')[-1]
-				title = parsed_query.get('dn', ['Unknown'])[-1]
-				name = source_utils.clean_name(title)
+				link = re.search(r'href\s*=\s*["\']/(.+?)["\']>', columns[0], re.I).group(1).split('/')
+				hash = link[0]
+				name = source_utils.clean_name(unquote_plus(link[1]).replace('&amp;', '&'))
 
 				episode_start, episode_end = 0, 0
 				if not self.search_series:
@@ -216,20 +179,21 @@ class source:
 
 				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
 				try:
-					seeders = int(columns[4].replace(',', ''))
+					seeders = int(columns[3].replace(',', ''))
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 
 				quality, info = source_utils.get_release_quality(name_info, url)
 				try:
-					dsize, isize = source_utils._size(columns[2].split('<')[0])
+					dsize, isize = source_utils._size(columns[2])
 					info.insert(0, isize)
 				except: dsize = 0
 				info = ' | '.join(info)
-				item = {'provider': 'knaben', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
+
+				item = {'provider': 'torrentdownload', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
 							'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize, 'package': package}
 				if self.search_series: item.update({'last_season': last_season})
 				elif episode_start: item.update({'episode_start': episode_start, 'episode_end': episode_end}) # for partial season packs
 				self.sources_append(item)
 			except:
-				source_utils.scraper_error('knaben')
+				source_utils.scraper_error('TORRENTDOWNLOAD')

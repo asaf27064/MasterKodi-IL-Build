@@ -81,8 +81,8 @@ class source:
 				magnet_url = unescape(magnet_match.group(1))
 				parsed_query = parse_qs(urlparse(magnet_url).query)
 				xt_param = parsed_query.get('xt', [''])[-1]
-				if xt_param: hash = xt_param.split(':')[-1]
-				else: continue
+				if not xt_param: continue
+				hash = xt_param.split(':')[-1]
 				title = parsed_query.get('dn', ['Unknown'])[-1]
 				name = source_utils.clean_name(title)
 
@@ -172,8 +172,8 @@ class source:
 				magnet_url = unescape(magnet_match.group(1))
 				parsed_query = parse_qs(urlparse(magnet_url).query)
 				xt_param = parsed_query.get('xt', [''])[-1]
-				if xt_param: hash = xt_param.split(':')[-1]
-				else: continue
+				if not xt_param: continue
+				hash = xt_param.split(':')[-1]
 				title = parsed_query.get('dn', ['Unknown'])[-1]
 				name = source_utils.clean_name(title)
 
