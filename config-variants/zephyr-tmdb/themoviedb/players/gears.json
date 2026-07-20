@@ -1,0 +1,11 @@
+{
+    "name": "Gears",
+    "plugin": "plugin.video.gears",
+    "priority": 100,
+    "is_resolvable": "false",
+    "play_movie": "plugin://plugin.video.gears/?mode=playback.meta&media_type=movie&tmdb_id={tmdb}",
+    "play_episode": "plugin://plugin.video.gears/?mode=playback.meta&media_type=episode&tmdb_id={tmdb}&season={season}&episode={episode}",
+    "search_movie": "plugin://plugin.video.gears/?mode=build_movie_list&action=tmdb_movies_search&query={title_url}",
+    "search_episode": "plugin://plugin.video.gears/?mode=build_tvshow_list&action=tmdb_tv_search&query={showname_url}",
+    "assert": {"play_movie": ["tmdb"], "play_episode": ["tmdb", "season", "episode"]}
+}
