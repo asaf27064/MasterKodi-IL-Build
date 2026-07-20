@@ -1,0 +1,50 @@
+<shortcuts>
+	<shortcut>
+		<defaultID />
+		<label>המשך צפייה</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/player.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>חם עכשיו</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/trending.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>רשתות סטרימינג</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/folder.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=build_tvshow_list&amp;action=tmdb_tv_networks&amp;name=Networks",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>שידור בכורה</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/fresh.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>בקרוב</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/lists.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>ז'אנרים</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/genres.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres",return)</action>
+		</shortcut>
+	</shortcuts>

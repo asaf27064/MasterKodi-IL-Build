@@ -1,0 +1,50 @@
+<shortcuts>
+	<shortcut>
+		<defaultID />
+		<label>המשך צפייה</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/player.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>חם עכשיו</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/trending.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>בקולנוע</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/intheatres.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_premieres&amp;random_support=true&amp;iconImage=intheatres",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>שוברי קופות</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/most_voted.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>הנצפים ביותר</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/oscar_winners.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Most+Watched&amp;mode=build_movie_list&amp;action=trakt_movies_most_watched&amp;random_support=true&amp;iconImage=oscar_winners",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>ז'אנרים</label>
+		<label2>הרחבת וידאו</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/genres.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres",return)</action>
+		</shortcut>
+	</shortcuts>

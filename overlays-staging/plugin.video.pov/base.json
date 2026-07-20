@@ -1,0 +1,11 @@
+{
+  "addon_id": "plugin.video.pov",
+  "base_version": "6.07.07",
+  "base_zip_local": "base/plugin.video.pov-6.07.07.zip",
+  "base_zip_url": "https://kodiyashimaru.github.io/repo/plugin.video.pov/plugin.video.pov-{version}.zip",
+  "upstream_zip_url": "https://kodiyashimaru.github.io/repo/plugin.video.pov/plugin.video.pov-{version}.zip",
+  "upstream_addons_xml": "https://kodiyashimaru.github.io/repo/packages/addons.xml",
+  "overlay_version": "0.1.0",
+  "note": "POV (kodifitzwell) staged as a Gears ALTERNATIVE. Primary repo kodifitzwell.github.io is EMPTY (<addons/>); the kodiyashimaru mirror is the live source (same as magneto, which is POV's scraper module - versions are siblings 6.07.x). STAGING: lives in overlays-staging/ so no watcher/build touches it until deliberately promoted to overlays/.",
+  "changelog": "0.1.0: initial Hebrew overlay re-derived fresh from the current Gears overlay (kodirdil) onto clean POV 6.07.07."
+}
