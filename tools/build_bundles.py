@@ -128,15 +128,42 @@ def build_repack(name, spec, original_path, dist_dir, manifest, shas, out_path):
     return sorted(orig_addons)
 
 
-def build_fresh(name, spec, dist_dir, manifest, shas, out_path):
+def build_fresh(name, spec, dist_dir, manifest, shas, out_path, originals_dir=None):
     ids = spec['fresh']
+    # Optional neutral base skeleton: a fresh bundle carries only addons by
+    # default (config-apply delivers userdata). But the fast one-zip install
+    # also wants the CONTENT-NEUTRAL assets config does NOT deliver -- above all
+    # the Hebrew fonts (media/fonts, needed by subtitles.fontname) and the
+    # subtitle-addon default settings. We lift exactly those paths out of an
+    # existing proven bundle (seed_base) so POV lands as complete + fast as
+    # Gears, WITHOUT any Gears-specific content (menus/favourites/gears db).
+    seed_base = spec.get('seed_base')
+    seed_include = spec.get('seed_include', [])
+    seeded = 0
     with zipfile.ZipFile(out_path, 'w', zipfile.ZIP_DEFLATED) as zout:
+        if seed_base and seed_include:
+            sbp = os.path.join(originals_dir or 'originals', seed_base)
+            if not os.path.isfile(sbp):
+                raise SystemExit('%s: seed_base %s not found (need it in originals/)'
+                                 % (name, seed_base))
+            zin = zipfile.ZipFile(sbp)
+            wanted = [p.rstrip('/') for p in seed_include]
+            for n in zin.namelist():
+                if n.endswith('/'):
+                    continue
+                if any(n == w or n.startswith(w + '/') for w in wanted):
+                    zout.writestr(n, zin.read(n))
+                    seeded += 1
         for aid in ids:
             dz = dist_zip(dist_dir, aid, shas, manifest)
             if not dz:
                 raise SystemExit('%s: no dist zip for %s' % (name, aid))
             write_addon_tree(zout, dz)
-    log('%s: built fresh (%d addons)' % (name, len(ids)))
+        if spec.get('state_seed'):
+            seed = {aid: shas[aid] for aid in ids if shas.get(aid)}
+            zout.writestr(SEED_PATH, json.dumps(seed, indent=2))
+    log('%s: built fresh (%d addons%s)' % (name, len(ids),
+        ', +%d seeded base files from %s' % (seeded, seed_base) if seeded else ''))
     return sorted(ids)
 
 
@@ -180,7 +207,8 @@ def main():
         if spec.get('repack'):
             build_repack(name, spec, original_path, dist_dir, manifest, shas, out_path)
         else:
-            build_fresh(name, spec, dist_dir, manifest, shas, out_path)
+            build_fresh(name, spec, dist_dir, manifest, shas, out_path,
+                        originals_dir=args.originals)
         state[name] = fp
         changed.append(name)
         log('%s: %.1f MB' % (name, os.path.getsize(out_path) / 1e6))
