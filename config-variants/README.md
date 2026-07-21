@@ -1,37 +1,57 @@
-# Zephyr widget-source variants (STAGING — not wired into the build yet)
+# Skin config variants (STAGING — not wired into the build yet)
 
 Purpose: Zephyr's home crashes on Kodi 21.3 (upstream CPythonInvoker race) come
-from spawning one Python interpreter per Gears widget on every Home load. Moving
+from spawning one Python interpreter per addon widget on every Home load. Moving
 the home widgets to tmdbhelper (which serves widget content from a persistent
 service, not per-widget interpreters) removed the crash in live testing. These
-variants let us ship/toggle the widget SOURCE without losing any option.
+variants capture, per skin, the widget SOURCE + content addon combinations so we
+can ship/toggle without losing any option.
 
-Each variant is a self-contained bundle of the three file groups that define the
-home experience:
+## Naming
+`<skin>-<content-addon>[-tmdb]`:
+- `<content-addon>` = **gears** or **pov** (who resolves/plays + serves list content)
+- `-tmdb` suffix = home WIDGETS are tmdbhelper service widgets (crash-free);
+  without it, widgets are the content addon's own (per-widget interpreter =
+  crash-prone on Kodi 21.3 widget-heavy homes)
 
-| group | files | config_policy dest |
-|---|---|---|
-| menu (widgets) | skinshortcuts/*.DATA.xml (+ .properties) | userdata/addon_data/script.skinshortcuts/ |
-| skin settings | skin.zephyr/settings.xml | userdata/addon_data/skin.arctic.zephyr.2.resurrection.mod/settings.xml |
-| widget-engine settings | themoviedb/settings.xml (+ nodes/, players/) | userdata/addon_data/plugin.video.themoviedb.helper/ |
+## Crash verdicts (tested live, Kodi 21.3, 2026-07-21)
+- **Zephyr** — CRASHES (widget storm) → needs a `-tmdb` variant
+- **Estuary / Nimbus / AF3** — STABLE on plain addon widgets → no tmdb needed
+- Signature (all crashes): EXCEPTION_ACCESS_VIOLATION python3.8.dll+0x1c6744
 
 ## Variants
-- **zephyr-gears/** — the ORIGINAL shipped state: home widgets are Gears
-  (build_movie_list/build_tvshow_list). Preserved as the safe fallback.
-- **zephyr-tmdb/** — the experiment: home widgets are tmdbhelper (trending_week,
-  now_playing, upcoming, airing_today, SELECTED NETWORKS node) + a players/
-  gears.json bridge so playback still routes through Gears' scraper +
-  tmdbhelper language he-IL. Snapshot when Asaf declares the config final.
-- **zephyr-pov/** — PLACEHOLDER for the future POV-based build. Same structure;
-  widgets will point at plugin.video.pov once POV is integrated. Asaf brings the
-  clean POV files; we wire its update source + Hebrew mod like Gears.
+| variant | skin | content addon | widgets | notes |
+|---|---|---|---|---|
+| zephyr-gears | Zephyr | Gears | Gears | ORIGINAL shipped state; safe fallback (crashes) |
+| zephyr-gears-tmdb | Zephyr | Gears | tmdbhelper | crash-free; players/gears.json bridge |
+| zephyr-pov | Zephyr | POV | POV | POV alternative (still crashes — widget home) |
+| zephyr-pov-tmdb | Zephyr | POV | tmdbhelper | crash-free; players/pov.json; THE tested Zephyr pick |
+| estuary-pov | Estuary | POV | favourites/skin XML | stable; ratings port (gears.* props via OMDb) |
+| nimbus-pov | Nimbus | POV | cpath compiled | stable; +TV genres widget; self-contained ratings |
+| af3-pov | AF3 | POV | skinvariables nodes | stable; nodes+includes translated |
+| af3-pov-tmdb | AF3 | POV | tmdbhelper | on-request; NODES ONLY, needs generator rebuild |
 
-## How this will wire into the build (design, NOT yet implemented)
-config_policy.json / the wizard gets a "widget_variant" selector. The wizard
-applies the chosen variant's three file groups on install/update. Default =
-whatever we decide per skin/per Kodi version (21 may default tmdb to dodge the
-crash; 22 may keep Gears if its invoker fix holds). Applies to BOTH fleets.
+## File groups per variant
+| group | files | apply dest |
+|---|---|---|
+| menu/widgets | skinshortcuts/ or nodes/ or favourites.xml or skin-overrides/ | per skin (skinshortcuts / skinvariables nodes / userdata / skin xml) |
+| skin settings | skin.zephyr/settings.xml | the skin's addon_data settings.xml |
+| widget engine (tmdb only) | themoviedb/ (settings + nodes/ + players/) | userdata/addon_data/plugin.video.themoviedb.helper/ |
+| POV seeds (pov only) | pov/ (shortcut_folders.json, views.json, settings.xml) | POV navigator.db / views.db / settings |
 
-STATUS: staging only. zephyr-gears preserved from the shipped config. zephyr-tmdb
-to be snapshotted from Asaf's box when he says the tmdb config is final. Nothing
-here changes device behavior until the wizard selector is built + shipped.
+Icon sets (genre_icons, network_icons) apply to **portable_data/media/**
+(= special://home in portable Kodi — NOT the install root).
+
+## Ship note
+Favourites + skin config are RE-APPLIED by the wizard on skin-switch / update
+(revert to the Gears baseline). A variant only STICKS as the shipped baseline —
+so wiring these into the wizard's config-apply is the mechanism. For manual
+testing, switch skins via Kodi settings, not the wizard.
+
+## Kodi 22 / Piers
+The crash is 21.3-specific. Piers likely needs NO widget-architecture change —
+test whether it crashes with Gears widgets before porting any tmdb/pov variant
+there. Addon-side fixes (GearsAI, wizard) already ship to both fleets.
+
+STATUS: staging only. Nothing here changes device behavior until the wizard
+variant-selector is built + shipped.
