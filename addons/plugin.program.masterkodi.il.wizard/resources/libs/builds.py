@@ -1898,16 +1898,19 @@ def builds_menu():
             skin_choice = 'estuary'
             skin_name = "Estuary"
 
-        # Content source: Gears (default) or POV. POV = same skins/subtitles,
-        # a different content addon. Applied as a final step after the normal
-        # (Gears) install lands, via the tested content_source switcher.
-        content_choice = 'gears'
-        cs_sel = dialog.select('מקור תוכן', [
-            'Gears (ברירת מחדל)',
-            'POV (חלופה - אותם סקינים וכתוביות)'])
-        if cs_sel < 0:
-            continue
-        content_choice = 'pov' if cs_sel == 1 else 'gears'
+        # Content source: Gears or POV (same skins/subtitles, different content
+        # engine). The build itself now declares it via build.txt `content=` --
+        # the two builds ("MasterKodi IL (Gears)" / "(POV)") ARE the choice, made
+        # right on the build-selection screen. Only fall back to a separate
+        # dialog for a legacy build.txt that doesn't carry `content`.
+        content_choice = (selected_build.get('content') or '').strip().lower()
+        if content_choice not in ('gears', 'pov'):
+            cs_sel = dialog.select('מקור תוכן', [
+                'Gears (ברירת מחדל)',
+                'POV (חלופה - אותם סקינים וכתוביות)'])
+            if cs_sel < 0:
+                continue
+            content_choice = 'pov' if cs_sel == 1 else 'gears'
 
         # Confirm installation
         confirm_msg = (
