@@ -1004,6 +1004,11 @@ def download_sub(source,download_data,MySubFolder,language,filename):
     # removed them mid-session -- otherwise every listdir below crashes and NO
     # sub gets placed (and auto-translate never runs).
     general.ensure_cache_dirs()
+    # MASTERKODI: track whether the user DECLINED the auto AI translation in
+    # THIS download -- the placement toast must then say plain 'אנגלית', not
+    # '(תרגום מכונה)' (the old text was built from the setting alone and lied
+    # after a decline; seen live 2026-07-21).
+    general.ai_declined = False
     try:
         x=int(download_data['url'])
         log.warning(x)
@@ -1056,8 +1061,13 @@ def download_sub(source,download_data,MySubFolder,language,filename):
             return 'FaultSubException'
         
     # Auto punctuation fix for external Hebrew subtitles.
+    # MASTERKODI: the embedded_ai exclusion must sit on the PUNCT-FIX line
+    # only -- excluding it from the whole Hebrew branch dropped our Hebrew
+    # into the elif-auto-translate branch, which shoved it into trans_subs
+    # under an extension-less name that setSubtitles couldn't open (seen live
+    # 2026-07-21: CFileCache::Open error, sub loaded but never displayed).
     if 'Hebrew' in language:
-        if Addon.getSetting("auto_fix_sub_punctuation")=='true':
+        if Addon.getSetting("auto_fix_sub_punctuation")=='true' and source != 'embedded_ai':
             try:
                 fix_sub_punctuation_and_write(sub_file)
             except Exception as e:
@@ -1066,7 +1076,9 @@ def download_sub(source,download_data,MySubFolder,language,filename):
             
         ###### Upload to Telegram ########
         # Upload only subtitles (not from Telegram), and are not in "Cached_subs" directory. In that case, those subtitles should already have been uploaded.
-        if Addon.getSetting('telegram')=='true' and source != "telegram" and not found_in_cache: 
+        # MASTERKODI: embedded-AI output is machine translation -- it is shared
+        # via the community pool, not the human-subs Telegram channel.
+        if Addon.getSetting('telegram')=='true' and source not in ("telegram", "embedded_ai") and not found_in_cache:
             log.warning(f"[Telegram] | upload_subtitle_to_telegram | source={source} | sub_file={sub_file}")
             caption = ''
             from threading import Thread
@@ -1090,6 +1102,7 @@ def download_sub(source,download_data,MySubFolder,language,filename):
             already_translated=False
             if machine_translate_subs(sub_file,trans_file) == 'DECLINED':
                 declined=True   # keep the original (English) sub untouched
+                general.ai_declined = True
         if not declined:
             sub_file=trans_file
 

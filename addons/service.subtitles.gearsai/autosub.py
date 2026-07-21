@@ -334,21 +334,73 @@ def add_embedded_sub_if_exists(video_data, f_result, embedded_language):
     return f_result
     
     
+def add_embedded_ai_sub_if_exists(video_data, f_result):
+    """MASTERKODI: offer "תרגום מובנה ← עברית (AI)" when the playing file has a
+    FOREIGN embedded subtitle stream. Clicking it translates that track (or an
+    external English sub re-timed onto its cue skeleton) to Hebrew -- perfectly
+    synced, because the embedded cues carry the video's own timeline. The row is
+    never auto-picked (see the source=embedded_ai guards in place_sub); only an
+    explicit click -- or a remembered previous click, behind its own consent
+    dialog -- runs it. Gate is free: Kodi's own stream list, no network."""
+    try:
+        if xbmcaddon.Addon().getSetting('embedded_ai_translate') == 'false':
+            return f_result
+        if not xbmc.Player().isPlaying():
+            return f_result
+        for items in f_result:
+            if 'EmbeddedAISub' in items[8]:
+                return f_result
+        subs = wait_for_video_and_return_subs_list()
+        # Kodi's stream list mixes EMBEDDED tracks (bare language codes like
+        # 'eng') with loaded EXTERNAL subs (full filenames, e.g. 'Toy Story 5
+        # ... (חיצוני)') -- seen live 2026-07-21. Only 2-3 letter alpha codes
+        # are embedded tracks; anything else must not summon the row.
+        foreign = [s for s in subs
+                   if s and 2 <= len(s) <= 3 and s.isalpha()
+                   and s.lower() not in ('heb', 'he', 'und')]
+        if not foreign:
+            return f_result
+
+        download_data = {'url': 'ai', 'file_name': 'ai',
+                         'langs': ','.join(dict.fromkeys(foreign))}
+        save_data = ('EmbeddedAISub' + video_data['imdb'] + str(video_data['season'])
+                     + str(video_data['episode']) + video_data['OriginalTitle']
+                     + video_data['Tagline'])
+        url = "plugin://%s/?action=download&download_data=%s&filename=%s&language=%s&source=%s" % (
+            MyScriptID, que(json.dumps(download_data)), que(que(que(save_data))),
+            'Hebrew', 'embedded_ai')
+        label2 = '[AI] תרגום מובנה בעברית'
+        # Insert after the Hebrew block (same placement rule as the embedded rows).
+        index = 0
+        for i, sub in enumerate(f_result):
+            if sub[0] == 'Hebrew':
+                index = i + 1
+        f_result.insert(index, ('Hebrew', '[COLOR gold]' + label2 + '[/COLOR]',
+                                '0', 'he', url, 100, 'true', 'false',
+                                que(save_data), '[AI]'))
+    except Exception as e:
+        log.warning(f'add_embedded_ai_sub_if_exists error: {e}')
+    return f_result
+
+
 def add_embedded_subs_to_subs_list(video_data, f_result):
 
     # For settings changes to take effect.
     Addon=xbmcaddon.Addon()
-        
+
     # Add Hebrew Embbeded Subtitles if exists
     search_language_hebrew_bool = (Addon.getSetting('language_hebrew') == 'true' or Addon.getSetting("all_lang") == 'true')
     if search_language_hebrew_bool:
         f_result=add_embedded_sub_if_exists(video_data, f_result, 'heb')
-        
+
     # Add English Embbeded Subtitles if exists
     search_language_english_bool = (Addon.getSetting('language_english') == 'true' or Addon.getSetting("all_lang") == 'true')
     if search_language_english_bool:
         f_result=add_embedded_sub_if_exists(video_data, f_result, 'eng')
-    
+
+    # MASTERKODI: AI translation of a foreign embedded track
+    f_result=add_embedded_ai_sub_if_exists(video_data, f_result)
+
     return f_result
         
 ####################################################################################
@@ -409,8 +461,11 @@ def place_sub(video_data,f_result,last_sub_name_in_cache,last_sub_language_in_ca
     # even when the image sub ranks higher by match% -- image subs ignore the Kodi
     # font, render blurry and are often mis-tagged. This ONLY changes which sub
     # auto-downloads; the results list shown to the user stays sorted by match%.
+    # MASTERKODI: never auto-pick the embedded-AI row -- it triggers a full AI
+    # translation, which must stay an explicit user choice (a REMEMBERED pick is
+    # honored below, and translate_embedded still asks consent on non-manual runs).
     for f_sub in f_result:
-        if not _is_image_result(f_sub):
+        if not _is_image_result(f_sub) and 'source=embedded_ai' not in str(f_sub[4]):
             selected_sub=f_sub
             break
     # When the pick is non-Hebrew (i.e. it's about to be AI-translated), prefer
@@ -472,8 +527,54 @@ def place_sub(video_data,f_result,last_sub_name_in_cache,last_sub_language_in_ca
                 
             sub_file=download_sub(source,download_data,MySubFolder,language,filename)
             log.warning('Auto Sub result:'+str(sub_file))
+
+            # MASTERKODI: the user DECLINED the AI translation -- if the file
+            # carries an embedded foreign track, show THAT (perfect sync, no
+            # cost) instead of placing a weak external. Only real embedded
+            # streams count (bare 2-3 letter codes; loaded externals appear in
+            # the same list as full filenames). English preferred.
+            try:
+                if getattr(general, 'ai_declined', False):
+                    _subs = wait_for_video_and_return_subs_list()
+                    _idx = get_embedded_sub_index(_subs, 'eng')
+                    if _idx is None:
+                        _idx = next((i for i, s in enumerate(_subs)
+                                     if s and 2 <= len(s) <= 3 and s.isalpha()
+                                     and s.lower() not in ('heb', 'he', 'und')), None)
+                    if _idx is not None:
+                        log.warning(f"place_sub | declined -> embedded stream {_idx} ({_subs[_idx]})")
+                        xbmc.Player().setSubtitleStream(_idx)
+                        xbmc.Player().showSubtitles(True)
+                        # Record the pick exactly like a manual embedded-row
+                        # click does -- otherwise the wand shows no [ נוכחית ]
+                        # marker (its 'current' comes from this DB record).
+                        try:
+                            if _subs[_idx] == 'eng':
+                                _sd = 'EnglishSubEmbedded'+video_data['imdb']+str(video_data['season'])+str(video_data['episode'])+video_data['OriginalTitle']+video_data['Tagline']
+                                save_file_name(que(_sd), "English", video_data, source='EnglishSubEmbedded')
+                        except Exception as _se:
+                            log.warning(f"place_sub | declined-embedded save failed: {_se}")
+                        if Addon.getSetting("enable_autosub_notifications")=='true':
+                            notify("התרגום בוטל - מוצגת הכתובית המובנית")
+                        general.ai_declined = False
+                        break
+            except Exception as _e:
+                log.warning(f"place_sub | declined-embedded switch failed: {_e}")
+
+            # MASTERKODI: a REMEMBERED embedded pick resolves to the sentinel
+            # 'EmbeddedSubSelected' (stream already selected inside
+            # download_sub). setSubtitles() on that string would silently load
+            # nothing and the loop would fall through to an external -- handle
+            # it like the manual paths do: save + done.
+            if sub_file == 'EmbeddedSubSelected':
+                save_file_name(params["filename"],language,video_data,source=source)
+                if Addon.getSetting("enable_autosub_notifications")=='true':
+                    notify("התרגום המובנה יופיע בעוד 10 שניות")
+                log.warning(f"place_sub | remembered embedded pick honored ({language})")
+                break
+
             xbmc.sleep(200)
-            xbmc.Player().setSubtitles(sub_file)        
+            xbmc.Player().setSubtitles(sub_file)
             save_file_name(params["filename"],language,video_data,source=source)
 
             f_count=0
@@ -505,7 +606,9 @@ def place_sub(video_data,f_result,last_sub_name_in_cache,last_sub_language_in_ca
                 
                 from resources.modules.engine import format_website_source_name
                 notify_website_name = format_website_source_name(source)
-                notify_language = f"{translate_sub_language_to_hebrew(language)} (תרגום מכונה)" if language != "Hebrew" and Addon.getSetting("auto_translate")=='true' else translate_sub_language_to_hebrew(language)
+                # MASTERKODI: no '(תרגום מכונה)' tag when the user declined the
+                # translation -- the sub being placed is the plain original.
+                notify_language = f"{translate_sub_language_to_hebrew(language)} (תרגום מכונה)" if language != "Hebrew" and Addon.getSetting("auto_translate")=='true' and not getattr(general, 'ai_declined', False) else translate_sub_language_to_hebrew(language)
                 notify_sync_percent = str(selected_sub[5])
             
                 notify( f"{notify_language} | {notify_sync_percent}% | {notify_website_name}" )
@@ -526,6 +629,11 @@ def place_sub(video_data,f_result,last_sub_name_in_cache,last_sub_language_in_ca
         except Exception as e:
             # Try the next subtitle in f_result.
             log.warning(f"DEBUG | place_sub | Number of try: {place_sub_count} | Exception in Sub: {str(e)}")
+            # MASTERKODI: the retry walk must not wander into the embedded-AI row
+            # either -- skip it and keep looking for a normal subtitle.
+            if 'source=embedded_ai' in str(f_sub[4]):
+                log.warning(f"DEBUG | place_sub | skipping embedded_ai row in retry walk")
+                continue
             log.warning(f"DEBUG | place_sub | Number of try: {place_sub_count} | Setting selected_sub to: {f_sub}")
             selected_sub=f_sub
             continue
@@ -687,7 +795,14 @@ def sub_from_main(arg):
         # never aborted.
         general.break_all=False
         log.warning(params["filename"])
-        sub_file=download_sub(source,download_data,MySubFolder,language,filename)
+        # MASTERKODI: a click in the KODI subtitle dialog is an explicit pick,
+        # exactly like a wand-window pick -- mark it so the AI paths (auto
+        # translate / embedded translate) skip their consent dialog.
+        general.ai_manual = True
+        try:
+            sub_file=download_sub(source,download_data,MySubFolder,language,filename)
+        finally:
+            general.ai_manual = False
         fault=False
         if sub_file=='EmbeddedSubSelected': # embedded subtitle
             notify( 'התרגום המובנה יופיע בעוד 10 שניות' )

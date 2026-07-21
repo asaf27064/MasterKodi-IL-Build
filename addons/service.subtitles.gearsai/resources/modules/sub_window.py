@@ -337,6 +337,31 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         except Exception:
             pass
         # stop-button visibility is XML-driven (Window(home) property)
+        # MASTERKODI: pack the footer buttons -- the XML gives each button a
+        # FIXED slot, so a hidden button (sync without an active Hebrew sub,
+        # stop outside a translation) left a hole between the others (Asaf,
+        # 2026-07-21). Re-assign the visible buttons to consecutive slots from
+        # the RIGHT, keeping the RTL order close > sync > style > stop; the
+        # stop button is pre-positioned too so it pops into the next free slot
+        # when its window-property condition turns it on mid-session. Slot
+        # coordinates come from the XML itself (both window styles differ), so
+        # this works for SubsWindow and SubsWindowCenter alike.
+        try:
+            btns = {cid: self.getControl(cid) for cid in (101, 105, 106, 107)}
+            # Capture the XML slot coordinates ONCE -- after a repack getX()
+            # returns the MOVED positions, and a refresh would stack buttons.
+            if not hasattr(self, '_footer_slots'):
+                self._footer_slots = sorted(
+                    ((b.getX(), b.getY()) for b in btns.values()),
+                    key=lambda p: -p[0])
+            # Visible buttons first (packed from the right), hidden ones parked
+            # on the remaining slots -- every button gets a slot, none overlap.
+            order = ([101] + ([105] if self._has_sync_row else []) + [107, 106]
+                     + ([] if self._has_sync_row else [105]))
+            for (x, y), cid in zip(self._footer_slots, order):
+                btns[cid].setPosition(x, y)
+        except Exception as e:
+            log.warning('footer pack failed: %s' % e)
         for line1, line2 in rows:
             items.append(xbmcgui.ListItem(label=line1, label2=line2))
         ctl.addItems(items)
@@ -396,6 +421,7 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
             except Exception:
                 pass
             self._set_status('מבטל תרגום…', 'orange')
+            log.warning('[gearsai-emb] STOP pressed by user (cancel flags set)')
             return
         if control_id != 100:
             return

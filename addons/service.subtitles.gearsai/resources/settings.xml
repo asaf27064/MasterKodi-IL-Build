@@ -60,6 +60,7 @@
 
 		<setting label="ניתן לכבות אם אתה נתקל הרבה בתרגום מובנה עם פיסוק הפוך:" type="lsep"/>
 		<setting id="auto_place_hebrew_embedded_subs" label="אפשר הורדה אוטומטית של תרגום מובנה בעברית (אם קיים)" type="bool" default="true" />
+		<setting id="embedded_ai_translate" label="הצג 'תרגום מובנה ← עברית (AI)' כשקיימת רצועת כתוביות מובנית בשפה זרה" type="bool" default="true" />
 		
 		<setting label="תיקון סימני פיסוק - עבור תרגום בעברית או תרגום מכונה (לא רלוונטי לתרגום מובנה!)" type="lsep"/>
 		<setting id="auto_fix_sub_punctuation" label="תקן סימני פיסוק אוטומטית" type="bool" default="true" />
