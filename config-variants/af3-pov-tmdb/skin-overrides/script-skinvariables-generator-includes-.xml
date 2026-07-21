@@ -1,0 +1,1361 @@
+<?xml version="1.0" ?>
+<includes>
+    <!-- Wall Widgets -->
+    <include name="skinvariables-homewidgets-wall">
+        <include content="Hub_Wall_Widget">
+            <param name="id">501</param>
+            <param name="content">plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=inprogress</param>
+            <param name="include">List_Landscape_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-cw000001)</param>
+        </include>
+        <include content="Hub_Wall_Widget">
+            <param name="id">502</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=trakt_trending&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Landscape_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-ac32a429)</param>
+        </include>
+        <include content="Hub_Wall_Widget">
+            <param name="id">503</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=now_playing&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Landscape_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-0954018f)</param>
+        </include>
+        <include content="Hub_Wall_Widget">
+            <param name="id">504</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=revenue_movies&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Landscape_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-10da678b)</param>
+        </include>
+        <include content="Hub_Wall_Widget">
+            <param name="id">505</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=trakt_mostviewers&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Landscape_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-3e057afc)</param>
+        </include>
+        <include content="Hub_Wall_Widget">
+            <param name="id">506</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Square_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-62e5febd)</param>
+        </include>
+        <animation effect="slide" start="0" end="0,260" time="400" tween="quadratic" reversible="false" condition="$EXP[Exp_Hubs_Spotlight_SlideDown]">Conditional</animation>
+        <animation effect="slide" end="0" start="0,260" time="400" tween="quadratic" reversible="false" condition="![$EXP[Exp_Hubs_Spotlight_SlideDown]]">Conditional</animation>
+    </include>
+    <!-- Combined Widgets Selector -->
+    <include name="skinvariables-homewidgets-wall-selector">
+        <item>
+            <label>המשך צפייה</label>
+            <property name="guid">guid-cw000001</property>
+            <property name="widget_id">$NUMBER[501]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=inprogress,return)</onclick>
+            <visible>!Integer.IsEqual(Container(501).NumItems,0) | Container(501).IsUpdating</visible>
+        </item>
+        <item>
+            <label>חם עכשיו</label>
+            <property name="guid">guid-ac32a429</property>
+            <property name="widget_id">$NUMBER[502]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=trakt_trending&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(502).NumItems,0) | Container(502).IsUpdating</visible>
+        </item>
+        <item>
+            <label>בקולנוע</label>
+            <property name="guid">guid-0954018f</property>
+            <property name="widget_id">$NUMBER[503]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=now_playing&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(503).NumItems,0) | Container(503).IsUpdating</visible>
+        </item>
+        <item>
+            <label>שוברי קופות</label>
+            <property name="guid">guid-10da678b</property>
+            <property name="widget_id">$NUMBER[504]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=revenue_movies&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(504).NumItems,0) | Container(504).IsUpdating</visible>
+        </item>
+        <item>
+            <label>הנצפים ביותר</label>
+            <property name="guid">guid-3e057afc</property>
+            <property name="widget_id">$NUMBER[505]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=trakt_mostviewers&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(505).NumItems,0) | Container(505).IsUpdating</visible>
+        </item>
+        <item>
+            <label>ז'אנרים</label>
+            <property name="guid">guid-62e5febd</property>
+            <property name="widget_id">$NUMBER[506]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(506).NumItems,0) | Container(506).IsUpdating</visible>
+        </item>
+    </include>
+    <!-- Combined Info -->
+    <include name="skinvariables-homewidgets-wall-info">
+        <include content="Hub_Wall_Info">
+            <param name="id">501</param>
+        </include>
+        <include content="Hub_Wall_Info">
+            <param name="id">502</param>
+        </include>
+        <include content="Hub_Wall_Info">
+            <param name="id">503</param>
+        </include>
+        <include content="Hub_Wall_Info">
+            <param name="id">504</param>
+        </include>
+        <include content="Hub_Wall_Info">
+            <param name="id">505</param>
+        </include>
+        <include content="Hub_Wall_Info">
+            <param name="id">506</param>
+        </include>
+    </include>
+    <!-- Wall Widgets -->
+    <include name="skinvariables-homewidgets-combined">
+        <include content="Hub_Combined_Widget">
+            <param name="id">501</param>
+            <param name="content">plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=inprogress</param>
+            <param name="include">List_Card_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-cw000001)</param>
+        </include>
+        <include content="Hub_Combined_Widget">
+            <param name="id">502</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=trakt_trending&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Card_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-ac32a429)</param>
+        </include>
+        <include content="Hub_Combined_Widget">
+            <param name="id">503</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=now_playing&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Card_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-0954018f)</param>
+        </include>
+        <include content="Hub_Combined_Widget">
+            <param name="id">504</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=revenue_movies&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Card_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-10da678b)</param>
+        </include>
+        <include content="Hub_Combined_Widget">
+            <param name="id">505</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=trakt_mostviewers&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Card_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-3e057afc)</param>
+        </include>
+        <include content="Hub_Combined_Widget">
+            <param name="id">506</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Square_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-62e5febd)</param>
+        </include>
+    </include>
+    <!-- Wall Widgets Selector -->
+    <include name="skinvariables-homewidgets-combined-selector">
+        <item>
+            <label>המשך צפייה</label>
+            <property name="guid">guid-cw000001</property>
+            <property name="widget_id">$NUMBER[501]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=inprogress,return)</onclick>
+            <visible>!Integer.IsEqual(Container(501).NumItems,0) | Container(501).IsUpdating</visible>
+        </item>
+        <item>
+            <label>חם עכשיו</label>
+            <property name="guid">guid-ac32a429</property>
+            <property name="widget_id">$NUMBER[502]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=trakt_trending&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(502).NumItems,0) | Container(502).IsUpdating</visible>
+        </item>
+        <item>
+            <label>בקולנוע</label>
+            <property name="guid">guid-0954018f</property>
+            <property name="widget_id">$NUMBER[503]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=now_playing&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(503).NumItems,0) | Container(503).IsUpdating</visible>
+        </item>
+        <item>
+            <label>שוברי קופות</label>
+            <property name="guid">guid-10da678b</property>
+            <property name="widget_id">$NUMBER[504]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=revenue_movies&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(504).NumItems,0) | Container(504).IsUpdating</visible>
+        </item>
+        <item>
+            <label>הנצפים ביותר</label>
+            <property name="guid">guid-3e057afc</property>
+            <property name="widget_id">$NUMBER[505]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=trakt_mostviewers&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(505).NumItems,0) | Container(505).IsUpdating</visible>
+        </item>
+        <item>
+            <label>ז'אנרים</label>
+            <property name="guid">guid-62e5febd</property>
+            <property name="widget_id">$NUMBER[506]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(506).NumItems,0) | Container(506).IsUpdating</visible>
+        </item>
+    </include>
+    <!-- Combined Info -->
+    <include name="skinvariables-homewidgets-combined-info">
+        <include content="Hub_Combined_Info">
+            <param name="id">501</param>
+        </include>
+        <include content="Hub_Combined_Info">
+            <param name="id">502</param>
+        </include>
+        <include content="Hub_Combined_Info">
+            <param name="id">503</param>
+        </include>
+        <include content="Hub_Combined_Info">
+            <param name="id">504</param>
+        </include>
+        <include content="Hub_Combined_Info">
+            <param name="id">505</param>
+        </include>
+        <include content="Hub_Combined_Info">
+            <param name="id">506</param>
+        </include>
+    </include>
+    <!-- Standard Widgets -->
+    <include name="skinvariables-homewidgets-standard">
+        <include content="Hub_Widgets_Grouplist">
+            <include content="Widget_Row">
+                <param name="id">501</param>
+                <param name="groupid">701</param>
+                <param name="label">המשך צפייה</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Card_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">501</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=inprogress</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(501) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+            <include content="Widget_Row">
+                <param name="id">502</param>
+                <param name="groupid">702</param>
+                <param name="label">חם עכשיו</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Card_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">502</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.themoviedb.helper/?info=trakt_trending&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(502) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+            <include content="Widget_Row">
+                <param name="id">503</param>
+                <param name="groupid">703</param>
+                <param name="label">בקולנוע</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Card_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">503</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.themoviedb.helper/?info=now_playing&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(503) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+            <include content="Widget_Row">
+                <param name="id">504</param>
+                <param name="groupid">704</param>
+                <param name="label">שוברי קופות</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Card_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">504</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.themoviedb.helper/?info=revenue_movies&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(504) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+            <include content="Widget_Row">
+                <param name="id">505</param>
+                <param name="groupid">705</param>
+                <param name="label">הנצפים ביותר</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Card_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">505</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.themoviedb.helper/?info=trakt_mostviewers&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(505) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+            <include content="Widget_Row">
+                <param name="id">506</param>
+                <param name="groupid">706</param>
+                <param name="label">ז'אנרים</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Square_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">506</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=movie&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(506) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+        </include>
+    </include>
+    <!-- Wall Widgets -->
+    <include name="skinvariables-1101widgets-wall">
+        <include content="Hub_Wall_Widget">
+            <param name="id">501</param>
+            <param name="content">plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=inprogress</param>
+            <param name="include">List_Landscape_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-cw000002)</param>
+        </include>
+        <include content="Hub_Wall_Widget">
+            <param name="id">502</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=trakt_trending&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Landscape_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-59620028)</param>
+        </include>
+        <include content="Hub_Wall_Widget">
+            <param name="id">503</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=dir_custom_node&amp;filename=SELECTED%20NETWORKS.json&amp;plugin_category=SELECTED%20NETWORKS</param>
+            <param name="include">List_Square_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-c70ce9e9)</param>
+        </include>
+        <include content="Hub_Wall_Widget">
+            <param name="id">504</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=airing_today&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Landscape_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-adc61fcf)</param>
+        </include>
+        <include content="Hub_Wall_Widget">
+            <param name="id">505</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=on_the_air&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Landscape_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-2779e3e5)</param>
+        </include>
+        <include content="Hub_Wall_Widget">
+            <param name="id">506</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Square_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-26bcc095)</param>
+        </include>
+        <animation effect="slide" start="0" end="0,260" time="400" tween="quadratic" reversible="false" condition="$EXP[Exp_Hubs_Spotlight_SlideDown]">Conditional</animation>
+        <animation effect="slide" end="0" start="0,260" time="400" tween="quadratic" reversible="false" condition="![$EXP[Exp_Hubs_Spotlight_SlideDown]]">Conditional</animation>
+    </include>
+    <!-- Combined Widgets Selector -->
+    <include name="skinvariables-1101widgets-wall-selector">
+        <item>
+            <label>המשך צפייה</label>
+            <property name="guid">guid-cw000002</property>
+            <property name="widget_id">$NUMBER[501]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=inprogress,return)</onclick>
+            <visible>!Integer.IsEqual(Container(501).NumItems,0) | Container(501).IsUpdating</visible>
+        </item>
+        <item>
+            <label>חם עכשיו</label>
+            <property name="guid">guid-59620028</property>
+            <property name="widget_id">$NUMBER[502]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=trakt_trending&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(502).NumItems,0) | Container(502).IsUpdating</visible>
+        </item>
+        <item>
+            <label>רשתות סטרימינג</label>
+            <property name="guid">guid-c70ce9e9</property>
+            <property name="widget_id">$NUMBER[503]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=dir_custom_node&amp;filename=SELECTED%20NETWORKS.json&amp;plugin_category=SELECTED%20NETWORKS,return)</onclick>
+            <visible>!Integer.IsEqual(Container(503).NumItems,0) | Container(503).IsUpdating</visible>
+        </item>
+        <item>
+            <label>שידור בכורה</label>
+            <property name="guid">guid-adc61fcf</property>
+            <property name="widget_id">$NUMBER[504]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=airing_today&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(504).NumItems,0) | Container(504).IsUpdating</visible>
+        </item>
+        <item>
+            <label>בקרוב</label>
+            <property name="guid">guid-2779e3e5</property>
+            <property name="widget_id">$NUMBER[505]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=on_the_air&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(505).NumItems,0) | Container(505).IsUpdating</visible>
+        </item>
+        <item>
+            <label>ז'אנרים</label>
+            <property name="guid">guid-26bcc095</property>
+            <property name="widget_id">$NUMBER[506]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(506).NumItems,0) | Container(506).IsUpdating</visible>
+        </item>
+    </include>
+    <!-- Combined Info -->
+    <include name="skinvariables-1101widgets-wall-info">
+        <include content="Hub_Wall_Info">
+            <param name="id">501</param>
+        </include>
+        <include content="Hub_Wall_Info">
+            <param name="id">502</param>
+        </include>
+        <include content="Hub_Wall_Info">
+            <param name="id">503</param>
+        </include>
+        <include content="Hub_Wall_Info">
+            <param name="id">504</param>
+        </include>
+        <include content="Hub_Wall_Info">
+            <param name="id">505</param>
+        </include>
+        <include content="Hub_Wall_Info">
+            <param name="id">506</param>
+        </include>
+    </include>
+    <!-- Wall Widgets -->
+    <include name="skinvariables-1101widgets-combined">
+        <include content="Hub_Combined_Widget">
+            <param name="id">501</param>
+            <param name="content">plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=inprogress</param>
+            <param name="include">List_Card_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-cw000002)</param>
+        </include>
+        <include content="Hub_Combined_Widget">
+            <param name="id">502</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=trakt_trending&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Card_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-59620028)</param>
+        </include>
+        <include content="Hub_Combined_Widget">
+            <param name="id">503</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=dir_custom_node&amp;filename=SELECTED%20NETWORKS.json&amp;plugin_category=SELECTED%20NETWORKS</param>
+            <param name="include">List_Square_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-c70ce9e9)</param>
+        </include>
+        <include content="Hub_Combined_Widget">
+            <param name="id">504</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=airing_today&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Card_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-adc61fcf)</param>
+        </include>
+        <include content="Hub_Combined_Widget">
+            <param name="id">505</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=on_the_air&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Card_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-2779e3e5)</param>
+        </include>
+        <include content="Hub_Combined_Widget">
+            <param name="id">506</param>
+            <param name="content">plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</param>
+            <param name="include">List_Square_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-26bcc095)</param>
+        </include>
+    </include>
+    <!-- Wall Widgets Selector -->
+    <include name="skinvariables-1101widgets-combined-selector">
+        <item>
+            <label>המשך צפייה</label>
+            <property name="guid">guid-cw000002</property>
+            <property name="widget_id">$NUMBER[501]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=inprogress,return)</onclick>
+            <visible>!Integer.IsEqual(Container(501).NumItems,0) | Container(501).IsUpdating</visible>
+        </item>
+        <item>
+            <label>חם עכשיו</label>
+            <property name="guid">guid-59620028</property>
+            <property name="widget_id">$NUMBER[502]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=trakt_trending&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(502).NumItems,0) | Container(502).IsUpdating</visible>
+        </item>
+        <item>
+            <label>רשתות סטרימינג</label>
+            <property name="guid">guid-c70ce9e9</property>
+            <property name="widget_id">$NUMBER[503]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=dir_custom_node&amp;filename=SELECTED%20NETWORKS.json&amp;plugin_category=SELECTED%20NETWORKS,return)</onclick>
+            <visible>!Integer.IsEqual(Container(503).NumItems,0) | Container(503).IsUpdating</visible>
+        </item>
+        <item>
+            <label>שידור בכורה</label>
+            <property name="guid">guid-adc61fcf</property>
+            <property name="widget_id">$NUMBER[504]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=airing_today&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(504).NumItems,0) | Container(504).IsUpdating</visible>
+        </item>
+        <item>
+            <label>בקרוב</label>
+            <property name="guid">guid-2779e3e5</property>
+            <property name="widget_id">$NUMBER[505]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=on_the_air&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(505).NumItems,0) | Container(505).IsUpdating</visible>
+        </item>
+        <item>
+            <label>ז'אנרים</label>
+            <property name="guid">guid-26bcc095</property>
+            <property name="widget_id">$NUMBER[506]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true,return)</onclick>
+            <visible>!Integer.IsEqual(Container(506).NumItems,0) | Container(506).IsUpdating</visible>
+        </item>
+    </include>
+    <!-- Combined Info -->
+    <include name="skinvariables-1101widgets-combined-info">
+        <include content="Hub_Combined_Info">
+            <param name="id">501</param>
+        </include>
+        <include content="Hub_Combined_Info">
+            <param name="id">502</param>
+        </include>
+        <include content="Hub_Combined_Info">
+            <param name="id">503</param>
+        </include>
+        <include content="Hub_Combined_Info">
+            <param name="id">504</param>
+        </include>
+        <include content="Hub_Combined_Info">
+            <param name="id">505</param>
+        </include>
+        <include content="Hub_Combined_Info">
+            <param name="id">506</param>
+        </include>
+    </include>
+    <!-- Standard Widgets -->
+    <include name="skinvariables-1101widgets-standard">
+        <include content="Hub_Widgets_Grouplist">
+            <include content="Widget_Row">
+                <param name="id">501</param>
+                <param name="groupid">701</param>
+                <param name="label">המשך צפייה</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Card_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">501</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=inprogress</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(501) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+            <include content="Widget_Row">
+                <param name="id">502</param>
+                <param name="groupid">702</param>
+                <param name="label">חם עכשיו</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Card_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">502</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.themoviedb.helper/?info=trakt_trending&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(502) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+            <include content="Widget_Row">
+                <param name="id">503</param>
+                <param name="groupid">703</param>
+                <param name="label">רשתות סטרימינג</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Square_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">503</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.themoviedb.helper/?info=dir_custom_node&amp;filename=SELECTED%20NETWORKS.json&amp;plugin_category=SELECTED%20NETWORKS</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(503) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+            <include content="Widget_Row">
+                <param name="id">504</param>
+                <param name="groupid">704</param>
+                <param name="label">שידור בכורה</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Card_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">504</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.themoviedb.helper/?info=airing_today&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(504) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+            <include content="Widget_Row">
+                <param name="id">505</param>
+                <param name="groupid">705</param>
+                <param name="label">בקרוב</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Card_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">505</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.themoviedb.helper/?info=on_the_air&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(505) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+            <include content="Widget_Row">
+                <param name="id">506</param>
+                <param name="groupid">706</param>
+                <param name="label">ז'אנרים</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Square_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">506</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(506) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+        </include>
+    </include>
+    <!-- Wall Widgets -->
+    <include name="skinvariables-1102widgets-wall">
+        <include content="Hub_Wall_Widget">
+            <param name="id">501</param>
+            <param name="content">plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&amp;shortcut_folder=True&amp;name=Connect+Services</param>
+            <param name="include">List_Square_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-torbox001)</param>
+        </include>
+        <animation effect="slide" start="0" end="0,260" time="400" tween="quadratic" reversible="false" condition="$EXP[Exp_Hubs_Spotlight_SlideDown]">Conditional</animation>
+        <animation effect="slide" end="0" start="0,260" time="400" tween="quadratic" reversible="false" condition="![$EXP[Exp_Hubs_Spotlight_SlideDown]]">Conditional</animation>
+    </include>
+    <!-- Combined Widgets Selector -->
+    <include name="skinvariables-1102widgets-wall-selector">
+        <item>
+            <label>שירותי TorBox</label>
+            <property name="guid">guid-torbox001</property>
+            <property name="widget_id">$NUMBER[501]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&amp;shortcut_folder=True&amp;name=Connect+Services,return)</onclick>
+            <visible>!Integer.IsEqual(Container(501).NumItems,0) | Container(501).IsUpdating</visible>
+        </item>
+    </include>
+    <!-- Combined Info -->
+    <include name="skinvariables-1102widgets-wall-info">
+        <include content="Hub_Wall_Info">
+            <param name="id">501</param>
+        </include>
+    </include>
+    <!-- Wall Widgets -->
+    <include name="skinvariables-1102widgets-combined">
+        <include content="Hub_Combined_Widget">
+            <param name="id">501</param>
+            <param name="content">plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&amp;shortcut_folder=True&amp;name=Connect+Services</param>
+            <param name="include">List_Square_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-torbox001)</param>
+        </include>
+    </include>
+    <!-- Wall Widgets Selector -->
+    <include name="skinvariables-1102widgets-combined-selector">
+        <item>
+            <label>שירותי TorBox</label>
+            <property name="guid">guid-torbox001</property>
+            <property name="widget_id">$NUMBER[501]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&amp;shortcut_folder=True&amp;name=Connect+Services,return)</onclick>
+            <visible>!Integer.IsEqual(Container(501).NumItems,0) | Container(501).IsUpdating</visible>
+        </item>
+    </include>
+    <!-- Combined Info -->
+    <include name="skinvariables-1102widgets-combined-info">
+        <include content="Hub_Combined_Info">
+            <param name="id">501</param>
+        </include>
+    </include>
+    <!-- Standard Widgets -->
+    <include name="skinvariables-1102widgets-standard">
+        <include content="Hub_Widgets_Grouplist">
+            <include content="Widget_Row">
+                <param name="id">501</param>
+                <param name="groupid">701</param>
+                <param name="label">שירותי TorBox</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Square_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">501</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&amp;shortcut_folder=True&amp;name=Connect+Services</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(501) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+        </include>
+    </include>
+    <!-- Wall Widgets -->
+    <include name="skinvariables-1103widgets-wall">
+        <include content="Hub_Wall_Widget">
+            <param name="id">501</param>
+            <param name="content">plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder</param>
+            <param name="include">List_Square_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-mk-af3-maint)</param>
+        </include>
+        <animation effect="slide" start="0" end="0,260" time="400" tween="quadratic" reversible="false" condition="$EXP[Exp_Hubs_Spotlight_SlideDown]">Conditional</animation>
+        <animation effect="slide" end="0" start="0,260" time="400" tween="quadratic" reversible="false" condition="![$EXP[Exp_Hubs_Spotlight_SlideDown]]">Conditional</animation>
+    </include>
+    <!-- Combined Widgets Selector -->
+    <include name="skinvariables-1103widgets-wall-selector">
+        <item>
+            <label>תחזוקה</label>
+            <property name="guid">guid-mk-af3-maint</property>
+            <property name="widget_id">$NUMBER[501]</property>
+            <property name="show_overlay">true</property>
+            <property name="hide_overlay"/>
+            <onclick>ActivateWindow(videos,plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder,return)</onclick>
+            <visible>!Integer.IsEqual(Container(501).NumItems,0) | Container(501).IsUpdating</visible>
+        </item>
+    </include>
+    <!-- Combined Info -->
+    <include name="skinvariables-1103widgets-wall-info">
+        <include content="Hub_Wall_Info">
+            <param name="id">501</param>
+        </include>
+    </include>
+    <!-- Wall Widgets -->
+    <include name="skinvariables-1103widgets-combined">
+        <include content="Hub_Combined_Widget">
+            <param name="id">501</param>
+            <param name="content">plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder</param>
+            <param name="include">List_Square_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="autoscroll">False</param>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-mk-af3-maint)</param>
+        </include>
+    </include>
+    <!-- Wall Widgets Selector -->
+    <include name="skinvariables-1103widgets-combined-selector">
+        <item>
+            <label>תחזוקה</label>
+            <property name="guid">guid-mk-af3-maint</property>
+            <property name="widget_id">$NUMBER[501]</property>
+            <property name="show_overlay"/>
+            <property name="hide_overlay">true</property>
+            <onclick>ActivateWindow(videos,plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder,return)</onclick>
+            <visible>!Integer.IsEqual(Container(501).NumItems,0) | Container(501).IsUpdating</visible>
+        </item>
+    </include>
+    <!-- Combined Info -->
+    <include name="skinvariables-1103widgets-combined-info">
+        <include content="Hub_Combined_Info">
+            <param name="id">501</param>
+        </include>
+    </include>
+    <!-- Standard Widgets -->
+    <include name="skinvariables-1103widgets-standard">
+        <include content="Hub_Widgets_Grouplist">
+            <include content="Widget_Row">
+                <param name="id">501</param>
+                <param name="groupid">701</param>
+                <param name="label">תחזוקה</param>
+                <param name="usewidgetlabel">False</param>
+                <param name="include">List_Square_Row</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <param name="detailed">False</param>
+                <param name="visible">[True] + [True]</param>
+                <param name="altvisible">False</param>
+                <param name="busy_isupdating">True</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetfade_disable">false</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">501</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(501) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+        </include>
+    </include>
+    <!-- Wall Widgets -->
+    <include name="skinvariables-1104widgets-wall">
+        <animation effect="slide" start="0" end="0,260" time="400" tween="quadratic" reversible="false" condition="$EXP[Exp_Hubs_Spotlight_SlideDown]">Conditional</animation>
+        <animation effect="slide" end="0" start="0,260" time="400" tween="quadratic" reversible="false" condition="![$EXP[Exp_Hubs_Spotlight_SlideDown]]">Conditional</animation>
+    </include>
+    <!-- Combined Widgets Selector -->
+    <include name="skinvariables-1104widgets-wall-selector">
+</include>
+    <!-- Combined Info -->
+    <include name="skinvariables-1104widgets-wall-info">
+</include>
+    <!-- Wall Widgets -->
+    <include name="skinvariables-1104widgets-combined">
+</include>
+    <!-- Wall Widgets Selector -->
+    <include name="skinvariables-1104widgets-combined-selector">
+</include>
+    <!-- Combined Info -->
+    <include name="skinvariables-1104widgets-combined-info">
+</include>
+    <!-- Standard Widgets -->
+    <include name="skinvariables-1104widgets-standard">
+        <include content="Hub_Widgets_Grouplist">
+</include>
+    </include>
+    <!-- Static Submenu Menu -->
+    <include name="skinvariables-homesubmenu-staticitems">
+</include>
+    <!-- Static Submenu Menu -->
+    <include name="skinvariables-1101submenu-staticitems">
+</include>
+    <!-- Static Submenu Menu -->
+    <include name="skinvariables-1102submenu-staticitems">
+</include>
+    <!-- Static Submenu Menu -->
+    <include name="skinvariables-1103submenu-staticitems">
+</include>
+    <!-- Static Submenu Menu -->
+    <include name="skinvariables-1104submenu-staticitems">
+</include>
+    <!-- Static Power Main Menu -->
+    <include name="skinvariables-powermenu-staticitems">
+        <item>
+            <label>טען סקין מחדש</label>
+            <icon>special://skin/extras/icons/rotate.png</icon>
+            <property name="path">ReloadSkin</property>
+            <property name="menu">powermenu</property>
+            <property name="mode"/>
+            <property name="node"/>
+            <property name="item">$NUMBER[0]</property>
+            <property name="guid">guid-75a00b71</property>
+            <property name="target"/>
+            <property name="fanart"/>
+            <onclick>Close</onclick>
+            <onclick>ReloadSkin</onclick>
+            <visible>True</visible>
+        </item>
+        <item>
+            <label>החלפת סקין</label>
+            <icon>special://skin/extras/icons/skinsettings.png</icon>
+            <property name="path">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</property>
+            <property name="menu">powermenu</property>
+            <property name="mode"/>
+            <property name="node"/>
+            <property name="item">$NUMBER[1]</property>
+            <property name="guid">guid-mk-skinswitch</property>
+            <property name="target"/>
+            <property name="fanart"/>
+            <onclick>Close</onclick>
+            <onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</onclick>
+            <visible>True</visible>
+        </item>
+        <item>
+            <label>ניקוי קאש POV</label>
+            <icon>special://skin/extras/icons/broom.png</icon>
+            <property name="path">RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)</property>
+            <property name="menu">powermenu</property>
+            <property name="mode"/>
+            <property name="node"/>
+            <property name="item">$NUMBER[2]</property>
+            <property name="guid">guid-mk-gearscache</property>
+            <property name="target"/>
+            <property name="fanart"/>
+            <onclick>Close</onclick>
+            <onclick>RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)</onclick>
+            <visible>True</visible>
+        </item>
+        <item>
+            <label>ניקוי קאש Gears AI</label>
+            <icon>special://skin/extras/icons/eraser.png</icon>
+            <property name="path">RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</property>
+            <property name="menu">powermenu</property>
+            <property name="mode"/>
+            <property name="node"/>
+            <property name="item">$NUMBER[3]</property>
+            <property name="guid">guid-mk-gearsaicache</property>
+            <property name="target"/>
+            <property name="fanart"/>
+            <onclick>Close</onclick>
+            <onclick>RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</onclick>
+            <visible>True</visible>
+        </item>
+        <item>
+            <label>שלח לוגים לתמיכה</label>
+            <icon>special://skin/extras/icons/info.png</icon>
+            <property name="path">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)</property>
+            <property name="menu">powermenu</property>
+            <property name="mode"/>
+            <property name="node"/>
+            <property name="item">$NUMBER[4]</property>
+            <property name="guid">guid-mk-sendlogs</property>
+            <property name="target"/>
+            <property name="fanart"/>
+            <onclick>Close</onclick>
+            <onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)</onclick>
+            <visible>True</visible>
+        </item>
+        <item>
+            <label>$LOCALIZE[1036]</label>
+            <icon>special://skin/extras/icons/favourites2.png</icon>
+            <property name="path">ActivateWindow(1160)</property>
+            <property name="menu">powermenu</property>
+            <property name="mode"/>
+            <property name="node"/>
+            <property name="item">$NUMBER[5]</property>
+            <property name="guid">guid-9c93481b</property>
+            <property name="target"/>
+            <property name="fanart"/>
+            <onclick>Close</onclick>
+            <onclick>ActivateWindow(1160)</onclick>
+            <visible>True</visible>
+        </item>
+        <item>
+            <label>$LOCALIZE[13009]</label>
+            <icon>special://skin/extras/icons/power.png</icon>
+            <property name="path">RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</property>
+            <property name="menu">powermenu</property>
+            <property name="mode"/>
+            <property name="node"/>
+            <property name="item">$NUMBER[6]</property>
+            <property name="guid">guid-b214139d</property>
+            <property name="target"/>
+            <property name="fanart"/>
+            <onclick>Close</onclick>
+            <onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</onclick>
+            <visible>True</visible>
+        </item>
+    </include>
+    <!-- Options Tray Items -->
+    <include name="skinvariables-powertray-staticitems">
+</include>
+    <!-- Options Onload Tray Check -->
+    <include name="skinvariables-powertray-onload">
+</include>
+    <!-- Search Extended -->
+    <include name="skinvariables-searchwidgets-combined">
+        <include content="Hub_Combined_Widget">
+            <param name="id">502</param>
+            <param name="content">$VAR[Path_SearchTerm,plugin://plugin.video.pov/?mode=build_movie_list&amp;action=tmdb_movies_search&amp;query=,]</param>
+            <param name="include">List_Poster_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-5eb7a3e0)</param>
+            <param name="allowhiddenfocus">true</param>
+        </include>
+        <include content="Hub_Combined_Widget">
+            <param name="id">503</param>
+            <param name="content">$VAR[Path_SearchTerm,plugin://plugin.video.pov/?mode=build_tvshow_list&amp;action=tmdb_tv_search&amp;query=,]</param>
+            <param name="include">List_Poster_Row</param>
+            <param name="target">videos</param>
+            <param name="sortby"/>
+            <param name="sortorder">ascending</param>
+            <param name="limit"/>
+            <param name="visible">String.IsEqual(Container(601).ListItem.Property(guid),guid-644b1a13)</param>
+            <param name="allowhiddenfocus">true</param>
+        </include>
+    </include>
+    <!-- Search Widgets -->
+    <include name="skinvariables-searchwidgets-standard">
+        <include content="Hub_Widgets_Grouplist">
+            <include content="Widget_Row">
+                <param name="id">502</param>
+                <param name="groupid">702</param>
+                <param name="label">סרטים</param>
+                <param name="include">List_Poster_Row</param>
+                <param name="visible">[String.IsEqual(Container(601).ListItem.Property(guid),guid-5eb7a3e0) | String.IsEmpty(Container(601).ListItem.Property(guid)) | Skin.HasSetting(Search.DisableCombined)]</param>
+                <param name="altvisible">[!String.IsEmpty(Control.GetLabel(3000).index(1)) + [Control.HasFocus(3000) | Control.HasFocus(301)] + System.IdleTime(1) + !System.IdleTime(2)]</param>
+                <param name="busy_isupdating">[!String.IsEmpty(Control.GetLabel(3000).index(1)) + [Control.HasFocus(3000) | Control.HasFocus(301)] + System.IdleTime(1) + !System.IdleTime(2)]</param>
+                <param name="busy_visible">[Integer.IsEqual(Container(502).NumItems,0) | Container(502).IsUpdating]</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">502</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">$VAR[Path_SearchTerm,plugin://plugin.video.pov/?mode=build_movie_list&amp;action=tmdb_movies_search&amp;query=,]</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(502) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+            <include content="Widget_Row">
+                <param name="id">503</param>
+                <param name="groupid">703</param>
+                <param name="label">סדרות</param>
+                <param name="include">List_Poster_Row</param>
+                <param name="visible">[String.IsEqual(Container(601).ListItem.Property(guid),guid-644b1a13) | String.IsEmpty(Container(601).ListItem.Property(guid)) | Skin.HasSetting(Search.DisableCombined)]</param>
+                <param name="altvisible">[!String.IsEmpty(Control.GetLabel(3000).index(1)) + [Control.HasFocus(3000) | Control.HasFocus(301)] + System.IdleTime(1) + !System.IdleTime(2)]</param>
+                <param name="busy_isupdating">[!String.IsEmpty(Control.GetLabel(3000).index(1)) + [Control.HasFocus(3000) | Control.HasFocus(301)] + System.IdleTime(1) + !System.IdleTime(2)]</param>
+                <param name="busy_visible">[Integer.IsEqual(Container(503).NumItems,0) | Container(503).IsUpdating]</param>
+                <param name="widgetfade_include">true</param>
+                <param name="widgetconstants_affix">_detailed</param>
+                <param name="grouplistid">602</param>
+                <param name="refocus">SetFocus(302)</param>
+                <onfocus>ClearProperty(HomeSwitcher.IsVisible,Home)</onfocus>
+                <onfocus>ClearProperty(InfoPanel.FullSwitch,Home)</onfocus>
+                <description/>
+                <include content="Widget_NoResults">
+                    <param name="id">503</param>
+                </include>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">$VAR[Path_SearchTerm,plugin://plugin.video.pov/?mode=build_tvshow_list&amp;action=tmdb_tv_search&amp;query=,]</content>
+                <include content="Defs_AutoScroll" condition="False">
+                    <param name="condition">[!Control.HasFocus(503) | System.IdleTime(3)]</param>
+                </include>
+            </include>
+        </include>
+    </include>
+    <!-- Search Selector -->
+    <include name="skinvariables-searchwidgets-selector">
+        <item>
+            <label>סרטים</label>
+            <icon>special://skin/extras/icons/film.png</icon>
+            <property name="guid">guid-5eb7a3e0</property>
+            <property name="widget_id">$NUMBER[502]</property>
+            <property name="show_artwork">true</property>
+            <property name="widget_numitems">$INFO[Container(502).NumItems]</property>
+            <visible>!Integer.IsEqual(Container(502).NumItems,0)</visible>
+            <visible>!String.IsEmpty(Control.GetLabel(3000).index(1))</visible>
+        </item>
+        <item>
+            <label>סדרות</label>
+            <icon>special://skin/extras/icons/tv.png</icon>
+            <property name="guid">guid-644b1a13</property>
+            <property name="widget_id">$NUMBER[503]</property>
+            <property name="show_artwork">true</property>
+            <property name="widget_numitems">$INFO[Container(503).NumItems]</property>
+            <visible>!Integer.IsEqual(Container(503).NumItems,0)</visible>
+            <visible>!String.IsEmpty(Control.GetLabel(3000).index(1))</visible>
+        </item>
+    </include>
+    <!-- Search Extended -->
+    <include name="skinvariables-searchwidgets-info">
+        <include content="Hub_Combined_Info">
+            <param name="id">502</param>
+        </include>
+        <include content="Hub_Combined_Info">
+            <param name="id">503</param>
+        </include>
+    </include>
+</includes>

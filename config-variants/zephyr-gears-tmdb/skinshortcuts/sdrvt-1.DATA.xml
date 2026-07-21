@@ -13,7 +13,7 @@
 		<label2>פריטים מותאמים אישית</label2>
 		<icon>DefaultShortcut.png</icon>
 		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/trending.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=trending_week&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=trakt_trending&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />

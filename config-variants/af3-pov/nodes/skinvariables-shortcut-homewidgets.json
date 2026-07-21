@@ -1,6 +1,6 @@
 [
     {
-        "label": "\u05d4\u05de\u05e9\u05da \u05e6\u05e4\u05d9\u05d9\u05d4",
+        "label": "המשך צפייה",
         "path": "plugin://plugin.video.pov/?name=Continue Watching&mode=build_movie_list&action=in_progress_movies&random_support=true&iconImage=inprogress",
         "icon": "inprogress",
         "target": "videos",
@@ -8,7 +8,7 @@
         "widget_style": "Card"
     },
     {
-        "label": "\u05d7\u05dd \u05e2\u05db\u05e9\u05d9\u05d5",
+        "label": "חם עכשיו",
         "path": "plugin://plugin.video.pov/?name=Trending&mode=build_movie_list&action=trakt_movies_trending&random_support=true&iconImage=trending",
         "icon": "trending",
         "target": "videos",
@@ -16,7 +16,7 @@
         "widget_style": "Card"
     },
     {
-        "label": "\u05d1\u05e7\u05d5\u05dc\u05e0\u05d5\u05e2",
+        "label": "בקולנוע",
         "path": "plugin://plugin.video.pov/?name=In+Theaters&mode=build_movie_list&action=tmdb_movies_premieres&random_support=true&iconImage=intheatres",
         "icon": "intheatres",
         "target": "videos",
@@ -24,7 +24,7 @@
         "widget_style": "Card"
     },
     {
-        "label": "\u05e9\u05d5\u05d1\u05e8\u05d9 \u05e7\u05d5\u05e4\u05d5\u05ea",
+        "label": "שוברי קופות",
         "path": "plugin://plugin.video.pov/?name=Blockbusters&mode=build_movie_list&action=tmdb_movies_blockbusters&random_support=true&iconImage=most_voted",
         "icon": "most_voted",
         "target": "videos",
@@ -32,7 +32,7 @@
         "widget_style": "Card"
     },
     {
-        "label": "\u05d6\u05d5\u05db\u05d9 \u05d0\u05d5\u05e1\u05e7\u05e8",
+        "label": "הנצפים ביותר",
         "path": "plugin://plugin.video.pov/?name=Most+Watched&mode=build_movie_list&action=trakt_movies_most_watched&random_support=true&iconImage=oscar_winners",
         "icon": "oscar_winners",
         "target": "videos",
@@ -40,7 +40,7 @@
         "widget_style": "Card"
     },
     {
-        "label": "\u05d6'\u05d0\u05e0\u05e8\u05d9\u05dd",
+        "label": "ז'אנרים",
         "path": "plugin://plugin.video.pov/?name=Genres&mode=navigator.genres&menu_type=movie&random_support=true&iconImage=genres",
         "icon": "genres",
         "target": "videos",

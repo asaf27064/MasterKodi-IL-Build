@@ -7,8 +7,8 @@ zephyr-pov-tmdb).
 
 ## Contents
 - nodes/  -- AF3 skinvariables nodes, content widgets -> TMDbHelper:
-  trending->trending_week, in_theaters/premieres->now_playing,
-  blockbusters->revenue_movies, most_watched->trakt_mostwatched,
+  trending->trakt_trending, in_theaters/premieres->now_playing,
+  blockbusters->revenue_movies, most_watched->trakt_mostviewers,
   genres->info=genres, tv premieres->airing_today, upcoming->upcoming,
   SELECTED NETWORKS->info=dir_custom_node. KEPT on POV: Continue Watching
   (no TMDbHelper local resume), search, Connect Services, power cache.
