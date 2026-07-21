@@ -977,9 +977,17 @@ class BuildManager:
             except:
                 pass
             
-            # Step 1: Download base build
+            # Step 1: Download base build. POV chosen -> download the CLEAN POV
+            # base bundle (POV closure, no Gears/scrapers), NOT the Gears bundle.
+            # The POV bundle URL is the pov_url from build.txt, else derived from
+            # the Gears url (FenLight_Estuary.zip -> POV_Estuary.zip), same
+            # base-builds release CI uploads it to.
+            base_url = build_info['url']
+            if content_choice == 'pov':
+                base_url = (build_info.get('pov_url')
+                            or base_url.replace('FenLight_Estuary.zip', 'POV_Estuary.zip'))
             progress.update(0, f"[COLOR yellow]מוריד בילד {build_name}...[/COLOR]")
-            success = self.download_file(build_info['url'], zip_path, progress, f"[COLOR yellow]מוריד בילד {build_name}...[/COLOR]")
+            success = self.download_file(base_url, zip_path, progress, f"[COLOR yellow]מוריד בילד {build_name}...[/COLOR]")
             
             if not success or not os.path.exists(zip_path) or os.path.getsize(zip_path) == 0:
                 progress.close()
@@ -2026,6 +2034,18 @@ def _skin_switch_flow():
     ADDON.setSetting('installed_skin', name)
     # activate the new skin's stack, neutralize the other skins' stacks
     manager.sync_skin_stacks(sid)
+
+    # If the build is on POV, re-apply the POV config for the NEW skin (parity
+    # with the Gears config re-apply on skin switch). content_source persists
+    # the choice; install_apply uses the explicit skin id + no reload (the
+    # restart below applies it). Fail-open -> skin still switches on Gears config.
+    try:
+        import xbmcaddon as _xa
+        if _xa.Addon().getSetting('content_source') == 'pov':
+            from resources.libs import content_source
+            content_source.install_apply(sid, 'pov')
+    except Exception as e:
+        log(f"POV re-apply on skin switch failed: {e}", xbmc.LOGWARNING)
 
     # ask what to do with the previous optional skin (never touch Estuary).
     # Removal is DEFERRED to the next startup: the old skin is still the running

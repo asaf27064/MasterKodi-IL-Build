@@ -78,6 +78,41 @@
         "resource.images.moviecountryicons.maps",
         "resource.images.weathericons.white"
       ]
+    },
+    "POV_Estuary.zip": {
+      "fresh": [
+        "metadata.common.fanart.tv",
+        "metadata.themoviedb.org.python",
+        "metadata.tvshows.themoviedb.org.python",
+        "plugin.program.autocompletion",
+        "plugin.program.masterkodi.il.wizard",
+        "plugin.video.pov",
+        "plugin.video.themoviedb.helper",
+        "repository.chainsrepo",
+        "repository.dendygh",
+        "repository.jurialmunkey",
+        "repository.kodifitzwell",
+        "repository.masterkodi.il",
+        "repository.peno64",
+        "resource.language.he_il",
+        "script.common.plugin.cache",
+        "script.module.autocompletion",
+        "script.module.beautifulsoup4",
+        "script.module.certifi",
+        "script.module.chardet",
+        "script.module.idna",
+        "script.module.pysubs2",
+        "script.module.requests",
+        "script.module.soupsieve",
+        "script.module.urllib3",
+        "service.masterkodi.skipintro",
+        "service.subtitles.all_subs_plus",
+        "service.subtitles.gearsai",
+        "service.subtitles.localsubtitle",
+        "service.xbmc.versioncheck",
+        "skin.estuary"
+      ],
+      "state_seed": true
     }
   }
 }
