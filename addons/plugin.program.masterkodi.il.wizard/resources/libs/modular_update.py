@@ -1279,6 +1279,39 @@ def _apply_policy(zf, policy, home, fresh):
                     _defer['skin_settings'] = True
             except Exception as e:
                 log('skin-visual defer detect failed: %s' % e, xbmc.LOGWARNING)
+    # --- directory delivery: ship a whole tree (e.g. media/genre_icons, the
+    # zephyr skinshortcuts set) that would be impractical as per-file entries.
+    # Each dir entry: {src_dir, dest_dir, fresh, update}. 'replace' overwrites
+    # every file; 'seed_if_absent' only writes files not already present. A
+    # Kodi-version gate (kodi_min/max) applies as for files. ---
+    for entry in policy.get('dirs', []):
+        srcd = (entry.get('src_dir') or '').rstrip('/')
+        destd = (entry.get('dest_dir') or '').rstrip('/')
+        dmode = entry.get(mode_key, 'replace')
+        if not srcd or not destd or dmode in (None, '', 'skip'):
+            continue
+        kmin, kmax = entry.get('kodi_min'), entry.get('kodi_max')
+        if KODI_MAJOR and ((kmin and KODI_MAJOR < int(kmin)) or (kmax and KODI_MAJOR > int(kmax))):
+            continue
+        prefix = srcd + '/'
+        wrote = 0
+        for name in zf.namelist():
+            if not name.startswith(prefix) or name.endswith('/'):
+                continue
+            rel = name[len(prefix):]
+            dest = os.path.join(home, destd.replace('/', os.sep), rel.replace('/', os.sep))
+            if dmode == 'seed_if_absent' and os.path.exists(dest):
+                continue
+            try:
+                os.makedirs(os.path.dirname(dest), exist_ok=True)
+                with open(dest, 'wb') as fh:
+                    fh.write(zf.read(name))
+                wrote += 1
+            except Exception:
+                pass
+        if wrote:
+            applied.append('%s/ -> %s/ (%d files, %s)' % (srcd, destd, wrote, dmode))
+
     if (not fresh) and (_defer['viewtypes'] or _defer['skin_settings']):
         try:
             _write_text(os.path.join(ADDON_DATA, 'pending_view_rebuild'),

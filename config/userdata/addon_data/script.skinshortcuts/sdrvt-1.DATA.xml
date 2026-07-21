@@ -2,49 +2,49 @@
 	<shortcut>
 		<defaultID />
 		<label>המשך צפייה</label>
-		<label2>הרחבת וידאו</label2>
+		<label2>פריטים מותאמים אישית</label2>
 		<icon>DefaultShortcut.png</icon>
 		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/player.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=In+Progress&amp;mode=build_tvshow_list&amp;action=in_progress_tvshows&amp;iconImage=in_progress_tvshow",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />
 		<label>חם עכשיו</label>
-		<label2>הרחבת וידאו</label2>
+		<label2>פריטים מותאמים אישית</label2>
 		<icon>DefaultShortcut.png</icon>
 		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/trending.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=trakt_trending&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />
 		<label>רשתות סטרימינג</label>
-		<label2>הרחבת וידאו</label2>
+		<label2>פריטים מותאמים אישית</label2>
 		<icon>DefaultShortcut.png</icon>
 		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/folder.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=SELECTED+NETWROKS&amp;iconImage=folder",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=dir_custom_node&amp;filename=SELECTED%20NETWORKS.json&amp;plugin_category=SELECTED%20NETWORKS&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />
 		<label>שידור בכורה</label>
-		<label2>הרחבת וידאו</label2>
+		<label2>פריטים מותאמים אישית</label2>
 		<icon>DefaultShortcut.png</icon>
 		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/fresh.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Premieres&amp;mode=build_tvshow_list&amp;action=tmdb_tv_premieres&amp;random_support=true&amp;iconImage=fresh",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=airing_today&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />
 		<label>בקרוב</label>
-		<label2>הרחבת וידאו</label2>
+		<label2>פריטים מותאמים אישית</label2>
 		<icon>DefaultShortcut.png</icon>
 		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/lists.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Up+Coming&amp;mode=build_tvshow_list&amp;action=tmdb_tv_upcoming&amp;random_support=true&amp;iconImage=lists",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=upcoming&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />
 		<label>ז'אנרים</label>
-		<label2>הרחבת וידאו</label2>
+		<label2>פריטים מותאמים אישית</label2>
 		<icon>DefaultShortcut.png</icon>
 		<thumb>special://home/addons/plugin.video.gears/resources/media/icons/genres.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
 		</shortcut>
 	</shortcuts>
