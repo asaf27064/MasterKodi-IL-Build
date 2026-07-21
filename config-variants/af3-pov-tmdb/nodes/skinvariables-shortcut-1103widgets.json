@@ -1,0 +1,10 @@
+[
+    {
+        "label": "תחזוקה",
+        "path": "plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",
+        "icon": "special://skin/extras/icons/arrows-rotate.png",
+        "target": "videos",
+        "guid": "guid-mk-af3-maint",
+        "widget_style": "Square"
+    }
+]

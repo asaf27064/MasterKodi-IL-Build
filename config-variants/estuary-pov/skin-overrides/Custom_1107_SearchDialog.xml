@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window type="dialog" id="1107">
+	<defaultcontrol always="true">9000</defaultcontrol>
+	<include>Animation_DialogPopupOpenClose</include>
+	<controls>
+		<control type="group">
+			<centerleft>50%</centerleft>
+			<width>600</width>
+			<centertop>60%</centertop>
+			<height>700</height>
+			<include content="DialogBackgroundCommons">
+				<param name="width" value="600" />
+				<param name="height" value="80" />
+				<param name="header_label" value="$LOCALIZE[137]" />
+				<param name="header_id" value="" />
+			</include>
+			<control type="panel" id="9000">
+				<include>ButtonMenuList</include>
+				<content>
+					<!-- Gears Movie Search -->
+					<item>
+						<label>[COLOR gold][B]חיפוש סרטים (Gears)[/B][/COLOR]</label>
+						<onclick>Dialog.Close(all)</onclick>
+						<onclick condition="System.AddonIsEnabled(plugin.video.pov)">ActivateWindow(Videos,plugin://plugin.video.pov/?mode=search_history&amp;action=movie&amp;name=Search%20Movies)</onclick>
+						<onclick condition="!System.HasAddon(plugin.video.pov)">Notification(Gears,Gears לא מותקן!,3000)</onclick>
+					</item>
+					<!-- Gears TV Search - Goes to search history with NEW SEARCH -->
+					<item>
+						<label>[COLOR gold][B]חיפוש סדרות (Gears)[/B][/COLOR]</label>
+						<onclick>Dialog.Close(all)</onclick>
+						<onclick condition="System.AddonIsEnabled(plugin.video.pov)">ActivateWindow(Videos,plugin://plugin.video.pov/?mode=search_history&amp;action=tvshow&amp;name=Search%20TV%20Shows)</onclick>
+						<onclick condition="!System.HasAddon(plugin.video.pov)">Notification(Gears,Gears לא מותקן!,3000)</onclick>
+					</item>
+					<!-- Separator -->
+					<item>
+						<label>[COLOR gray]—————————————————[/COLOR]</label>
+						<onclick>SetProperty(mk.separator.noop,1,home)</onclick>
+					</item>
+					<!-- Global Search -->
+					<item>
+						<label>$LOCALIZE[31113]</label>
+						<onclick>Dialog.Close(all)</onclick>
+						<onclick condition="System.AddonIsEnabled(script.globalsearch)">RunScript(script.globalsearch)</onclick>
+						<onclick condition="System.HasAddon(script.globalsearch) + !System.AddonIsEnabled(script.globalsearch)">EnableAddon(script.globalsearch)</onclick>
+						<onclick condition="!System.HasAddon(script.globalsearch)">InstallAddon(script.globalsearch)</onclick>
+					</item>
+					<!-- Addon Search -->
+					<item>
+						<label>$LOCALIZE[31145]</label>
+						<onclick>Dialog.Close(all)</onclick>
+						<onclick>ActivateWindow(addonbrowser,addons://search/,return)</onclick>
+					</item>
+					<!-- YouTube Search -->
+					<item>
+						<label>$LOCALIZE[31114]</label>
+						<onclick>Dialog.Close(all)</onclick>
+						<onclick condition="System.AddonIsEnabled(plugin.video.youtube)">ActivateWindow(videos,"plugin://plugin.video.youtube/kodion/search/list/",return)</onclick>
+						<onclick condition="System.HasAddon(plugin.video.youtube) + !System.AddonIsEnabled(plugin.video.youtube)">EnableAddon(plugin.video.youtube)</onclick>
+						<onclick condition="!System.HasAddon(plugin.video.youtube)">InstallAddon(plugin.video.youtube)</onclick>
+					</item>
+				</content>
+			</control>
+		</control>
+	</controls>
+</window>

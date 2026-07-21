@@ -1,0 +1,95 @@
+{
+ "SELECTED NETWORKS": [
+  {
+   "mode": "build_tvshow_list",
+   "action": "tmdb_tv_networks",
+   "network_id": "213",
+   "name": "Netflix",
+   "iconImage": "special://home/addons/plugin.video.pov/resources/media/network_icons/jI5c3bw.png"
+  },
+  {
+   "mode": "build_tvshow_list",
+   "action": "tmdb_tv_networks",
+   "network_id": "1024",
+   "name": "Amazon",
+   "iconImage": "special://home/addons/plugin.video.pov/resources/media/network_icons/ru9DDlL.png"
+  },
+  {
+   "mode": "build_tvshow_list",
+   "action": "tmdb_tv_networks",
+   "network_id": "2552",
+   "name": "Apple TV +",
+   "iconImage": "special://home/addons/plugin.video.pov/resources/media/network_icons/fAQMVNp.png"
+  },
+  {
+   "mode": "build_tvshow_list",
+   "action": "tmdb_tv_networks",
+   "network_id": "2739",
+   "name": "Disney+",
+   "iconImage": "special://home/addons/plugin.video.pov/resources/media/network_icons/DVrPgbM.png"
+  },
+  {
+   "mode": "build_tvshow_list",
+   "action": "tmdb_tv_networks",
+   "network_id": "49",
+   "name": "HBO",
+   "iconImage": "special://home/addons/plugin.video.pov/resources/media/network_icons/Hyu8ZGq.png"
+  },
+  {
+   "mode": "build_tvshow_list",
+   "action": "tmdb_tv_networks",
+   "network_id": "3186",
+   "name": "HBO Max",
+   "iconImage": "special://home/addons/plugin.video.pov/resources/media/network_icons/mmRMG75.png"
+  },
+  {
+   "mode": "build_tvshow_list",
+   "action": "tmdb_tv_networks",
+   "network_id": "453",
+   "name": "Hulu",
+   "iconImage": "special://home/addons/plugin.video.pov/resources/media/network_icons/uSD2Cdw.png"
+  },
+  {
+   "mode": "build_tvshow_list",
+   "action": "tmdb_tv_networks",
+   "network_id": "4330",
+   "name": "Paramount+",
+   "iconImage": "special://home/addons/plugin.video.pov/resources/media/network_icons/dmUjWmU.png"
+  },
+  {
+   "mode": "build_tvshow_list",
+   "action": "tmdb_tv_networks",
+   "network_id": "19",
+   "name": "FOX",
+   "iconImage": "special://home/addons/plugin.video.pov/resources/media/network_icons/6vc0Iov.png"
+  },
+  {
+   "mode": "build_tvshow_list",
+   "action": "tmdb_tv_networks",
+   "network_id": "71",
+   "name": "The CW",
+   "iconImage": "special://home/addons/plugin.video.pov/resources/media/network_icons/Q8tooeM.png"
+  },
+  {
+   "mode": "build_tvshow_list",
+   "action": "tmdb_tv_networks",
+   "network_id": "2",
+   "name": "ABC",
+   "iconImage": "special://home/addons/plugin.video.pov/resources/media/network_icons/qePLxos.png"
+  }
+ ],
+ "Connect Services": [
+  {
+   "mode": "myservices",
+   "name": "חיבור שירותים",
+   "iconImage": "mk_tb_connect.png",
+   "isFolder": "false"
+  },
+  {
+   "mode": "torbox.show_account_info",
+   "name": "פרטי חשבון TorBox",
+   "iconImage": "mk_torbox.png",
+   "isFolder": "false"
+  }
+ ]
+}

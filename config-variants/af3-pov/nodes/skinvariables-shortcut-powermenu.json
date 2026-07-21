@@ -1,0 +1,51 @@
+[
+ {
+  "label": "טען סקין מחדש",
+  "path": "ReloadSkin",
+  "icon": "special://skin/extras/icons/rotate.png",
+  "target": "",
+  "guid": "guid-75a00b71"
+ },
+ {
+  "label": "החלפת סקין",
+  "path": "RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)",
+  "icon": "special://skin/extras/icons/skinsettings.png",
+  "target": "",
+  "guid": "guid-mk-skinswitch"
+ },
+ {
+  "label": "ניקוי קאש POV",
+  "path": "RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)",
+  "icon": "special://skin/extras/icons/broom.png",
+  "target": "",
+  "guid": "guid-mk-gearscache"
+ },
+ {
+  "label": "ניקוי קאש Gears AI",
+  "path": "RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)",
+  "icon": "special://skin/extras/icons/eraser.png",
+  "target": "",
+  "guid": "guid-mk-gearsaicache"
+ },
+ {
+  "label": "שלח לוגים לתמיכה",
+  "path": "RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)",
+  "icon": "special://skin/extras/icons/info.png",
+  "target": "",
+  "guid": "guid-mk-sendlogs"
+ },
+ {
+  "icon": "special://skin/extras/icons/favourites2.png",
+  "label": "$LOCALIZE[1036]",
+  "path": "ActivateWindow(1160)",
+  "target": "",
+  "guid": "guid-9c93481b"
+ },
+ {
+  "icon": "special://skin/extras/icons/power.png",
+  "label": "$LOCALIZE[13009]",
+  "path": "RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)",
+  "target": "",
+  "guid": "guid-b214139d"
+ }
+]

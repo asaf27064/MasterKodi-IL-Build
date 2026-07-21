@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window>
+	<defaultcontrol>9000</defaultcontrol>
+	<include>Animation_DialogPopupOpenClose</include>
+	<controls>
+		<control type="group">
+			<centerleft>50%</centerleft>
+			<width>600</width>
+			<centertop>50%</centertop>
+			<height>700</height>
+			<include content="DialogBackgroundCommons">
+				<param name="width" value="600" />
+				<param name="height" value="80" />
+				<param name="header_label" value="$LOCALIZE[31072]" />
+				<param name="header_id" value="2" />
+			</include>
+			<control type="panel" id="9000">
+				<include>ButtonMenuList</include>
+				<content>
+					<!-- MasterKodi power-menu actions -->
+					<item>
+						<label>החלפת סקין</label>
+						<onclick>Dialog.Close(shutdownmenu)</onclick>
+						<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</onclick>
+					</item>
+					<item>
+						<label>ניקוי קאש POV</label>
+						<onclick>Dialog.Close(shutdownmenu)</onclick>
+						<onclick>RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)</onclick>
+					</item>
+					<item>
+						<label>ניקוי קאש Gears AI</label>
+						<onclick>Dialog.Close(shutdownmenu)</onclick>
+						<onclick>RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</onclick>
+					</item>
+					<item>
+						<label>שלח לוגים לתמיכה</label>
+						<onclick>Dialog.Close(shutdownmenu)</onclick>
+						<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)</onclick>
+					</item>
+					<item>
+						<label>$LOCALIZE[13012]</label>
+						<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</onclick>
+						<visible>System.ShowExitButton</visible>
+					</item>
+					<item>
+						<label>$LOCALIZE[13016]</label>
+						<onclick>Powerdown()</onclick>
+						<visible>System.CanPowerDown</visible>
+					</item>
+					<item>
+						<label>$LOCALIZE[20150]</label>
+						<onclick>AlarmClock(shutdowntimer,Shutdown())</onclick>
+						<visible>!System.HasAlarm(shutdowntimer)</visible>
+						<visible>System.CanPowerDown | System.CanSuspend | System.CanHibernate</visible>
+					</item>
+					<item>
+						<label>$LOCALIZE[20151] $INFO[System.AlarmPos,(,)]</label>
+						<onclick>CancelAlarm(shutdowntimer)</onclick>
+						<visible>System.HasAlarm(shutdowntimer)</visible>
+					</item>
+					<item>
+						<label>$LOCALIZE[13011]</label>
+						<onclick>Dialog.Close(shutdownmenu)</onclick>
+						<onclick>Suspend()</onclick>
+						<visible>System.CanSuspend</visible>
+					</item>
+					<item>
+						<label>$LOCALIZE[13010]</label>
+						<onclick>Dialog.Close(shutdownmenu)</onclick>
+						<onclick>Hibernate()</onclick>
+						<visible>System.CanHibernate</visible>
+					</item>
+					<item>
+						<label>$LOCALIZE[13013]</label>
+						<onclick>Reset()</onclick>
+						<visible>System.CanReboot</visible>
+					</item>
+					<item>
+						<label>$LOCALIZE[20126] $INFO[system.profilename]</label>
+						<onclick>dialog.close(all,true)</onclick>
+						<onclick>System.LogOff</onclick>
+						<visible>System.HasLoginScreen | Integer.IsGreater(System.ProfileCount,1)</visible>
+						<visible>System.Loggedon</visible>
+					</item>
+					<item>
+						<label>$VAR[MasterModeLabel]</label>
+						<onclick>mastermode</onclick>
+						<visible>System.HasLocks</visible>
+					</item>
+					<item>
+						<label>$LOCALIZE[13017]</label>
+						<onclick>InhibitIdleShutdown(true)</onclick>
+						<visible>System.HasShutdown +!System.IdleShutdownInhibited</visible>
+					</item>
+					<item>
+						<label>$LOCALIZE[13018]</label>
+						<onclick>InhibitIdleShutdown(false)</onclick>
+						<visible>System.HasShutdown + System.IdleShutdownInhibited</visible>
+					</item>
+				</content>
+			</control>
+		</control>
+	</controls>
+</window>

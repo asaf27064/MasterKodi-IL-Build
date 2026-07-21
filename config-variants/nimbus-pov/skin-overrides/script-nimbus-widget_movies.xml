@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<includes>
+  <include name="MovieWidgets">
+
+    <include content="WidgetListLandscape">
+      <param name="content_path" value="plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=inprogress"/>
+      <param name="widget_header" value="המשך צפייה"/>
+      <param name="widget_target" value="videos"/>
+      <param name="list_id" value="19011"/>
+    </include>
+
+    <include content="WidgetListPoster">
+      <param name="content_path" value="plugin://plugin.video.pov/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending"/>
+      <param name="widget_header" value="חם עכשיו"/>
+      <param name="widget_target" value="videos"/>
+      <param name="list_id" value="19012"/>
+    </include>
+
+    <include content="WidgetListPoster">
+      <param name="content_path" value="plugin://plugin.video.pov/?name=Popular&amp;mode=build_movie_list&amp;action=tmdb_movies_popular&amp;random_support=true&amp;iconImage=popular"/>
+      <param name="widget_header" value="פופולרי"/>
+      <param name="widget_target" value="videos"/>
+      <param name="list_id" value="19013"/>
+    </include>
+
+    <include content="WidgetListPoster">
+      <param name="content_path" value="plugin://plugin.video.pov/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres"/>
+      <param name="widget_header" value="ז'אנרים"/>
+      <param name="widget_target" value="videos"/>
+      <param name="list_id" value="19014"/>
+    </include>
+
+  </include>
+</includes>

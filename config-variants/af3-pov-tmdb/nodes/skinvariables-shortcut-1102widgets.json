@@ -1,0 +1,10 @@
+[
+    {
+        "label": "שירותי TorBox",
+        "path": "plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&shortcut_folder=True&name=Connect+Services",
+        "icon": "cloud-arrow-down",
+        "target": "videos",
+        "guid": "guid-torbox001",
+        "widget_style": "Square"
+    }
+]

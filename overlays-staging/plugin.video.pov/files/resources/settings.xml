@@ -359,7 +359,9 @@
 		<setting id="hebrew_subtitles.match_opensubtitles" label="Search OpenSubtitles" type="bool" default="true" visible="eq(-6,true)" subsetting="true" />
 		<setting id="hebrew_subtitles.ktuvit_email" label="Ktuvit Email" type="text" default="" visible="eq(-7,true)" subsetting="true" />
 		<setting id="hebrew_subtitles.ktuvit_password" label="Ktuvit Password" type="text" option="hidden" default="" visible="eq(-8,true)" subsetting="true" />
-		<setting id="hebrew_subtitles.opensubtitles_apikey" label="OpenSubtitles API Key" type="text" default="" visible="eq(-9,true)" subsetting="true" />
+			<setting id="kodirdil.extra_ratings" label="הצג דירוגים IMDb/RT/MC בפריטים" type="bool" default="true" />
+		<setting id="kodirdil.omdb_api_key" label="OMDb API Key" type="text" default="8e4dcdac" visible="eq(-1,true)" subsetting="true" />
+	<setting id="hebrew_subtitles.opensubtitles_apikey" label="OpenSubtitles API Key" type="text" default="" visible="eq(-9,true)" subsetting="true" />
 	</category>
 </settings>
 

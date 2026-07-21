@@ -1,0 +1,107 @@
+[
+ [
+  "tvshow.main_menu",
+  "plugin://plugin.video.pov/?name=TV+Shows&mode=navigator.main&action=TVShowList&iconImage=tv",
+  "סדרות",
+  "",
+  ""
+ ],
+ [
+  "movie.main_menu",
+  "plugin://plugin.video.pov/?name=Movies&mode=navigator.main&action=MovieList&iconImage=movies",
+  "סרטים",
+  "",
+  ""
+ ],
+ [
+  "movie.widget.1",
+  "plugin://plugin.video.pov/?name=Continue Watching&mode=build_movie_list&action=in_progress_movies&random_support=true&iconImage=inprogress",
+  "המשך צפייה",
+  "WidgetListLandscape",
+  "המשך צפייה | Landscape"
+ ],
+ [
+  "movie.widget.2",
+  "plugin://plugin.video.pov/?name=Trending&mode=build_movie_list&action=trakt_movies_trending&random_support=true&iconImage=trending",
+  "חם עכשיו",
+  "WidgetListPoster",
+  "חם עכשיו | Poster"
+ ],
+ [
+  "movie.widget.3",
+  "plugin://plugin.video.pov/?name=Popular&mode=build_movie_list&action=tmdb_movies_popular&random_support=true&iconImage=popular",
+  "פופולרי",
+  "WidgetListPoster",
+  "פופולרי | Poster"
+ ],
+ [
+  "movie.widget.4",
+  "plugin://plugin.video.pov/?name=Genres&mode=navigator.genres&menu_type=movie&random_support=true&iconImage=genres",
+  "ז'אנרים",
+  "WidgetListPoster",
+  "ז'אנרים | Poster"
+ ],
+ [
+  "tvshow.widget.1",
+  "plugin://plugin.video.pov/?name=Continue Watching&mode=build_in_progress_episode&random_support=true&iconImage=inprogress",
+  "המשך צפייה",
+  "WidgetListLandscape",
+  "המשך צפייה | Landscape"
+ ],
+ [
+  "tvshow.widget.2",
+  "plugin://plugin.video.pov/?name=Trending&mode=build_tvshow_list&action=trakt_tv_trending&random_support=true&iconImage=trending",
+  "חם עכשיו",
+  "WidgetListPoster",
+  "חם עכשיו | Poster"
+ ],
+ [
+  "tvshow.widget.3",
+  "plugin://plugin.video.pov/?name=Popular&mode=build_tvshow_list&action=tmdb_tv_popular&random_support=true&iconImage=popular",
+  "פופולרי",
+  "WidgetListPoster",
+  "פופולרי | Poster"
+ ],
+ [
+  "tvshow.widget.4",
+  "plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&shortcut_folder=True&name=SELECTED+NETWORKS",
+  "רשתות סטרימינג",
+  "WidgetListCategory",
+  "רשתות סטרימינג | Square"
+ ],
+ [
+  "custom1.widget.1",
+  "plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&shortcut_folder=True&name=Connect+Services",
+  "שירותי TorBox",
+  "WidgetListCategory",
+  "שירותי TorBox | Square"
+ ],
+ [
+  "custom1.main_menu",
+  "plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&shortcut_folder=True&name=Connect+Services",
+  "חיבור שירותים",
+  "",
+  ""
+ ],
+ [
+  "custom2.main_menu",
+  "plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",
+  "תחזוקה",
+  "",
+  ""
+ ],
+ [
+  "custom2.widget.1",
+  "plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",
+  "תחזוקה",
+  "WidgetListCategory",
+  "תחזוקה | Square"
+ ],
+ [
+  "tvshow.widget.5",
+  "plugin://plugin.video.pov/?name=Genres&mode=navigator.genres&menu_type=tvshow&random_support=true&iconImage=genres",
+  "ז'אנרים",
+  "WidgetListPoster",
+  "ז'אנרים | Poster"
+ ]
+]
