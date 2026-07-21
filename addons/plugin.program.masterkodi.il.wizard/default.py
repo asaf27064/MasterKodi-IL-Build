@@ -151,6 +151,8 @@ def main_menu():
         handlers.append(build_menu)
         items.append(menu_item('סקינים', 'החלפה / התקנה / הסרה של סקין', 'DefaultAddonSkin.png'))
         handlers.append(open_skins_menu)
+        items.append(menu_item('מקור תוכן (Gears / POV)', 'החלף בין Gears ל-POV לתפריטים והוידג\'טים של הסקין', 'DefaultAddonVideo.png'))
+        handlers.append(content_source_menu)
         items.append(menu_item('סטטוס הבילד', 'מה מותקן וגרסאות | מהמאניפסט', 'DefaultAddonInfoProvider.png'))
         handlers.append(build_status_menu)
         items.append(menu_item('כתוביות AI (Gemini)', format_status(gearsai_status), 'DefaultAddonSubtitles.png'))
@@ -249,6 +251,15 @@ def open_skins_menu():
     try:
         from resources.libs.builds import skins_menu
         skins_menu()
+    except Exception as e:
+        xbmcgui.Dialog().ok(ADDON_NAME, f"{color('שגיאה:', COLOR_ERROR)}\n{e}")
+
+
+def content_source_menu():
+    """Switch the current skin's menus/widgets/search between Gears and POV."""
+    try:
+        from resources.libs import content_source
+        content_source.menu()
     except Exception as e:
         xbmcgui.Dialog().ok(ADDON_NAME, f"{color('שגיאה:', COLOR_ERROR)}\n{e}")
 

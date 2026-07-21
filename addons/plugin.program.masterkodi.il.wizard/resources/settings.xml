@@ -18,5 +18,6 @@
     </category>
     <category label="פנימי (מוסתר)">
         <setting id="skip_update_check" type="text" label="Skip next update check" default="false" visible="false" />
+        <setting id="content_source" type="text" label="Content source (gears/pov)" default="gears" visible="false" />
     </category>
 </settings>
