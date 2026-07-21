@@ -5,7 +5,7 @@
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "manifest_schema": 1,
-  "config_version": 46,
+  "config_version": 47,
   "piers": {
     "release_tag": "addons-piers",
     "manifest": "manifest-piers.json",

@@ -1102,7 +1102,18 @@ def _config_version_changed(manifest, state):
     return state.get('__config__') != ('config:%s' % cfg.get('version'))
 
 
-def _maybe_apply_config(manifest, state, force=False):
+def _content_source():
+    """'pov' or 'gears' (default). The content source chosen at install/switch,
+    stored on the wizard addon. The config engine skips Gears-specific entries
+    when POV is active, so POV and Gears never share config -- on install AND on
+    every routine update thereafter."""
+    try:
+        return ADDON.getSetting('content_source') or 'gears'
+    except Exception:
+        return 'gears'
+
+
+def _maybe_apply_config(manifest, state, force=False, content=None):
     """Apply the shipped build-config using config_policy.json (if present).
 
     Instead of blindly extracting the whole config zip over userdata/ (which
@@ -1157,7 +1168,8 @@ def _maybe_apply_config(manifest, state, force=False):
                 except Exception as e:
                     log('bad config_policy.json: %s' % e, xbmc.LOGWARNING)
             if policy:
-                _apply_policy(z, policy, home, fresh)
+                _apply_policy(z, policy, home, fresh,
+                              content=content if content is not None else _content_source())
             else:
                 z.extractall(home)   # no policy -> legacy behaviour
                 log('applied config %s (no policy, full extract)' % cfg['version'])
@@ -1179,14 +1191,23 @@ def _maybe_apply_config(manifest, state, force=False):
         return False
 
 
-def _apply_policy(zf, policy, home, fresh):
+def _apply_policy(zf, policy, home, fresh, content='gears'):
     import tempfile, shutil
     mode_key = 'fresh' if fresh else 'update'
     applied = []
+    skipped_content = 0
     _defer = {'viewtypes': False, 'skin_settings': False}
     for entry in policy.get('files', []):
         src = entry.get('src'); dest_rel = entry.get('dest')
         if not src or not dest_rel:
+            continue
+        # content gate: an entry tagged for a specific content source ('gears')
+        # is skipped under any other ('pov'), so a POV box never receives Gears
+        # menus/favourites/players/nodes. Untagged entries are neutral (skin
+        # defaults, icons, tmdbhelper settings) and always apply.
+        ec = entry.get('content')
+        if ec and ec != content:
+            skipped_content += 1
             continue
         mode = entry.get(mode_key, 'replace')
         if mode in (None, '', 'skip'):
@@ -1285,6 +1306,10 @@ def _apply_policy(zf, policy, home, fresh):
     # every file; 'seed_if_absent' only writes files not already present. A
     # Kodi-version gate (kodi_min/max) applies as for files. ---
     for entry in policy.get('dirs', []):
+        ec = entry.get('content')
+        if ec and ec != content:
+            skipped_content += 1
+            continue
         srcd = (entry.get('src_dir') or '').rstrip('/')
         destd = (entry.get('dest_dir') or '').rstrip('/')
         dmode = entry.get(mode_key, 'replace')
@@ -1323,8 +1348,10 @@ def _apply_policy(zf, policy, home, fresh):
                 ','.join(k for k, v in _defer.items() if v))
         except Exception as e:
             log('could not arm view-rebuild marker: %s' % e, xbmc.LOGWARNING)
-    # Gears settings.db enforcement (our extension)
-    gs = policy.get('gears_settings')
+    # Gears settings.db + navigator.db enforcement (our extension). These write
+    # ONLY into plugin.video.gears' own state, so they are inherently Gears-only
+    # -- never run them for a POV box (the addon isn't even installed there).
+    gs = policy.get('gears_settings') if content == 'gears' else None
     if gs:
         _enforce_gears_settings(home, gs, set(policy.get('gears_settings_exclude', [])))
         # the enforced values can change the scraper SELECTION (magneto default)
@@ -1334,7 +1361,7 @@ def _apply_policy(zf, policy, home, fresh):
         except Exception:
             pass
     # Gears navigator.db shortcut-folder enforcement (delete/replace debrid folders)
-    gsc = policy.get('gears_shortcuts')
+    gsc = policy.get('gears_shortcuts') if content == 'gears' else None
     if gsc:
         _enforce_gears_shortcuts(home, gsc)
     # Kodi 21 stream-buffer settings (GUI filecache.* replaced the old
@@ -1342,9 +1369,10 @@ def _apply_policy(zf, policy, home, fresh):
     fc = policy.get('filecache')
     if fc:
         _enforce_filecache(fc)
-    log('config policy applied: %d files%s%s%s' % (len(applied),
+    log('config policy applied [%s]: %d files%s%s%s (%d skipped: wrong content)' % (
+        content, len(applied),
         ' + gears_settings' if gs else '', ' + gears_shortcuts' if gsc else '',
-        ' + filecache' if fc else ''))
+        ' + filecache' if fc else '', skipped_content))
 
 
 def _enforce_filecache(spec):

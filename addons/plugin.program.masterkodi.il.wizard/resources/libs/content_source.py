@@ -330,7 +330,13 @@ def switch_to(source):
         prog.close()
         _set_source('pov')
     else:  # gears -> restore from the .pre_gears backups
-        _restore_gears(skin_id)
+        restored = _restore_gears(skin_id)
+        # On a CLEAN POV install there are no .pre_gears backups (the Gears
+        # config was never applied). Switching to Gears must then BUILD the
+        # Gears config fresh instead of restoring nothing -- else the box would
+        # stay on POV menus. Force-apply the Gears content config for this skin.
+        if not restored:
+            _apply_gears_content(skin_id)
         _set_source('gears')
 
     xbmc.executebuiltin('ReloadSkin()')
@@ -363,6 +369,29 @@ def _restore_gears(skin_id):
                     except Exception:
                         pass
     _log('restored %d gears backup file(s)' % restored)
+    return restored
+
+
+def _apply_gears_content(skin_id):
+    """Build the Gears content config for skin_id from scratch (used when
+    switching a clean POV install back to Gears -- no backups to restore).
+    Delegates to the wizard's own config engine with content forced to 'gears',
+    which delivers the Gears menus/favourites/players/nodes + gears_settings +
+    gears_shortcuts, then seeds the gears shortcut folder and per-skin views."""
+    try:
+        from resources.libs import modular_update as mu
+        manifest = mu.fetch_manifest()
+        state = mu._load_state()
+        mu._maybe_apply_config(manifest, state, force=True, content='gears')
+        mu._save_state(state)
+        try:
+            mu.seed_gears_shortcut_folder()
+            mu.apply_gears_views_for_skin(skin_id)
+        except Exception as e:
+            _log('gears seed after switch failed: %s' % e, xbmc.LOGWARNING)
+        _log('applied Gears content config fresh (no backups to restore)')
+    except Exception as e:
+        _log('apply gears content failed: %s' % e, xbmc.LOGERROR)
 
 
 def _set_source(source):

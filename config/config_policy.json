@@ -1,5 +1,5 @@
 {
-  "config_version": 46,
+  "config_version": 47,
   "_comment": "Declarative policy for how the wizard applies the shipped build-config onto a device. Bump build.json config_version whenever ANY file under config/ changes. Modes: replace (overwrite whole file), seed_if_absent (write only if missing), merge_id (per <setting id>, build value wins - CLOBBERS user changes), merge_seed (per <setting id>, add-if-absent - our value is the DEFAULT but a user's own change is NEVER overwritten), merge_name (per <source><name>, add build's, keep user's). To DELIBERATELY push a changed default to every device with merge_seed: add that id to the file's optional \"force_ids\" list (overwrites even user-set values) and bump config_version; remove it once propagated if you want user changes to stick again. exclude_ids always win over force_ids to protect credentials. gears_settings enforces critical values in Gears' binary settings.db.",
   "files": [
     {
@@ -12,7 +12,8 @@
       "src": "userdata/favourites.xml",
       "dest": "userdata/favourites.xml",
       "fresh": "replace",
-      "update": "replace"
+      "update": "replace",
+      "content": "gears"
     },
     {
       "src": "userdata/sources.xml",
@@ -101,25 +102,29 @@
       "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-powermenu.json",
       "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-powermenu.json",
       "fresh": "replace",
-      "update": "replace"
+      "update": "replace",
+      "content": "gears"
     },
     {
       "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1102widgets.json",
       "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1102widgets.json",
       "fresh": "replace",
-      "update": "replace"
+      "update": "replace",
+      "content": "gears"
     },
     {
       "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1103widgets.json",
       "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1103widgets.json",
       "fresh": "replace",
-      "update": "replace"
+      "update": "replace",
+      "content": "gears"
     },
     {
       "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1103submenu.json",
       "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1103submenu.json",
       "fresh": "replace",
-      "update": "replace"
+      "update": "replace",
+      "content": "gears"
     },
     {
       "src": "userdata/Database/ViewModes6.db",
@@ -145,19 +150,22 @@
       "dest": "userdata/addon_data/plugin.program.masterkodi.il.wizard/gears_views.json",
       "fresh": "replace",
       "update": "replace",
-      "_comment": "Config-driven Gears per-skin view map: apply_gears_views_for_skin reads this over the built-in fallback, so a Gears view change ships as a config bump, no wizard release. Wizard-owned file, users never edit it -> plain replace."
+      "_comment": "Config-driven Gears per-skin view map: apply_gears_views_for_skin reads this over the built-in fallback, so a Gears view change ships as a config bump, no wizard release. Wizard-owned file, users never edit it -> plain replace.",
+      "content": "gears"
     },
     {
       "src": "userdata/addon_data/plugin.video.themoviedb.helper/players/gears.json",
       "dest": "userdata/addon_data/plugin.video.themoviedb.helper/players/gears.json",
       "fresh": "replace",
-      "update": "seed_if_absent"
+      "update": "seed_if_absent",
+      "content": "gears"
     },
     {
       "src": "userdata/addon_data/plugin.video.themoviedb.helper/nodes/SELECTED NETWORKS.json",
       "dest": "userdata/addon_data/plugin.video.themoviedb.helper/nodes/SELECTED NETWORKS.json",
       "fresh": "replace",
-      "update": "seed_if_absent"
+      "update": "seed_if_absent",
+      "content": "gears"
     }
   ],
   "gears_settings": {
@@ -223,7 +231,8 @@
       "src_dir": "userdata/addon_data/script.skinshortcuts",
       "dest_dir": "userdata/addon_data/script.skinshortcuts",
       "fresh": "replace",
-      "update": "skip"
+      "update": "skip",
+      "content": "gears"
     },
     {
       "src_dir": "media/genre_icons",

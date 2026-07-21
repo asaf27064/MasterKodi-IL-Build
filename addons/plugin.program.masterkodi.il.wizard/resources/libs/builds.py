@@ -962,7 +962,17 @@ class BuildManager:
         try:
             # Set skip flag for service (don't show update dialog during install)
             ADDON.setSetting('skip_update_check', 'true')
-            
+
+            # Record the content source NOW, before any config apply. This makes
+            # the whole install content-aware: the config engine skips every
+            # Gears-specific entry when POV is chosen (no gears menus/favourites/
+            # settings/shortcuts ever written), so a POV build stays fully clean
+            # -- POV and Gears share no config. A Gears install is unchanged.
+            try:
+                ADDON.setSetting('content_source', content_choice)
+            except Exception:
+                pass
+
             # Prepare destination
             if not os.path.exists(TEMP_FOLDER):
                 os.makedirs(TEMP_FOLDER)
@@ -1465,7 +1475,7 @@ class BuildManager:
             log(f"_install_from_manifest error: {e}", xbmc.LOGERROR)
             return False
 
-    def _apply_build_config(self, skin_id=None):
+    def _apply_build_config(self, skin_id=None, content=None):
         """Force-apply the build config after a skin install/switch, so a freshly-
         (re)installed skin lands with all the build defaults -- Flix view, hidden
         match%/profile info, colorful ratings, detailed notifications, etc.
@@ -1474,7 +1484,17 @@ class BuildManager:
         update never overwrites a preference the user set. But an explicit
         (re)install SHOULD reset to our curated defaults -- so we first delete the
         installed skin's settings.xml, letting the seed write our full defaults
-        fresh. Credentials stay excluded by policy; other skins are untouched."""
+        fresh. Credentials stay excluded by policy; other skins are untouched.
+
+        content ('gears'|'pov', default = the stored content_source): the config
+        engine skips Gears-specific entries for POV; here we also skip the two
+        Gears-only DB seeders (shortcut folder + gears views) so a POV install
+        never writes a byte of Gears state."""
+        if content is None:
+            try:
+                content = ADDON.getSetting('content_source') or 'gears'
+            except Exception:
+                content = 'gears'
         try:
             from resources.libs import modular_update as mu
             if skin_id:
@@ -1487,15 +1507,16 @@ class BuildManager:
                     log(f"could not reset {skin_id} settings: {e}", xbmc.LOGWARNING)
             manifest = mu.fetch_manifest()
             state = mu._load_state()
-            mu._maybe_apply_config(manifest, state, force=True)
+            mu._maybe_apply_config(manifest, state, force=True, content=content)
             mu._save_state(state)
-            # Seed the Gears shortcut folder the default networks widget uses,
-            # so a fresh install's FIRST boot already renders it populated.
-            mu.seed_gears_shortcut_folder()
-            # Point Gears' use_viewtypes at THIS skin's view ids, so gears movie/
-            # tvshow lists open in the skin's intended view (else Gears forces its
-            # global default -- e.g. Estuary showed Wall instead of Poster).
-            mu.apply_gears_views_for_skin(skin_id)
+            if content != 'pov':
+                # Seed the Gears shortcut folder the default networks widget uses,
+                # so a fresh install's FIRST boot already renders it populated.
+                mu.seed_gears_shortcut_folder()
+                # Point Gears' use_viewtypes at THIS skin's view ids, so gears movie/
+                # tvshow lists open in the skin's intended view (else Gears forces its
+                # global default -- e.g. Estuary showed Wall instead of Poster).
+                mu.apply_gears_views_for_skin(skin_id)
             # Flag a one-time skinvariables view rebuild for the next boot. A freshly
             # (re)installed skin (Zephyr/AF3) builds its views on Home load with
             # no_reload, so the display never refreshes -> foreground looks frozen
