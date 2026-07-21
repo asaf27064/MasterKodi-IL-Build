@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-21T15:42:35Z",
+  "generated_utc": "2026-07-21T16:04:09Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -45,12 +45,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.106",
+      "version": "2.4.107",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.106.zip",
-      "sha256": "53795bdc141ebebba799d893a214fa4bede5e90c90f106d208cb98d59b2e5b9f",
-      "size": 2386958,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.106.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.107.zip",
+      "sha256": "805a02c0a907307ef761b6af3f4e6e3b49b394f7691d1bff538e5bfde5002837",
+      "size": 2387359,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.107.zip"
     },
     {
       "id": "plugin.video.gears",
@@ -531,10 +531,10 @@
     }
   ],
   "config": {
-    "version": "45",
-    "zip": "config-45.zip",
-    "sha256": "7d03291ea594d1321eb634e8951044f1df944c527e6f23fd605789c35eb4df95",
-    "size": 34537,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-45.zip"
+    "version": "46",
+    "zip": "config-46.zip",
+    "sha256": "665a50e2e397eb1102e6df8479f874a8fe522746ce4b8e02c08f4ea7d7c391b7",
+    "size": 2697409,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-46.zip"
   }
 }
