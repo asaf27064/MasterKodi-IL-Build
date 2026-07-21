@@ -273,6 +273,37 @@ def _ensure_pov_installed():
         return False
 
 
+def _apply_pov_core(skin_id):
+    """Apply the POV variant for skin_id (no reload, no dialogs). Returns
+    (ok, err). Shared by the interactive switch and the install-time apply."""
+    variant = _variant_dir(skin_id)
+    if not variant or skin_id not in _APPLY:
+        return False, 'no POV variant for this skin/version'
+    if not _ensure_pov_installed():
+        return False, 'POV install failed'
+    root = _base_repo_dir(skin_id) + '/' + variant
+    try:
+        _APPLY[skin_id](root, skin_id)
+    except Exception as e:
+        _log('apply failed: %s' % e, xbmc.LOGERROR)
+        return False, str(e)
+    return True, None
+
+
+def install_apply(skin_id, source):
+    """Install-time content-source apply: explicit skin_id (the new skin isn't
+    active yet at install), no ReloadSkin (the install restart handles it).
+    Fail-open: a POV failure leaves the freshly-installed Gears build intact."""
+    if source != 'pov':
+        _set_source('gears')
+        return True
+    ok, err = _apply_pov_core(skin_id)
+    _set_source('pov' if ok else 'gears')
+    if not ok:
+        _log('install POV apply skipped: %s' % err, xbmc.LOGWARNING)
+    return ok
+
+
 def switch_to(source):
     """source: 'pov' | 'gears'. Returns True on success."""
     dialog = xbmcgui.Dialog()

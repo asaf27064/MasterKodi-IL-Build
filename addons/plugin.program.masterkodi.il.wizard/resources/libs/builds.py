@@ -945,7 +945,7 @@ class BuildManager:
     }
 
     def install_build(self, build_info, skin_choice='estuary', with_arctic_fuse=None,
-                      keep_keys=None, keep_extras=None):
+                      keep_keys=None, keep_extras=None, content_choice='gears'):
         """Full build installation. skin_choice: 'estuary' | 'arctic' | 'nimbus'.
         keep_keys: list of 'keep' group keys to carry across the wipe (see keep.py).
         keep_extras: user-installed addon ids to preserve if 'extras' is kept."""
@@ -1133,6 +1133,26 @@ class BuildManager:
                 log(f"post-install stack sync failed: {e}", xbmc.LOGWARNING)
             ADDON.setSetting('buildname', build_name)
             ADDON.setSetting('buildversion', build_info.get('version', '1.0'))
+
+            # Content source: if the user picked POV at install, apply the POV
+            # variant for the chosen skin on top of the (Gears) build. Explicit
+            # skin id (the new skin isn't active until restart), no reload (the
+            # install restart applies it). Fail-open: a POV problem leaves the
+            # working Gears build untouched.
+            if content_choice == 'pov':
+                try:
+                    from resources.libs import content_source
+                    target_skin = skin['id'] if skin else 'skin.estuary'
+                    progress.update(98, "[COLOR yellow]מחיל מקור תוכן POV...[/COLOR]")
+                    content_source.install_apply(target_skin, 'pov')
+                except Exception as e:
+                    log(f"install POV apply failed: {e}", xbmc.LOGWARNING)
+            else:
+                try:
+                    import xbmcaddon as _xa
+                    _xa.Addon().setSetting('content_source', 'gears')
+                except Exception:
+                    pass
 
             # Create first-run marker (so wizard won't auto-launch again)
             try:
@@ -1848,11 +1868,23 @@ def builds_menu():
         else:
             skin_choice = 'estuary'
             skin_name = "Estuary"
-        
+
+        # Content source: Gears (default) or POV. POV = same skins/subtitles,
+        # a different content addon. Applied as a final step after the normal
+        # (Gears) install lands, via the tested content_source switcher.
+        content_choice = 'gears'
+        cs_sel = dialog.select('מקור תוכן', [
+            'Gears (ברירת מחדל)',
+            'POV (חלופה - אותם סקינים וכתוביות)'])
+        if cs_sel < 0:
+            continue
+        content_choice = 'pov' if cs_sel == 1 else 'gears'
+
         # Confirm installation
         confirm_msg = (
             f"[COLOR cyan]בילד:[/COLOR] {build_name} v{build_ver}\n"
-            f"[COLOR cyan]סקין:[/COLOR] {skin_name}\n\n"
+            f"[COLOR cyan]סקין:[/COLOR] {skin_name}\n"
+            f"[COLOR cyan]מקור תוכן:[/COLOR] {content_choice.upper()}\n\n"
             f"[COLOR {COLOR_WARNING}]הבילד הקיים יימחק (תוכל לבחור מה לשמור בשלב הבא).[/COLOR]\n\n"
             "להתחיל בהתקנה?"
         )
@@ -1870,7 +1902,8 @@ def builds_menu():
                 log(f"detect_extras skipped: {e}", xbmc.LOGWARNING)
             keep_keys = keep_mod.prompt(extras=extras, default_all=True)
             manager.install_build(selected_build, skin_choice=skin_choice,
-                                  keep_keys=keep_keys, keep_extras=extras)
+                                  keep_keys=keep_keys, keep_extras=extras,
+                                  content_choice=content_choice)
             break
 
 
