@@ -70,7 +70,7 @@
     <setting id="contextmenu_modify_artwork" default="true">true</setting>
     <setting id="contextmenu_add_to_library" default="true">true</setting>
     <setting id="contextmenu_make_node" default="true">true</setting>
-    <setting id="genre_icon_location">special://home/media/genre_icons/</setting>
+    <setting id="genre_icon_location">special://home/media/genre_icons</setting>
     <setting id="trakt_genre_icon_location" default="true" />
     <setting id="provider_icon_location" default="true" />
     <setting id="genre_fanart" default="true">false</setting>

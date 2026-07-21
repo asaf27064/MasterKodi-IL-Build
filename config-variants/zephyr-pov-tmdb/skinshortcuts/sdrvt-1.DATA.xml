@@ -1,0 +1,50 @@
+<shortcuts>
+	<shortcut>
+		<defaultID />
+		<label>המשך צפייה</label>
+		<label2>פריטים מותאמים אישית</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/skins/Default/media/player.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=In+Progress&amp;mode=build_tvshow_list&amp;action=in_progress_tvshows&amp;iconImage=in_progress_tvshow",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>חם עכשיו</label>
+		<label2>פריטים מותאמים אישית</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/skins/Default/media/trending.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=trending_week&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>רשתות סטרימינג</label>
+		<label2>פריטים מותאמים אישית</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/skins/Default/media/folder.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=dir_custom_node&amp;filename=SELECTED%20NETWORKS.json&amp;plugin_category=SELECTED%20NETWORKS&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>שידור בכורה</label>
+		<label2>פריטים מותאמים אישית</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/skins/Default/media/fresh.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=airing_today&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>בקרוב</label>
+		<label2>פריטים מותאמים אישית</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/skins/Default/media/lists.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=upcoming&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>ז'אנרים</label>
+		<label2>פריטים מותאמים אישית</label2>
+		<icon>DefaultShortcut.png</icon>
+		<thumb>special://home/addons/plugin.video.pov/resources/skins/Default/media/genres.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=genres&amp;tmdb_type=tv&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
+		</shortcut>
+	</shortcuts>

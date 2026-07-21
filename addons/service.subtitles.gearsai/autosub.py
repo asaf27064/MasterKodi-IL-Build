@@ -1258,7 +1258,22 @@ class KodiMonitor(xbmc.Monitor):
                         # If placeHebrewEmbeddedSub=False and f_result list is not empty - place sub from external subtitles list.
                         else:
                             wait_for_video()
-                            
+
+                            # MASTERKODI: PSEUDO-playback guard. TMDbHelper's
+                            # player (is_resolvable=false) "plays" its plugin
+                            # url for ~1.5s before handing off to the source
+                            # window -- the Player-ON flow then searched subs
+                            # and popped the AI consent dialog while the user
+                            # was still browsing sources (seen live 2026-07-21,
+                            # pov+tmdb config). If the player already died,
+                            # there is nothing to subtitle -- abort silently.
+                            # The REAL playback that follows fires its own
+                            # Player-ON and runs this flow properly.
+                            if not xbmc.Player().isPlayingVideo():
+                                log.warning('DEBUG | autosub abort: player no longer active (pseudo/aborted playback)')
+                                general.show_msg = "END"
+                                return
+
                             if len(f_result)>0:
                                 sub_name,sub_filename=place_sub(video_data,f_result,last_sub_name_in_cache,last_sub_language_in_cache,all_subs,last_sub_in_cache_is_empty)
                             

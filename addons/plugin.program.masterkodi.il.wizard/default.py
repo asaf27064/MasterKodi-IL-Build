@@ -658,8 +658,14 @@ def maintenance_folder():
     # skin-independent icons bundled with the wizard (special://skin/ paths only
     # resolve on skins that ship those files -- Nimbus doesn't)
     ICON = 'special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/%s'
+    # Content-addon cache tile: POV boxes get the POV cleaner, everyone else
+    # keeps the Gears one (fleet default). Detection by installed addon dir.
+    _pov_dir = xbmcvfs.translatePath('special://home/addons/plugin.video.pov')
+    _has_pov = os.path.isdir(_pov_dir)
+    _content_tile = (('ניקוי קאש POV', 'maint_pov', ICON % 'broom.png') if _has_pov
+                     else ('ניקוי קאש Gears', 'maint_gears', ICON % 'broom.png'))
     items = [
-        ('ניקוי קאש Gears',     'maint_gears',   ICON % 'broom.png'),
+        _content_tile,
         ('ניקוי קאש Gears AI',  'maint_gearsai', ICON % 'broom-ball.png'),
         ('שלח לוגים לתמיכה',    'send_logs',     ICON % 'circle-info.png'),
         ('עדכון מהיר',          'check_updates', ICON % 'arrows-rotate.png'),
@@ -673,6 +679,12 @@ def maintenance_folder():
         url = '%s?mode=%s' % (base, mode)
         xbmcplugin.addDirectoryItem(handle, url, li, isFolder=False)
     xbmcplugin.endOfDirectory(handle, cacheToDisc=False)
+
+
+def maint_pov():
+    """Clear POV cache (fire-and-forget for a home tile). Shown on POV boxes."""
+    xbmc.executebuiltin('RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)')
+    xbmcgui.Dialog().notification(ADDON_NAME, 'מנקה קאש POV...', xbmcgui.NOTIFICATION_INFO, 3000)
 
 
 def maint_gears():
@@ -741,6 +753,8 @@ if __name__ == '__main__':
         fast_exit()
     elif mode == 'maintenance_folder':
         maintenance_folder()
+    elif mode == 'maint_pov':
+        maint_pov()
     elif mode == 'maint_gears':
         maint_gears()
     elif mode == 'maint_gearsai':

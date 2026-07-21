@@ -21,7 +21,7 @@
 		<label2>הרחבת וידאו</label2>
 		<icon>DefaultShortcut.png</icon>
 		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/folder.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=build_tvshow_list&amp;action=tmdb_tv_networks&amp;name=Networks",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&amp;shortcut_folder=True&amp;name=SELECTED+NETWORKS",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />
