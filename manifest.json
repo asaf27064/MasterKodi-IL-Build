@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-22T09:25:54Z",
+  "generated_utc": "2026-07-22T09:33:49Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -45,12 +45,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.112",
+      "version": "2.4.113",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.112.zip",
-      "sha256": "646db4d24392f7bbe61f8a7e78f8c57198f0291e7f8f613872fdcc65ff6be7c4",
-      "size": 2390241,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.112.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.113.zip",
+      "sha256": "7050488f2a8538cacb8ae22804edf76e4cf0699ff91255e05d80a38e68844d8f",
+      "size": 2390702,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.113.zip"
     },
     {
       "id": "plugin.video.gears",
@@ -59,7 +59,8 @@
       "zip": "plugin.video.gears-2.3.8.zip",
       "sha256": "36f686ac77172b1b964b1956e5e608e96dc0bd1eaa5d5ae53d5d78e42ec1805a",
       "size": 8659589,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.gears-2.3.8.zip"
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.gears-2.3.8.zip",
+      "content": "gears"
     },
     {
       "id": "plugin.video.pov",
@@ -68,7 +69,8 @@
       "zip": "plugin.video.pov-6.07.08.zip",
       "sha256": "75aac1ef8200d466752f18e5567a2d12e2f4793107db4203e31aa0548fdc1bfc",
       "size": 3615653,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.pov-6.07.08.zip"
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.pov-6.07.08.zip",
+      "content": "pov"
     },
     {
       "id": "plugin.video.themoviedb.helper",
@@ -95,7 +97,8 @@
       "zip": "repository.cocoscrapers-1.0.1.zip",
       "sha256": "0dd50ba213f90647b4633281f6d168a47abe5477718fdb25e5d94edff5b0e76b",
       "size": 68433,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/repository.cocoscrapers-1.0.1.zip"
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/repository.cocoscrapers-1.0.1.zip",
+      "content": "gears"
     },
     {
       "id": "repository.dendygh",
@@ -266,7 +269,8 @@
       "zip": "script.module.cocoscrapers-1.0.39.zip",
       "sha256": "170e3c665ab16c5cd08837e4818c402d2126d99fc48d07b55260ddcaefc106e2",
       "size": 341753,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.cocoscrapers-1.0.39.zip"
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.cocoscrapers-1.0.39.zip",
+      "content": "gears"
     },
     {
       "id": "script.module.gearsscrapers",
@@ -275,7 +279,8 @@
       "zip": "script.module.gearsscrapers-1.4.9.zip",
       "sha256": "b3441409aa7acbea36e5c47fc5c033de6e2aa87b829f81f446ba84df15518ca3",
       "size": 1059135,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.gearsscrapers-1.4.9.zip"
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.gearsscrapers-1.4.9.zip",
+      "content": "gears"
     },
     {
       "id": "script.module.idna",
@@ -311,7 +316,8 @@
       "zip": "script.module.magneto-6.07.04.zip",
       "sha256": "822da798a9f1d8bfb8e76615d9ded345a31c33da0d383f9513fec33df871297c",
       "size": 479244,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.magneto-6.07.04.zip"
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.magneto-6.07.04.zip",
+      "content": "gears"
     },
     {
       "id": "script.module.pysubs2",
