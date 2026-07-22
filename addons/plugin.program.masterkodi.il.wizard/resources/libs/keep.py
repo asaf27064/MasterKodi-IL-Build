@@ -189,33 +189,44 @@ def prompt(extras=None, default_all=True):
 
 
 def backup(keys, extras=None):
-    """Snapshot the selected groups to STAGE (call BEFORE the wipe)."""
+    """Snapshot the selected groups to STAGE (call BEFORE the wipe).
+
+    Returns (ok, staged_count). The caller MUST check this: everything after the
+    backup is destructive, and this used to swallow every failure and return
+    None, so a backup that saved nothing (no stage dir, disk full, locked files)
+    still let the wipe run and permanently destroyed exactly the data the user
+    ticked to keep."""
     try:
         if os.path.isdir(STAGE):
             shutil.rmtree(STAGE, ignore_errors=True)
         os.makedirs(STAGE, exist_ok=True)
     except Exception as e:
         log('cannot create stage: %s' % e, xbmc.LOGERROR)
-        return
+        return False, 0
+    staged = 0
     saved = {'keys': keys, 'settings': {}, 'xml': {}}
     for g in GROUPS:
         if g['key'] not in keys:
             continue
         if g.get('gears_ids'):
-            saved['settings'].setdefault('gears', {}).update(_db_read(GEARS_SETTINGS_DB, g['gears_ids']))
+            _got = _db_read(GEARS_SETTINGS_DB, g['gears_ids'])
+            saved['settings'].setdefault('gears', {}).update(_got)
+            staged += len(_got)
         for path, ids in g.get('xml_targets', []):
-            saved['xml'].setdefault(path, {}).update(_xml_read(path, ids))
+            _gotx = _xml_read(path, ids)
+            saved['xml'].setdefault(path, {}).update(_gotx)
+            staged += len(_gotx)
         for name in g.get('db_files', []):
             src = os.path.join(GEARS_DB_DIR, name)
             if os.path.isfile(src):
                 try:
-                    shutil.copy2(src, os.path.join(STAGE, 'gearsdb__' + name))
+                    shutil.copy2(src, os.path.join(STAGE, 'gearsdb__' + name)); staged += 1
                 except Exception as e:
                     log('backup db %s failed: %s' % (name, e), xbmc.LOGWARNING)
         for f in g.get('files', []):
             if os.path.isfile(f):
                 try:
-                    shutil.copy2(f, os.path.join(STAGE, 'file__' + os.path.basename(f)))
+                    shutil.copy2(f, os.path.join(STAGE, 'file__' + os.path.basename(f))); staged += 1
                 except Exception as e:
                     log('backup file %s failed: %s' % (f, e), xbmc.LOGWARNING)
     # user-installed extra addons: whole folder + their addon_data
@@ -224,20 +235,21 @@ def backup(keys, extras=None):
             src = os.path.join(HOME_ADDONS, aid)
             if os.path.isdir(src):
                 try:
-                    shutil.copytree(src, os.path.join(STAGE, 'addon__' + aid))
+                    shutil.copytree(src, os.path.join(STAGE, 'addon__' + aid)); staged += 1
                 except Exception as e:
                     log('backup addon %s failed: %s' % (aid, e), xbmc.LOGWARNING)
             ad = os.path.join(ADDON_DATA, aid)
             if os.path.isdir(ad):
                 try:
-                    shutil.copytree(ad, os.path.join(STAGE, 'addondata__' + aid))
+                    shutil.copytree(ad, os.path.join(STAGE, 'addondata__' + aid)); staged += 1
                 except Exception as e:
                     log('backup addon_data %s failed: %s' % (aid, e), xbmc.LOGWARNING)
     try:
         json.dump(saved, open(os.path.join(STAGE, 'manifest.json'), 'w', encoding='utf-8'))
     except Exception as e:
         log('save manifest failed: %s' % e, xbmc.LOGWARNING)
-    log('backed up groups: %s' % ', '.join(keys) if keys else 'none')
+    log('backed up groups: %s (%d items staged)' % (', '.join(keys) if keys else 'none', staged))
+    return True, staged
 
 
 def restore():

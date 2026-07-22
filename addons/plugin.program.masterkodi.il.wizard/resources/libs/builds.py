@@ -185,6 +185,11 @@ class BuildManager:
                            f'מתוך [COLOR lime]{total/mb:.2f}[/COLOR] MB[/COLOR]\n'
                            f'[COLOR yellow][B]מהירות:[/B] [COLOR cyan]{spd:.2f}[/COLOR] {unit}/s[/COLOR]')
                     progress_dialog.update(done, msg)
+        # same short-read guard as the requests path
+        if total and downloaded < total:
+            log(f"Truncated download (urllib): {downloaded}/{total} bytes for {url}",
+                xbmc.LOGERROR)
+            return False
         log(f"Downloaded (urllib): {dest}")
         return True
 
@@ -246,7 +251,17 @@ class BuildManager:
                         speed = f'[COLOR yellow][B]מהירות:[/B] [COLOR cyan]{kbps_speed:.2f}[/COLOR] {type_speed}/s | [B]זמן:[/B] [COLOR orange]{div[0]:02d}:{div[1]:02d}[/COLOR][/COLOR]'
                         
                         progress_dialog.update(done, f'{title}\n' + currently_downloaded + '\n' + speed)
-            
+
+                    # A connection dropped mid-stream ends iter_content WITHOUT
+                    # raising -- we used to return success on a truncated file.
+                    # The install then wiped the box and only failed later at
+                    # extract, leaving the user with an empty Kodi. Treat a short
+                    # read as a failed download (the caller aborts BEFORE the wipe).
+                    if downloaded < total:
+                        log(f"Truncated download: {downloaded}/{total} bytes for {url}",
+                            xbmc.LOGERROR)
+                        return False
+
             log(f"Downloaded: {dest}")
             return True
             
@@ -300,6 +315,31 @@ class BuildManager:
                         pass
         
         log("Wipe complete")
+
+    def validate_build_zip(self, zip_path):
+        """Is this a complete, readable build zip? Returns (ok, reason).
+
+        MUST be called BEFORE the wipe. A corrupt/truncated download used to slip
+        through (only size>0 was checked, and grab_addons_from_zip swallowed the
+        error), so the install wiped the box first and only discovered the bad
+        zip at extract time -- leaving the user with an empty Kodi and no build.
+        Now a bad download aborts while the existing build is still intact."""
+        try:
+            with zipfile.ZipFile(zip_path, 'r', allowZip64=True) as z:
+                names = z.namelist()
+                if not names:
+                    return False, 'הקובץ ריק'
+                # A zip's central directory lives at the END of the file, so a
+                # successful open already proves the download wasn't truncated --
+                # which is the failure this guards against. Deliberately NOT
+                # calling testzip(): it decompresses all ~60 MB and would add
+                # tens of seconds on a weak Android box. Per-file CRC problems
+                # still surface during extract, which fails loudly on a burst.
+                if not any(n.startswith('addons/') for n in names):
+                    return False, 'לא נמצאו אדונים בקובץ'
+            return True, None
+        except Exception as e:
+            return False, str(e)
 
     def grab_addons_from_zip(self, zip_path):
         """Get list of addon IDs from the build ZIP"""
@@ -1008,18 +1048,55 @@ class BuildManager:
                 self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]ההורדה נכשלה![/COLOR]")
                 return False
             
-            # Step 2: Get addon list before wipe
+            # Step 2: Validate the archive BEFORE touching the user's build, then
+            # get the addon list. Order matters: everything below this point is
+            # destructive, so a bad download must abort HERE.
+            progress.update(0, "[COLOR yellow]בודק תקינות הקובץ...[/COLOR]")
+            zip_ok, zip_err = self.validate_build_zip(zip_path)
+            if not zip_ok:
+                progress.close()
+                try:
+                    os.remove(zip_path)
+                except Exception:
+                    pass
+                log(f"Build zip validation FAILED: {zip_err}", xbmc.LOGERROR)
+                self.dialog.ok(ADDON_NAME,
+                               f"[COLOR {COLOR_ERROR}]ההורדה נכשלה או שהקובץ פגום.[/COLOR]\n"
+                               f"{zip_err}\n\n"
+                               "הבילד הקיים לא נפגע. נסו שוב.")
+                return False
+
             progress.update(0, "[COLOR yellow]סורק אדונים בבילד...[/COLOR]")
             addon_list = self.grab_addons_from_zip(zip_path)
             
-            # Step 2.5: snapshot the user's 'keep' selections BEFORE wiping
+            # Step 2.5: snapshot the user's 'keep' selections BEFORE wiping.
+            # A HARD failure here (no stage dir / disk full) means the very data
+            # the user ticked to keep gets destroyed by the wipe below with no
+            # way back -- make that an explicit decision instead of a silent
+            # loss. staged==0 is NOT an error: a box with no logins configured
+            # legitimately has nothing to carry over.
             if keep_keys:
+                keep_ok, keep_n = True, 0
                 try:
                     from resources.libs import keep as keep_mod
                     progress.update(0, "[COLOR yellow]שומר נתונים נבחרים...[/COLOR]")
-                    keep_mod.backup(keep_keys, extras=keep_extras)
+                    keep_ok, keep_n = keep_mod.backup(keep_keys, extras=keep_extras)
                 except Exception as e:
+                    keep_ok = False
                     log(f"keep backup failed: {e}", xbmc.LOGWARNING)
+                log(f"keep backup: ok={keep_ok} staged={keep_n}")
+                if not keep_ok:
+                    progress.close()
+                    if not self.dialog.yesno(
+                            ADDON_NAME,
+                            f"[COLOR {COLOR_WARNING}]גיבוי הנתונים שבחרתם נכשל.[/COLOR]\n\n"
+                            "אם תמשיכו, ההתחברויות והנתונים שסימנתם יימחקו "
+                            "ולא ניתן יהיה לשחזר אותם.\n\n"
+                            "להמשיך בכל זאת?",
+                            yeslabel="המשך", nolabel="[B]בטל[/B]"):
+                        log("install aborted by user after keep-backup failure")
+                        return False
+                    progress.create(ADDON_NAME, "[COLOR cyan]ממשיך בהתקנה...[/COLOR]")
 
             # Step 3: Wipe
             progress.update(0, "[COLOR yellow]מכין להתקנה...[/COLOR]")

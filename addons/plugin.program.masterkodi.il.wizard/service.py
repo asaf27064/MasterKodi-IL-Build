@@ -369,7 +369,15 @@ def _prewarm_gears(mon):
     the user's first click. Headless via JSON-RPC Files.GetDirectory (no
     window opens). Fail-open: any error -> do nothing."""
     try:
-        if not xbmc.getCondVisibility('System.HasAddon(plugin.video.gears)'):
+        # Content-aware: POV is a Gears fork with the SAME modes/actions and the
+        # same reuselanguageinvoker, so it pays the identical cold start. Warming
+        # whichever engine is actually installed means a POV box gets the fast
+        # first click too (it used to get none -- this returned immediately).
+        if xbmc.getCondVisibility('System.HasAddon(plugin.video.gears)'):
+            engine = 'plugin.video.gears'
+        elif xbmc.getCondVisibility('System.HasAddon(plugin.video.pov)'):
+            engine = 'plugin.video.pov'
+        else:
             return
         # Apply the view map BEFORE the prewarm too: gears caches its settings
         # in the warm interpreter on first touch, so writing the db only AFTER
@@ -378,15 +386,16 @@ def _prewarm_gears(mon):
         # prewarm apply below still covers the fresh-install case where the
         # db is only created by the prewarm itself.
         try:
-            from resources.libs import modular_update as _mu
-            _mu.apply_gears_views_for_skin()
+            if engine == 'plugin.video.gears':
+                from resources.libs import modular_update as _mu
+                _mu.apply_gears_views_for_skin()
         except Exception:
             pass
         paths = (
-            'plugin://plugin.video.gears/?name=Trending&mode=build_movie_list'
-            '&action=trakt_movies_trending&random_support=true&iconImage=trending',
-            'plugin://plugin.video.gears/?name=Trending&mode=build_tvshow_list'
-            '&action=trakt_tv_trending&random_support=true&iconImage=trending',
+            'plugin://%s/?name=Trending&mode=build_movie_list'
+            '&action=trakt_movies_trending&random_support=true&iconImage=trending' % engine,
+            'plugin://%s/?name=Trending&mode=build_tvshow_list'
+            '&action=trakt_tv_trending&random_support=true&iconImage=trending' % engine,
         )
         for p in paths:
             if mon.abortRequested():
@@ -398,23 +407,27 @@ def _prewarm_gears(mon):
                     '"properties":["title"],"limits":{"start":0,"end":3}}}' % p)
             except Exception:
                 pass
-        log("gears pre-warm done")
+        log("%s pre-warm done" % engine)
         # The pre-warm is what CREATES gears' settings.db on a fresh install
         # (gears fills every setting with defaults on first run). The install-
         # time apply_gears_views_for_skin() no-oped back then because the db
         # didn't exist yet -- re-apply now that it does, so a fresh box's first
         # browse already uses the skin's configured views (not gears' Wall).
         try:
-            from resources.libs import modular_update as mu
-            # fresh-install catch-up: land any gears settings the config
-            # enforcement stashed while the db didn't exist yet (e.g. the
-            # magneto default selection) -- BEFORE the scraper sync reads it
-            mu.apply_pending_gears_settings()
-            mu.apply_gears_views_for_skin()
-            # scraper lifecycle: keep only the SELECTED external scraper
-            # enabled; neutralize the unused standby (its settings-monitor
-            # service is dead weight). gearsscrapers is never touched.
-            mu.sync_scraper_stack()
+            # These three all write into GEARS' own settings.db / scraper stack.
+            # A POV box has neither, so they are gears-only by definition
+            # (POV's views + settings are seeded by content_source at install).
+            if engine == 'plugin.video.gears':
+                from resources.libs import modular_update as mu
+                # fresh-install catch-up: land any gears settings the config
+                # enforcement stashed while the db didn't exist yet (e.g. the
+                # magneto default selection) -- BEFORE the scraper sync reads it
+                mu.apply_pending_gears_settings()
+                mu.apply_gears_views_for_skin()
+                # scraper lifecycle: keep only the SELECTED external scraper
+                # enabled; neutralize the unused standby (its settings-monitor
+                # service is dead weight). gearsscrapers is never touched.
+                mu.sync_scraper_stack()
         except Exception as e:
             log("post-prewarm views apply failed: %s" % e, xbmc.LOGDEBUG)
     except Exception as e:

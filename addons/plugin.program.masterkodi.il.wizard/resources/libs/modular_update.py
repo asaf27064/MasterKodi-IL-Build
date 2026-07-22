@@ -24,6 +24,7 @@ import json
 import os
 import re
 import shutil
+import time
 import zipfile
 
 import xbmc
@@ -118,14 +119,33 @@ def _download(url, timeout=120, attempts=4):
     raise Exception('download failed after %d attempts: %s' % (attempts, last))
 
 
-def fetch_manifest(url=None):
+_MANIFEST_CACHE = {}          # url-key -> (fetched_at, manifest)
+_MANIFEST_TTL = 120           # seconds
+
+
+def fetch_manifest(url=None, force=False):
+    """Fetch the build manifest, memoized for _MANIFEST_TTL seconds.
+
+    There are 9 call sites and a single install/update flow hits several in a
+    row (install -> skin install -> config apply -> content apply), each of which
+    re-downloaded the same JSON over a fresh HTTPS connection. The manifest
+    cannot change mid-flow, so a short in-process TTL removes those redundant
+    round-trips (a real win on slow/mobile links) while still picking up a new
+    manifest on the next user-initiated action. force=True bypasses it."""
+    key = url or '__default__'
+    if not force:
+        hit = _MANIFEST_CACHE.get(key)
+        if hit and (time.time() - hit[0]) < _MANIFEST_TTL:
+            return hit[1]
     urls = [url] if url else [MANIFEST_URL, MANIFEST_URL_FALLBACK]
     last = None
     for u in urls:
         try:
             raw = _download(u, timeout=30)
             # utf-8-sig tolerates a stray BOM from raw.githubusercontent
-            return json.loads(raw.decode('utf-8-sig'))
+            manifest = json.loads(raw.decode('utf-8-sig'))
+            _MANIFEST_CACHE[key] = (time.time(), manifest)
+            return manifest
         except Exception as e:
             last = e
             log('manifest fetch failed from %s: %s' % (u, e), xbmc.LOGWARNING)
@@ -548,7 +568,7 @@ def _apply_one(entry):
     # If this is one of OUR modded addons, stop Kodi auto-replacing it from a
     # repo (no-op for vanilla deps, which keep auto-updating normally).
     _disable_kodi_autoupdate(entry['id'])
-    if entry['id'] == 'plugin.video.gears':
+    if entry['id'] in ('plugin.video.gears', 'plugin.video.pov'):
         # Kodi's texture cache keys images by URL; replaced media files with
         # unchanged filenames (e.g. network_icons logo refresh) would keep
         # showing the OLD cached art forever. Purge those entries so the new
