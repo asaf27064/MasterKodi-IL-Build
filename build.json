@@ -50,7 +50,8 @@
       "script.module.gearsscrapers",
       "script.module.cocoscrapers",
       "repository.cocoscrapers",
-      "script.module.magneto"
+      "script.module.magneto",
+      "repository.chainsrepo"
     ],
     "pov_only": [
       "plugin.video.pov"
@@ -98,7 +99,6 @@
         "plugin.program.masterkodi.il.wizard",
         "plugin.video.pov",
         "plugin.video.themoviedb.helper",
-        "repository.chainsrepo",
         "repository.dendygh",
         "repository.jurialmunkey",
         "repository.kodifitzwell",
