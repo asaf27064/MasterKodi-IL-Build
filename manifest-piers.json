@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-22T10:25:13Z",
+  "generated_utc": "2026-07-22T17:54:17Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -88,7 +88,8 @@
       "zip": "repository.chainsrepo-0.0.15.zip",
       "sha256": "3e6d0c1cc83b4e79e561315f20eae623f8c5faba955f5dcd2ded6f6ccc02d76d",
       "size": 1044544,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/repository.chainsrepo-0.0.15.zip"
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/repository.chainsrepo-0.0.15.zip",
+      "content": "gears"
     },
     {
       "id": "repository.cocoscrapers",
