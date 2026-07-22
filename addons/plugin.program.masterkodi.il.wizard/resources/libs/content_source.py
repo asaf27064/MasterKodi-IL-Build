@@ -463,9 +463,34 @@ def menu():
         body += '\n\n[COLOR %s](אין וריאנט POV לסקין/גרסה זו)[/COLOR]' % COLOR_WARNING
     choices = ['החלף ל-POV' if cur != 'pov' else 'כבר על POV',
                'החזר ל-Gears' if cur != 'gears' else 'כבר על Gears',
+               # Re-apply the CURRENT source for the CURRENT skin. Without this
+               # there was no way to pick up a fixed/updated variant short of a
+               # full reinstall: the switch options refuse to run when you are
+               # already on that source, so a corrected menu/widget file could
+               # never reach an existing box.
+               'החל מחדש את התצורה (%s) לסקין הנוכחי' % cur.upper(),
                'ביטול']
     sel = dialog.select(ADDON_NAME + ' · מקור תוכן', choices)
     if sel == 0 and cur != 'pov' and has_pov:
         switch_to('pov')
     elif sel == 1 and cur != 'gears':
         switch_to('gears')
+    elif sel == 2:
+        if cur == 'pov':
+            if not has_pov:
+                dialog.ok(ADDON_NAME,
+                          '[COLOR %s]אין וריאנט POV לסקין/גרסה זו.[/COLOR]' % COLOR_WARNING)
+                return False
+            prog = xbmcgui.DialogProgress()
+            prog.create(ADDON_NAME, '[COLOR cyan]מחיל מחדש את תצורת POV...[/COLOR]')
+            ok, err = _apply_pov_core(skin_id)
+            prog.close()
+            if not ok:
+                dialog.ok(ADDON_NAME, '[COLOR %s]ההחלה נכשלה:[/COLOR] %s' % (COLOR_ERROR, err))
+                return False
+        else:
+            _apply_gears_content(skin_id)
+        xbmc.executebuiltin('ReloadSkin()')
+        dialog.notification(ADDON_NAME, 'התצורה הוחלה מחדש (%s)' % cur.upper(),
+                            xbmcgui.NOTIFICATION_INFO, 4000)
+        return True
