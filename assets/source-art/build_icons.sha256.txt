@@ -1,0 +1,28 @@
+# Pristine ORIGINAL build_icons (pre-720px optimisation).
+# name, width, height, bytes, sha256[:16]
+ABC.png                        820   776   1009804  2b1511bb407eb66f
+Amazon_Prime_TV.png            819   776    997953  df3b95707ad5daa9
+Apple_TV+.png                  820   776    975771  b856ecd2940a92b7
+CW.png                         816   782    991793  cbab82be835509db
+Disney+.png                    821   775   1026776  80ebb58a4ef64883
+FOX.png                        820   776   1024080  ec6fbe45a179b6fb
+HBO.png                        821   777    956049  f43334cc4599e4f8
+HBO_MAX.png                    820   775   1107209  0c2a424baac16dfa
+HULU.png                       818   779    942175  0bf498095e2d558f
+Movies.png                     843   814   1441498  3c62fa951550b8ec
+Movies_Cat.png                 873   907   1521531  f2de33ff949c57f0
+Movies_In_Progress.png         881   850   1341103  de3abfd5d9275c98
+NBC.png                       1056   992   2020608  d2ceb8523fb45582
+Netflix.png                    818   776    855739  e86f9862fb60f38b
+Next_Episodes.png              881   853   1313109  3e229102ca6fcf66
+Paramount+.png                 821   777   1006761  9b291f87eaa125e7
+Real_Debrid_Auth.png           882   867   1330562  99884fa84ac20d22
+Real_Debrid_Revoke.png         882   867   1327994  d5b40fee331d448d
+Real_Derbid.png                882   867   1290883  ecf1f6f6827843a5
+Search.png                     879   853   1388129  6c77aaa0125330ea
+Series_In_Progress.png         881   885   1316890  77ae19aa2f744cee
+TV_Shows.png                   841   813   1536188  9d96cbeefa5c45fe
+TV_Shows_Cat.png               901   928   1603356  c47e3230cb52647d
+TorBox.png                    1024  1005   1815628  eac584408a9329b9
+TorBox_Auth.png               1024  1006   1799538  ebcf173fe18bdc95
+TorBox_Revoke.png             1024  1005   1845759  7dd74f675a581cef
