@@ -419,12 +419,27 @@ def compute_updates(manifest, force=False):
     # installed (the zip-install bypasses Kodi's own dependency resolution).
     needed = _missing_deps_of_installed(manifest)
 
+    content = _content_source()
     updates = []
     for a in manifest.get('addons', []):
         aid = a.get('id')
         if not aid or aid in NEVER_TOUCH:
             continue
+        # Content-engine gate: an addon owned by the OTHER content source is
+        # never installed or updated here. Without this, a clean POV install
+        # downloaded the clean POV bundle and then step-8's manifest completion
+        # promptly re-installed the whole Gears engine on top (gears +
+        # gearsscrapers + cocoscrapers + magneto are 'core').
+        ac = a.get('content')
+        if ac and ac != content:
+            continue
         installed = _installed_version(aid)
+        # An addon owned by the ACTIVE content source is essential, so install it
+        # even though it's flagged optional (POV is optional in the shared
+        # manifest but mandatory on a POV box).
+        if ac == content and installed is None:
+            updates.append(a)
+            continue
         if a.get('channel') == 'optional' and installed is None and aid not in needed:
             continue  # don't force-install heavy optional skins (but DO repair a
                       # missing companion dep of an installed parent)

@@ -52,6 +52,11 @@ def main():
     manifest_name = fleet.get('manifest', 'manifest.json')
     replacements = fleet.get('replacements', {})
     optional = set(cfg.get('channels', {}).get('optional', []))
+    # Content-engine ownership: an addon tagged here belongs to ONE content
+    # source. The wizard skips the other source's addons entirely, so a POV box
+    # never receives the Gears engine (and vice versa). Untagged = shared.
+    gears_only = set(cfg.get('channels', {}).get('gears_only', []))
+    pov_only = set(cfg.get('channels', {}).get('pov_only', []))
     base_url = 'https://github.com/%s/releases/download/%s/' % (repo, tag)
 
     dist_dir = os.path.join(repo_root, args.dist)
@@ -82,7 +87,7 @@ def main():
             missing.append(zip_name)
             continue
         sha = sha256_file(zpath)
-        addons.append({
+        entry = {
             'id': aid,
             'version': ver,
             'channel': 'optional' if aid in optional else 'core',
@@ -90,7 +95,12 @@ def main():
             'sha256': sha,
             'size': os.path.getsize(zpath),
             'url': base_url + zip_name,
-        })
+        }
+        if aid in gears_only:
+            entry['content'] = 'gears'
+        elif aid in pov_only:
+            entry['content'] = 'pov'
+        addons.append(entry)
 
     if missing:
         print('ERROR: built zips missing for: %s' % ', '.join(missing), file=sys.stderr)

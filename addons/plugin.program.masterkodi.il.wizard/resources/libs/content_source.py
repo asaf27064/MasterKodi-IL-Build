@@ -119,12 +119,23 @@ def _fetchv(roots, rel):
 
 # ------------------------------------------------------------------ POV seeds
 def _seed_pov_db(roots):
-    """Seed POV navigator.db (shortcut folders) + views.db from pov/*.json."""
+    """Seed POV navigator.db (shortcut folders) + views.db from pov/*.json.
+
+    These DBs must be CREATED if absent, not skipped: on a clean install POV has
+    never run yet, so its addon_data DBs don't exist until after the restart --
+    requiring them to pre-exist silently no-opped the whole seed, leaving a
+    fresh POV box with default views and no shortcut folders. sqlite3.connect
+    creates the file, and the CREATE TABLE below matches POV's own schema, so
+    POV simply picks up the pre-seeded rows on first run."""
     pov_data = os.path.join(ADDON_DATA_PATH, 'plugin.video.pov')
+    try:
+        os.makedirs(pov_data, exist_ok=True)
+    except Exception as e:
+        _log('could not create POV addon_data dir: %s' % e, xbmc.LOGWARNING)
     # shortcut folders -> navigator.db
     sf = _fetchv(roots, 'pov/shortcut_folders.json')
     ndb = os.path.join(pov_data, 'navigator.db')
-    if sf and os.path.exists(ndb):
+    if sf:
         try:
             folders = json.loads(sf.decode('utf-8'))
             con = sqlite3.connect(ndb)
@@ -139,7 +150,7 @@ def _seed_pov_db(roots):
     # views -> views.db
     vj = _fetchv(roots, 'pov/views.json')
     vdb = os.path.join(pov_data, 'views.db')
-    if vj and os.path.exists(vdb):
+    if vj:
         try:
             views = json.loads(vj.decode('utf-8'))
             con = sqlite3.connect(vdb)

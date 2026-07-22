@@ -44,6 +44,16 @@
       "skin.arctic.fuse.3",
       "skin.arctic.zephyr.2.resurrection.mod",
       "skin.nimbus"
+    ],
+    "gears_only": [
+      "plugin.video.gears",
+      "script.module.gearsscrapers",
+      "script.module.cocoscrapers",
+      "repository.cocoscrapers",
+      "script.module.magneto"
+    ],
+    "pov_only": [
+      "plugin.video.pov"
     ]
   },
   "notes": "channels.optional = addons that are NOT part of every install, so the client only updates them if the user already has them. This is the two skins + their bundled deps (Arctic Fuse pulls themoviedb.helper/skinvariables/jurialmunkey/six/qrcode/fonts/resources; Nimbus pulls script.nimbus.helper) + the bootstrap-only firstrun. Marking them core would make an Estuary/Nimbus user's 'check updates' list every AF3 dependency as missing. Everything else is core and auto-updates for everyone.",
@@ -116,6 +126,7 @@
       "seed_base": "FenLight_Estuary.zip",
       "seed_include": [
         "media/fonts",
+        "media/build_icons",
         "userdata/profiles.xml",
         "userdata/RssFeeds.xml",
         "userdata/addon_data/service.subtitles.gearsai",
