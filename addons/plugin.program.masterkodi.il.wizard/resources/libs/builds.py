@@ -1379,106 +1379,6 @@ class BuildManager:
         except Exception as e:
             log(f"state seed after bundle install failed: {e}", xbmc.LOGWARNING)
 
-    def install_skin_only(self, skin_url):
-        """Install Arctic Fuse skin on existing build (no wipe)"""
-        # Kodi 22: the build.txt bundle is the OMEGA one (gui 5.17 +
-        # skinshortcuts 2.0.3) -- installing it here would reboot the box into
-        # an unloadable skin. Route through the manifest like every other
-        # Piers skin install.
-        if _kodi_major() >= 22:
-            cfg = self.OPTIONAL_SKINS['arctic']
-            if not self._install_from_manifest(cfg['id'], cfg.get('deps', []), cfg['name']):
-                return False
-            self.set_default_skin(cfg['id'])
-            ADDON.setSetting('installed_skin', cfg['name'])
-            self.sync_skin_stacks(cfg['id'])
-            self._countdown_restart(self.get_installed_build_name(), cfg['name'])
-            return True
-        progress = xbmcgui.DialogProgress()
-        progress.create(ADDON_NAME, "[COLOR cyan]מתקין סקין Arctic Fuse...[/COLOR]")
-        
-        try:
-            # Set skip flag
-            ADDON.setSetting('skip_update_check', 'true')
-            
-            if not os.path.exists(TEMP_FOLDER):
-                os.makedirs(TEMP_FOLDER)
-            
-            skin_zip = os.path.join(TEMP_FOLDER, 'arctic_fuse.zip')
-            try:
-                os.remove(skin_zip)
-            except:
-                pass
-            
-            # Download skin
-            progress.update(0, "[COLOR yellow]מוריד סקין Arctic Fuse...[/COLOR]")
-            success = self.download_file(skin_url, skin_zip, progress, "[COLOR yellow]מוריד Arctic Fuse...[/COLOR]")
-            
-            if not success or not os.path.exists(skin_zip) or os.path.getsize(skin_zip) == 0:
-                progress.close()
-                try:
-                    os.remove(skin_zip)
-                except:
-                    pass
-                self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]ההורדה נכשלה![/COLOR]")
-                return False
-            
-            # Get skin addons
-            progress.update(50, "[COLOR yellow]סורק אדונים...[/COLOR]")
-            skin_addons = self.grab_addons_from_zip(skin_zip)
-            
-            # Extract with database merge (no wipe!)
-            progress.update(60, "[COLOR yellow]מתקין Arctic Fuse...[/COLOR]")
-            success, errors = self.extract_and_merge_skin(skin_zip, progress, "מתקין Arctic Fuse...")
-            
-            if not success:
-                progress.close()
-                self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]ההתקנה נכשלה![/COLOR]")
-                return False
-            
-            # Enable addons
-            progress.update(85, "[COLOR yellow]מפעיל אדונים...[/COLOR]")
-            self.enable_addons_in_db(skin_addons)
-            self._pin_addons_in_db(skin_addons)
-            self.setup_wizard_repo_in_db()
-            self._seed_state_from_manifest(skin_addons)
-
-            # Set as default skin
-            progress.update(90, "[COLOR yellow]מגדיר סקין ברירת מחדל...[/COLOR]")
-            self.set_default_skin('skin.arctic.fuse.3')
-            self.sync_skin_stacks('skin.arctic.fuse.3')
-            
-            # Update
-            progress.update(95, "[COLOR yellow]מעדכן...[/COLOR]")
-            xbmc.executebuiltin('UpdateAddonRepos()')
-            xbmc.executebuiltin('UpdateLocalAddons()')
-            self._apply_build_config('skin.arctic.fuse.3')
-
-            # Save setting
-            ADDON.setSetting('installed_skin', 'Arctic Fuse')
-            
-            # Cleanup
-            try:
-                os.remove(skin_zip)
-            except:
-                pass
-            
-            progress.update(100, "[COLOR lime]הסקין הותקן![/COLOR]")
-            xbmc.sleep(500)
-            progress.close()
-            
-            # Countdown and restart
-            build_name = self.get_installed_build_name()
-            self._countdown_restart(build_name, "Arctic Fuse")
-            
-            return True
-            
-        except Exception as e:
-            progress.close()
-            log(f"Skin install error: {e}", xbmc.LOGERROR)
-            self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]שגיאה:[/COLOR] {str(e)}")
-            return False
-
     # ------------------------------------------------------------------ #
     # Skin manager helpers (used by skins_menu)
     # ------------------------------------------------------------------ #
@@ -1879,18 +1779,10 @@ def builds_menu():
         dialog.ok(ADDON_NAME, "[COLOR red]לא נמצאו בילדים זמינים.[/COLOR]\nבדוק את חיבור האינטרנט.")
         return
     
-    # Check if build is installed and get skin URL for "add skin" option
-    build_installed = manager.is_build_installed()
+    # Shown on the installed build's row.
     installed_build = manager.get_installed_build_name()
     installed_skin = manager.get_installed_skin()
-    
-    # Get skin_url from any build (they all share the same skin URL)
-    skin_url = None
-    for b in builds:
-        if b.get('skin_url'):
-            skin_url = b['skin_url']
-            break
-    
+
     while True:
         # Branded rows (same custom window as the wizard menu), with a parallel
         # 'kind' list so we act on the choice by index, not by matching text.
@@ -1905,29 +1797,19 @@ def builds_menu():
                 rows.append(menu_item(name, f"v{ver}", 'DefaultAddonProgram.png'))
             row_kind.append(('build', b))
 
-        # "Add Arctic Fuse" option if a build is installed on Estuary
-        if build_installed and installed_skin == 'Estuary' and skin_url:
-            rows.append(menu_item('הוסף סקין Arctic Fuse', 'לבילד הקיים, בלי למחוק', 'DefaultAddonProgram.png'))
-            row_kind.append(('add_af3', None))
+        # (Removed: the "הוסף סקין Arctic Fuse" row. It dated from when AF3 was
+        # the ONLY optional skin, before the dedicated Skins menu existed. It was
+        # redundant -- 'סקינים' > 'החלפת סקין' installs/switches ANY of the four
+        # skins without wiping -- inconsistent (no equivalent for Nimbus/Zephyr),
+        # and BROKEN on POV: install_skin_only never re-applied the content
+        # source, so AF3 landed with no POV menus/widgets at all. The skin-switch
+        # flow does that correctly.)
 
         sel = wizard_select('התקנת בילד', rows)
         if sel < 0:
             break                                   # BACK / cancel
 
         kind, selected_build = row_kind[sel]
-
-        # "Add Arctic Fuse" to the existing build
-        if kind == 'add_af3':
-            confirm_msg = (
-                f"[COLOR cyan]בילד מותקן:[/COLOR] {installed_build}\n"
-                f"[COLOR cyan]סקין נוכחי:[/COLOR] Estuary\n"
-                f"[COLOR cyan]סקין חדש:[/COLOR] Arctic Fuse\n\n"
-                "[COLOR yellow]הסקין יותקן בלי למחוק את הבילד הקיים.[/COLOR]\n\n"
-                "להמשיך?"
-            )
-            if dialog.yesno("[B]הוספת סקין Arctic Fuse[/B]", confirm_msg, yeslabel="[B]התקן[/B]", nolabel="ביטול"):
-                manager.install_skin_only(skin_url)
-            continue
 
         if not selected_build:
             continue
