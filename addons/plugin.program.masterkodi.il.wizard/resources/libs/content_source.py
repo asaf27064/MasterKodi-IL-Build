@@ -89,17 +89,40 @@ def _variant_dir(skin_id):
     return k21
 
 
-def _base_repo_dir(skin_id):
-    return ('config-variants-piers' if (_kodi_major() >= 22 and
-            SKIN_VARIANTS.get(skin_id, (None, None))[1]) else 'config-variants')
+def _variant_roots(skin_id):
+    """Repo-relative variant roots, MOST SPECIFIC FIRST.
+
+    The piers variants are OVERLAYS: they carry only what actually differs on
+    Kodi 22 (the skin's own XML/menus, because the Piers skins differ). Every
+    fleet-NEUTRAL piece -- POV addon data (navigator shortcut folders, views,
+    settings) and favourites -- lives once in the shared base variant. Resolving
+    per file, piers-then-base, means a missing piers file falls back instead of
+    being silently skipped (which used to leave a Kodi 22 POV install with no
+    favourites and an unseeded POV db)."""
+    k21, piers = SKIN_VARIANTS.get(skin_id, (None, None))
+    roots = []
+    if _kodi_major() >= 22 and piers:
+        roots.append('config-variants-piers/' + piers)
+    if k21:
+        roots.append('config-variants/' + k21)
+    return roots
+
+
+def _fetchv(roots, rel):
+    """Fetch a variant-relative file from the first root that has it."""
+    for r in roots:
+        data = _fetch(r + '/' + rel)
+        if data:
+            return data
+    return None
 
 
 # ------------------------------------------------------------------ POV seeds
-def _seed_pov_db(variant_root):
+def _seed_pov_db(roots):
     """Seed POV navigator.db (shortcut folders) + views.db from pov/*.json."""
     pov_data = os.path.join(ADDON_DATA_PATH, 'plugin.video.pov')
     # shortcut folders -> navigator.db
-    sf = _fetch(variant_root + '/pov/shortcut_folders.json')
+    sf = _fetchv(roots, 'pov/shortcut_folders.json')
     ndb = os.path.join(pov_data, 'navigator.db')
     if sf and os.path.exists(ndb):
         try:
@@ -114,7 +137,7 @@ def _seed_pov_db(variant_root):
         except Exception as e:
             _log('pov folder seed failed: %s' % e, xbmc.LOGWARNING)
     # views -> views.db
-    vj = _fetch(variant_root + '/pov/views.json')
+    vj = _fetchv(roots, 'pov/views.json')
     vdb = os.path.join(pov_data, 'views.db')
     if vj and os.path.exists(vdb):
         try:
@@ -128,40 +151,40 @@ def _seed_pov_db(variant_root):
         except Exception as e:
             _log('pov views seed failed: %s' % e, xbmc.LOGWARNING)
     # POV addon settings
-    ps = _fetch(variant_root + '/pov/settings.xml')
+    ps = _fetchv(roots, 'pov/settings.xml')
     if ps:
         _backup_once(os.path.join(pov_data, 'settings.xml'), 'gears')
         _write(os.path.join(pov_data, 'settings.xml'), ps)
 
 
 # ------------------------------------------------------------------ per skin
-def _apply_estuary(variant_root, skin_id):
+def _apply_estuary(roots, skin_id):
     # favourites (userdata, shared) + skin xml overrides
-    fav = _fetch(variant_root + '/favourites.xml')
+    fav = _fetchv(roots, 'favourites.xml')
     if fav:
         _backup_once(os.path.join(USERDATA, 'favourites.xml'), 'gears')
         _write(os.path.join(USERDATA, 'favourites.xml'), fav)
     for name in ('Home.xml', 'Includes.xml', 'Custom_1107_SearchDialog.xml',
                  'DialogButtonMenu.xml'):
-        data = _fetch(variant_root + '/skin-overrides/' + name)
+        data = _fetchv(roots, 'skin-overrides/' + name)
         if data:
             dest = os.path.join(ADDONS, skin_id, 'xml', name)
             _backup_once(dest, 'gears'); _write(dest, data)
-    _seed_pov_db(variant_root)
+    _seed_pov_db(roots)
 
 
-def _apply_nimbus(variant_root, skin_id):
+def _apply_nimbus(roots, skin_id):
     for name in ('Custom_1107_SearchDialog.xml', 'DialogButtonMenu.xml',
                  'Variables_Search.xml', 'script-nimbus-main_menu_custom1.xml',
                  'script-nimbus-main_menu_movies.xml', 'script-nimbus-main_menu_tvshows.xml',
                  'script-nimbus-widget_custom1.xml', 'script-nimbus-widget_movies.xml',
                  'script-nimbus-widget_tvshows.xml'):
-        data = _fetch(variant_root + '/skin-overrides/' + name)
+        data = _fetchv(roots, 'skin-overrides/' + name)
         if data:
             dest = os.path.join(ADDONS, skin_id, 'xml', name)
             _backup_once(dest, 'gears'); _write(dest, data)
     # cpath compiled menu config
-    cp = _fetch(variant_root + '/nimbus/cpath_seed.json')
+    cp = _fetchv(roots, 'nimbus/cpath_seed.json')
     db = os.path.join(ADDON_DATA_PATH, 'script.nimbus.helper', 'cpath_cache.db')
     if cp and os.path.exists(db):
         try:
@@ -175,40 +198,40 @@ def _apply_nimbus(variant_root, skin_id):
             _log('seeded %d nimbus cpath rows' % len(rows))
         except Exception as e:
             _log('nimbus cpath seed failed: %s' % e, xbmc.LOGWARNING)
-    _seed_pov_db(variant_root)
+    _seed_pov_db(roots)
 
 
-def _apply_af3(variant_root, skin_id):
+def _apply_af3(roots, skin_id):
     nodes_dir = os.path.join(ADDON_DATA_PATH, 'script.skinvariables', 'nodes', skin_id)
     for name in ('skinvariables-shortcut-homewidgets.json',
                  'skinvariables-shortcut-1101widgets.json',
                  'skinvariables-shortcut-1102widgets.json',
                  'skinvariables-shortcut-searchwidgets.json',
                  'skinvariables-shortcut-powermenu.json'):
-        data = _fetch(variant_root + '/nodes/' + name)
+        data = _fetchv(roots, 'nodes/' + name)
         if data:
             dest = os.path.join(nodes_dir, name)
             _backup_once(dest, 'gears'); _write(dest, data)
     for name in ('script-skinvariables-generator-includes-.xml',
                  'script-skinviewtypes-includes.xml'):
-        data = _fetch(variant_root + '/skin-overrides/' + name)
+        data = _fetchv(roots, 'skin-overrides/' + name)
         if data:
             dest = os.path.join(ADDONS, skin_id, '1080i', name)
             _backup_once(dest, 'gears'); _write(dest, data)
     # viewtypes source json
-    vt = _fetch(variant_root + '/skinvariables/' + skin_id + '-viewtypes.json')
+    vt = _fetchv(roots, 'skinvariables/' + skin_id + '-viewtypes.json')
     if vt:
         dest = os.path.join(ADDON_DATA_PATH, 'script.skinvariables', skin_id + '-viewtypes.json')
         _backup_once(dest, 'gears'); _write(dest, vt)
-    _seed_pov_db(variant_root)
+    _seed_pov_db(roots)
 
 
-def _apply_zephyr(variant_root, skin_id):
+def _apply_zephyr(roots, skin_id):
     piers = _kodi_major() >= 22
     if piers:
         # Piers Zephyr = skin's own shortcuts menu files
         for name in ('menus.xml', 'templates.xml'):
-            data = _fetch(variant_root + '/skin-overrides/' + name)
+            data = _fetchv(roots, 'skin-overrides/' + name)
             if data:
                 dest = os.path.join(ADDONS, skin_id, 'shortcuts', name)
                 _backup_once(dest, 'gears'); _write(dest, data)
@@ -218,7 +241,7 @@ def _apply_zephyr(variant_root, skin_id):
         for name in ('srtym-1.DATA.xml', 'sdrvt-1.DATA.xml', 'mainmenu.DATA.xml',
                      'hybvrshyrvtym-1.DATA.xml',
                      'skin.arctic.zephyr.2.resurrection.mod.properties'):
-            data = _fetch(variant_root + '/skinshortcuts/' + name)
+            data = _fetchv(roots, 'skinshortcuts/' + name)
             if data:
                 dest = os.path.join(ss, name)
                 _backup_once(dest, 'gears'); _write(dest, data)
@@ -234,11 +257,11 @@ def _apply_zephyr(variant_root, skin_id):
         for rel, sub in (('themoviedb/settings.xml', 'settings.xml'),
                          ('themoviedb/players/pov.json', 'players/pov.json'),
                          ('themoviedb/nodes/SELECTED NETWORKS.json', 'nodes/SELECTED NETWORKS.json')):
-            data = _fetch(variant_root + '/' + rel)
+            data = _fetchv(roots, rel)
             if data:
                 dest = os.path.join(th, sub)
                 _backup_once(dest, 'gears'); _write(dest, data)
-    _seed_pov_db(variant_root)
+    _seed_pov_db(roots)
 
 
 _APPLY = {
@@ -281,9 +304,9 @@ def _apply_pov_core(skin_id):
         return False, 'no POV variant for this skin/version'
     if not _ensure_pov_installed():
         return False, 'POV install failed'
-    root = _base_repo_dir(skin_id) + '/' + variant
+    roots = _variant_roots(skin_id)
     try:
-        _APPLY[skin_id](root, skin_id)
+        _APPLY[skin_id](roots, skin_id)
     except Exception as e:
         _log('apply failed: %s' % e, xbmc.LOGERROR)
         return False, str(e)
@@ -317,11 +340,11 @@ def switch_to(source):
         if not _ensure_pov_installed():
             dialog.ok(ADDON_NAME, '[COLOR %s]התקנת POV נכשלה.[/COLOR]' % COLOR_ERROR)
             return False
-        root = _base_repo_dir(skin_id) + '/' + variant
+        roots = _variant_roots(skin_id)
         prog = xbmcgui.DialogProgress()
         prog.create(ADDON_NAME, '[COLOR cyan]מחליף מקור תוכן ל-POV...[/COLOR]')
         try:
-            _APPLY[skin_id](root, skin_id)
+            _APPLY[skin_id](roots, skin_id)
         except Exception as e:
             prog.close()
             _log('apply failed: %s' % e, xbmc.LOGERROR)
