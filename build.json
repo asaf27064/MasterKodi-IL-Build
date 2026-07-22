@@ -5,7 +5,7 @@
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "manifest_schema": 1,
-  "config_version": 47,
+  "config_version": 48,
   "piers": {
     "release_tag": "addons-piers",
     "manifest": "manifest-piers.json",
@@ -130,7 +130,8 @@
         "userdata/profiles.xml",
         "userdata/RssFeeds.xml",
         "userdata/addon_data/service.subtitles.gearsai",
-        "userdata/addon_data/service.subtitles.all_subs_plus"
+        "userdata/addon_data/service.subtitles.all_subs_plus",
+        "userdata/addon_data/plugin.program.autocompletion"
       ]
     }
   }

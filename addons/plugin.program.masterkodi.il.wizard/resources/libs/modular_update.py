@@ -468,6 +468,9 @@ def compute_updates(manifest, force=False):
 # and repo self-update from our own repo, so they're excluded too.
 MODDED_ADDONS = {
     'plugin.video.gears',
+    'plugin.video.pov',        # kodirdil Hebrew overlay; repository.kodifitzwell
+                               # ships vanilla POV and IS installed -> real
+                               # clobber risk, exactly like gears/chainsrepo
     'skin.estuary',            # in Kodi's official repo -> real clobber risk
     'skin.nimbus',             # in Kodi's official repo -> real clobber risk
     'skin.arctic.fuse.3',
