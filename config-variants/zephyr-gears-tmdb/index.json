@@ -36,16 +36,16 @@
       "dest": "{addon_data}/script.skinshortcuts/thzvkh-1.DATA.xml"
     },
     {
-      "src": "themoviedb/settings.xml",
-      "dest": "{addon_data}/plugin.video.themoviedb.helper/settings.xml"
-    },
-    {
       "src": "themoviedb/nodes/SELECTED NETWORKS.json",
       "dest": "{addon_data}/plugin.video.themoviedb.helper/nodes/SELECTED NETWORKS.json"
     },
     {
       "src": "themoviedb/players/gears.json",
       "dest": "{addon_data}/plugin.video.themoviedb.helper/players/gears.json"
+    },
+    {
+      "src": "themoviedb/settings.xml",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/settings.xml"
     }
   ],
   "special": []

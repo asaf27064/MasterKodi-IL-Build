@@ -52,16 +52,16 @@
       "dest": "{addon_data}/script.skinvariables/skin.arctic.zephyr.2.resurrection.mod-viewtypes.json"
     },
     {
-      "src": "themoviedb/settings.xml",
-      "dest": "{addon_data}/plugin.video.themoviedb.helper/settings.xml"
-    },
-    {
       "src": "themoviedb/nodes/SELECTED NETWORKS.json",
       "dest": "{addon_data}/plugin.video.themoviedb.helper/nodes/SELECTED NETWORKS.json"
     },
     {
       "src": "themoviedb/players/pov.json",
       "dest": "{addon_data}/plugin.video.themoviedb.helper/players/pov.json"
+    },
+    {
+      "src": "themoviedb/settings.xml",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/settings.xml"
     }
   ],
   "special": [

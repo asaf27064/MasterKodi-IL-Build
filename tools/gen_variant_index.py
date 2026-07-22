@@ -97,6 +97,7 @@ def build(repo_root, check=False):
             skin = skin_for(variant)
             files, special = [], []
             for dp, _dirs, fs in os.walk(vdir):
+                _dirs.sort()          # stable traversal across platforms
                 for f in sorted(fs):
                     if f in ('index.json', 'README.md') or f.startswith('.'):
                         continue
@@ -112,6 +113,10 @@ def build(repo_root, check=False):
                         special.append(rel)
                         continue
                     files.append({'src': rel, 'dest': d})
+            # Sort by src: os.walk visits subdirectories in OS-dependent order,
+            # so without this the same tree produced different JSON on Windows
+            # vs the Linux CI runner and --check flagged everything stale.
+            files.sort(key=lambda e: e['src'])
             index = {'variant': variant, 'skin': skin,
                      'inherit': variant not in SELF_CONTAINED,
                      'files': files, 'special': sorted(special)}
