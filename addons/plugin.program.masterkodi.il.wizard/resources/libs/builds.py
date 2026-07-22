@@ -2009,7 +2009,25 @@ def builds_menu():
                 extras = keep_mod.detect_extras({a.get('id') for a in man.get('addons', [])})
             except Exception as e:
                 log(f"detect_extras skipped: {e}", xbmc.LOGWARNING)
-            keep_keys = keep_mod.prompt(extras=extras, default_all=True)
+            # The checklist only earns its place when there is something to lose.
+            # Skip it when the user has turned it off (keep_ask=false -> always
+            # keep everything), or when nothing on this box is worth carrying
+            # over (fresh/just-reinstalled). Both paths keep EVERYTHING, so
+            # skipping the dialog can never cause data loss -- it only removes a
+            # pointless confirmation.
+            _all_keys = [g['key'] for g in keep_mod.GROUPS] + (['extras'] if extras else [])
+            try:
+                _ask = ADDON.getSetting('keep_ask') != 'false'
+            except Exception:
+                _ask = True
+            if not _ask:
+                keep_keys = _all_keys
+                log("keep prompt skipped (keep_ask=false) - keeping everything")
+            elif not keep_mod.has_anything(extras):
+                keep_keys = _all_keys
+                log("keep prompt skipped (nothing on this box to keep)")
+            else:
+                keep_keys = keep_mod.prompt(extras=extras, default_all=True)
             manager.install_build(selected_build, skin_choice=skin_choice,
                                   keep_keys=keep_keys, keep_extras=extras,
                                   content_choice=content_choice)

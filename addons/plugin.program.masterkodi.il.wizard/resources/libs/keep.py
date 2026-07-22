@@ -170,6 +170,34 @@ def _xml_write(path, values):
 # --------------------------------------------------------------------------- #
 # public API
 # --------------------------------------------------------------------------- #
+def has_anything(extras=None):
+    """Is there actually anything worth carrying across the wipe?
+
+    Used to skip the 'what to keep' dialog entirely on a box where nothing is
+    configured yet (fresh install, or a reinstall right after one) -- the
+    checklist is pure noise there. Cheap probes only: existence/non-empty, no
+    full reads."""
+    try:
+        if extras:
+            return True
+        for g in GROUPS:
+            if g.get('gears_ids') and _db_read(GEARS_SETTINGS_DB, g['gears_ids']):
+                return True
+            for path, ids in g.get('xml_targets', []):
+                if _xml_read(path, ids):
+                    return True
+            for name in g.get('db_files', []):
+                if os.path.isfile(os.path.join(GEARS_DB_DIR, name)):
+                    return True
+            for f in g.get('files', []):
+                if os.path.isfile(f) and os.path.getsize(f) > 0:
+                    return True
+    except Exception as e:
+        log('has_anything probe failed: %s' % e, xbmc.LOGWARNING)
+        return True          # unsure -> ask, never silently skip a real backup
+    return False
+
+
 def prompt(extras=None, default_all=True):
     """Show the 'what to keep' checklist (all ticked by default). Returns a list
     of selected group keys (may include 'extras'). Cancel -> keep the defaults
