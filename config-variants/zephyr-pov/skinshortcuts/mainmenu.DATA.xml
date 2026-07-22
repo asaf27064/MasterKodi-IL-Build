@@ -3,7 +3,7 @@
 		<defaultID>mkil_movies</defaultID>
 		<label>סרטים</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://home/media/build_icons/Movies.png</icon>
+		<icon>special://skin/extras/icons/director.png</icon>
 		<thumb>special://skin/extras/icons/director.png</thumb>
 		<action>ActivateWindow(10025,"plugin://plugin.video.pov/?action=trakt_movies_trending&amp;iconImage=trending&amp;mode=build_movie_list&amp;name=Trending&amp;random_support=true",return)</action>
 		</shortcut>
@@ -11,7 +11,7 @@
 		<defaultID>mkil_tvshows</defaultID>
 		<label>סדרות</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://home/media/build_icons/TV_Shows.png</icon>
+		<icon>special://skin/extras/icons/tv.png</icon>
 		<thumb>special://skin/extras/icons/tv.png</thumb>
 		<action>ActivateWindow(10025,"plugin://plugin.video.pov/?action=trakt_tv_trending&amp;iconImage=trending&amp;mode=build_tvshow_list&amp;name=Trending&amp;random_support=true",return)</action>
 		</shortcut>
@@ -27,7 +27,7 @@
 		<defaultID>mkil_torbox</defaultID>
 		<label>חיבור שירותים</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://home/media/build_icons/TorBox_Auth.png</icon>
+		<icon>special://skin/extras/icons/configure.png</icon>
 		<thumb>special://skin/extras/icons/configure.png</thumb>
 		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=navigator.torbox",return)</action>
 		</shortcut>

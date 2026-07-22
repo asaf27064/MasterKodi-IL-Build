@@ -3,7 +3,7 @@
 		<defaultID>mkil_movies</defaultID>
 		<label>סרטים</label>
 		<label2>פריטים מותאמים אישית</label2>
-		<icon>special://home/media/build_icons/Movies.png</icon>
+		<icon>special://skin/extras/icons/director.png</icon>
 		<thumb>special://skin/extras/icons/director.png</thumb>
 		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=dir_movie&amp;tmdb_type=None&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
 		</shortcut>
@@ -11,7 +11,7 @@
 		<defaultID>mkil_tvshows</defaultID>
 		<label>סדרות</label>
 		<label2>פריטים מותאמים אישית</label2>
-		<icon>special://home/media/build_icons/TV_Shows.png</icon>
+		<icon>special://skin/extras/icons/tv.png</icon>
 		<thumb>special://skin/extras/icons/tv.png</thumb>
 		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=dir_tv&amp;tmdb_type=None&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
 		</shortcut>
@@ -27,7 +27,7 @@
 		<defaultID>mkil_torbox</defaultID>
 		<label>חיבור שירותים</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://home/media/build_icons/TorBox_Auth.png</icon>
+		<icon>special://skin/extras/icons/configure.png</icon>
 		<thumb>special://skin/extras/icons/configure.png</thumb>
 		<action>ActivateWindow(Videos,"plugin://plugin.video.gears/?mode=navigator.build_shortcut_folder_contents&amp;name=TorBox+Services&amp;iconImage=folder",return)</action>
 		</shortcut>

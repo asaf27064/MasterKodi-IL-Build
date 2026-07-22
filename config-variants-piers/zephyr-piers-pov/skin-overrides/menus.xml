@@ -13,13 +13,13 @@
         <item name="mkil-movies" submenu="mkil-movies">
             <label>סרטים</label>
             <action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
-            <icon>special://home/media/build_icons/Movies.png</icon>
+            <icon>special://skin/extras/icons/director.png</icon>
             <thumb>special://skin/extras/icons/director.png</thumb>
         </item>
         <item name="mkil-tvshows" submenu="mkil-tvshows">
             <label>סדרות</label>
             <action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
-            <icon>special://home/media/build_icons/TV_Shows.png</icon>
+            <icon>special://skin/extras/icons/tv.png</icon>
             <thumb>special://skin/extras/icons/tv.png</thumb>
         </item>
         <item name="search" submenu="search">
@@ -32,7 +32,7 @@
         <item name="mkil-services" submenu="mkil-services">
             <label>חיבור שירותים</label>
             <action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&amp;shortcut_folder=True&amp;name=Connect+Services",return)</action>
-            <icon>special://home/media/build_icons/TorBox_Auth.png</icon>
+            <icon>special://skin/extras/icons/configure.png</icon>
             <thumb>special://skin/extras/icons/configure.png</thumb>
         </item>
         <item name="mkil-maint" submenu="mkil-maint">
