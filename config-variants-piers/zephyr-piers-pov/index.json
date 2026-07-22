@@ -1,0 +1,16 @@
+{
+  "variant": "zephyr-piers-pov",
+  "skin": "skin.arctic.zephyr.2.resurrection.mod",
+  "inherit": false,
+  "files": [
+    {
+      "src": "skin-overrides/menus.xml",
+      "dest": "{addons}/{skin}/shortcuts/menus.xml"
+    },
+    {
+      "src": "skin-overrides/templates.xml",
+      "dest": "{addons}/{skin}/shortcuts/templates.xml"
+    }
+  ],
+  "special": []
+}

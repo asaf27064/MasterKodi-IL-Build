@@ -1,0 +1,24 @@
+{
+  "variant": "estuary-piers-pov",
+  "skin": "skin.estuary",
+  "inherit": true,
+  "files": [
+    {
+      "src": "skin-overrides/Custom_1107_SearchDialog.xml",
+      "dest": "{addons}/{skin}/xml/Custom_1107_SearchDialog.xml"
+    },
+    {
+      "src": "skin-overrides/DialogButtonMenu.xml",
+      "dest": "{addons}/{skin}/xml/DialogButtonMenu.xml"
+    },
+    {
+      "src": "skin-overrides/Home.xml",
+      "dest": "{addons}/{skin}/xml/Home.xml"
+    },
+    {
+      "src": "skin-overrides/Includes.xml",
+      "dest": "{addons}/{skin}/xml/Includes.xml"
+    }
+  ],
+  "special": []
+}

@@ -48,6 +48,13 @@ jobs:
         # This keeps the Hebrew isolated + re-appliable to future upstreams.
         run: python tools/apply_overlay.py overlays addons
 
+      - name: Check config-variant indexes are current
+        # index.json is what the wizard's content switcher reads to know which
+        # files a variant ships. Hard-coded lists drifted before and silently
+        # dropped files (the Zephyr maintenance menu, the POV power menu). Fail
+        # the build if someone adds a variant file without regenerating.
+        run: python tools/gen_variant_index.py --check
+
       - name: Build addon zips (reproducible)
         run: python tools/build_addons.py --repo-root . --out dist
 

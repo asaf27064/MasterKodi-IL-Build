@@ -1,0 +1,72 @@
+{
+  "variant": "zephyr-pov-tmdb",
+  "skin": "skin.arctic.zephyr.2.resurrection.mod",
+  "inherit": true,
+  "files": [
+    {
+      "src": "skin-overrides/Includes_Items.xml",
+      "dest": "{addons}/{skin}/1080i/Includes_Items.xml"
+    },
+    {
+      "src": "skin-overrides/script-skinviewtypes-includes.xml",
+      "dest": "{addons}/{skin}/1080i/script-skinviewtypes-includes.xml"
+    },
+    {
+      "src": "skin-overrides/template.xml",
+      "dest": "{addons}/{skin}/1080i/template.xml"
+    },
+    {
+      "src": "skin.zephyr/settings.xml",
+      "dest": "{addon_data}/{skin}/settings.xml"
+    },
+    {
+      "src": "skinshortcuts/5.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/5.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/hybvrshyrvtym-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/hybvrshyrvtym-1.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/mainmenu.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/mainmenu.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/sdrvt-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/sdrvt-1.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.arctic.zephyr.2.resurrection.mod.properties",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.2.resurrection.mod.properties"
+    },
+    {
+      "src": "skinshortcuts/srtym-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/srtym-1.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/thzvkh-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/thzvkh-1.DATA.xml"
+    },
+    {
+      "src": "skinvariables/skin.arctic.zephyr.2.resurrection.mod-viewtypes.json",
+      "dest": "{addon_data}/script.skinvariables/skin.arctic.zephyr.2.resurrection.mod-viewtypes.json"
+    },
+    {
+      "src": "themoviedb/settings.xml",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/settings.xml"
+    },
+    {
+      "src": "themoviedb/nodes/SELECTED NETWORKS.json",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/nodes/SELECTED NETWORKS.json"
+    },
+    {
+      "src": "themoviedb/players/pov.json",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/players/pov.json"
+    }
+  ],
+  "special": [
+    "pov/settings.xml",
+    "pov/shortcut_folders.json",
+    "pov/views.json"
+  ]
+}

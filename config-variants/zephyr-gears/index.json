@@ -1,0 +1,28 @@
+{
+  "variant": "zephyr-gears",
+  "skin": "skin.arctic.zephyr.2.resurrection.mod",
+  "inherit": true,
+  "files": [
+    {
+      "src": "skin.zephyr/settings.xml",
+      "dest": "{addon_data}/{skin}/settings.xml"
+    },
+    {
+      "src": "skinshortcuts/hybvrtorbox-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/hybvrtorbox-1.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/sdrvt-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/sdrvt-1.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/srtym-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/srtym-1.DATA.xml"
+    },
+    {
+      "src": "themoviedb/settings.xml",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/settings.xml"
+    }
+  ],
+  "special": []
+}

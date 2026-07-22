@@ -1,0 +1,49 @@
+{
+  "variant": "nimbus-pov",
+  "skin": "skin.nimbus",
+  "inherit": true,
+  "files": [
+    {
+      "src": "skin-overrides/Custom_1107_SearchDialog.xml",
+      "dest": "{addons}/{skin}/xml/Custom_1107_SearchDialog.xml"
+    },
+    {
+      "src": "skin-overrides/DialogButtonMenu.xml",
+      "dest": "{addons}/{skin}/xml/DialogButtonMenu.xml"
+    },
+    {
+      "src": "skin-overrides/Variables_Search.xml",
+      "dest": "{addons}/{skin}/xml/Variables_Search.xml"
+    },
+    {
+      "src": "skin-overrides/script-nimbus-main_menu_custom1.xml",
+      "dest": "{addons}/{skin}/xml/script-nimbus-main_menu_custom1.xml"
+    },
+    {
+      "src": "skin-overrides/script-nimbus-main_menu_movies.xml",
+      "dest": "{addons}/{skin}/xml/script-nimbus-main_menu_movies.xml"
+    },
+    {
+      "src": "skin-overrides/script-nimbus-main_menu_tvshows.xml",
+      "dest": "{addons}/{skin}/xml/script-nimbus-main_menu_tvshows.xml"
+    },
+    {
+      "src": "skin-overrides/script-nimbus-widget_custom1.xml",
+      "dest": "{addons}/{skin}/xml/script-nimbus-widget_custom1.xml"
+    },
+    {
+      "src": "skin-overrides/script-nimbus-widget_movies.xml",
+      "dest": "{addons}/{skin}/xml/script-nimbus-widget_movies.xml"
+    },
+    {
+      "src": "skin-overrides/script-nimbus-widget_tvshows.xml",
+      "dest": "{addons}/{skin}/xml/script-nimbus-widget_tvshows.xml"
+    }
+  ],
+  "special": [
+    "nimbus/cpath_seed.json",
+    "pov/settings.xml",
+    "pov/shortcut_folders.json",
+    "pov/views.json"
+  ]
+}

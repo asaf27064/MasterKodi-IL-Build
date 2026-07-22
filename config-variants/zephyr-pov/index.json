@@ -1,0 +1,68 @@
+{
+  "variant": "zephyr-pov",
+  "skin": "skin.arctic.zephyr.2.resurrection.mod",
+  "inherit": true,
+  "files": [
+    {
+      "src": "skin.zephyr/settings.xml",
+      "dest": "{addon_data}/{skin}/settings.xml"
+    },
+    {
+      "src": "skinshortcuts/13012.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/13012.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/137.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/137.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/5.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/5.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/hhlptskyn.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/hhlptskyn.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/hybvrshyrvtym-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/hybvrshyrvtym-1.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/mainmenu.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/mainmenu.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/sdrvt-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/sdrvt-1.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/sdrvt.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/sdrvt.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.arctic.zephyr.2.resurrection.mod.properties",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.2.resurrection.mod.properties"
+    },
+    {
+      "src": "skinshortcuts/srtym-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/srtym-1.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/srtym.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/srtym.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/thzvkh-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/thzvkh-1.DATA.xml"
+    },
+    {
+      "src": "skinvariables/skin.arctic.zephyr.2.resurrection.mod-viewtypes.json",
+      "dest": "{addon_data}/script.skinvariables/skin.arctic.zephyr.2.resurrection.mod-viewtypes.json"
+    }
+  ],
+  "special": [
+    "pov/settings.xml",
+    "pov/shortcut_folders.json",
+    "pov/views.json"
+  ]
+}

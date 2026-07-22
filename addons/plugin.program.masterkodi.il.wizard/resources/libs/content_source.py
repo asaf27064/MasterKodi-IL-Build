@@ -117,6 +117,75 @@ def _fetchv(roots, rel):
     return None
 
 
+def _apply_index(roots, skin_id):
+    """Apply every file the variant declares in its index.json.
+
+    Replaces the old hard-coded per-skin file lists, which silently drifted from
+    what the variants actually shipped (the wizard cannot list a directory over
+    raw.githubusercontent, so a name missing from the list was simply never
+    fetched). That cost us the Zephyr MAINTENANCE menu and left the POV power
+    menu calling gears' clear_all_cache. The variant directory is now the source
+    of truth: tools/gen_variant_index.py regenerates the index, CI checks it is
+    current, and adding a file to a variant needs no wizard change.
+
+    Returns (applied, failed)."""
+    # MERGE the indexes across roots, base first so a more specific root wins.
+    # Taking only the first root's index would drop everything the piers variant
+    # doesn't restate -- on Kodi 22 that silently lost Estuary's favourites.xml
+    # again, the exact bug the per-file fallback was added to kill.
+    # Load most-specific first so we can honour its `inherit` flag: a variant
+    # that REPLACES the base (different menu architecture, e.g. Piers Zephyr)
+    # sets inherit=false and the base is ignored -- otherwise we would write
+    # Omega-era skin XML into a Piers skin. Overlay variants (the default)
+    # inherit, so the base still supplies whatever piers doesn't restate.
+    merged = {}
+    found = False
+    loaded = []
+    for root in roots:                            # most specific ... base
+        raw = _fetch(root + '/index.json')
+        if not raw:
+            continue
+        try:
+            loaded.append((root, json.loads(raw.decode('utf-8'))))
+            found = True
+        except Exception as e:
+            _log('bad index.json in %s: %s' % (root, e), xbmc.LOGERROR)
+    if loaded and loaded[0][1].get('inherit') is False:
+        _log('index: %s is self-contained, not inheriting base' % loaded[0][0])
+        loaded = loaded[:1]
+    for root, index in reversed(loaded):          # base first, specific wins
+        for entry in index.get('files', []):
+            if entry.get('src') and entry.get('dest'):
+                merged[entry['dest']] = entry
+    if not found:
+        _log('no index.json for %s (roots=%s)' % (skin_id, roots), xbmc.LOGWARNING)
+        return 0, 0
+    subs = {'{addons}': ADDONS, '{addon_data}': ADDON_DATA_PATH,
+            '{userdata}': USERDATA, '{home}': HOME, '{skin}': skin_id}
+    applied = failed = 0
+    for entry in merged.values():
+        src, dest = entry.get('src'), entry.get('dest')
+        if not src or not dest:
+            continue
+        for k, v in subs.items():
+            dest = dest.replace(k, v)
+        dest = os.path.normpath(dest)
+        data = _fetchv(roots, src)
+        if not data:
+            failed += 1
+            _log('index: could not fetch %s' % src, xbmc.LOGWARNING)
+            continue
+        try:
+            _backup_once(dest, 'gears')
+            _write(dest, data)
+            applied += 1
+        except Exception as e:
+            failed += 1
+            _log('index: write failed %s: %s' % (dest, e), xbmc.LOGWARNING)
+    _log('index applied for %s: %d file(s), %d failed' % (skin_id, applied, failed))
+    return applied, failed
+
+
 # ------------------------------------------------------------------ POV seeds
 def _seed_pov_db(roots):
     """Seed POV navigator.db (shortcut folders) + views.db from pov/*.json.
@@ -169,32 +238,19 @@ def _seed_pov_db(roots):
 
 
 # ------------------------------------------------------------------ per skin
+# ------------------------------------------------------------------ per skin
+# The file lists live in each variant's index.json (see tools/gen_variant_index.py),
+# NOT here -- hard-coded lists drifted and silently dropped files. These wrappers
+# now only carry the steps an index cannot express: database seeding and the
+# skinshortcuts hash reset that forces Zephyr to rebuild its menus.
 def _apply_estuary(roots, skin_id):
-    # favourites (userdata, shared) + skin xml overrides
-    fav = _fetchv(roots, 'favourites.xml')
-    if fav:
-        _backup_once(os.path.join(USERDATA, 'favourites.xml'), 'gears')
-        _write(os.path.join(USERDATA, 'favourites.xml'), fav)
-    for name in ('Home.xml', 'Includes.xml', 'Custom_1107_SearchDialog.xml',
-                 'DialogButtonMenu.xml'):
-        data = _fetchv(roots, 'skin-overrides/' + name)
-        if data:
-            dest = os.path.join(ADDONS, skin_id, 'xml', name)
-            _backup_once(dest, 'gears'); _write(dest, data)
+    _apply_index(roots, skin_id)
     _seed_pov_db(roots)
 
 
 def _apply_nimbus(roots, skin_id):
-    for name in ('Custom_1107_SearchDialog.xml', 'DialogButtonMenu.xml',
-                 'Variables_Search.xml', 'script-nimbus-main_menu_custom1.xml',
-                 'script-nimbus-main_menu_movies.xml', 'script-nimbus-main_menu_tvshows.xml',
-                 'script-nimbus-widget_custom1.xml', 'script-nimbus-widget_movies.xml',
-                 'script-nimbus-widget_tvshows.xml'):
-        data = _fetchv(roots, 'skin-overrides/' + name)
-        if data:
-            dest = os.path.join(ADDONS, skin_id, 'xml', name)
-            _backup_once(dest, 'gears'); _write(dest, data)
-    # cpath compiled menu config
+    _apply_index(roots, skin_id)
+    # cpath compiled menu config (a sqlite seed, not a file copy)
     cp = _fetchv(roots, 'nimbus/cpath_seed.json')
     db = os.path.join(ADDON_DATA_PATH, 'script.nimbus.helper', 'cpath_cache.db')
     if cp and os.path.exists(db):
@@ -213,66 +269,23 @@ def _apply_nimbus(roots, skin_id):
 
 
 def _apply_af3(roots, skin_id):
-    nodes_dir = os.path.join(ADDON_DATA_PATH, 'script.skinvariables', 'nodes', skin_id)
-    for name in ('skinvariables-shortcut-homewidgets.json',
-                 'skinvariables-shortcut-1101widgets.json',
-                 'skinvariables-shortcut-1102widgets.json',
-                 'skinvariables-shortcut-searchwidgets.json',
-                 'skinvariables-shortcut-powermenu.json'):
-        data = _fetchv(roots, 'nodes/' + name)
-        if data:
-            dest = os.path.join(nodes_dir, name)
-            _backup_once(dest, 'gears'); _write(dest, data)
-    for name in ('script-skinvariables-generator-includes-.xml',
-                 'script-skinviewtypes-includes.xml'):
-        data = _fetchv(roots, 'skin-overrides/' + name)
-        if data:
-            dest = os.path.join(ADDONS, skin_id, '1080i', name)
-            _backup_once(dest, 'gears'); _write(dest, data)
-    # viewtypes source json
-    vt = _fetchv(roots, 'skinvariables/' + skin_id + '-viewtypes.json')
-    if vt:
-        dest = os.path.join(ADDON_DATA_PATH, 'script.skinvariables', skin_id + '-viewtypes.json')
-        _backup_once(dest, 'gears'); _write(dest, vt)
+    _apply_index(roots, skin_id)
     _seed_pov_db(roots)
 
 
 def _apply_zephyr(roots, skin_id):
-    piers = _kodi_major() >= 22
-    if piers:
-        # Piers Zephyr = skin's own shortcuts menu files
-        for name in ('menus.xml', 'templates.xml'):
-            data = _fetchv(roots, 'skin-overrides/' + name)
-            if data:
-                dest = os.path.join(ADDONS, skin_id, 'shortcuts', name)
-                _backup_once(dest, 'gears'); _write(dest, data)
-    else:
-        # K21 Zephyr = script.skinshortcuts DATA + properties + tmdbhelper + viewtypes
-        ss = os.path.join(ADDON_DATA_PATH, 'script.skinshortcuts')
-        for name in ('srtym-1.DATA.xml', 'sdrvt-1.DATA.xml', 'mainmenu.DATA.xml',
-                     'hybvrshyrvtym-1.DATA.xml',
-                     'skin.arctic.zephyr.2.resurrection.mod.properties'):
-            data = _fetchv(roots, 'skinshortcuts/' + name)
-            if data:
-                dest = os.path.join(ss, name)
-                _backup_once(dest, 'gears'); _write(dest, data)
-        # force menu rebuild
-        h = os.path.join(ss, 'skin.arctic.zephyr.2.resurrection.mod.hash')
-        try:
-            if os.path.exists(h):
-                os.remove(h)
-        except Exception:
-            pass
-        # tmdbhelper widget engine (settings + player + custom node)
-        th = os.path.join(ADDON_DATA_PATH, 'plugin.video.themoviedb.helper')
-        for rel, sub in (('themoviedb/settings.xml', 'settings.xml'),
-                         ('themoviedb/players/pov.json', 'players/pov.json'),
-                         ('themoviedb/nodes/SELECTED NETWORKS.json', 'nodes/SELECTED NETWORKS.json')):
-            data = _fetchv(roots, rel)
-            if data:
-                dest = os.path.join(th, sub)
-                _backup_once(dest, 'gears'); _write(dest, data)
+    _apply_index(roots, skin_id)
+    # Force skinshortcuts to rebuild the menus from the DATA files we just wrote.
+    # Without dropping the hash it keeps serving the previously compiled menu.
+    h = os.path.join(ADDON_DATA_PATH, 'script.skinshortcuts',
+                     'skin.arctic.zephyr.2.resurrection.mod.hash')
+    try:
+        if os.path.exists(h):
+            os.remove(h)
+    except Exception:
+        pass
     _seed_pov_db(roots)
+
 
 
 _APPLY = {

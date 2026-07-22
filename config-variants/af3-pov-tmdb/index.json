@@ -1,0 +1,76 @@
+{
+  "variant": "af3-pov-tmdb",
+  "skin": "skin.arctic.fuse.3",
+  "inherit": true,
+  "files": [
+    {
+      "src": "nodes/skinvariables-shortcut-1101submenu.json",
+      "dest": "{addon_data}/script.skinvariables/nodes/{skin}/skinvariables-shortcut-1101submenu.json"
+    },
+    {
+      "src": "nodes/skinvariables-shortcut-1101widgets.json",
+      "dest": "{addon_data}/script.skinvariables/nodes/{skin}/skinvariables-shortcut-1101widgets.json"
+    },
+    {
+      "src": "nodes/skinvariables-shortcut-1102submenu.json",
+      "dest": "{addon_data}/script.skinvariables/nodes/{skin}/skinvariables-shortcut-1102submenu.json"
+    },
+    {
+      "src": "nodes/skinvariables-shortcut-1102widgets.json",
+      "dest": "{addon_data}/script.skinvariables/nodes/{skin}/skinvariables-shortcut-1102widgets.json"
+    },
+    {
+      "src": "nodes/skinvariables-shortcut-1103submenu.json",
+      "dest": "{addon_data}/script.skinvariables/nodes/{skin}/skinvariables-shortcut-1103submenu.json"
+    },
+    {
+      "src": "nodes/skinvariables-shortcut-1103widgets.json",
+      "dest": "{addon_data}/script.skinvariables/nodes/{skin}/skinvariables-shortcut-1103widgets.json"
+    },
+    {
+      "src": "nodes/skinvariables-shortcut-homesubmenu.json",
+      "dest": "{addon_data}/script.skinvariables/nodes/{skin}/skinvariables-shortcut-homesubmenu.json"
+    },
+    {
+      "src": "nodes/skinvariables-shortcut-homewidgets.json",
+      "dest": "{addon_data}/script.skinvariables/nodes/{skin}/skinvariables-shortcut-homewidgets.json"
+    },
+    {
+      "src": "nodes/skinvariables-shortcut-powermenu.json",
+      "dest": "{addon_data}/script.skinvariables/nodes/{skin}/skinvariables-shortcut-powermenu.json"
+    },
+    {
+      "src": "nodes/skinvariables-shortcut-powertray.json",
+      "dest": "{addon_data}/script.skinvariables/nodes/{skin}/skinvariables-shortcut-powertray.json"
+    },
+    {
+      "src": "nodes/skinvariables-shortcut-searchwidgets.json",
+      "dest": "{addon_data}/script.skinvariables/nodes/{skin}/skinvariables-shortcut-searchwidgets.json"
+    },
+    {
+      "src": "skin-overrides/script-skinvariables-generator-includes-.xml",
+      "dest": "{addons}/{skin}/1080i/script-skinvariables-generator-includes-.xml"
+    },
+    {
+      "src": "skin-overrides/script-skinviewtypes-includes.xml",
+      "dest": "{addons}/{skin}/1080i/script-skinviewtypes-includes.xml"
+    },
+    {
+      "src": "skinvariables/skin.arctic.fuse.3-viewtypes.json",
+      "dest": "{addon_data}/script.skinvariables/skin.arctic.fuse.3-viewtypes.json"
+    },
+    {
+      "src": "themoviedb/settings.xml",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/settings.xml"
+    },
+    {
+      "src": "themoviedb/nodes/SELECTED NETWORKS.json",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/nodes/SELECTED NETWORKS.json"
+    },
+    {
+      "src": "themoviedb/players/pov.json",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/players/pov.json"
+    }
+  ],
+  "special": []
+}
