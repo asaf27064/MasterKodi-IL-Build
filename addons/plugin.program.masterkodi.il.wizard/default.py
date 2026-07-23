@@ -9,7 +9,6 @@ import xbmcvfs
 import xbmcplugin
 import os
 import sys
-import json
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')

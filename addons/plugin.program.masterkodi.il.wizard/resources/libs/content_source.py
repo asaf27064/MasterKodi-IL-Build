@@ -12,17 +12,15 @@ build asset. Per skin, the apply mirrors exactly what was validated live
 2026-07-21.
 """
 import os
-import io
 import json
 import sqlite3
 import shutil
 import xbmc
 import xbmcgui
-import xbmcvfs
 
 from resources.libs.config import (
-    ADDON_NAME, HOME, ADDONS, USERDATA, ADDON_DATA_PATH, TEMP_FOLDER,
-    COLOR_SUCCESS, COLOR_ERROR, COLOR_WARNING,
+    ADDON_NAME, HOME, ADDONS, USERDATA, ADDON_DATA_PATH,
+    COLOR_ERROR, COLOR_WARNING,
 )
 
 RAW = 'https://raw.githubusercontent.com/asaf27064/MasterKodi-IL-Build/main/'
@@ -340,7 +338,13 @@ def _apply_pov_core(skin_id):
 def install_apply(skin_id, source):
     """Install-time content-source apply: explicit skin_id (the new skin isn't
     active yet at install), no ReloadSkin (the install restart handles it).
-    Fail-open: a POV failure leaves the freshly-installed Gears build intact."""
+    Fail-open: a POV failure leaves the freshly-installed Gears build intact.
+
+    CAUTION: this DOWNGRADES the stored source to 'gears' when a POV apply fails
+    -- correct only at install time (Gears build, POV is the optional overlay).
+    Do NOT call it on an already-POV box (e.g. a skin switch): a failed apply
+    would flip a POV build to 'gears' with no Gears content installed. Use
+    _apply_pov_core(skin_id) there -- it never touches the source flag."""
     if source != 'pov':
         _set_source('gears')
         return True

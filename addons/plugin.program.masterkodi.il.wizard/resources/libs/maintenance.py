@@ -8,7 +8,7 @@ import xbmc
 import xbmcgui
 
 from resources.libs.config import (
-    ADDON_ID, ADDON_NAME, HOME, ADDONS, USERDATA, ADDON_DATA_PATH, DATABASE,
+    ADDON_ID, ADDON_NAME, HOME, ADDONS, USERDATA, DATABASE,
     TEMP_FOLDER, COLOR_SUCCESS, COLOR_ERROR, COLOR_WARNING
 )
 
@@ -24,9 +24,9 @@ def get_size(path):
             for f in files:
                 try:
                     total += os.path.getsize(os.path.join(root, f))
-                except:
+                except Exception:
                     pass
-    except:
+    except Exception:
         pass
     return total
 
@@ -69,9 +69,9 @@ def clear_cache():
                             os.remove(p)
                         else:
                             shutil.rmtree(p)
-                    except:
+                    except Exception:
                         pass
-            except:
+            except Exception:
                 pass
     
     dialog.ok(ADDON_NAME, f"[COLOR {COLOR_SUCCESS}]Cache cleared![/COLOR]")
@@ -99,7 +99,7 @@ def clear_packages():
         for f in os.listdir(pkg):
             try:
                 os.remove(os.path.join(pkg, f))
-            except:
+            except Exception:
                 pass
         dialog.ok(ADDON_NAME, f"[COLOR {COLOR_SUCCESS}]Packages cleared![/COLOR]")
     except Exception as e:
@@ -137,7 +137,7 @@ def clear_thumbnails():
                     os.makedirs(p)
                 else:
                     os.remove(p)
-            except:
+            except Exception:
                 pass
         
         # Clear Textures DB
@@ -145,7 +145,7 @@ def clear_thumbnails():
             if f.startswith('Textures') and f.endswith('.db'):
                 try:
                     os.remove(os.path.join(DATABASE, f))
-                except:
+                except Exception:
                     pass
         
         progress.close()

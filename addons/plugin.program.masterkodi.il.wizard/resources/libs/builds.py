@@ -24,7 +24,7 @@ except ImportError:
 
 from resources.libs.config import (
     ADDON_ID, ADDON_NAME, HOME, ADDONS, USERDATA, ADDON_DATA_PATH,
-    BUILD_TXT_URL, TEMP_FOLDER, COLOR_SUCCESS, COLOR_ERROR, COLOR_WARNING
+    BUILD_TXT_URL, TEMP_FOLDER, COLOR_ERROR, COLOR_WARNING
 )
 # Branded custom-window menu (same look as the wizard's main menu)
 from resources.libs.ui import menu_item, wizard_select
@@ -231,7 +231,7 @@ class BuildManager:
                         
                         try:
                             kbps_speed = downloaded / (time.time() - start_time)
-                        except:
+                        except Exception:
                             kbps_speed = 0
                         
                         if kbps_speed > 0 and done < 100:
@@ -295,7 +295,7 @@ class BuildManager:
                 
                 try:
                     os.remove(filepath)
-                except:
+                except Exception:
                     pass
                 
                 if del_file % 100 == 0:
@@ -311,7 +311,7 @@ class BuildManager:
                     try:
                         if not os.listdir(dirpath):
                             os.rmdir(dirpath)
-                    except:
+                    except Exception:
                         pass
         
         log("Wipe complete")
@@ -678,7 +678,7 @@ class BuildManager:
                 temp_db = os.path.join(TEMP_FOLDER, 'skin_addons.db')
                 try:
                     os.remove(temp_db)
-                except:
+                except Exception:
                     pass
                 
                 # Extract just the database file
@@ -692,7 +692,7 @@ class BuildManager:
                 
                 try:
                     os.remove(temp_db)
-                except:
+                except Exception:
                     pass
                     
             except Exception as e:
@@ -704,7 +704,7 @@ class BuildManager:
                 temp_db = os.path.join(TEMP_FOLDER, 'skin_viewmodes.db')
                 try:
                     os.remove(temp_db)
-                except:
+                except Exception:
                     pass
                 
                 # Extract just the database file
@@ -718,7 +718,7 @@ class BuildManager:
                 
                 try:
                     os.remove(temp_db)
-                except:
+                except Exception:
                     pass
                     
             except Exception as e:
@@ -760,7 +760,7 @@ class BuildManager:
             
             try:
                 filename.encode('ascii')
-            except:
+            except Exception:
                 continue
             
             try:
@@ -1024,7 +1024,7 @@ class BuildManager:
             
             try:
                 os.remove(zip_path)
-            except:
+            except Exception:
                 pass
             
             # Step 1: Download base build. POV chosen -> download the CLEAN POV
@@ -1043,7 +1043,7 @@ class BuildManager:
                 progress.close()
                 try:
                     os.remove(zip_path)
-                except:
+                except Exception:
                     pass
                 self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]ההורדה נכשלה![/COLOR]")
                 return False
@@ -1114,7 +1114,7 @@ class BuildManager:
             # Cleanup base zip
             try:
                 os.remove(zip_path)
-            except:
+            except Exception:
                 pass
             
             # Step 4.5: Ask about OLED and apply settings
@@ -1143,7 +1143,7 @@ class BuildManager:
                 skin_zip = os.path.join(TEMP_FOLDER, skin['zip'])
                 try:
                     os.remove(skin_zip)
-                except:
+                except Exception:
                     pass
 
                 success = self.download_file(skin_zip_url, skin_zip, progress, dl_msg)
@@ -1174,7 +1174,7 @@ class BuildManager:
 
                     try:
                         os.remove(skin_zip)
-                    except:
+                    except Exception:
                         pass
                 else:
                     log(f"Failed to download {skin['name']} skin")
@@ -2076,8 +2076,17 @@ def _skin_switch_flow():
             _p = xbmcgui.DialogProgress()
             _p.create(ADDON_NAME, '[COLOR cyan]מחיל תצורת POV לסקין החדש...[/COLOR]')
             from resources.libs import content_source
-            content_source.install_apply(sid, 'pov')
+            # _apply_pov_core, NOT install_apply: the box is already POV (checked
+            # above). install_apply sets content_source='gears' when the apply
+            # fails -- e.g. switching a Piers box to Nimbus/AF3, which have no
+            # Piers POV variant -- which would silently convert a POV build into a
+            # broken "gears" box that has no Gears content installed, and make
+            # later updates apply Gears config to it. A failed re-apply must leave
+            # the box on POV; the new skin simply keeps its own default menus.
+            ok, err = content_source._apply_pov_core(sid)
             _p.close()
+            if not ok:
+                log(f"POV re-apply on skin switch left source=pov ({err})", xbmc.LOGWARNING)
     except Exception as e:
         log(f"POV re-apply on skin switch failed: {e}", xbmc.LOGWARNING)
 

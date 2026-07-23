@@ -3,7 +3,6 @@
 MasterKodi IL Wizard - Configuration
 """
 import os
-import xbmc
 import xbmcaddon
 import xbmcvfs
 

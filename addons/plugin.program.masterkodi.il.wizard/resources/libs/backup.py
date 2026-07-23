@@ -20,7 +20,6 @@ import json
 import shutil
 import zipfile
 import xbmc
-import xbmcvfs
 import xbmcgui
 from datetime import datetime
 

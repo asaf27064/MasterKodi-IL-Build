@@ -433,7 +433,6 @@ def compute_updates(manifest, force=False):
     fully reinstalled. Optional skins the user never installed are still skipped,
     and NEVER_TOUCH ids are still left alone."""
     state = _load_state()
-    by_id = {a.get('id'): a for a in manifest.get('addons', [])}
 
     # Repair: any manifest dep that is missing while an addon requiring it IS
     # installed (the zip-install bypasses Kodi's own dependency resolution).
@@ -1056,7 +1055,6 @@ def run_update(silent=False, notify=None, force=False, no_reload=False):
         if not removed and not enabled:
             _say('הבילד מעודכן')
         # still apply config on a version bump even if no addon changed
-        cfg_bumped = _config_version_changed(manifest, state)
         cfg_applied = _maybe_apply_config(manifest, state, force=force)
         # ...and the POV content-variant, on the SAME no-addon-change path. This
         # was the bug behind "why doesn't it auto-update": a box already on the
@@ -1113,7 +1111,6 @@ def run_update(silent=False, notify=None, force=False, no_reload=False):
     dp.close()
 
     # config payload (default userdata) - applied on version bump only
-    cfg_bumped = _config_version_changed(manifest, state)
     cfg_applied = _maybe_apply_config(manifest, state, force=force)
     _save_state(state)
 
@@ -1148,14 +1145,6 @@ def run_update(silent=False, notify=None, force=False, no_reload=False):
     }
     log('update summary: %s' % summary)
     return summary
-
-
-def _config_version_changed(manifest, state):
-    """True if the manifest's config version differs from the one last applied on
-    this device. Lets callers reload the skin only on a real config bump, not on
-    every wizard update (config also re-applies when the wizard version changes)."""
-    cfg = manifest.get('config') or {}
-    return state.get('__config__') != ('config:%s' % cfg.get('version'))
 
 
 def _maybe_apply_content_variants(manifest, state, force=False):
@@ -1301,7 +1290,7 @@ def _maybe_apply_config(manifest, state, force=False, content=None):
 
 
 def _apply_policy(zf, policy, home, fresh, content='gears'):
-    import tempfile, shutil
+    import shutil
     mode_key = 'fresh' if fresh else 'update'
     applied = []
     skipped_content = 0
