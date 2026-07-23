@@ -25,16 +25,38 @@ import io, os, re, sys, glob
 
 SCAN_DIRS = ('config-variants', 'config-variants-piers', 'config', 'overlays', 'overlays-piers')
 
-# per-USER auth ids: never ship a value
-USER_CRED = re.compile(r'^(tb\.token|rd\.token|pm\.token|ad\.token|oc\.token|premiumize\.token|'
-                       r'trakt\.token|trakt\.refresh|trakt\.usertoken|trakt\.user|trakt\.expires|'
-                       r'tmdb\.username|tmdb\.sessionid|'
-                       r'OS_USER_API_KEY_VALUE|KT_enc_pass|OSpass.*)$', re.I)
+# per-USER auth ids: never ship a value. A captured live-box config bakes the
+# user's own login into these -- debrid, usenet, Trakt, TMDB, list services and
+# subtitle-site accounts.
+USER_CRED_IDS = {
+    # debrid
+    'tb.token', 'rd.token', 'rd.secret', 'rd.username', 'pm.token', 'ad.token',
+    'oc.token', 'premiumize.token',
+    # usenet
+    'easynews_user', 'easynews_password',
+    # trakt user auth (both dot and underscore id variants exist)
+    'trakt.token', 'trakt.refresh', 'trakt.usertoken', 'trakt.user', 'trakt_user',
+    'trakt.expires',
+    # tmdb user
+    'tmdb.token', 'tmdb.username', 'tmdb.sessionid',
+    # list services
+    'mdblist.token', 'mdblist_user', 'rpdb_api_key',
+    # subtitle-site logins
+    'hebrew_subtitles.ktuvit_password', 'hebrew_subtitles.opensubtitles_apikey',
+    'os_user_api_key_value', 'kt_enc_pass',
+}
+USER_CRED_PAT = re.compile(r'^OSpass', re.I)     # OSpass / OSpass2 / ...
+
+
+def is_user_cred(sid):
+    return sid.lower() in USER_CRED_IDS or bool(USER_CRED_PAT.match(sid))
+
 
 # ids that are public-by-design (same value in every client) -> never a leak
 PUBLIC_SETTING = {
     'tmdb_read_token', 'trakt.client_id', 'trakt.client_secret',
     'tmdb.api.key', 'fanarttv.api.key',
+    'omdb_api', 'kodirdil.omdb_api_key',         # shared free OMDB key (public)
 }
 
 # name LOOKS like a credential (for the heuristic (B) check)
@@ -55,7 +77,7 @@ def _scan_text(text, rel, leaks):
             continue
         if sid in PUBLIC_SETTING:
             continue
-        if USER_CRED.match(sid):
+        if is_user_cred(sid):
             leaks.append((rel, sid, val[:10], 'known user-auth id'))
         elif CREDISH.search(sid) and TOKEN_SHAPE.match(val):
             leaks.append((rel, sid, val[:10], 'token-shaped value under a credential-ish id'))
