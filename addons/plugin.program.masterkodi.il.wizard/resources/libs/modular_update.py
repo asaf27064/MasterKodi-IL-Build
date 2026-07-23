@@ -958,8 +958,9 @@ def _finalize_reload(summary):
     need_restart = summary.get('wizard_changed')
     need_skin = summary.get('skin_changed')
     # A config change can rewrite skin files (e.g. skinvariables nodes, home menu),
-    # which the running skin won't show until it reloads.
-    need_config_reload = summary.get('config_applied')
+    # which the running skin won't show until it reloads. A POV content-variant
+    # re-apply rewrites the same kind of files, so treat it identically.
+    need_config_reload = summary.get('config_applied') or summary.get('variants_applied')
     if not (need_restart or need_skin or need_config_reload):
         return
     try:
@@ -1109,6 +1110,15 @@ def run_update(silent=False, notify=None, force=False, no_reload=False):
     cfg_applied = _maybe_apply_config(manifest, state, force=force)
     _save_state(state)
 
+    # POV content-variant payload. The POV menus/widgets/power-menu live in
+    # config-variants/ (not the config zip) and are normally applied only by the
+    # content switcher. Re-apply the ACTIVE POV variant automatically when the
+    # manifest's content-variant fingerprint changes -- so a variant fix reaches
+    # an existing POV box on the next update, exactly like a config bump reaches
+    # a Gears box, with no manual "re-apply". No-op on Gears boxes.
+    variants_applied = _maybe_apply_content_variants(manifest, state, force=force)
+    _save_state(state)
+
     # self-heal an empty skinshortcuts home menu. Runs AFTER any skin re-extract
     # above, so the rebuilt includes are not clobbered.
     menu_repaired = repair_skin_menu(no_reload=no_reload)
@@ -1125,6 +1135,7 @@ def run_update(silent=False, notify=None, force=False, no_reload=False):
         'skin_changed': skin_changed,
         'active_skin': active_skin,
         'config_applied': cfg_applied,
+        'variants_applied': variants_applied,
         'up_to_date': False,
         'manifest_generated': manifest.get('generated_utc'),
     }
@@ -1138,6 +1149,59 @@ def _config_version_changed(manifest, state):
     every wizard update (config also re-applies when the wizard version changes)."""
     cfg = manifest.get('config') or {}
     return state.get('__config__') != ('config:%s' % cfg.get('version'))
+
+
+def _maybe_apply_content_variants(manifest, state, force=False):
+    """Re-apply the ACTIVE POV variant when the manifest's content-variant
+    fingerprint has advanced since this box last applied it. Mirrors the config
+    mechanism: keyed on manifest['content_variants']['version'] + the running
+    wizard version, so both a variant change AND a wizard change trigger it.
+
+    Only acts on POV boxes -- Gears content config already rides the config zip.
+    Writes files with no ReloadSkin (the crash window); the content apply clears
+    the skinshortcuts hash + arms pending_view_rebuild, so the next boot shows it.
+    Fail-open: any problem leaves the box exactly as it was."""
+    if _content_source() != 'pov':
+        return False
+    cv = manifest.get('content_variants') or {}
+    ver = cv.get('version')
+    if not ver:
+        return False
+    try:
+        wiz_ver = ADDON.getAddonInfo('version')
+    except Exception:
+        wiz_ver = ''
+    key = 'variants:%s' % ver
+    already = (state.get('__variants__') == key
+               and state.get('__variants_wizard__') == wiz_ver)
+    if already and not force:
+        return False
+    try:
+        import xbmc as _xbmc
+        skin_id = _xbmc.getSkinDir()
+        from resources.libs import content_source
+        if skin_id not in content_source.SKIN_VARIANTS or not content_source._variant_dir(skin_id):
+            # active skin has no POV variant (nothing to re-apply) -- still record
+            # the version so we don't re-check every pass.
+            state['__variants__'] = key
+            state['__variants_wizard__'] = wiz_ver
+            return False
+        ok, err = content_source._apply_pov_core(skin_id)
+        if ok:
+            # arm the same boot-time rebuild the config path uses, so the menus
+            # actually refresh without a mid-session ReloadSkin.
+            try:
+                _write_text(os.path.join(ADDON_DATA, 'pending_view_rebuild'), skin_id)
+            except Exception:
+                pass
+            state['__variants__'] = key
+            state['__variants_wizard__'] = wiz_ver
+            log('content-variant re-apply: POV re-applied for %s (%s)' % (skin_id, ver))
+            return True
+        log('content-variant re-apply failed: %s' % err, xbmc.LOGWARNING)
+    except Exception as e:
+        log('content-variant re-apply error: %s' % e, xbmc.LOGWARNING)
+    return False
 
 
 def _content_source():

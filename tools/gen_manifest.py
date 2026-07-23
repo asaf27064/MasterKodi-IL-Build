@@ -20,6 +20,7 @@ Fails (exit 3) if any zip is missing a sha256 - never publish an unverifiable bu
 
 import argparse
 import datetime
+import hashlib
 import json
 import os
 import re
@@ -128,6 +129,29 @@ def main():
             'size': os.path.getsize(cfg_zip),
             'url': base_url + 'config-%s.zip' % cfg_ver,
         }
+
+    # Content-variant fingerprint: the POV menus/widgets/power-menu live in
+    # config-variants/ (NOT the config zip), and the wizard's content switcher
+    # fetches them from raw github on demand. To make a variant fix reach an
+    # EXISTING POV box automatically -- the way a config-version bump reaches a
+    # Gears box -- publish one hash of those trees. run_update re-applies the
+    # active POV variant when this changes, so no manual "re-apply" is needed.
+    def _variants_fingerprint(root):
+        h = hashlib.sha256()
+        for base in ('config-variants', 'config-variants-piers'):
+            d = os.path.join(root, base)
+            if not os.path.isdir(d):
+                continue
+            for dp, dirs, files in os.walk(d):
+                dirs.sort()
+                for f in sorted(files):
+                    p = os.path.join(dp, f)
+                    rel = os.path.relpath(p, root).replace(os.sep, '/')
+                    h.update(rel.encode('utf-8'))
+                    with open(p, 'rb') as fh:
+                        h.update(fh.read())
+        return h.hexdigest()[:16]
+    manifest['content_variants'] = {'version': _variants_fingerprint(repo_root)}
 
     # diff against previously committed manifest to find changed assets
     old = _load_old_manifest(repo_root, manifest_name)
