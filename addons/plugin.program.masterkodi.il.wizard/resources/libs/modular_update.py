@@ -179,12 +179,62 @@ def _load_state():
 
 
 def _save_state(state):
+    # Atomic: write a temp file, fsync, then os.replace. A crash mid-write used to
+    # leave a truncated/corrupt applied_manifest.json -> the next run couldn't
+    # parse it, treated the device as FRESH, and re-applied config aggressively.
     try:
         os.makedirs(ADDON_DATA, exist_ok=True)
-        with open(STATE_FILE, 'w', encoding='utf-8') as fh:
+        tmp = STATE_FILE + '.tmp'
+        with open(tmp, 'w', encoding='utf-8') as fh:
             json.dump(state, fh, indent=2)
+            fh.flush()
+            try:
+                os.fsync(fh.fileno())
+            except Exception:
+                pass
+        os.replace(tmp, STATE_FILE)
     except Exception as e:
         log('could not save state: %s' % e, xbmc.LOGWARNING)
+
+
+# --------------------------------------------------------------------------- #
+# Cross-process operation lock. The background service can silently update while
+# the user starts a manual install / repair / content switch -- they share live
+# addon dirs and fixed staging names (.stage_/.rb_), so a race corrupts state.
+OP_LOCK = os.path.join(ADDON_DATA, 'operation.lock')
+OP_LOCK_STALE = 1800   # a lock held longer than this is presumed abandoned (crash)
+
+
+def acquire_op_lock(name):
+    """Best-effort mutex for MUTATING wizard operations. True if acquired. A lock
+    older than OP_LOCK_STALE is reclaimed. Fail-open on filesystem errors so a
+    broken lock can never permanently block the wizard."""
+    try:
+        if os.path.isfile(OP_LOCK):
+            try:
+                d = json.load(open(OP_LOCK, encoding='utf-8'))
+                age = time.time() - float(d.get('ts', 0))
+                if 0 <= age < OP_LOCK_STALE:
+                    log('op-lock held by "%s" (%ds) -- refusing "%s"'
+                        % (d.get('name'), int(age), name), xbmc.LOGWARNING)
+                    return False
+                log('reclaiming stale op-lock from "%s" (%ds)' % (d.get('name'), int(age)))
+            except Exception:
+                pass
+        os.makedirs(ADDON_DATA, exist_ok=True)
+        with open(OP_LOCK, 'w', encoding='utf-8') as fh:
+            json.dump({'name': name, 'ts': time.time(), 'pid': os.getpid()}, fh)
+        return True
+    except Exception:
+        return True
+
+
+def release_op_lock():
+    try:
+        if os.path.isfile(OP_LOCK):
+            os.remove(OP_LOCK)
+    except Exception:
+        pass
 
 
 # --------------------------------------------------------------------------- #
@@ -1068,6 +1118,19 @@ def _finalize_reload(summary):
 
 
 def run_update(silent=False, notify=None, force=False, no_reload=False):
+    """Lock-guarded entry point. Refuses to run while another mutating operation
+    (a manual install / repair / content switch, or another update pass) holds
+    the op-lock, so they can't race over shared addon dirs + staging names."""
+    if not acquire_op_lock('update'):
+        return {'ok': False, 'skipped': 'another operation in progress',
+                'applied': [], 'failed': [], 'removed': []}
+    try:
+        return _run_update_impl(silent=silent, notify=notify, force=force, no_reload=no_reload)
+    finally:
+        release_op_lock()
+
+
+def _run_update_impl(silent=False, notify=None, force=False, no_reload=False):
     """Check + apply. Returns dict summary.
 
     notify:    optional callable(message) for user-facing status text.

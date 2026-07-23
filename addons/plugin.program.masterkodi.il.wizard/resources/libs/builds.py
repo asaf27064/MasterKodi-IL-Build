@@ -1300,7 +1300,11 @@ class BuildManager:
             try:
                 progress.update(97, "[COLOR yellow]מחיל את ברירות המחדל של הבילד...[/COLOR]")
                 from resources.libs import modular_update as mu
-                mu.run_update(silent=True, no_reload=True)
+                # _run_update_impl, not run_update: we're inside the install (the
+                # background service is already held off by skip_update_check) and
+                # this completion MUST run -- routing through the lock-guarded
+                # run_update could see the lock briefly held and skip it.
+                mu._run_update_impl(silent=True, no_reload=True)
             except Exception as e:
                 log(f"post-install manifest completion failed: {e}", xbmc.LOGWARNING)
 

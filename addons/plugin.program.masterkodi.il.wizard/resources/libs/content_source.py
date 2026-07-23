@@ -413,8 +413,21 @@ def install_apply(skin_id, source):
 
 
 def switch_to(source):
-    """source: 'pov' | 'gears'. Returns True on success."""
+    """source: 'pov' | 'gears'. Returns True on success. Lock-guarded so a content
+    switch can't race the background updater over live skin/addon files."""
+    from resources.libs import modular_update as _mu
     dialog = xbmcgui.Dialog()
+    if not _mu.acquire_op_lock('switch'):
+        dialog.ok(ADDON_NAME, '[COLOR %s]פעולה אחרת מתבצעת כרגע. נסו שוב בעוד רגע.[/COLOR]'
+                  % COLOR_WARNING)
+        return False
+    try:
+        return _switch_to_impl(source, dialog)
+    finally:
+        _mu.release_op_lock()
+
+
+def _switch_to_impl(source, dialog):
     skin_id = xbmc.getSkinDir()
     variant = _variant_dir(skin_id)
     if source == 'pov' and not variant:
@@ -444,6 +457,15 @@ def switch_to(source):
             return False
         _set_source('pov')
     else:  # gears -> restore from the .pre_gears backups
+        # A CLEAN POV build ships no Gears closure (gears/scrapers/etc). Switching
+        # to Gears would only rewrite config to point at addons that aren't
+        # installed, leaving a broken box that records 'gears' but can't play.
+        # Refuse and tell the user to reinstall as a Gears build instead.
+        if not os.path.isdir(os.path.join(ADDONS, 'plugin.video.gears')):
+            dialog.ok(ADDON_NAME,
+                      '[COLOR %s]זהו בילד POV בלבד (Gears אינו מותקן).[/COLOR]\n'
+                      'כדי לעבור ל-Gears יש להתקין מחדש בילד Gears.' % COLOR_WARNING)
+            return False
         restored = _restore_gears(skin_id)
         # On a CLEAN POV install there are no .pre_gears backups (the Gears
         # config was never applied). Switching to Gears must then BUILD the
