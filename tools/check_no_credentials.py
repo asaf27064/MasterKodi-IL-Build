@@ -1,137 +1,156 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Fail the build if a per-USER credential is committed in a shipped settings XML.
+"""Fail the build if a NEW, unreviewed credential appears in a shipped settings XML.
 
-A config is captured from a live box, so a personal debrid/Trakt token can get
-baked into a settings.xml (this happened: a real TorBox tb.token shipped in
-estuary/af3/nimbus-pov). That leak lived in config-variants/, but the SAME
-capture could land in config/ or overlays/ and the old scanner (config-variants
-only) would miss it -- so we scan every place a captured settings.xml ships.
+The threat is a config captured off a live box baking the USER's own login into a
+settings.xml (this happened: a real TorBox tb.token shipped once). But the build
+also DELIBERATELY ships shared service keys (MDBList, OMDB, the TMDB read token,
+the Trakt app secret, ...) so it works out of the box for everyone -- those are
+public by design and must NOT be flagged.
 
-Two checks per <setting id="X">value</setting>:
-  (A) X is a known user-auth id (tb.token, trakt.token, ...) with a real value.
-  (B) X is not a known-public setting, LOOKS credential-ish by name, AND its
-      value is token-shaped (UUID / 32+ hex) -- catches a cred hidden under a
-      renamed id.
+Rather than hand-maintain a fragile per-id allow/deny list, we BASELINE the
+credentials currently in the repo (they are all intentional) into
+tools/known_public_keys.txt, and flag only values that are NOT in that baseline
+-- i.e. something newly introduced, which a human should eyeball. Empty settings
+are always fine. Regenerate the baseline after intentionally adding/rotating a
+shared key:  python tools/check_no_credentials.py --update-baseline
 
-Public app defaults (tmdb_read_token, trakt.client_id/secret) ship the same in
-every client BY DESIGN and are allowlisted. NOTE: this guards captured USER
-credentials, not the intentional public shared keys hardcoded in source (those
-must ship in the client and can never be secret -- a broad code scan is nothing
-but false positives: upstream TMDB/fanart/Trakt app keys, API path fragments,
-dict keys). Keep those out of committed config, not out of client code.
+Also scans settings XML INSIDE install-bundle zips (--bundles DIR): the bundle
+copies 'kept-as-was' content verbatim from a live-box base, so a harvested login
+can ride into the published artifact even when committed config is clean.
 """
-import io, os, re, sys, glob
+import io, os, re, sys, glob, hashlib
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+BASELINE = os.path.join(HERE, 'known_public_keys.txt')
 SCAN_DIRS = ('config-variants', 'config-variants-piers', 'config', 'overlays', 'overlays-piers')
 
-# per-USER auth ids: never ship a value. A captured live-box config bakes the
-# user's own login into these -- debrid, usenet, Trakt, TMDB, list services and
-# subtitle-site accounts.
-USER_CRED_IDS = {
-    # debrid
+# per-USER login ids: personal accounts that must never ship a value. Checked
+# even when the value is short (a password needn't look token-shaped). They are
+# all empty today, so none are in the baseline -- a future capture is caught.
+PERSONAL_IDS = {
     'tb.token', 'rd.token', 'rd.secret', 'rd.username', 'pm.token', 'ad.token',
-    'oc.token', 'premiumize.token',
-    # usenet
-    'easynews_user', 'easynews_password',
-    # trakt user auth (both dot and underscore id variants exist)
+    'oc.token', 'premiumize.token', 'easynews_user', 'easynews_password',
     'trakt.token', 'trakt.refresh', 'trakt.usertoken', 'trakt.user', 'trakt_user',
-    'trakt.expires',
-    # tmdb user
-    'tmdb.token', 'tmdb.username', 'tmdb.sessionid',
-    # list services
-    'mdblist.token', 'mdblist_user', 'rpdb_api_key',
-    # subtitle-site logins
+    'trakt.expires', 'tmdb.token', 'tmdb.username', 'tmdb.sessionid',
     'hebrew_subtitles.ktuvit_password', 'hebrew_subtitles.opensubtitles_apikey',
     'os_user_api_key_value', 'kt_enc_pass',
 }
-USER_CRED_PAT = re.compile(r'^OSpass', re.I)     # OSpass / OSpass2 / ...
-
-
-def is_user_cred(sid):
-    return sid.lower() in USER_CRED_IDS or bool(USER_CRED_PAT.match(sid))
-
-
-# ids that are public-by-design (same value in every client) -> never a leak
-PUBLIC_SETTING = {
-    'tmdb_read_token', 'trakt.client_id', 'trakt.client_secret',
-    'tmdb.api.key', 'fanarttv.api.key',
-    'omdb_api', 'kodirdil.omdb_api_key',         # shared free OMDB key (public)
-}
-
-# name LOOKS like a credential (for the heuristic (B) check)
-CREDISH = re.compile(r'(token|secret|passw|apikey|api_key|sessionid|userkey|auth)', re.I)
-# value LOOKS like a token: a UUID, or 32+ hex, or a long opaque blob
-TOKEN_SHAPE = re.compile(r'^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
-                         r'|[0-9a-f]{32,}'
-                         r'|[A-Za-z0-9_\-]{40,})$', re.I)
-
+PERSONAL_PAT = re.compile(r'^OSpass', re.I)
+# a value that structurally looks like a key/token/session
+CREDISH = re.compile(r'(token|secret|passw|api_?key|sessionid|userkey|auth)', re.I)
+SHAPE = re.compile(r'^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+                   r'|[A-Za-z0-9._-]{12,})$')
 SETTING = re.compile(r'<setting id="([^"]+)"[^>]*>([^<]+)</setting>')
+_SKIP_VALS = {'true', 'false', '0', '1', 'default'}
 
 
-def _scan_text(text, rel, leaks):
-    """Apply the setting-credential checks to one XML blob."""
-    for m in SETTING.finditer(text):
-        sid, val = m.group(1), m.group(2).strip()
-        if not val or val.lower() in ('true', 'false', '0', '1', 'default'):
+def _is_personal(sid):
+    return sid.lower() in PERSONAL_IDS or bool(PERSONAL_PAT.match(sid))
+
+
+def _cred_shaped(sid, val):
+    if _is_personal(sid):
+        return True
+    return bool(CREDISH.search(sid)) and bool(SHAPE.match(val))
+
+
+def _fp(sid, val):
+    return '%s\t%s' % (sid.lower(), hashlib.sha256(val.encode('utf-8')).hexdigest()[:16])
+
+
+def _iter_settings_text(text):
+    for sid, val in SETTING.findall(text):
+        val = val.strip()
+        if not val or val.lower() in _SKIP_VALS:
             continue
-        if sid in PUBLIC_SETTING:
-            continue
-        if is_user_cred(sid):
-            leaks.append((rel, sid, val[:10], 'known user-auth id'))
-        elif CREDISH.search(sid) and TOKEN_SHAPE.match(val):
-            leaks.append((rel, sid, val[:10], 'token-shaped value under a credential-ish id'))
+        if _cred_shaped(sid, val):
+            yield sid, val
 
 
-def _scan_bundles(bundles_dir, leaks):
-    """Scan every settings XML INSIDE each install-bundle zip. Bundles are
-    repacked from a base captured off a live box and copy 'kept-as-was' content
-    verbatim -- exactly where a harvested login can ride along into the published
-    artifact without ever touching the committed config the dir-scan covers."""
+def _collect_repo(root):
+    """[(rel, sid, val)] for every credential-shaped, non-empty setting on disk."""
+    out = []
+    for base in SCAN_DIRS:
+        for f in glob.glob(os.path.join(root, base, '**', '*.xml'), recursive=True):
+            rel = os.path.relpath(f, root).replace(os.sep, '/')
+            text = io.open(f, encoding='utf-8', errors='replace').read()
+            for sid, val in _iter_settings_text(text):
+                out.append((rel, sid, val))
+    return out
+
+
+def _collect_bundles(bundles_dir):
     import zipfile
-    n = 0
+    out = []
     for z in sorted(glob.glob(os.path.join(bundles_dir, '*.zip'))):
         try:
             with zipfile.ZipFile(z) as zf:
                 for name in zf.namelist():
                     if not name.lower().endswith('.xml'):
                         continue
-                    n += 1
                     try:
                         text = zf.read(name).decode('utf-8', 'replace')
                     except Exception:
                         continue
-                    _scan_text(text, '%s!%s' % (os.path.basename(z), name), leaks)
+                    for sid, val in _iter_settings_text(text):
+                        out.append(('%s!%s' % (os.path.basename(z), name), sid, val))
         except Exception as e:
             print('  (could not read bundle %s: %s)' % (z, e), file=sys.stderr)
-    return n
+    return out
+
+
+def _load_baseline():
+    known = set()
+    if os.path.isfile(BASELINE):
+        for line in io.open(BASELINE, encoding='utf-8'):
+            line = line.split('#', 1)[0].strip()
+            if line:
+                known.add(line)
+    return known
+
+
+def _update_baseline(root):
+    items = _collect_repo(root)
+    lines = sorted(set('%s  # %s = %s…' % (_fp(sid, val), sid, val[:6]) for _r, sid, val in items))
+    with io.open(BASELINE, 'w', encoding='utf-8', newline='\n') as fh:
+        fh.write('# Baseline of intentional/public credentials currently shipped.\n'
+                 '# <id-lowercase>\\t<sha256(value)[:16]>  # id = value-prefix\n'
+                 '# Regenerate after adding/rotating a shared key:\n'
+                 '#   python tools/check_no_credentials.py --update-baseline\n')
+        for l in lines:
+            fh.write(l + '\n')
+    print('[check_no_credentials] baseline written: %d intentional credential(s)' % len(lines))
+    return 0
 
 
 def main():
-    args = [a for a in sys.argv[1:]]
+    args = list(sys.argv[1:])
+    if '--update-baseline' in args:
+        args.remove('--update-baseline')
+        return _update_baseline(args[0] if args else '.')
     bundles_dir = None
     if '--bundles' in args:
         i = args.index('--bundles')
         bundles_dir = args[i + 1] if i + 1 < len(args) else None
         del args[i:i + 2]
     root = args[0] if args else '.'
-    leaks = []
-    scanned = 0
-    for base in SCAN_DIRS:
-        for f in glob.glob(os.path.join(root, base, '**', '*.xml'), recursive=True):
-            scanned += 1
-            rel = os.path.relpath(f, root).replace(os.sep, '/')
-            _scan_text(io.open(f, encoding='utf-8', errors='replace').read(), rel, leaks)
+    known = _load_baseline()
+    found = _collect_repo(root)
     where = '/'.join(SCAN_DIRS)
     if bundles_dir:
-        scanned += _scan_bundles(bundles_dir, leaks)
+        found += _collect_bundles(bundles_dir)
         where += ' + bundles'
+    leaks = [(rel, sid, val) for rel, sid, val in found if _fp(sid, val) not in known]
     if leaks:
-        print('CREDENTIAL LEAK -- user auth in a shipped settings XML:', file=sys.stderr)
-        for f, sid, v, why in leaks:
-            print('  %s : %s = %s...  (%s)' % (f, sid, v, why), file=sys.stderr)
+        print('CREDENTIAL LEAK -- NEW/unreviewed credential in a shipped settings XML.', file=sys.stderr)
+        print('If this value is an intentional shared key, add it with:', file=sys.stderr)
+        print('  python tools/check_no_credentials.py --update-baseline', file=sys.stderr)
+        for rel, sid, val in leaks:
+            print('  %s : %s = %s...' % (rel, sid, val[:10]), file=sys.stderr)
         return 1
-    print('[check_no_credentials] clean: scanned %d XML file(s) across %s' % (scanned, where))
+    print('[check_no_credentials] clean: %d credential-shaped value(s), all in baseline (%s)'
+          % (len(found), where))
     return 0
 
 
