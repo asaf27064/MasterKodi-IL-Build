@@ -206,10 +206,12 @@ OP_LOCK_STALE = 1800   # a lock held longer than this is presumed abandoned (cra
 
 
 def acquire_op_lock(name):
-    """Best-effort mutex for MUTATING wizard operations. True if acquired. A lock
-    older than OP_LOCK_STALE is reclaimed. Fail-open on filesystem errors so a
-    broken lock can never permanently block the wizard."""
+    """Mutex for MUTATING wizard operations. True if acquired. Uses an ATOMIC
+    O_CREAT|O_EXCL create so two contenders can't both win (the old check-then-
+    write let both see no file and both 'acquire'). A lock older than
+    OP_LOCK_STALE is reclaimed. Fail-open on filesystem errors."""
     try:
+        # reclaim a stale/unparseable lock first
         if os.path.isfile(OP_LOCK):
             try:
                 d = json.load(open(OP_LOCK, encoding='utf-8'))
@@ -221,18 +223,34 @@ def acquire_op_lock(name):
                 log('reclaiming stale op-lock from "%s" (%ds)' % (d.get('name'), int(age)))
             except Exception:
                 pass
+            try:
+                os.remove(OP_LOCK)
+            except Exception:
+                pass
         os.makedirs(ADDON_DATA, exist_ok=True)
-        with open(OP_LOCK, 'w', encoding='utf-8') as fh:
+        fd = os.open(OP_LOCK, os.O_CREAT | os.O_EXCL | os.O_WRONLY)   # atomic
+        with os.fdopen(fd, 'w', encoding='utf-8') as fh:
             json.dump({'name': name, 'ts': time.time(), 'pid': os.getpid()}, fh)
         return True
+    except FileExistsError:
+        return False                     # another contender won the atomic create
     except Exception:
         return True
 
 
 def release_op_lock():
+    """Release only if WE own the lock (pid match), so a reclaimed-by-another
+    operation isn't deleted out from under it."""
     try:
-        if os.path.isfile(OP_LOCK):
-            os.remove(OP_LOCK)
+        if not os.path.isfile(OP_LOCK):
+            return
+        try:
+            d = json.load(open(OP_LOCK, encoding='utf-8'))
+            if d.get('pid') not in (os.getpid(), None):
+                return
+        except Exception:
+            pass
+        os.remove(OP_LOCK)
     except Exception:
         pass
 
@@ -655,6 +673,19 @@ def _apply_one(entry):
         tops = [n for n in os.listdir(stage) if os.path.isdir(os.path.join(stage, n))]
         if not tops:
             raise Exception('empty extract for %s' % aid)
+        # IDENTITY: the zip must actually contain the addon the manifest names,
+        # and its addon.xml must declare that id. Otherwise a manifest entry for
+        # A pointing (by accident or tampering) at a zip of B would replace B
+        # while state records A as applied.
+        if aid not in tops:
+            raise Exception('zip for %s does not contain that addon (has: %s)' % (aid, tops))
+        _axml = os.path.join(stage, aid, 'addon.xml')
+        try:
+            _xml = open(_axml, encoding='utf-8', errors='replace').read()
+            if ('id="%s"' % aid) not in _xml:
+                raise Exception('addon.xml id mismatch for %s' % aid)
+        except OSError:
+            raise Exception('addon.xml missing for %s' % aid)
         for name in tops:                          # normally just <aid>/
             live = os.path.join(ADDONS_PATH, name)
             rb = os.path.join(ADDONS_PATH, '.rb_%s' % name)

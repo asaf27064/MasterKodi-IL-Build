@@ -87,6 +87,10 @@ _SCRUB = [
     # the WORD "Bearer" (matching on "authorization") and leaves the token, so
     # catch the token after "bearer " explicitly, first.
     (re.compile(r'(?i)(bearer\s+)[A-Za-z0-9._\-]{8,}'), r'\1<redacted>'),
+    # Authorization: Basic <base64>  (username:password)
+    (re.compile(r'(?i)(basic\s+)[A-Za-z0-9+/=]{8,}'), r'\1<redacted>'),
+    # Cookie: / Set-Cookie: -- redact the whole header value (session/auth tokens)
+    (re.compile(r'(?i)((?:set-)?cookie["\':=\s]+)[^\r\n]+'), r'\1<redacted>'),
     # key/token = value  (settings dumps, headers)
     (re.compile(r'(?i)\b(access_token|refresh_token|client_secret|api[_-]?key|'
                 r'apikey|token|secret|password|passwd|auth|authorization|bearer)\b'
