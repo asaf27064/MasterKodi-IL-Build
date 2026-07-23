@@ -21,14 +21,14 @@
 					<item>
 						<label>[COLOR gold][B]חיפוש סרטים (POV)[/B][/COLOR]</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick condition="System.AddonIsEnabled(plugin.video.pov)">ActivateWindow(Videos,plugin://plugin.video.pov/?mode=navigator.search_history&amp;action=movie&amp;name=Search%20Movies)</onclick>
+						<onclick condition="System.AddonIsEnabled(plugin.video.pov)">ActivateWindow(Videos,plugin://plugin.video.pov/?mode=search_history&amp;action=movie&amp;name=Search%20Movies)</onclick>
 						<onclick condition="!System.HasAddon(plugin.video.pov)">Notification(POV,POV לא מותקן!,3000)</onclick>
 					</item>
 					<!-- POV TV Search - Goes to search history with NEW SEARCH -->
 					<item>
 						<label>[COLOR gold][B]חיפוש סדרות (POV)[/B][/COLOR]</label>
 						<onclick>Dialog.Close(all)</onclick>
-						<onclick condition="System.AddonIsEnabled(plugin.video.pov)">ActivateWindow(Videos,plugin://plugin.video.pov/?mode=navigator.search_history&amp;action=tvshow&amp;name=Search%20TV%20Shows)</onclick>
+						<onclick condition="System.AddonIsEnabled(plugin.video.pov)">ActivateWindow(Videos,plugin://plugin.video.pov/?mode=search_history&amp;action=tvshow&amp;name=Search%20TV%20Shows)</onclick>
 						<onclick condition="!System.HasAddon(plugin.video.pov)">Notification(POV,POV לא מותקן!,3000)</onclick>
 					</item>
 					<!-- Separator -->

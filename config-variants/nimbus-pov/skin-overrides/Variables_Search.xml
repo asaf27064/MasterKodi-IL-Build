@@ -76,19 +76,19 @@
 	</variable>
 
 	<variable name="SearchProviderKeywordMoviesVar">
-		<value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.encoded)) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.pov/?mode=build_movie_list&amp;action=imdb_keywords_list_contents&amp;list_id=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
+		<value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.encoded)) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.pov/?mode=build_movie_list&amp;action=tmdb_movies_search&amp;query=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
     <value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.encoded)) + String.IsEqual(Skin.String(current_search_provider),1)">plugin://plugin.video.fenlight/?mode=build_movie_list&amp;action=tmdb_movie_keyword_results_direct&amp;key_id=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
-    <value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.encoded)) + String.IsEqual(Skin.String(current_search_provider),3)">plugin://plugin.video.pov/?mode=imdb_build_keyword_results&amp;media_type=movie&amp;query=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
+    <value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.encoded)) + String.IsEqual(Skin.String(current_search_provider),3)">plugin://plugin.video.pov/?mode=build_movie_list&amp;action=tmdb_movies_search&amp;query=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
 	</variable>
 
 	<variable name="SearchProviderKeywordTVShowsVar">
-		<value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.encoded)) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.pov/?mode=build_tvshow_list&amp;action=imdb_keywords_list_contents&amp;list_id=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
+		<value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.encoded)) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.pov/?mode=build_tvshow_list&amp;action=tmdb_tv_search&amp;query=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
     <value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.encoded)) + String.IsEqual(Skin.String(current_search_provider),1)">plugin://plugin.video.fenlight/?mode=build_tvshow_list&amp;action=tmdb_tv_keyword_results_direct&amp;key_id=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
-    <value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.encoded)) + String.IsEqual(Skin.String(current_search_provider),3)">plugin://plugin.video.pov/?mode=imdb_build_keyword_results&amp;media_type=tvshow&amp;query=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
+    <value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.encoded)) + String.IsEqual(Skin.String(current_search_provider),3)">plugin://plugin.video.pov/?mode=build_tvshow_list&amp;action=tmdb_tv_search&amp;query=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
 	</variable>
 
 	<variable name="SearchProviderTRAKTListsVar">
-		<value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.trakt.encoded)) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.pov/?mode=trakt.list.search_trakt_lists&amp;query=$INFO[Window(home).Property(nimbus.search.input.trakt.encoded)]</value>
+		<value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.trakt.encoded)) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.pov/?mode=build_trakt_list.search_trakt_lists&amp;search_title=$INFO[Window(home).Property(nimbus.search.input.trakt.encoded)]</value>
     <value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.trakt.encoded)) + String.IsEqual(Skin.String(current_search_provider),1)">plugin://plugin.video.fenlight/?mode=trakt.list.search_trakt_lists&amp;query=$INFO[Window(home).Property(nimbus.search.input.trakt.encoded)]</value>
     <value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.trakt.encoded)) + String.IsEqual(Skin.String(current_search_provider),3)">plugin://plugin.video.pov/?mode=build_trakt_list.search_trakt_lists&amp;search_title=$INFO[Window(home).Property(nimbus.search.input.trakt.encoded)]</value>
 	</variable>
@@ -142,19 +142,19 @@
 	</variable>
 
 	<variable name="SearchProviderKeywordMoviesVar">
-		<value condition="System.HasAddon(plugin.video.fen) + System.AddonIsEnabled(plugin.video.fen) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.pov/?mode=build_movie_list&amp;action=imdb_keywords_list_contents&amp;list_id=$INFO[Skin.String(SearchInputEncoded)]</value>
+		<value condition="System.HasAddon(plugin.video.fen) + System.AddonIsEnabled(plugin.video.fen) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.pov/?mode=build_movie_list&amp;action=tmdb_movies_search&amp;query=$INFO[Skin.String(SearchInputEncoded)]</value>
     <value condition="System.HasAddon(plugin.video.fenlight) + System.AddonIsEnabled(plugin.video.fenlight) + String.IsEqual(Skin.String(current_search_provider),1)">plugin://plugin.video.fenlight/?mode=build_movie_list&amp;action=tmdb_movie_keyword_results_direct&amp;key_id=$INFO[Skin.String(SearchInputEncoded)]</value>
-    <value condition="System.HasAddon(plugin.video.pov) + System.AddonIsEnabled(plugin.video.pov) + String.IsEqual(Skin.String(current_search_provider),3)">plugin://plugin.video.pov/?mode=imdb_build_keyword_results&amp;media_type=movie&amp;query=$INFO[Skin.String(SearchInputEncoded)]</value>
+    <value condition="System.HasAddon(plugin.video.pov) + System.AddonIsEnabled(plugin.video.pov) + String.IsEqual(Skin.String(current_search_provider),3)">plugin://plugin.video.pov/?mode=build_movie_list&amp;action=tmdb_movies_search&amp;query=$INFO[Skin.String(SearchInputEncoded)]</value>
 	</variable>
 
 	<variable name="SearchProviderKeywordTVShowsVar">
-		<value condition="System.HasAddon(plugin.video.fen) + System.AddonIsEnabled(plugin.video.fen) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.pov/?mode=build_tvshow_list&amp;action=imdb_keywords_list_contents&amp;list_id=$INFO[Skin.String(SearchInputEncoded)]</value>
+		<value condition="System.HasAddon(plugin.video.fen) + System.AddonIsEnabled(plugin.video.fen) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.pov/?mode=build_tvshow_list&amp;action=tmdb_tv_search&amp;query=$INFO[Skin.String(SearchInputEncoded)]</value>
     <value condition="System.HasAddon(plugin.video.fenlight) + System.AddonIsEnabled(plugin.video.fenlight) + String.IsEqual(Skin.String(current_search_provider),1)">plugin://plugin.video.fenlight/?mode=build_tvshow_list&amp;action=tmdb_tv_keyword_results_direct&amp;key_id=$INFO[Skin.String(SearchInputEncoded)]</value>
-    <value condition="System.HasAddon(plugin.video.pov) + System.AddonIsEnabled(plugin.video.pov) + String.IsEqual(Skin.String(current_search_provider),3)">plugin://plugin.video.pov/?mode=imdb_build_keyword_results&amp;media_type=tvshow&amp;query=$INFO[Skin.String(SearchInputEncoded)]</value>
+    <value condition="System.HasAddon(plugin.video.pov) + System.AddonIsEnabled(plugin.video.pov) + String.IsEqual(Skin.String(current_search_provider),3)">plugin://plugin.video.pov/?mode=build_tvshow_list&amp;action=tmdb_tv_search&amp;query=$INFO[Skin.String(SearchInputEncoded)]</value>
 	</variable>
 
 	<variable name="SearchProviderTRAKTListsVar">
-		<value condition="System.HasAddon(plugin.video.fen) + System.AddonIsEnabled(plugin.video.fen) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.pov/?mode=trakt.list.search_trakt_lists&amp;query=$INFO[Skin.String(SearchInputTraktEncoded)]</value>
+		<value condition="System.HasAddon(plugin.video.fen) + System.AddonIsEnabled(plugin.video.fen) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.pov/?mode=build_trakt_list.search_trakt_lists&amp;search_title=$INFO[Skin.String(SearchInputTraktEncoded)]</value>
     <value condition="System.HasAddon(plugin.video.fenlight) + System.AddonIsEnabled(plugin.video.fenlight) + String.IsEqual(Skin.String(current_search_provider),1)">plugin://plugin.video.fenlight/?mode=trakt.list.search_trakt_lists&amp;query=$INFO[Skin.String(SearchInputTraktEncoded)]</value>
     <value condition="System.HasAddon(plugin.video.pov) + System.AddonIsEnabled(plugin.video.pov) + String.IsEqual(Skin.String(current_search_provider),3)">plugin://plugin.video.pov/?mode=build_trakt_list.search_trakt_lists&amp;search_title=$INFO[Skin.String(SearchInputTraktEncoded)]</value>
 	</variable>

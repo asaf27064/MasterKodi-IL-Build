@@ -29,7 +29,7 @@
 		<label2>Common Shortcut</label2>
 		<icon>special://skin/extras/icons/configure.png</icon>
 		<thumb>special://skin/extras/icons/configure.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=navigator.torbox",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&amp;shortcut_folder=True&amp;name=Connect+Services",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID>mkil_maint</defaultID>
