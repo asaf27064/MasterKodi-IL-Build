@@ -42,6 +42,17 @@ from common import sha256_file  # noqa: E402
 STATE_FILE = 'bundles_state.json'
 SEED_PATH = 'userdata/addon_data/plugin.program.masterkodi.il.wizard/applied_manifest.json'
 
+# Addons that must NEVER ride along in a bundle, even if the previous bundle
+# carried them. These are known-dead legacy repos the wizard's remove_junk_repos()
+# deletes on every update -- keeping them in the bundle meant a fresh install
+# extracted the junk repo (Step 7 then briefly enabled it) and only Step 8 cleanup
+# removed it, leaving it installed if that cleanup ever failed. Purging them at
+# bundle-build time is the real closure. Mirror of modular_update.JUNK_REPOS (a
+# build tool can't import the Kodi-only module); keep the two in sync.
+DROP_ADDONS = {
+    'repository.KodiRealDebridIsrael',
+}
+
 
 def log(msg):
     print('[build_bundles] %s' % msg)
@@ -104,7 +115,8 @@ def build_repack(name, spec, original_path, dist_dir, manifest, shas, out_path):
     orig = zipfile.ZipFile(original_path)
     orig_addons = addons_in_original(original_path)
     replaced = sorted(a for a in orig_addons if shas.get(a))
-    kept = sorted(orig_addons - set(replaced))
+    dropped = sorted(a for a in orig_addons if a in DROP_ADDONS and a not in replaced)
+    kept = sorted(orig_addons - set(replaced) - set(dropped))
     with zipfile.ZipFile(out_path, 'w', zipfile.ZIP_DEFLATED) as zout:
         for n in orig.namelist():
             if n.endswith('/'):
@@ -112,6 +124,8 @@ def build_repack(name, spec, original_path, dist_dir, manifest, shas, out_path):
             parts = n.split('/')
             if parts[0] == 'addons' and len(parts) > 1 and parts[1] in replaced:
                 continue                       # replaced with the fresh tree below
+            if parts[0] == 'addons' and len(parts) > 1 and parts[1] in dropped:
+                continue                       # known-junk repo -> purge from bundle
             if spec.get('state_seed') and n == SEED_PATH:
                 continue                       # regenerated below
             zout.writestr(n, orig.read(n))
@@ -123,9 +137,10 @@ def build_repack(name, spec, original_path, dist_dir, manifest, shas, out_path):
         if spec.get('state_seed'):
             seed = {aid: shas[aid] for aid in replaced}
             zout.writestr(SEED_PATH, json.dumps(seed, indent=2))
-    log('%s: repacked (%d addons refreshed, %d kept as-was: %s)'
-        % (name, len(replaced), len(kept), ','.join(kept) or '-'))
-    return sorted(orig_addons)
+    log('%s: repacked (%d addons refreshed, %d kept as-was, %d junk dropped: %s | dropped: %s)'
+        % (name, len(replaced), len(kept), len(dropped),
+           ','.join(kept) or '-', ','.join(dropped) or '-'))
+    return sorted(a for a in orig_addons if a not in dropped)
 
 
 def build_fresh(name, spec, dist_dir, manifest, shas, out_path, originals_dir=None):

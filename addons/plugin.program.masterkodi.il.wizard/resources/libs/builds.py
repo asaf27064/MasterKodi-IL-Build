@@ -291,49 +291,62 @@ class BuildManager:
             return False
 
     def wipe(self, progress_dialog):
-        """Wipe Kodi - delete everything except wizard and My_Builds"""
+        """Wipe Kodi - delete everything except wizard, downloads, and My_Builds.
+
+        Returns the count of files that could NOT be deleted (e.g. locked on
+        Windows). >0 means the fresh build is about to be extracted OVER a
+        partially-retained old install, so the caller must not report a clean
+        success -- it warns instead."""
         log("Starting wipe...")
 
-        # The Gears/POV default download dirs live INSIDE addon_data (Movies/TV
-        # Show/Premium/Image Downloads under plugin.video.{gears,pov}). Those hold
-        # the user's own downloaded media -- gigabytes that are NOT addon state and
-        # must survive a reinstall. Pruning by name preserves them wherever they
-        # sit; if the user pointed downloads at external storage the wipe never
-        # reached them anyway.
-        exclude_dirs = [ADDON_ID, 'packages', 'My_Builds', 'temp', 'cache',
-                        'Movies Downloads', 'TV Show Downloads',
-                        'Premium Downloads', 'Image Downloads']
-        
+        exclude_dirs = [ADDON_ID, 'packages', 'My_Builds', 'temp', 'cache']
+        # The Gears/POV default download dirs (Movies/TV Show/Premium/Image
+        # Downloads) live inside addon_data and hold the user's own downloaded
+        # media -- preserve them across a reinstall. Scope the match by PARENT to
+        # those two addon dirs, so an unrelated folder that merely shares one of
+        # these names elsewhere under Kodi home is still wiped as normal.
+        dl_names = {'Movies Downloads', 'TV Show Downloads',
+                    'Premium Downloads', 'Image Downloads'}
+        dl_parents = {'plugin.video.gears', 'plugin.video.pov'}
+
+        def _prune(dirs, root):
+            base = os.path.basename(root)
+            return [d for d in dirs
+                    if d not in exclude_dirs
+                    and not (d in dl_names and base in dl_parents)]
+
         total_files = 0
         for root, dirs, files in os.walk(HOME):
-            dirs[:] = [d for d in dirs if d not in exclude_dirs]
+            dirs[:] = _prune(dirs, root)
             total_files += len(files)
-        
+
         del_file = 0
+        del_fail = 0
         progress_dialog.update(0, "[COLOR yellow]מנקה קבצים ותיקיות...[/COLOR]")
-        
+
         for root, dirs, files in os.walk(HOME, topdown=True):
-            dirs[:] = [d for d in dirs if d not in exclude_dirs]
-            
+            dirs[:] = _prune(dirs, root)
+
             for name in files:
                 del_file += 1
                 filepath = os.path.join(root, name)
-                
+
                 if name.endswith('.log') or name.endswith('.old.log'):
                     continue
-                
+
                 try:
                     os.remove(filepath)
-                except Exception:
-                    pass
-                
+                except Exception as e:
+                    del_fail += 1
+                    log(f"wipe: could not delete {filepath}: {e}", xbmc.LOGWARNING)
+
                 if del_file % 100 == 0:
                     pct = min(int(del_file * 100 / max(total_files, 1)), 100)
                     progress_dialog.update(pct, f"[COLOR yellow]מוחק קבצים...[/COLOR]\n{del_file}/{total_files}")
-        
+
         progress_dialog.update(95, "[COLOR yellow]מנקה תיקיות ריקות...[/COLOR]")
         for root, dirs, files in os.walk(HOME, topdown=False):
-            dirs[:] = [d for d in dirs if d not in exclude_dirs]
+            dirs[:] = _prune(dirs, root)
             for name in dirs:
                 dirpath = os.path.join(root, name)
                 if name not in ["Database", "userdata", "temp", "addons", "addon_data"]:
@@ -342,8 +355,12 @@ class BuildManager:
                             os.rmdir(dirpath)
                     except Exception:
                         pass
-        
-        log("Wipe complete")
+
+        if del_fail:
+            log(f"Wipe complete with {del_fail} undeletable file(s)", xbmc.LOGWARNING)
+        else:
+            log("Wipe complete")
+        return del_fail
 
     def validate_build_zip(self, zip_path):
         """Is this a complete, readable build zip? Returns (ok, reason).
@@ -1184,26 +1201,62 @@ class BuildManager:
 
             # Step 3: Wipe
             progress.update(0, "[COLOR yellow]מכין להתקנה...[/COLOR]")
-            self.wipe(progress)
-            
+            wipe_failed = self.wipe(progress)
+            if wipe_failed:
+                # locked files survived the wipe (Windows) -> the build is about to
+                # extract over a partially-retained old install. Don't silently call
+                # it a clean success; log loudly so a mixed install is diagnosable.
+                log(f"wipe left {wipe_failed} undeletable file(s); build will extract "
+                    f"over them -- install may be partially mixed", xbmc.LOGWARNING)
+
             # Step 4: Extract base build
             progress.update(0, f"[COLOR yellow]מתקין {build_name}...[/COLOR]")
             success, errors = self.extract_zip(zip_path, HOME, progress, f"מתקין {build_name}...")
-            
+
             if not success:
                 progress.close()
                 self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]ההתקנה נכשלה![/COLOR]")
                 return False
-            
+
             # Cleanup base zip
             try:
                 os.remove(zip_path)
             except Exception:
                 pass
-            
+
             # Step 4.5: Ask about OLED and apply settings
             self._ask_and_apply_oled(progress)
             progress.create(ADDON_NAME, "[COLOR cyan]ממשיך בהתקנה...[/COLOR]")
+
+            # Step 4.6: restore the 'keep' selections NOW -- after the base build is
+            # extracted but BEFORE any addon is registered/enabled/started. The skin
+            # install below can be a MANIFEST install (Zephyr/Piers) that itself
+            # enables addons and runs UpdateLocalAddons(); doing the restore only
+            # before Step 6 (as 2.4.135 did) still left the kept sqlite files being
+            # overwritten while a service started by that earlier path could hold
+            # them open (WAL corruption). Restoring here precedes EVERY registration
+            # path. Restored user addons are folded into addon_list for the single
+            # enable at Step 6.
+            if keep_keys:
+                try:
+                    from resources.libs import keep as keep_mod
+                    progress.update(0, "[COLOR yellow]משחזר נתונים שנשמרו...[/COLOR]")
+                    restored_extras, restore_failed = keep_mod.restore()
+                    if restored_extras:
+                        addon_list.extend(a for a in restored_extras if a not in addon_list)
+                    if restore_failed:
+                        try:
+                            progress.close()
+                        except Exception:
+                            pass
+                        self.dialog.ok(ADDON_NAME,
+                            f"[COLOR {COLOR_WARNING}]חלק מהנתונים ששמרת לא שוחזרו "
+                            f"({restore_failed} פריטים).[/COLOR]\n\n"
+                            "עותק הגיבוי לא נמחק וניתן לשחזר ממנו ידנית:\n"
+                            f"{keep_mod.STAGE}")
+                        progress.create(ADDON_NAME, "[COLOR cyan]ממשיך בהתקנה...[/COLOR]")
+                except Exception as e:
+                    log(f"keep restore failed: {e}", xbmc.LOGWARNING)
             
             # Step 5: Install the chosen optional skin (Arctic Fuse / Nimbus / Zephyr)
             skin_zip_url = build_info.get(skin['url_key']) if (skin and skin.get('url_key')) else None
@@ -1266,36 +1319,8 @@ class BuildManager:
                     ADDON.setSetting('installed_skin', 'Estuary')
             else:
                 ADDON.setSetting('installed_skin', 'Estuary')
-            
-            # Step 5.5: restore the 'keep' selections onto the freshly extracted
-            # build BEFORE we register/enable the addons. The kept sqlite files
-            # (watched/maincache/settings) are copied into place here so that no
-            # addon service -- which the UpdateLocalAddons() at Step 7 can start --
-            # can hold them open when they're overwritten (an open-WAL overwrite
-            # corrupts the database). Restored user addons are folded into the
-            # single enable below so they're registered in one pass.
-            if keep_keys:
-                try:
-                    from resources.libs import keep as keep_mod
-                    progress.update(88, "[COLOR yellow]משחזר נתונים שנשמרו...[/COLOR]")
-                    restored_extras, restore_failed = keep_mod.restore()
-                    if restored_extras:
-                        addon_list.extend(a for a in restored_extras if a not in addon_list)
-                    # tell the user if some kept data didn't come back -- the
-                    # backup was deliberately NOT deleted so it can be recovered.
-                    if restore_failed:
-                        try:
-                            progress.close()
-                        except Exception:
-                            pass
-                        self.dialog.ok(ADDON_NAME,
-                            f"[COLOR {COLOR_WARNING}]חלק מהנתונים ששמרת לא שוחזרו "
-                            f"({restore_failed} פריטים).[/COLOR]\n\n"
-                            "עותק הגיבוי לא נמחק וניתן לשחזר ממנו ידנית:\n"
-                            f"{keep_mod.STAGE}")
-                        progress.create(ADDON_NAME, "[COLOR cyan]ממשיך בהתקנה...[/COLOR]")
-                except Exception as e:
-                    log(f"keep restore failed: {e}", xbmc.LOGWARNING)
+
+            # (keep-restore now runs at Step 4.6, before any addon registration.)
 
             # Step 6: Enable addons in database
             progress.update(90, "[COLOR yellow]מפעיל אדונים...[/COLOR]")

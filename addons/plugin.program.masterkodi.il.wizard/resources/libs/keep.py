@@ -500,14 +500,18 @@ def restore():
             elif name.startswith('addon__'):
                 aid = name[len('addon__'):]
                 dst = os.path.join(HOME_ADDONS, aid)
-                if not os.path.isdir(dst):
-                    shutil.copytree(os.path.join(STAGE, name), dst)
+                # MERGE into an existing dir (dirs_exist_ok) rather than skip it.
+                # A fresh Kodi/bundle can create addon_data/<id> before restore
+                # runs; the old skip-if-exists then silently DROPPED the user's
+                # staged data yet still reported success and deleted the only
+                # backup. The staged copy is the user's real pre-wipe data, so it
+                # wins on conflict. A failure now raises -> counted -> STAGE kept.
+                shutil.copytree(os.path.join(STAGE, name), dst, dirs_exist_ok=True)
                 restored_addons.append(aid)
             elif name.startswith('addondata__'):
                 aid = name[len('addondata__'):]
                 dst = os.path.join(ADDON_DATA, aid)
-                if not os.path.isdir(dst):
-                    shutil.copytree(os.path.join(STAGE, name), dst)
+                shutil.copytree(os.path.join(STAGE, name), dst, dirs_exist_ok=True)
         except Exception as e:
             failed += 1
             log('restore %s failed: %s' % (name, e), xbmc.LOGERROR)

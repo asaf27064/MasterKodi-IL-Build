@@ -52,7 +52,19 @@ class BackupManager:
     # What QUICK grabs: (label, absolute source path, arc path inside the zip)
     def _quick_items(self):
         items = [
-            ('הגדרות Gears (דבריד/Trakt)', _addon_settings_file(C.GEARS_ADDON_ID),
+            # Gears keeps debrid/Trakt/etc in its OWN settings.DB (custom settings
+            # manager), NOT in settings.xml -- which usually doesn't even exist, so
+            # the old quick backup captured NONE of the user's Gears logins. This
+            # is the real cred store; create() snapshots it consistently.
+            ('התחברויות Gears (דבריד/Trakt)',
+             os.path.join(C.ADDON_DATA_PATH, C.GEARS_ADDON_ID, 'databases', 'settings.db'),
+             f'addon_data/{C.GEARS_ADDON_ID}/databases/settings.db'),
+            # POV keeps its logins in pov/settings.xml -- was omitted entirely, so a
+            # POV box's quick backup saved no credentials at all.
+            ('התחברויות POV (דבריד/Trakt/TMDb)',
+             os.path.join(C.ADDON_DATA_PATH, 'plugin.video.pov', 'settings.xml'),
+             'addon_data/plugin.video.pov/settings.xml'),
+            ('הגדרות Gears (settings.xml)', _addon_settings_file(C.GEARS_ADDON_ID),
              f'addon_data/{C.GEARS_ADDON_ID}/settings.xml'),
             ('מפתח Gemini + כתוביות AI', _addon_settings_file(C.GEARSAI_ADDON_ID),
              f'addon_data/{C.GEARSAI_ADDON_ID}/settings.xml'),
@@ -77,6 +89,7 @@ class BackupManager:
         dest_dir = C.backup_location()
         zip_path = os.path.join(dest_dir, name + '.zip')
         included = []
+        snaps = []                 # temp db snapshots to delete after the zip closes
         try:
             with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as z:
                 if scope == 'full':
@@ -87,7 +100,19 @@ class BackupManager:
                     for i, (lbl, src, arc) in enumerate(items):
                         if progress_cb:
                             progress_cb(f'מגבה: {lbl}', int(10 + 80 * i / total))
-                        z.write(src, arc)
+                        if src.endswith('.db'):
+                            # a live SQLite db (WAL) must be snapshotted, not raw-
+                            # copied, or the archived copy can be torn/inconsistent.
+                            snap = self._snapshot_db(src)
+                            if not snap:
+                                log(f'quick backup: could not snapshot {src}', xbmc.LOGWARNING)
+                                continue
+                            try:
+                                z.write(snap, arc)
+                            finally:
+                                snaps.append(snap)
+                        else:
+                            z.write(src, arc)
                         included.append(lbl)
 
                 manifest = {
@@ -112,6 +137,31 @@ class BackupManager:
             except Exception:
                 pass
             return None, None
+        finally:
+            for s in snaps:
+                try:
+                    os.remove(s)
+                except Exception:
+                    pass
+
+    def _snapshot_db(self, src):
+        """Consistent temp snapshot of a live SQLite db (WAL-checkpointed +
+        integrity-verified) via keep._safe_db_copy. Returns the temp path or None.
+        The caller zips it and deletes it afterwards."""
+        try:
+            import tempfile
+            from resources.libs import keep as keep_mod
+            fd, tmp = tempfile.mkstemp(suffix='.db')
+            os.close(fd)
+            if keep_mod._safe_db_copy(src, tmp):
+                return tmp
+            try:
+                os.remove(tmp)
+            except Exception:
+                pass
+        except Exception as e:
+            log(f'snapshot_db failed for {src}: {e}', xbmc.LOGWARNING)
+        return None
 
     def _add_full_userdata(self, z, progress_cb, included):
         root = C.USERDATA.rstrip('/\\')

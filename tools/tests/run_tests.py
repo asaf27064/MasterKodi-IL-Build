@@ -107,6 +107,72 @@ def test_keep():
     check('POV watched.db restored with its row', _sentinel(pov_w) == 'POV_WATCHED')
     check('POV maincache.db restored with its row', _sentinel(pov_m) == 'POV_CACHE')
     check('gears watched.db restored with its row', _sentinel(gears_w) == 'GEARS_WATCHED')
+
+    # --- #8: restore MERGES into an existing addon_data dir (doesn't skip it) ---
+    # A fresh Kodi/bundle can create addon_data/<id> before restore; the old
+    # skip-if-exists silently dropped the user's staged data then deleted the
+    # backup. Stage a user settings.xml, pre-create the dest, restore, verify.
+    if os.path.isdir(keep.STAGE):
+        shutil.rmtree(keep.STAGE, ignore_errors=True)
+    os.makedirs(keep.STAGE)
+    import json as _json
+    _json.dump({'keys': ['extras'], 'settings': {}, 'xml': {}},
+               open(os.path.join(keep.STAGE, 'manifest.json'), 'w'))
+    stg = os.path.join(keep.STAGE, 'addondata__plugin.user.x')
+    os.makedirs(stg)
+    open(os.path.join(stg, 'settings.xml'), 'w').write('USER_STAGED')
+    dest = os.path.join(keep.ADDON_DATA, 'plugin.user.x')
+    os.makedirs(dest, exist_ok=True)                 # dest already exists
+    _, rf8 = keep.restore()
+    landed = os.path.join(dest, 'settings.xml')
+    check('#8 existing addon_data dir MERGED (staged file restored)',
+          os.path.isfile(landed) and open(landed).read() == 'USER_STAGED')
+    check('#8 restore reported no failure', rf8 == 0)
+    shutil.rmtree(d, ignore_errors=True)
+
+
+def test_switch_transactional():
+    print("\n=== content_source: transactional switch (#3) + backup consume (#4) ===")
+    import json as _json
+    d = tempfile.mkdtemp()
+    idx = _json.dumps({'files': [
+        {'src': 'a.xml', 'dest': os.path.join(d, 'a.xml')},
+        {'src': 'b.xml', 'dest': os.path.join(d, 'b.xml')},
+    ]})
+
+    def fake_fetch(rel):
+        return idx.encode('utf-8') if rel.endswith('index.json') else None
+
+    orig_fetch, orig_fetchv = cs._fetch, cs._fetchv
+    try:
+        cs._fetch = fake_fetch
+        # PHASE-1 abort: b.xml fails to fetch -> switch must write NOTHING
+        cs._fetchv = lambda roots, src: (b'<x/>' if src == 'a.xml' else None)
+        applied, failed = cs._apply_index(['root'], 'skin.test')
+        wrote = os.path.exists(os.path.join(d, 'a.xml')) or os.path.exists(os.path.join(d, 'b.xml'))
+        check('#3 fetch failure -> aborted (applied=0, failed>0)', applied == 0 and failed >= 1)
+        check('#3 fetch failure -> NOTHING written to disk', not wrote)
+        # all fetch OK -> both files written
+        cs._fetchv = lambda roots, src: b'<ok/>'
+        applied, failed = cs._apply_index(['root'], 'skin.test')
+        check('#3 all fetched -> both written, no failures',
+              applied == 2 and failed == 0 and
+              os.path.isfile(os.path.join(d, 'a.xml')) and os.path.isfile(os.path.join(d, 'b.xml')))
+    finally:
+        cs._fetch, cs._fetchv = orig_fetch, orig_fetchv
+
+    # #4 -- _restore_gears restores AND consumes the .pre_gears backup (so the
+    # next switch captures fresh Gears state instead of reusing a stale copy).
+    uf = os.path.join(cs.USERDATA, 'zzz_switchtest.xml')
+    open(uf + '.pre_gears', 'w').write('GEARS_BACKUP')
+    open(uf, 'w').write('POV_NOW')                   # live file is now POV
+    cs._restore_gears('skin.test')
+    check('#4 restore brought back gears content', open(uf).read() == 'GEARS_BACKUP')
+    check('#4 .pre_gears consumed after restore', not os.path.exists(uf + '.pre_gears'))
+    try:
+        os.remove(uf)
+    except Exception:
+        pass
     shutil.rmtree(d, ignore_errors=True)
 
 
@@ -199,6 +265,41 @@ def test_backup_restore():
     check('zip-slip BLOCKED', not os.path.isfile(outside))
 
 
+def test_backup_quick_creds():
+    print("\n=== backup: quick backup captures Gears settings.db + POV creds (#9) ===")
+    os.makedirs(C.backup_location(), exist_ok=True)
+    gdb_dir = os.path.join(C.ADDON_DATA_PATH, C.GEARS_ADDON_ID, 'databases')
+    os.makedirs(gdb_dir, exist_ok=True)
+    gdb = os.path.join(gdb_dir, 'settings.db')
+    cc = sqlite3.connect(gdb); cc.execute("PRAGMA journal_mode=WAL")
+    cc.execute("CREATE TABLE settings(setting_id TEXT UNIQUE, setting_value TEXT)")
+    cc.execute("INSERT INTO settings VALUES('rd.token','USER_RD_TOKEN')"); cc.commit(); cc.close()
+    povdir = os.path.join(C.ADDON_DATA_PATH, 'plugin.video.pov')
+    os.makedirs(povdir, exist_ok=True)
+    open(os.path.join(povdir, 'settings.xml'), 'w', encoding='utf-8').write(
+        '<settings><setting id="tb.token">USER_TB_TOKEN</setting></settings>')
+
+    zp, _mf = backup.BackupManager().create('quick')
+    check('quick backup created', bool(zp) and os.path.isfile(zp))
+    db_arc = 'addon_data/%s/databases/settings.db' % C.GEARS_ADDON_ID
+    pov_arc = 'addon_data/plugin.video.pov/settings.xml'
+    with zipfile.ZipFile(zp) as z:
+        names = z.namelist()
+        check('quick backup includes Gears settings.db', db_arc in names)
+        check('quick backup includes POV settings.xml', pov_arc in names)
+        if pov_arc in names:
+            check('POV creds captured', b'USER_TB_TOKEN' in z.read(pov_arc))
+        if db_arc in names:
+            td = tempfile.mkdtemp()
+            z.extract(db_arc, td)
+            dbp = os.path.join(td, *db_arc.split('/'))
+            row = sqlite3.connect(dbp).execute(
+                "SELECT setting_value FROM settings WHERE setting_id='rd.token'").fetchone()
+            check('Gears settings.db snapshot preserved the cred row',
+                  bool(row) and row[0] == 'USER_RD_TOKEN')
+            shutil.rmtree(td, ignore_errors=True)
+
+
 def test_update_ordering():
     print("\n=== run_update: removals SKIPPED when an update fails (#11 regression) ===")
     fake = {'addons': [{'id': 'plugin.new', 'version': '2.0', 'sha256': 'x' * 64, 'url': 'http://x'}],
@@ -256,8 +357,10 @@ def test_update_ordering():
 
 
 def main():
-    for t in (test_imports, test_keep, test_cred_preserve, test_logs, test_lock_and_recovery,
-              test_validate_zip, test_backup_restore, test_update_ordering):
+    for t in (test_imports, test_keep, test_cred_preserve, test_switch_transactional,
+              test_logs, test_lock_and_recovery,
+              test_validate_zip, test_backup_restore, test_backup_quick_creds,
+              test_update_ordering):
         try:
             t()
         except Exception as e:

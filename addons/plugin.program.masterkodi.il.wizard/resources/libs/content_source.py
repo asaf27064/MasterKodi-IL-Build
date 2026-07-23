@@ -161,6 +161,13 @@ def _apply_index(roots, skin_id):
     subs = {'{addons}': ADDONS, '{addon_data}': ADDON_DATA_PATH,
             '{userdata}': USERDATA, '{home}': HOME, '{skin}': skin_id}
     applied = failed = 0
+    # PHASE 1 -- fetch EVERYTHING first. A content switch must be all-or-nothing:
+    # the old fetch-and-write-per-file left the skin half-POV/half-Gears when a
+    # later file timed out (the box then recorded the OLD source but the skin held
+    # a mix of both). If any fetch fails we abort HERE, before a single file on
+    # disk is touched, so the box is genuinely left intact -- matching the comment
+    # in switch_to() that a partial fetch leaves the previous source unchanged.
+    payload = []
     for entry in merged.values():
         src, dest = entry.get('src'), entry.get('dest')
         if not src or not dest:
@@ -172,7 +179,16 @@ def _apply_index(roots, skin_id):
         if not data:
             failed += 1
             _log('index: could not fetch %s' % src, xbmc.LOGWARNING)
-            continue
+        else:
+            payload.append((dest, data))
+    if failed:
+        _log('index: %d file(s) failed to fetch for %s -> aborting, box untouched'
+             % (failed, skin_id), xbmc.LOGWARNING)
+        return 0, failed
+    # PHASE 2 -- everything fetched: back up each original once, then write. A rare
+    # mid-write failure (e.g. disk full) rolls every write back to the pre-switch
+    # Gears state via the .pre_gears backups, so the box is never left mixed.
+    for dest, data in payload:
         try:
             _backup_once(dest, 'gears')
             _write(dest, data)
@@ -180,6 +196,11 @@ def _apply_index(roots, skin_id):
         except Exception as e:
             failed += 1
             _log('index: write failed %s: %s' % (dest, e), xbmc.LOGWARNING)
+    if failed:
+        _log('index: %d write(s) failed for %s -> rolling back to Gears'
+             % (failed, skin_id), xbmc.LOGERROR)
+        _restore_gears(skin_id)
+        return 0, failed
     _log('index applied for %s: %d file(s), %d failed' % (skin_id, applied, failed))
     return applied, failed
 
@@ -521,6 +542,13 @@ def _restore_gears(skin_id):
                     try:
                         shutil.copy2(src, dst)
                         restored += 1
+                        # CONSUME the backup once it's restored. _backup_once only
+                        # writes .pre_gears when none exists, so a leftover copy
+                        # would freeze the Gears snapshot at the FIRST switch: a
+                        # later gears->pov->gears cycle would then restore that
+                        # stale copy over the user's newer edits. Removing it here
+                        # makes the next switch capture fresh Gears state.
+                        os.remove(src)
                     except Exception:
                         pass
     _log('restored %d gears backup file(s)' % restored)
