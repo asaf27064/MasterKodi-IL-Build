@@ -1058,6 +1058,12 @@ def run_update(silent=False, notify=None, force=False, no_reload=False):
         # still apply config on a version bump even if no addon changed
         cfg_bumped = _config_version_changed(manifest, state)
         cfg_applied = _maybe_apply_config(manifest, state, force=force)
+        # ...and the POV content-variant, on the SAME no-addon-change path. This
+        # was the bug behind "why doesn't it auto-update": a box already on the
+        # latest wizard takes THIS branch (updates is empty), and it used to
+        # apply config but not variants -- so a POV menu/search/widget fix never
+        # landed unless an addon also happened to change. Now both re-apply here.
+        variants_applied = _maybe_apply_content_variants(manifest, state, force=force)
         _save_state(state)
         # self-heal an empty skinshortcuts home menu (nothing was re-extracted
         # here, so a missing includes file means the boot build never landed)
@@ -1070,6 +1076,7 @@ def run_update(silent=False, notify=None, force=False, no_reload=False):
         return {'ok': True, 'applied': [], 'failed': [], 'removed': removed,
                 'enabled': enabled, 'menu_repaired': menu_repaired,
                 'config_applied': cfg_applied,
+                'variants_applied': variants_applied,
                 'up_to_date': not removed and not enabled and not menu_repaired,
                 'manifest_generated': manifest.get('generated_utc')}
 
