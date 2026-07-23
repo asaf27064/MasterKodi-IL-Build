@@ -32,7 +32,7 @@ RAW = 'https://raw.githubusercontent.com/asaf27064/MasterKodi-IL-Build/main/'
 SKIN_VARIANTS = {
     'skin.estuary':                          ('estuary-pov', 'estuary-piers-pov'),
     'skin.nimbus':                           ('nimbus-pov', None),
-    'skin.arctic.fuse.3':                    ('af3-pov', None),
+    'skin.arctic.fuse.3':                    ('af3-pov-tmdb', None),
     'skin.arctic.zephyr.2.resurrection.mod': ('zephyr-pov-tmdb', 'zephyr-piers-pov'),
 }
 

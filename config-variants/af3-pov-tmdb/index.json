@@ -72,5 +72,9 @@
       "dest": "{addon_data}/plugin.video.themoviedb.helper/settings.xml"
     }
   ],
-  "special": []
+  "special": [
+    "pov/settings.xml",
+    "pov/shortcut_folders.json",
+    "pov/views.json"
+  ]
 }

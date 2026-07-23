@@ -2036,21 +2036,12 @@ def _skin_switch_flow():
     # activate the new skin's stack, neutralize the other skins' stacks
     manager.sync_skin_stacks(sid)
 
-    # If the build is on POV, re-apply the POV config for the NEW skin (parity
-    # with the Gears config re-apply on skin switch). content_source persists
-    # the choice; install_apply uses the explicit skin id + no reload (the
-    # restart below applies it). Fail-open -> skin still switches on Gears config.
-    try:
-        import xbmcaddon as _xa
-        if _xa.Addon().getSetting('content_source') == 'pov':
-            from resources.libs import content_source
-            content_source.install_apply(sid, 'pov')
-    except Exception as e:
-        log(f"POV re-apply on skin switch failed: {e}", xbmc.LOGWARNING)
-
-    # ask what to do with the previous optional skin (never touch Estuary).
-    # Removal is DEFERRED to the next startup: the old skin is still the running
-    # one until we restart, and deleting a live skin (Windows file locks) fails.
+    # Ask what to do with the previous optional skin FIRST -- it's an instant
+    # user decision. The POV re-apply below fetches ~17 variant files from GitHub
+    # one-by-one, which used to run BEFORE this prompt and made the window take
+    # seconds to appear. Prompt first, network after. Removal is DEFERRED to the
+    # next startup: the old skin is still the running one until we restart, and
+    # deleting a live skin (Windows file locks) fails.
     if prev_active in _OPTIONAL_SKIN_IDS and prev_active != sid:
         if dialog.yesno('סקינים',
                         f'מה לעשות עם הסקין הקודם ({_skin_name(prev_active)})?',
@@ -2062,6 +2053,22 @@ def _skin_switch_flow():
                     f.write(prev_active)
             except Exception as e:
                 log(f"could not schedule skin removal: {e}", xbmc.LOGWARNING)
+
+    # If the build is on POV, re-apply the POV config for the NEW skin (parity
+    # with the Gears config re-apply on skin switch). Runs AFTER the prompt (see
+    # above) so the fetch delay isn't in the user's way. install_apply uses the
+    # explicit skin id + no reload (the restart below applies it). Fail-open ->
+    # skin still switches on Gears config.
+    try:
+        import xbmcaddon as _xa
+        if _xa.Addon().getSetting('content_source') == 'pov':
+            _p = xbmcgui.DialogProgress()
+            _p.create(ADDON_NAME, '[COLOR cyan]מחיל תצורת POV לסקין החדש...[/COLOR]')
+            from resources.libs import content_source
+            content_source.install_apply(sid, 'pov')
+            _p.close()
+    except Exception as e:
+        log(f"POV re-apply on skin switch failed: {e}", xbmc.LOGWARNING)
 
     # restart to apply the new skin (service removes the old one on next launch)
     manager._countdown_restart(manager.get_installed_build_name(), name)
