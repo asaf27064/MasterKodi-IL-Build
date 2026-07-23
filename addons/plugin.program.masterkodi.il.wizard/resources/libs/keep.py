@@ -110,9 +110,21 @@ def _db_read(db, ids):
     return out
 
 
+# kept Gears credentials that couldn't be written yet (settings.db not born on a
+# fresh install) are stashed here and applied by modular_update's first-boot
+# catch-up. Without this the creds were silently dropped and the backup deleted.
+KEEP_PENDING = os.path.join(ADDON_DATA, WIZARD_ID, 'gears_keep_pending.json')
+
+
 def _db_write(db, values):
-    if not values or not os.path.isfile(db):
-        return
+    """Write settings into a gears settings.db. Returns:
+      True   -> written
+      'nodb' -> the DB doesn't exist yet (fresh install; caller should defer)
+      False  -> a real write error (caller should treat as a restore failure)."""
+    if not values:
+        return True
+    if not os.path.isfile(db):
+        return 'nodb'
     try:
         c = sqlite3.connect(db)
         for sid, val in values.items():
@@ -123,8 +135,29 @@ def _db_write(db, values):
                 except Exception:
                     pass
         c.commit(); c.close()
+        return True
     except Exception as e:
-        log('settings.db write failed: %s' % e, xbmc.LOGWARNING)
+        log('settings.db write failed: %s' % e, xbmc.LOGERROR)
+        return False
+
+
+def _stash_keep_pending(values):
+    """Defer kept Gears creds to the first-boot catch-up when the db isn't born."""
+    try:
+        os.makedirs(os.path.dirname(KEEP_PENDING), exist_ok=True)
+        existing = {}
+        if os.path.isfile(KEEP_PENDING):
+            try:
+                existing = json.load(open(KEEP_PENDING, encoding='utf-8-sig'))
+            except Exception:
+                existing = {}
+        existing.update(values)
+        json.dump(existing, open(KEEP_PENDING, 'w', encoding='utf-8'), ensure_ascii=False)
+        log('deferred %d kept gears cred(s) to first-boot catch-up' % len(values))
+        return True
+    except Exception as e:
+        log('stash keep-pending failed: %s' % e, xbmc.LOGERROR)
+        return False
 
 
 # --------------------------------------------------------------------------- #
@@ -147,8 +180,10 @@ def _xml_read(path, ids):
 
 
 def _xml_write(path, values):
+    """Write settings into an XML settings file (created if absent). Returns
+    True on success, False on error, so restore() can count a real failure."""
     if not values:
-        return
+        return True
     try:
         import re
         os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -163,8 +198,10 @@ def _xml_write(path, values):
             elif '</settings>' in txt:
                 txt = txt.replace('</settings>', '    <setting id="%s">%s</setting>\n</settings>' % (sid, val), 1)
         open(path, 'w', encoding='utf-8').write(txt)
+        return True
     except Exception as e:
-        log('xml write failed %s: %s' % (path, e), xbmc.LOGWARNING)
+        log('xml write failed %s: %s' % (path, e), xbmc.LOGERROR)
+        return False
 
 
 # --------------------------------------------------------------------------- #
@@ -334,11 +371,21 @@ def restore():
     except Exception as e:
         log('restore: manifest unreadable, keeping STAGE: %s' % e, xbmc.LOGERROR)
         return restored_addons, 1            # staged data exists but unreadable
-    # gears settings.db credentials
-    _db_write(GEARS_SETTINGS_DB, saved.get('settings', {}).get('gears', {}))
+    # gears settings.db credentials. On a fresh install the db isn't born yet
+    # (the base zip ships none) -> defer to the first-boot catch-up instead of
+    # silently dropping the creds (which then deleted the only backup).
+    gears_creds = saved.get('settings', {}).get('gears', {})
+    if gears_creds:
+        res = _db_write(GEARS_SETTINGS_DB, gears_creds)
+        if res == 'nodb':
+            if not _stash_keep_pending(gears_creds):
+                failed += 1                  # couldn't even defer -> keep STAGE
+        elif res is False:
+            failed += 1                      # real write error -> keep STAGE
     # xml settings (gearsai key, tmdb-helper trakt)
     for path, values in saved.get('xml', {}).items():
-        _xml_write(path, values)
+        if not _xml_write(path, values):
+            failed += 1                      # real write error -> keep STAGE
     # staged db files, plain files, and extra addons/addon_data
     for name in os.listdir(STAGE):
         try:

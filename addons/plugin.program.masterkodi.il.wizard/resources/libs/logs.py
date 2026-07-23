@@ -83,6 +83,10 @@ def _header(info):
     return '\n'.join(lines) + '\n\n'
 
 _SCRUB = [
+    # Authorization: Bearer <jwt>. The generic key=value rule below only redacts
+    # the WORD "Bearer" (matching on "authorization") and leaves the token, so
+    # catch the token after "bearer " explicitly, first.
+    (re.compile(r'(?i)(bearer\s+)[A-Za-z0-9._\-]{8,}'), r'\1<redacted>'),
     # key/token = value  (settings dumps, headers)
     (re.compile(r'(?i)\b(access_token|refresh_token|client_secret|api[_-]?key|'
                 r'apikey|token|secret|password|passwd|auth|authorization|bearer)\b'
@@ -293,7 +297,10 @@ def send_logs():
             if dumps:
                 xbmc.log('[wizard] uploaded %d crash dump(s)' % dumps, xbmc.LOGINFO)
         prog.update(80)
-        paste = _upload_paste(text)               # always-available public paste
+        # Public paste (paste.kodi.tv/dpaste) is a PRIVACY fallback ONLY when our
+        # private Cloudflare store is unreachable -- it used to run on every
+        # upload, sending every log to a public paste even when CF succeeded.
+        paste = _upload_paste(text) if not cf else None
         prog.close()
         url = cf or paste
         if url:

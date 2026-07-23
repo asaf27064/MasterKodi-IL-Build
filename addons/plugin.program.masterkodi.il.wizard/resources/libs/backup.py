@@ -115,8 +115,26 @@ class BackupManager:
 
     def _add_full_userdata(self, z, progress_cb, included):
         root = C.USERDATA.rstrip('/\\')
+        # NEVER walk the backup store (its default is inside userdata -> the
+        # archive would contain ITSELF, and restore would truncate its own source
+        # mid-read) nor the transient keep-staging dir.
+        skip_dirs = set()
+        for _p in (C.backup_location(),):
+            try:
+                skip_dirs.add(os.path.realpath(_p))
+            except Exception:
+                pass
+        try:
+            from resources.libs import keep as _keep
+            skip_dirs.add(os.path.realpath(_keep.STAGE))
+        except Exception:
+            pass
         all_files = []
         for base, dirs, files in os.walk(root):
+            rp = os.path.realpath(base)
+            if any(rp == s or rp.startswith(s + os.sep) for s in skip_dirs):
+                dirs[:] = []
+                continue
             rel = os.path.relpath(base, root)
             top = (rel.split(os.sep)[0] if rel != '.' else '')
             if top in FULL_EXCLUDE_DIRS:
@@ -167,7 +185,16 @@ class BackupManager:
     # ---- restore ----
     def restore(self, zip_path, progress_cb=None):
         try:
+            zip_real = os.path.realpath(zip_path)
+            ud_real = os.path.realpath(C.USERDATA)
             with zipfile.ZipFile(zip_path) as z:
+                # Verify the WHOLE archive before overwriting anything -- restore
+                # is destructive and used to overwrite live files one-by-one with
+                # no integrity check, so a corrupt archive half-wiped the box.
+                bad = z.testzip()
+                if bad is not None:
+                    log(f'restore aborted: corrupt member {bad}', xbmc.LOGERROR)
+                    return False
                 names = z.namelist()
                 manifest = json.loads(z.read('manifest.json').decode('utf-8')) if 'manifest.json' in names else {}
                 scope = manifest.get('scope', 'quick')
@@ -180,6 +207,14 @@ class BackupManager:
                     # known locations under userdata.
                     rel = n[len('userdata/'):] if n.startswith('userdata/') else n
                     dest = os.path.join(C.USERDATA, rel.replace('/', os.sep))
+                    dest_real = os.path.realpath(dest)
+                    # zip-slip: refuse any member that escapes userdata via '..'
+                    if not (dest_real == ud_real or dest_real.startswith(ud_real + os.sep)):
+                        log(f'restore: skipping out-of-tree member {n}', xbmc.LOGWARNING)
+                        continue
+                    # never overwrite the archive we are reading from
+                    if dest_real == zip_real:
+                        continue
                     os.makedirs(os.path.dirname(dest), exist_ok=True)
                     with z.open(n) as srcf, open(dest, 'wb') as dstf:
                         shutil.copyfileobj(srcf, dstf)

@@ -118,7 +118,18 @@ def main():
         'addons': addons,
     }
 
-    # config zip (optional)
+    # config zip (optional). GUARD: build.json drives the published version, but
+    # config/config_policy.json carries its own config_version for humans -- if
+    # they drift, a config change can ship without a version bump (so devices
+    # never re-apply it). Fail the build on mismatch.
+    try:
+        with open(os.path.join(repo_root, 'config', 'config_policy.json'), encoding='utf-8') as _pf:
+            _pol_ver = json.load(_pf).get('config_version')
+        if _pol_ver is not None and str(_pol_ver) != str(cfg.get('config_version', 1)):
+            raise SystemExit('config_version mismatch: build.json=%s vs config_policy.json=%s'
+                             % (cfg.get('config_version'), _pol_ver))
+    except FileNotFoundError:
+        pass
     cfg_ver = str(cfg.get('config_version', 1))
     cfg_zip = os.path.join(dist_dir, 'config-%s.zip' % cfg_ver)
     if os.path.isfile(cfg_zip):

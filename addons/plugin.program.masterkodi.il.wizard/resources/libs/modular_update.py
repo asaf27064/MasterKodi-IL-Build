@@ -553,6 +553,31 @@ def _pin_all_modded_once(state):
     state['__pinned_v1__'] = True
 
 
+def _recover_orphaned_rollbacks():
+    """Repair addon swaps interrupted by power loss. _apply_one renames the live
+    addon to .rb_<name> then renames the staged copy into place; a crash between
+    the two leaves .rb_<name> with NO live addon. Restore it. If the live addon
+    IS present (the swap finished, only cleanup was lost), reclaim the stale
+    rollback. Also clear orphaned .stage_ dirs. Fail-open."""
+    try:
+        for name in os.listdir(ADDONS_PATH):
+            path = os.path.join(ADDONS_PATH, name)
+            if name.startswith('.rb_'):
+                live = os.path.join(ADDONS_PATH, name[len('.rb_'):])
+                if not os.path.isdir(live):
+                    try:
+                        os.replace(path, live)
+                        log('recovered interrupted addon swap: %s' % name[len('.rb_'):])
+                    except Exception as e:
+                        log('rollback recovery failed for %s: %s' % (name, e), xbmc.LOGWARNING)
+                else:
+                    shutil.rmtree(path, ignore_errors=True)   # swap done; stale rollback
+            elif name.startswith('.stage_'):
+                shutil.rmtree(path, ignore_errors=True)
+    except Exception as e:
+        log('rollback recovery scan failed: %s' % e, xbmc.LOGWARNING)
+
+
 def _apply_one(entry):
     """Download, verify sha256, extract. Raises on any mismatch/failure.
 
@@ -1063,6 +1088,11 @@ def run_update(silent=False, notify=None, force=False, no_reload=False):
         log('run_update skipped: could not determine Kodi major version', xbmc.LOGWARNING)
         return {'ok': False, 'skipped': 'unknown kodi version',
                 'applied': [], 'failed': [], 'removed': []}
+
+    # Recover any addon swap a power-loss interrupted last time BEFORE doing
+    # anything else, so a half-swapped addon is made whole (or its rollback
+    # reclaimed) instead of being clobbered by this pass.
+    _recover_orphaned_rollbacks()
 
     try:
         manifest = fetch_manifest()
@@ -1801,19 +1831,33 @@ def apply_pending_gears_settings():
     prewarm). The enforce step stashes the dict when that happens; this runs
     post-prewarm and lands it -- so shipped defaults like the magneto
     external-scraper selection are live from the very first boot."""
+    home = xbmcvfs.translatePath('special://home/')
+    # (1) config's shipped gears_settings (honors its own credential exclude list)
     pending = os.path.join(ADDON_DATA, 'gears_settings_pending.json')
-    if not os.path.isfile(pending):
-        return
-    try:
-        with open(pending, encoding='utf-8-sig') as fh:
-            data = json.load(fh)
-        home = xbmcvfs.translatePath('special://home/')
-        _enforce_gears_settings(home, data.get('settings', {}),
-                                set(data.get('exclude', [])))
-        os.remove(pending)
-        log('applied pending gears settings (fresh-install catch-up)')
-    except Exception as e:
-        log('pending gears settings apply failed: %s' % e, xbmc.LOGWARNING)
+    if os.path.isfile(pending):
+        try:
+            with open(pending, encoding='utf-8-sig') as fh:
+                data = json.load(fh)
+            _enforce_gears_settings(home, data.get('settings', {}),
+                                    set(data.get('exclude', [])))
+            os.remove(pending)
+            log('applied pending gears settings (fresh-install catch-up)')
+        except Exception as e:
+            log('pending gears settings apply failed: %s' % e, xbmc.LOGWARNING)
+    # (2) user credentials the keep-restore deferred because the db wasn't born
+    #     yet. Empty exclude: these ARE the user's own kept logins and MUST be
+    #     written (without this they were silently lost on a fresh install).
+    keep_pending = os.path.join(ADDON_DATA, 'gears_keep_pending.json')
+    if os.path.isfile(keep_pending):
+        try:
+            with open(keep_pending, encoding='utf-8-sig') as fh:
+                creds = json.load(fh)
+            if creds:
+                _enforce_gears_settings(home, creds, set())
+            os.remove(keep_pending)
+            log('restored %d deferred kept gears cred(s) on first boot' % len(creds))
+        except Exception as e:
+            log('keep-pending apply failed: %s' % e, xbmc.LOGWARNING)
 
 
 def _enforce_gears_settings(home, gears_settings, exclude):

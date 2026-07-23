@@ -184,6 +184,50 @@ def _apply_index(roots, skin_id):
     return applied, failed
 
 
+# POV login fields to PRESERVE across a variant re-apply. The shipped
+# pov/settings.xml carries these as empty (scrubbed) defaults; blindly writing it
+# over the live file wiped the user's own debrid/Trakt/etc logins on EVERY wizard
+# update (the re-apply keys on the wizard version). Shipping no credentials is now
+# guaranteed by tools/check_no_credentials.py, so preserving the user's live
+# values here is safe -- we keep the USER's own tokens on the USER's box, we never
+# ship one.
+_POV_CRED_IDS = {
+    'pm.token', 'tb.token', 'rd.token', 'rd.secret', 'rd.username', 'ad.token',
+    'oc.token', 'premiumize.token', 'easynews_user', 'easynews_password',
+    'trakt.token', 'trakt.refresh', 'trakt.usertoken', 'trakt.user', 'trakt_user',
+    'trakt.expires', 'tmdb.token', 'tmdb.username', 'tmdb.sessionid',
+    'mdblist.token', 'mdblist_user', 'rpdb_api_key',
+    'hebrew_subtitles.ktuvit_password', 'hebrew_subtitles.opensubtitles_apikey',
+}
+
+
+def _merge_preserve_creds(shipped, live_path):
+    """Return the shipped settings.xml (bytes) with the user's existing non-empty
+    login values carried over from live_path. Regex-based (the files are flat
+    <setting id=..> lists); on any parse issue we fall back to shipped as-is."""
+    try:
+        if not os.path.isfile(live_path):
+            return shipped
+        import re
+        live = open(live_path, encoding='utf-8', errors='replace').read()
+        text = shipped.decode('utf-8', 'replace')
+        for sid in _POV_CRED_IDS:
+            m = re.search(r'<setting id="%s"[^>]*>([^<]+)</setting>' % re.escape(sid), live)
+            val = m.group(1).strip() if m else ''
+            if not val or val.lower() in ('true', 'false'):
+                continue                       # user has no value -> keep shipped
+            repl = '<setting id="%s">%s</setting>' % (sid, val)
+            pat = re.compile(r'<setting id="%s"[^>]*/>|<setting id="%s"[^>]*>[^<]*</setting>'
+                             % (re.escape(sid), re.escape(sid)))
+            text, n = pat.subn(repl, text, count=1)
+            if n:
+                _log('preserved user login: %s' % sid)
+        return text.encode('utf-8')
+    except Exception as e:
+        _log('cred-preserve merge failed (%s), shipping as-is' % e, xbmc.LOGWARNING)
+        return shipped
+
+
 # ------------------------------------------------------------------ POV seeds
 def _seed_pov_db(roots):
     """Seed POV navigator.db (shortcut folders) + views.db from pov/*.json.
@@ -228,11 +272,14 @@ def _seed_pov_db(roots):
             _log('seeded %d POV view(s)' % len(views))
         except Exception as e:
             _log('pov views seed failed: %s' % e, xbmc.LOGWARNING)
-    # POV addon settings
+    # POV addon settings -- MERGE, preserving the user's live logins (see
+    # _merge_preserve_creds). A blind overwrite wiped debrid/Trakt tokens on
+    # every wizard update.
     ps = _fetchv(roots, 'pov/settings.xml')
     if ps:
-        _backup_once(os.path.join(pov_data, 'settings.xml'), 'gears')
-        _write(os.path.join(pov_data, 'settings.xml'), ps)
+        dest = os.path.join(pov_data, 'settings.xml')
+        _backup_once(dest, 'gears')
+        _write(dest, _merge_preserve_creds(ps, dest))
 
 
 # ------------------------------------------------------------------ per skin

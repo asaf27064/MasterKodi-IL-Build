@@ -1049,11 +1049,17 @@ class BuildManager:
             # Set skip flag for service (don't show update dialog during install)
             ADDON.setSetting('skip_update_check', 'true')
 
-            # Record the content source NOW, before any config apply. This makes
-            # the whole install content-aware: the config engine skips every
-            # Gears-specific entry when POV is chosen (no gears menus/favourites/
-            # settings/shortcuts ever written), so a POV build stays fully clean
-            # -- POV and Gears share no config. A Gears install is unchanged.
+            # Record the content source NOW, before any config apply, so the
+            # whole install is content-aware (the config engine skips Gears-
+            # specific entries when POV is chosen). BUT remember the previous
+            # value: if the install fails after this point, we revert it, so a
+            # failed/cancelled install can't leave the box flagged for a content
+            # source it isn't actually running (the final value is re-committed
+            # at the end on success).
+            try:
+                _prev_content_source = ADDON.getSetting('content_source') or 'gears'
+            except Exception:
+                _prev_content_source = 'gears'
             try:
                 ADDON.setSetting('content_source', content_choice)
             except Exception:
@@ -1092,6 +1098,8 @@ class BuildManager:
                 except Exception:
                     pass
                 self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]ההורדה נכשלה![/COLOR]")
+                try: ADDON.setSetting('content_source', _prev_content_source)   # box untouched -> revert
+                except Exception: pass
                 return False
             
             # Step 2: Validate the archive BEFORE touching the user's build, then
@@ -1110,6 +1118,8 @@ class BuildManager:
                                f"[COLOR {COLOR_ERROR}]ההורדה נכשלה או שהקובץ פגום.[/COLOR]\n"
                                f"{zip_err}\n\n"
                                "הבילד הקיים לא נפגע. נסו שוב.")
+                try: ADDON.setSetting('content_source', _prev_content_source)   # box untouched -> revert
+                except Exception: pass
                 return False
 
             progress.update(0, "[COLOR yellow]סורק אדונים בבילד...[/COLOR]")
@@ -1141,6 +1151,8 @@ class BuildManager:
                             "להמשיך בכל זאת?",
                             yeslabel="המשך", nolabel="[B]בטל[/B]"):
                         log("install aborted by user after keep-backup failure")
+                        try: ADDON.setSetting('content_source', _prev_content_source)   # box untouched -> revert
+                        except Exception: pass
                         return False
                     progress.create(ADDON_NAME, "[COLOR cyan]ממשיך בהתקנה...[/COLOR]")
 
@@ -1287,19 +1299,29 @@ class BuildManager:
             ADDON.setSetting('buildname', build_name)
             ADDON.setSetting('buildversion', build_info.get('version', '1.0'))
 
-            # Content source: if the user picked POV at install, apply the POV
-            # variant for the chosen skin on top of the (Gears) build. Explicit
-            # skin id (the new skin isn't active until restart), no reload (the
-            # install restart applies it). Fail-open: a POV problem leaves the
-            # working Gears build untouched.
+            # Content source: a POV install downloaded the CLEAN POV bundle, so
+            # the box IS POV regardless of whether the variant menus applied. Use
+            # _apply_pov_core (which never flips the source) and then record POV
+            # explicitly -- install_apply would have DOWNGRADED to 'gears' on a
+            # variant failure, leaving a POV-closure box wrongly flagged Gears
+            # (with no Gears installed). A failed variant just needs a later
+            # re-apply of the menus, not a source change.
             if content_choice == 'pov':
                 try:
                     from resources.libs import content_source
                     target_skin = skin['id'] if skin else 'skin.estuary'
                     progress.update(98, "[COLOR yellow]מחיל מקור תוכן POV...[/COLOR]")
-                    content_source.install_apply(target_skin, 'pov')
+                    ok, err = content_source._apply_pov_core(target_skin)
+                    if not ok:
+                        log(f"install POV variant apply failed (box stays POV): {err}",
+                            xbmc.LOGWARNING)
                 except Exception as e:
                     log(f"install POV apply failed: {e}", xbmc.LOGWARNING)
+                try:
+                    import xbmcaddon as _xa
+                    _xa.Addon().setSetting('content_source', 'pov')
+                except Exception:
+                    pass
             else:
                 try:
                     import xbmcaddon as _xa
