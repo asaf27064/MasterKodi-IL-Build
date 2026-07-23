@@ -53,6 +53,17 @@ def dest_for(variant, skin_id, rel):
     if top.startswith('skin.'):                      # e.g. skin.zephyr/settings.xml
         return '{addon_data}/{skin}/' + name
     if top == 'skin-overrides':
+        rest = rel[len('skin-overrides/'):]
+        # Preferred form: skin-overrides/ MIRRORS the skin's own tree, so the
+        # subdir is explicit (skin-overrides/shortcuts/template.xml ->
+        # skin/shortcuts/template.xml). This exists because the flat form below
+        # guessed 1080i/ for every zephyr override and misrouted the SEARCH
+        # template (shortcuts/template.xml) into 1080i/ -- the skin never reads
+        # it there, so POV search kept calling the (uninstalled) gears plugin.
+        if '/' in rest:
+            return '{addons}/{skin}/' + rest
+        # Legacy flat form, still used by estuary/nimbus/af3/piers-zephyr where
+        # every override happens to share one target dir.
         if zephyr_piers:
             return '{addons}/{skin}/shortcuts/' + name
         if 'af3' in variant or 'zephyr' in variant:
