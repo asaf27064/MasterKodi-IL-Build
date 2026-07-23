@@ -145,7 +145,7 @@
 						</content>
 					</control>
 				</control>
-				<!-- KODIRDIL - Services submenu (Gears/GearsAI cache clear, send logs, quick update) -->
+				<!-- KODIRDIL - Services submenu (POV/GearsAI cache clear, send logs, quick update) -->
 				<control type="group" id="9150">
 					<visible>String.IsEqual(Container(9000).ListItem.Property(id),mk_services)</visible>
 					<include content="Visible_Right_Delayed"><param name="id" value="mk_services"/></include>

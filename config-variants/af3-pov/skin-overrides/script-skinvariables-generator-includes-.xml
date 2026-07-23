@@ -1167,7 +1167,7 @@
             <visible>True</visible>
         </item>
         <item>
-            <label>ניקוי קאש Gears</label>
+            <label>ניקוי קאש POV</label>
             <icon>special://skin/extras/icons/broom.png</icon>
             <property name="path">RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)</property>
             <property name="menu">powermenu</property>

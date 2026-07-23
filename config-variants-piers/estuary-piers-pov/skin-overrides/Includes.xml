@@ -128,8 +128,8 @@
 			<label>$INFO[$PARAM[infolabel]]</label>
 		</control>
 	</include>
-	<!-- Gears Extra Ratings Bar -->
-	<include name="GearsRatingsBar">
+	<!-- POV Extra Ratings Bar -->
+	<include name="POVRatingsBar">
 		<definition>
 			<control type="grouplist">
 				<orientation>horizontal</orientation>

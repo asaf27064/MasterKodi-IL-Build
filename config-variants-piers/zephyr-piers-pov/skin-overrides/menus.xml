@@ -372,7 +372,7 @@
             <icon>special://skin/extras/icons/settings.png</icon>
         </item>
         <item name="mkil-gears-cache">
-            <label>ניקוי קאש Gears</label>
+            <label>ניקוי קאש POV</label>
             <onclick>Dialog.Close(shutdownmenu)</onclick>
             <action>RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)</action>
             <icon>special://skin/extras/icons/refresh.png</icon>

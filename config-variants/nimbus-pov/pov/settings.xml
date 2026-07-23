@@ -32,7 +32,7 @@
     <setting id="pm.priority">8</setting>
     <setting id="pm.expires" default="true">0</setting>
     <setting id="tb_refer_link" default="true">https://tinyurl.com/2d2ra6jq</setting>
-    <setting id="tb.token">4cee9c2b-dd59-44b2-beb5-51939eb0278f</setting>
+    <setting id="tb.token" default="true" />
     <setting id="tb.enabled">true</setting>
     <setting id="tb.account_id">4271b796-cd5f-498b-8257-d050b6b85969</setting>
     <setting id="tb.torrent.enabled">true</setting>

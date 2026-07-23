@@ -145,7 +145,7 @@
 						</content>
 					</control>
 				</control>
-				<!-- KODIRDIL - Services submenu (Gears/GearsAI cache clear, send logs, quick update) -->
+				<!-- KODIRDIL - Services submenu (POV/GearsAI cache clear, send logs, quick update) -->
 				<control type="group" id="9150">
 					<visible>String.IsEqual(Container(9000).ListItem.Property(id),mk_services)</visible>
 					<include content="Visible_Right_Delayed"><param name="id" value="mk_services"/></include>
@@ -163,7 +163,7 @@
 							<include content="InfoWallMusicLayout"><param name="fallback_image" value="DefaultAddonService.png"/><param name="focused" value="true"/></include>
 						</control></focusedlayout>
 						<content>
-							<item><label>ניקוי מטמון Gears</label><onclick>RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)</onclick><thumb>DefaultAddonService.png</thumb></item>
+							<item><label>ניקוי מטמון POV</label><onclick>RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)</onclick><thumb>DefaultAddonService.png</thumb></item>
 							<item><label>ניקוי מטמון GearsAI</label><onclick>RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</onclick><thumb>DefaultAddonService.png</thumb></item>
 							<item><label>שלח לוגים לתמיכה</label><onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)</onclick><thumb>DefaultAddonService.png</thumb></item>
 							<item><label>עדכון מהיר</label><onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=check_updates)</onclick><thumb>DefaultAddonService.png</thumb></item>

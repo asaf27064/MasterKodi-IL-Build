@@ -50,6 +50,9 @@ jobs:
         # This keeps the Hebrew isolated + re-appliable to future upstreams.
         run: python tools/apply_overlay.py overlays addons
 
+      - name: Check no user credentials in variants
+        run: python tools/check_no_credentials.py
+
       - name: Check config-variant indexes are current
         # index.json is what the wizard's content switcher reads to know which
         # files a variant ships. Hard-coded lists drifted before and silently

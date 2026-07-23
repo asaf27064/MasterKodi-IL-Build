@@ -24,7 +24,7 @@
 						<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</onclick>
 					</item>
 					<item>
-						<label>ניקוי קאש Gears</label>
+						<label>ניקוי קאש POV</label>
 						<onclick>Dialog.Close(shutdownmenu)</onclick>
 						<onclick>RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)</onclick>
 					</item>

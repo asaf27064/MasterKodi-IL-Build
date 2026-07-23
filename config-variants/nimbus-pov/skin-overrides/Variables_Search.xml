@@ -2,7 +2,7 @@
 <includes>
 
 	<variable name="CurrentSearchProviderVar">
-    <value condition="String.IsEqual(Skin.String(current_search_provider),0)">Gears</value>
+    <value condition="String.IsEqual(Skin.String(current_search_provider),0)">POV</value>
     <value condition="String.IsEqual(Skin.String(current_search_provider),1)">FEN Light</value>
     <value condition="String.IsEqual(Skin.String(current_search_provider),2)">Umbrella</value>
     <value condition="String.IsEqual(Skin.String(current_search_provider),3)">POV</value>

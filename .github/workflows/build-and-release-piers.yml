@@ -53,6 +53,9 @@ jobs:
       - name: Apply Piers skin overlays (gui 5.18 variants win)
         run: python tools/apply_overlay.py overlays-piers addons
 
+      - name: Check no user credentials in variants
+        run: python tools/check_no_credentials.py
+
       - name: Check config-variant indexes are current
         # index.json is what the wizard's content switcher reads to know which
         # files a variant ships. Hard-coded lists drifted before and silently
