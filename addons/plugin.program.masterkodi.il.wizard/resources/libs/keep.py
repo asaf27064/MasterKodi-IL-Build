@@ -216,14 +216,40 @@ def prompt(extras=None, default_all=True):
     return [entries[i][0] for i in chosen]
 
 
+def _safe_db_copy(src, dst):
+    """Consistent snapshot of a possibly-live SQLite database (checkpoints WAL via
+    the backup API), falling back to a byte copy for a non-sqlite file. Returns
+    True on success. A plain copy2 of a live db can stage a torn/stale file whose
+    -wal was never applied -- exactly the kind of silent corruption that makes a
+    'kept' watched.db useless after the wipe."""
+    try:
+        import sqlite3
+        s = sqlite3.connect(src)
+        try:
+            d = sqlite3.connect(dst)
+            try:
+                s.backup(d)
+            finally:
+                d.close()
+        finally:
+            s.close()
+        return True
+    except Exception:
+        try:
+            shutil.copy2(src, dst)
+            return True
+        except Exception:
+            return False
+
+
 def backup(keys, extras=None):
     """Snapshot the selected groups to STAGE (call BEFORE the wipe).
 
-    Returns (ok, staged_count). The caller MUST check this: everything after the
-    backup is destructive, and this used to swallow every failure and return
-    None, so a backup that saved nothing (no stage dir, disk full, locked files)
-    still let the wipe run and permanently destroyed exactly the data the user
-    ticked to keep."""
+    Returns (ok, staged_count). ok is False if the stage can't be created OR any
+    selected item that exists failed to copy OR the manifest couldn't be written
+    -- the caller MUST honour it (it already prompts 'backup failed, continue?').
+    Everything after the backup is destructive: a partial backup reported as
+    success is exactly how 'kept' data gets destroyed by the wipe."""
     try:
         if os.path.isdir(STAGE):
             shutil.rmtree(STAGE, ignore_errors=True)
@@ -232,6 +258,7 @@ def backup(keys, extras=None):
         log('cannot create stage: %s' % e, xbmc.LOGERROR)
         return False, 0
     staged = 0
+    failed = 0
     saved = {'keys': keys, 'settings': {}, 'xml': {}}
     for g in GROUPS:
         if g['key'] not in keys:
@@ -247,16 +274,18 @@ def backup(keys, extras=None):
         for name in g.get('db_files', []):
             src = os.path.join(GEARS_DB_DIR, name)
             if os.path.isfile(src):
-                try:
-                    shutil.copy2(src, os.path.join(STAGE, 'gearsdb__' + name)); staged += 1
-                except Exception as e:
-                    log('backup db %s failed: %s' % (name, e), xbmc.LOGWARNING)
+                if _safe_db_copy(src, os.path.join(STAGE, 'gearsdb__' + name)):
+                    staged += 1
+                else:
+                    failed += 1
+                    log('backup db %s FAILED' % name, xbmc.LOGERROR)
         for f in g.get('files', []):
             if os.path.isfile(f):
                 try:
                     shutil.copy2(f, os.path.join(STAGE, 'file__' + os.path.basename(f))); staged += 1
                 except Exception as e:
-                    log('backup file %s failed: %s' % (f, e), xbmc.LOGWARNING)
+                    failed += 1
+                    log('backup file %s failed: %s' % (f, e), xbmc.LOGERROR)
     # user-installed extra addons: whole folder + their addon_data
     if 'extras' in (keys or []) and extras:
         for aid in extras:
@@ -265,33 +294,46 @@ def backup(keys, extras=None):
                 try:
                     shutil.copytree(src, os.path.join(STAGE, 'addon__' + aid)); staged += 1
                 except Exception as e:
-                    log('backup addon %s failed: %s' % (aid, e), xbmc.LOGWARNING)
+                    failed += 1
+                    log('backup addon %s failed: %s' % (aid, e), xbmc.LOGERROR)
             ad = os.path.join(ADDON_DATA, aid)
             if os.path.isdir(ad):
                 try:
                     shutil.copytree(ad, os.path.join(STAGE, 'addondata__' + aid)); staged += 1
                 except Exception as e:
-                    log('backup addon_data %s failed: %s' % (aid, e), xbmc.LOGWARNING)
+                    failed += 1
+                    log('backup addon_data %s failed: %s' % (aid, e), xbmc.LOGERROR)
+    # The manifest is what restore() reads -- if it doesn't land, EVERYTHING
+    # staged is unrecoverable, so a manifest write failure is fatal (ok=False).
+    manifest_ok = True
     try:
         json.dump(saved, open(os.path.join(STAGE, 'manifest.json'), 'w', encoding='utf-8'))
     except Exception as e:
-        log('save manifest failed: %s' % e, xbmc.LOGWARNING)
-    log('backed up groups: %s (%d items staged)' % (', '.join(keys) if keys else 'none', staged))
-    return True, staged
+        manifest_ok = False
+        log('save manifest FAILED: %s' % e, xbmc.LOGERROR)
+    ok = (failed == 0) and manifest_ok
+    log('backed up groups: %s (%d staged, %d failed, ok=%s)'
+        % (', '.join(keys) if keys else 'none', staged, failed, ok))
+    return ok, staged
 
 
 def restore():
     """Write back whatever backup() staged (call AFTER install + config).
-    Returns the list of restored user-extra addon ids (so the caller can enable
-    them in the addon DB)."""
+
+    Returns (restored_addon_ids, failed_count). CRITICAL: on ANY failure the
+    STAGE backup is NOT deleted -- the source data was already wiped, so the
+    staged copy is the user's only remaining copy. Deleting it on a failed
+    restore (as this used to) is the final, unrecoverable data loss."""
     restored_addons = []
+    failed = 0
     mf = os.path.join(STAGE, 'manifest.json')
     if not os.path.isfile(mf):
-        return restored_addons
+        return restored_addons, 0            # nothing staged -> nothing to lose
     try:
         saved = json.load(open(mf, encoding='utf-8'))
-    except Exception:
-        return restored_addons
+    except Exception as e:
+        log('restore: manifest unreadable, keeping STAGE: %s' % e, xbmc.LOGERROR)
+        return restored_addons, 1            # staged data exists but unreadable
     # gears settings.db credentials
     _db_write(GEARS_SETTINGS_DB, saved.get('settings', {}).get('gears', {}))
     # xml settings (gearsai key, tmdb-helper trakt)
@@ -319,10 +361,18 @@ def restore():
                 if not os.path.isdir(dst):
                     shutil.copytree(os.path.join(STAGE, name), dst)
         except Exception as e:
-            log('restore %s failed: %s' % (name, e), xbmc.LOGWARNING)
-    log('restore complete (extras: %s)' % (', '.join(restored_addons) or 'none'))
-    cleanup()
-    return restored_addons
+            failed += 1
+            log('restore %s failed: %s' % (name, e), xbmc.LOGERROR)
+    log('restore complete (extras: %s, %d failed)'
+        % (', '.join(restored_addons) or 'none', failed))
+    # Only drop the backup when EVERYTHING restored. On any failure keep STAGE so
+    # the user (or a retry) can still recover -- the originals are already gone.
+    if failed == 0:
+        cleanup()
+    else:
+        log('restore had %d failure(s); STAGE kept for recovery: %s' % (failed, STAGE),
+            xbmc.LOGERROR)
+    return restored_addons, failed
 
 
 def cleanup():

@@ -351,13 +351,25 @@ class BuildManager:
                 if not names:
                     return False, 'הקובץ ריק'
                 # A zip's central directory lives at the END of the file, so a
-                # successful open already proves the download wasn't truncated --
-                # which is the failure this guards against. Deliberately NOT
-                # calling testzip(): it decompresses all ~60 MB and would add
-                # tens of seconds on a weak Android box. Per-file CRC problems
-                # still surface during extract, which fails loudly on a burst.
+                # successful open already proves the download wasn't truncated.
+                # We deliberately do NOT testzip() the whole archive (it would
+                # decompress all ~60 MB and add tens of seconds on a weak Android
+                # box), BUT we DO CRC-check the boot-CRITICAL members now, before
+                # the wipe: guisettings.xml and every addon.xml. Those are small,
+                # so it's cheap, and a corrupt one would otherwise pass this
+                # structural check and only blow up AFTER the box is already wiped.
                 if not any(n.startswith('addons/') for n in names):
                     return False, 'לא נמצאו אדונים בקובץ'
+                critical = [n for n in names
+                            if n.replace('\\', '/').endswith('userdata/guisettings.xml')
+                            or n.replace('\\', '/').endswith('/addon.xml')]
+                for n in critical[:300]:
+                    try:
+                        with z.open(n) as fh:          # read forces CRC verification
+                            while fh.read(65536):
+                                pass
+                    except Exception as e:
+                        return False, 'קובץ קריטי פגום בהורדה: %s (%s)' % (n, e)
             return True, None
         except Exception as e:
             return False, str(e)
@@ -813,7 +825,8 @@ class BuildManager:
         total = len(files)
         errors = 0
         extracted = 0
-        
+        critical_failed = []
+
         progress_dialog.update(0, f"[COLOR yellow]{title}[/COLOR]")
         
         # skip the wizard's own ADDON CODE (addons/<id>/) so the running wizard
@@ -844,7 +857,11 @@ class BuildManager:
                 extracted += 1
             except Exception as e:
                 errors += 1
-            
+                _n = filename.replace('\\', '/').lower()
+                if _n.endswith('userdata/guisettings.xml') or _n.endswith('/addon.xml'):
+                    critical_failed.append(filename)
+                    log(f"CRITICAL extract failure: {filename}: {e}", xbmc.LOGERROR)
+
             if i % 50 == 0:
                 pct = int(i * 100 / total)
                 progress_dialog.update(pct, f"[COLOR yellow]{title}[/COLOR]\n{extracted}/{total} קבצים")
@@ -856,6 +873,14 @@ class BuildManager:
         # a burst means disk-full/permissions AFTER the wipe already ran --
         # reporting success there ends with a "complete" install on a gutted
         # box. Fail loudly instead so the caller shows the error path.
+        # A CRITICAL file (guisettings.xml / an addon.xml) failing aborts
+        # REGARDLESS of the count -- one corrupt guisettings.xml is a broken
+        # install even if it's the only error, and the count threshold used to
+        # wave it through as success.
+        if critical_failed:
+            log(f"Extraction FAILED: {len(critical_failed)} critical file(s) "
+                f"corrupt e.g. {critical_failed[:3]}", xbmc.LOGERROR)
+            return False, errors
         if errors and (extracted == 0 or errors >= max(10, total // 50)):
             log(f"Extraction FAILED: {errors} errors out of {total} entries", xbmc.LOGERROR)
             return False, errors
@@ -1219,11 +1244,23 @@ class BuildManager:
                 try:
                     from resources.libs import keep as keep_mod
                     progress.update(96, "[COLOR yellow]משחזר נתונים שנשמרו...[/COLOR]")
-                    restored_extras = keep_mod.restore()
+                    restored_extras, restore_failed = keep_mod.restore()
                     # register + enable any restored user addons
                     if restored_extras:
                         self.enable_addons_in_db(restored_extras)
                         xbmc.executebuiltin('UpdateLocalAddons()')
+                    # tell the user if some kept data didn't come back -- the
+                    # backup was deliberately NOT deleted so it can be recovered.
+                    if restore_failed:
+                        try:
+                            progress.close()
+                        except Exception:
+                            pass
+                        self.dialog.ok(ADDON_NAME,
+                            f"[COLOR {COLOR_WARNING}]חלק מהנתונים ששמרת לא שוחזרו "
+                            f"({restore_failed} פריטים).[/COLOR]\n\n"
+                            "עותק הגיבוי לא נמחק וניתן לשחזר ממנו ידנית:\n"
+                            f"{keep_mod.STAGE}")
                 except Exception as e:
                     log(f"keep restore failed: {e}", xbmc.LOGWARNING)
 

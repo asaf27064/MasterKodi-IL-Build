@@ -554,16 +554,57 @@ def _pin_all_modded_once(state):
 
 
 def _apply_one(entry):
-    """Download, verify sha256, extract. Raises on any mismatch/failure."""
+    """Download, verify sha256, extract. Raises on any mismatch/failure.
+
+    Extracts to a STAGING dir first, then atomically swaps each top-level dir
+    into place keeping a rollback copy. A mid-extract disk-full / power-loss /
+    locked-file used to happen straight over the live addon (in-place
+    extractall), leaving a half-old/half-new, often unbootable tree with no way
+    back. Now the live addon is only touched by fast os.replace renames AFTER the
+    new copy is fully staged, and any failure rolls every swap back."""
     data = _download(entry['url'])
     got = hashlib.sha256(data).hexdigest()
     if got != entry['sha256']:
         raise Exception('sha256 mismatch for %s (%s != %s)' % (entry['id'], got[:12], entry['sha256'][:12]))
-    with zipfile.ZipFile(io.BytesIO(data)) as z:
-        bad = z.testzip()
-        if bad is not None:
-            raise Exception('corrupt zip for %s (%s)' % (entry['id'], bad))
-        z.extractall(ADDONS_PATH)
+    aid = entry['id']
+    stage = os.path.join(ADDONS_PATH, '.stage_' + aid)
+    shutil.rmtree(stage, ignore_errors=True)
+    swapped = []                                   # (live, rollback|None) to undo
+    try:
+        with zipfile.ZipFile(io.BytesIO(data)) as z:
+            bad = z.testzip()
+            if bad is not None:
+                raise Exception('corrupt zip for %s (%s)' % (aid, bad))
+            os.makedirs(stage, exist_ok=True)
+            z.extractall(stage)                    # disk-full here -> live intact
+        tops = [n for n in os.listdir(stage) if os.path.isdir(os.path.join(stage, n))]
+        if not tops:
+            raise Exception('empty extract for %s' % aid)
+        for name in tops:                          # normally just <aid>/
+            live = os.path.join(ADDONS_PATH, name)
+            rb = os.path.join(ADDONS_PATH, '.rb_%s' % name)
+            shutil.rmtree(rb, ignore_errors=True)
+            if os.path.isdir(live):
+                os.replace(live, rb)               # move old aside (fast rename)
+                swapped.append((live, rb))
+            else:
+                swapped.append((live, None))
+            os.replace(os.path.join(stage, name), live)   # move new into place
+        for _live, rb in swapped:                  # committed -> drop rollbacks
+            if rb:
+                shutil.rmtree(rb, ignore_errors=True)
+    except Exception:
+        for live, rb in reversed(swapped):         # undo every swap we did
+            try:
+                if rb and os.path.isdir(rb):
+                    if os.path.isdir(live):
+                        shutil.rmtree(live, ignore_errors=True)
+                    os.replace(rb, live)
+            except Exception:
+                pass
+        raise
+    finally:
+        shutil.rmtree(stage, ignore_errors=True)
     # If this is one of OUR modded addons, stop Kodi auto-replacing it from a
     # repo (no-op for vanilla deps, which keep auto-updating normally).
     _disable_kodi_autoupdate(entry['id'])
