@@ -34,7 +34,7 @@
     <setting id="tb_refer_link" default="true">https://tinyurl.com/2d2ra6jq</setting>
     <setting id="tb.token" default="true" />
     <setting id="tb.enabled">true</setting>
-    <setting id="tb.account_id">4271b796-cd5f-498b-8257-d050b6b85969</setting>
+    <setting id="tb.account_id" default="true" />
     <setting id="tb.torrent.enabled">true</setting>
     <setting id="store_torrent.torbox" default="true">false</setting>
     <setting id="provider.torboxnews" default="true">false</setting>

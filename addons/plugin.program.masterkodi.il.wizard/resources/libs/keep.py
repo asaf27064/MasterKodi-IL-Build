@@ -70,18 +70,37 @@ def log(msg, level=xbmc.LOGINFO):
 
 
 # Ordered so the multiselect reads sensibly; all preselected by default.
+# POV stores its logins in plugin.video.pov/settings.xml (XML, not a settings.db
+# like Gears), so the keep groups must cover it too -- otherwise a POV box saved
+# NOTHING and lost every login on a reinstall.
+POV_SETTINGS = os.path.join(ADDON_DATA, 'plugin.video.pov', 'settings.xml')
+_POV_DEBRID = ['pm.token', 'pm.account_id', 'tb.token', 'tb.account_id',
+               'oc.token', 'oc.account_id', 'ad.token', 'ad.account_id',
+               'rd.token', 'rd.secret', 'rd.username', 'rd.client_id', 'rd.refresh',
+               'premiumize.token', 'easynews_user', 'easynews_password']
+_POV_TRAKT = ['trakt.token', 'trakt.refresh', 'trakt.usertoken', 'trakt.user', 'trakt_user']
+_POV_SERVICES = ['tmdb.token', 'tmdb.username', 'tmdb.account_id',
+                 'tmdb.session_account_id', 'tmdb.session_id',
+                 'mdblist.token', 'mdblist_user', 'rpdb_api_key',
+                 'hebrew_subtitles.ktuvit_password', 'hebrew_subtitles.opensubtitles_apikey']
+
 GROUPS = [
     {'key': 'debrid',
      'label': 'התחברות Debrid (RD / TorBox / Premiumize / AllDebrid)',
      'gears_ids': ['rd.token', 'rd.client_id', 'rd.secret', 'rd.refresh',
-                   'torbox.api_key', 'premiumize.token', 'alldebrid.token']},
+                   'torbox.api_key', 'premiumize.token', 'alldebrid.token'],
+     'xml_targets': [(POV_SETTINGS, _POV_DEBRID)]},
     {'key': 'trakt',
      'label': 'התחברות Trakt',
      'gears_ids': ['trakt.token', 'trakt.secret', 'trakt.user'],
-     'xml_targets': [(TMDBH_SETTINGS, ['trakt.token', 'trakt.refreshtoken', 'trakt.usertoken'])]},
+     'xml_targets': [(TMDBH_SETTINGS, ['trakt.token', 'trakt.refreshtoken', 'trakt.usertoken']),
+                     (POV_SETTINGS, _POV_TRAKT)]},
     {'key': 'gemini',
      'label': 'מפתח Gemini אישי (כתוביות AI)',
      'xml_targets': [(GEARSAI_SETTINGS, ['api_key', 'extra_api_keys'])]},
+    {'key': 'pov_services',
+     'label': 'חשבונות POV (TMDb / MDbList / כתוביות)',
+     'xml_targets': [(POV_SETTINGS, _POV_SERVICES)]},
     {'key': 'gears_content',
      'label': 'צפייה, המשך צפייה ורשימות (Gears)',
      'db_files': ['watched.db', 'personal_lists.db', 'lists.db', 'tmdb_lists.db', 'favourites.db']},
@@ -95,6 +114,9 @@ GROUPS = [
 # sqlite settings.db helpers (table: settings(setting_id, setting_value))
 # --------------------------------------------------------------------------- #
 def _db_read(db, ids):
+    """Returns a dict of found values, {} if the db is absent (fine -- nothing to
+    keep), or None on a READ ERROR (locked/corrupt) so backup() can tell a real
+    failure apart from 'the user has no values' and refuse to wipe silently."""
     out = {}
     if not os.path.isfile(db):
         return out
@@ -106,7 +128,8 @@ def _db_read(db, ids):
                 out[sid] = row[0]
         c.close()
     except Exception as e:
-        log('settings.db read failed: %s' % e, xbmc.LOGWARNING)
+        log('settings.db read FAILED (%s): %s' % (db, e), xbmc.LOGERROR)
+        return None
     return out
 
 
@@ -175,7 +198,8 @@ def _xml_read(path, ids):
             if m and m.group(1):
                 out[sid] = m.group(1)
     except Exception as e:
-        log('xml read failed %s: %s' % (path, e), xbmc.LOGWARNING)
+        log('xml read FAILED %s: %s' % (path, e), xbmc.LOGERROR)
+        return None                          # read error -> a real failure, not "empty"
     return out
 
 
@@ -302,10 +326,18 @@ def backup(keys, extras=None):
             continue
         if g.get('gears_ids'):
             _got = _db_read(GEARS_SETTINGS_DB, g['gears_ids'])
+            if _got is None:                 # read ERROR (locked/corrupt), not empty
+                failed += 1
+                log('keep: could not read gears settings for group %s' % g['key'], xbmc.LOGERROR)
+                _got = {}
             saved['settings'].setdefault('gears', {}).update(_got)
             staged += len(_got)
         for path, ids in g.get('xml_targets', []):
             _gotx = _xml_read(path, ids)
+            if _gotx is None:                # read ERROR, not empty
+                failed += 1
+                log('keep: could not read %s for group %s' % (path, g['key']), xbmc.LOGERROR)
+                _gotx = {}
             saved['xml'].setdefault(path, {}).update(_gotx)
             staged += len(_gotx)
         for name in g.get('db_files', []):

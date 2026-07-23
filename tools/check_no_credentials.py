@@ -29,16 +29,23 @@ SCAN_DIRS = ('config-variants', 'config-variants-piers', 'config', 'overlays', '
 # even when the value is short (a password needn't look token-shaped). They are
 # all empty today, so none are in the baseline -- a future capture is caught.
 PERSONAL_IDS = {
-    'tb.token', 'rd.token', 'rd.secret', 'rd.username', 'pm.token', 'ad.token',
-    'oc.token', 'premiumize.token', 'easynews_user', 'easynews_password',
+    # debrid: token AND account_id/client_id/refresh -- a shipped tb.account_id
+    # slipped through because the old set + heuristic didn't cover account_id.
+    'tb.token', 'tb.account_id', 'rd.token', 'rd.secret', 'rd.username',
+    'rd.client_id', 'rd.refresh', 'pm.token', 'pm.account_id', 'ad.token',
+    'ad.account_id', 'oc.token', 'oc.account_id', 'premiumize.token',
+    'easynews_user', 'easynews_password',
     'trakt.token', 'trakt.refresh', 'trakt.usertoken', 'trakt.user', 'trakt_user',
-    'trakt.expires', 'tmdb.token', 'tmdb.username', 'tmdb.sessionid',
+    'trakt.expires',
+    'tmdb.token', 'tmdb.username', 'tmdb.account_id', 'tmdb.session_account_id',
+    'tmdb.session_id',
     'hebrew_subtitles.ktuvit_password', 'hebrew_subtitles.opensubtitles_apikey',
     'os_user_api_key_value', 'kt_enc_pass',
 }
 PERSONAL_PAT = re.compile(r'^OSpass', re.I)
-# a value that structurally looks like a key/token/session
-CREDISH = re.compile(r'(token|secret|passw|api_?key|sessionid|userkey|auth)', re.I)
+# a value whose ID structurally looks like a key/token/session/account binding
+CREDISH = re.compile(r'(token|secret|passw|api_?key|session|account_id|client_id|'
+                     r'client_secret|refresh|usertoken|userkey|auth|customer)', re.I)
 SHAPE = re.compile(r'^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
                    r'|[A-Za-z0-9._-]{12,})$')
 SETTING = re.compile(r'<setting id="([^"]+)"[^>]*>([^<]+)</setting>')

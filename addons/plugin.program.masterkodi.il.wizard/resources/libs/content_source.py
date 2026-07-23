@@ -192,10 +192,17 @@ def _apply_index(roots, skin_id):
 # values here is safe -- we keep the USER's own tokens on the USER's box, we never
 # ship one.
 _POV_CRED_IDS = {
-    'pm.token', 'tb.token', 'rd.token', 'rd.secret', 'rd.username', 'ad.token',
-    'oc.token', 'premiumize.token', 'easynews_user', 'easynews_password',
+    # debrid: token AND account_id/client_id/refresh (all account-binding state)
+    'pm.token', 'pm.account_id', 'tb.token', 'tb.account_id',
+    'oc.token', 'oc.account_id', 'ad.token', 'ad.account_id',
+    'rd.token', 'rd.secret', 'rd.username', 'rd.client_id', 'rd.refresh',
+    'premiumize.token',
+    'easynews_user', 'easynews_password',
     'trakt.token', 'trakt.refresh', 'trakt.usertoken', 'trakt.user', 'trakt_user',
-    'trakt.expires', 'tmdb.token', 'tmdb.username', 'tmdb.sessionid',
+    'trakt.expires',
+    # tmdb sessions/account bindings (the real ids -- was the wrong 'tmdb.sessionid')
+    'tmdb.token', 'tmdb.username', 'tmdb.account_id', 'tmdb.session_account_id',
+    'tmdb.session_id',
     'mdblist.token', 'mdblist_user', 'rpdb_api_key',
     'hebrew_subtitles.ktuvit_password', 'hebrew_subtitles.opensubtitles_apikey',
 }

@@ -1895,36 +1895,44 @@ def apply_pending_gears_settings():
     post-prewarm and lands it -- so shipped defaults like the magneto
     external-scraper selection are live from the very first boot."""
     home = xbmcvfs.translatePath('special://home/')
+    # If gears' settings.db still isn't born, leave BOTH pending files untouched
+    # for the next pass. Removing a pending file while the write can't happen (as
+    # this used to) discards the user's ONLY surviving copy of their logins.
+    db = os.path.join(home, 'userdata', 'addon_data', 'plugin.video.gears',
+                      'databases', 'settings.db')
+    if not os.path.isfile(db):
+        return
     # (1) config's shipped gears_settings (honors its own credential exclude list)
     pending = os.path.join(ADDON_DATA, 'gears_settings_pending.json')
     if os.path.isfile(pending):
         try:
             with open(pending, encoding='utf-8-sig') as fh:
                 data = json.load(fh)
-            _enforce_gears_settings(home, data.get('settings', {}),
-                                    set(data.get('exclude', [])))
-            os.remove(pending)
-            log('applied pending gears settings (fresh-install catch-up)')
+            if _enforce_gears_settings(home, data.get('settings', {}),
+                                       set(data.get('exclude', []))):
+                os.remove(pending)          # only drop once actually written
+                log('applied pending gears settings (fresh-install catch-up)')
         except Exception as e:
             log('pending gears settings apply failed: %s' % e, xbmc.LOGWARNING)
-    # (2) user credentials the keep-restore deferred because the db wasn't born
-    #     yet. Empty exclude: these ARE the user's own kept logins and MUST be
-    #     written (without this they were silently lost on a fresh install).
+    # (2) user credentials the keep-restore deferred. Empty exclude: these ARE the
+    #     user's own kept logins and MUST be written. Only drop once written.
     keep_pending = os.path.join(ADDON_DATA, 'gears_keep_pending.json')
     if os.path.isfile(keep_pending):
         try:
             with open(keep_pending, encoding='utf-8-sig') as fh:
                 creds = json.load(fh)
-            if creds:
-                _enforce_gears_settings(home, creds, set())
-            os.remove(keep_pending)
-            log('restored %d deferred kept gears cred(s) on first boot' % len(creds))
+            if not creds or _enforce_gears_settings(home, creds, set()):
+                os.remove(keep_pending)
+                log('restored %d deferred kept gears cred(s) on first boot' % len(creds))
         except Exception as e:
-            log('keep-pending apply failed: %s' % e, xbmc.LOGWARNING)
+            log('keep-pending apply failed (kept for retry): %s' % e, xbmc.LOGWARNING)
 
 
 def _enforce_gears_settings(home, gears_settings, exclude):
-    """Write critical Gears values into its settings.db without touching creds."""
+    """Write critical Gears values into its settings.db. Returns True on a
+    successful write, False if the db isn't born yet (stashed for the catch-up)
+    or the write errored -- so a caller that owns the user's only cred copy knows
+    NOT to drop its backup."""
     import sqlite3
     db = os.path.join(home, 'userdata', 'addon_data', 'plugin.video.gears',
                       'databases', 'settings.db')
@@ -1938,17 +1946,22 @@ def _enforce_gears_settings(home, gears_settings, exclude):
                           ensure_ascii=False)
         except Exception:
             pass
-        return
+        return False
     try:
         c = sqlite3.connect(db)
         for sid, val in gears_settings.items():
             if sid in exclude:
                 continue
-            c.execute('UPDATE settings SET setting_value=? WHERE setting_id=?', (str(val), sid))
+            cur = c.execute('UPDATE settings SET setting_value=? WHERE setting_id=?', (str(val), sid))
+            if cur.rowcount == 0:
+                c.execute('INSERT OR REPLACE INTO settings (setting_id, setting_value) VALUES (?, ?)',
+                          (sid, str(val)))
         c.commit(); c.close()
         log('enforced %d gears settings' % len(gears_settings))
+        return True
     except Exception as e:
-        log('gears settings enforce failed: %s' % e, xbmc.LOGWARNING)
+        log('gears settings enforce failed: %s' % e, xbmc.LOGERROR)
+        return False
 
 
 def _enforce_gears_shortcuts(home, spec):
