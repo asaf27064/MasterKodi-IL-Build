@@ -370,6 +370,21 @@ class BuildManager:
                                 pass
                     except Exception as e:
                         return False, 'קובץ קריטי פגום בהורדה: %s (%s)' % (n, e)
+                # Zip-bomb / too-big-for-device guard, BEFORE the wipe: sum the
+                # uncompressed sizes (cheap, from the central directory) and make
+                # sure the box has room + a margin. A build that can't fit must
+                # NOT wipe the existing one first.
+                total = sum(getattr(i, 'file_size', 0) for i in z.infolist())
+                if total > 12 * 1024 ** 3:
+                    return False, 'הבילד גדול מדי (%d MB)' % (total // 1024 ** 2)
+                try:
+                    import shutil as _sh
+                    free = _sh.disk_usage(xbmcvfs.translatePath('special://home/')).free
+                    if free < total + 300 * 1024 ** 2:
+                        return False, ('אין מספיק מקום פנוי: צריך ~%d MB, פנוי %d MB'
+                                       % (total // 1024 ** 2, free // 1024 ** 2))
+                except Exception:
+                    pass
             return True, None
         except Exception as e:
             return False, str(e)

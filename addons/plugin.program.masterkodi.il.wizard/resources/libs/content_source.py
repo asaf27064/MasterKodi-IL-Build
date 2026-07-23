@@ -453,9 +453,21 @@ def switch_to(source):
             _apply_gears_content(skin_id)
         _set_source('gears')
 
-    xbmc.executebuiltin('ReloadSkin()')
-    dialog.notification(ADDON_NAME, 'מקור התוכן: %s' % source.upper(),
-                        xbmcgui.NOTIFICATION_INFO, 4000)
+    # A mid-session ReloadSkin() is the known python3.8.dll crash trigger when
+    # skin Python widgets are live. Arm the boot-time rebuild and restart cleanly
+    # instead of reloading in place (matches how config changes are applied).
+    try:
+        wiz_data = os.path.join(ADDON_DATA_PATH, 'plugin.program.masterkodi.il.wizard')
+        os.makedirs(wiz_data, exist_ok=True)
+        _write(os.path.join(wiz_data, 'pending_view_rebuild'), skin_id.encode('utf-8'))
+    except Exception:
+        pass
+    if dialog.yesno(ADDON_NAME,
+                    'מקור התוכן שונה ל-%s.\nיש להפעיל את Kodi מחדש כדי להחיל. להפעיל מחדש עכשיו?'
+                    % source.upper(), yeslabel='הפעל מחדש', nolabel='אחר כך'):
+        xbmc.executebuiltin('RestartApp')
+    else:
+        dialog.notification(ADDON_NAME, 'יוחל בהפעלה הבאה', xbmcgui.NOTIFICATION_INFO, 4000)
     return True
 
 

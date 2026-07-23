@@ -70,6 +70,16 @@ begin
   Result := True;
 end;
 
+// Only a folder that is actually a Kodi/MasterKodi install may be recursively
+// deleted -- otherwise a user who points the installer at an ordinary folder
+// (Documents, a drive root) would have its contents destroyed.
+function LooksLikeKodiInstall(Dir: String): Boolean;
+begin
+  Result := FileExists(Dir + '\kodi.exe')
+         or DirExists(Dir + '\portable_data')
+         or DirExists(Dir + '\addons');
+end;
+
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
   Result := True;
@@ -78,8 +88,19 @@ begin
   begin
     if DirExists(WizardDirValue) then
     begin
+      if not LooksLikeKodiInstall(WizardDirValue) then
+      begin
+        // Existing, non-empty, and NOT a Kodi install -> refuse to wipe it.
+        MsgBox(
+          'התיקייה שנבחרה קיימת ואינה נראית כמו התקנת Kodi/MasterKodi:' + #13#10 +
+          WizardDirValue + #13#10#13#10 +
+          'כדי למנוע מחיקת קבצים לא קשורים, בחרו תיקייה חדשה או ריקה.',
+          mbError, MB_OK);
+        Result := False;
+        exit;
+      end;
       if MsgBox(
-        'נמצאה התקנה קיימת של MasterKodi IL בתיקייה:' + #13#10 +
+        'נמצאה התקנה קיימת של MasterKodi IL / Kodi בתיקייה:' + #13#10 +
         WizardDirValue + #13#10#13#10 +
         'האם למחוק אותה לחלוטין ולהתקין מחדש?',
         mbConfirmation, MB_YESNO
@@ -96,7 +117,9 @@ procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssInstall then
   begin
-    if DoCleanInstall and DirExists(WizardDirValue) then
+    // Guard the destructive delete with the same marker check.
+    if DoCleanInstall and DirExists(WizardDirValue)
+       and LooksLikeKodiInstall(WizardDirValue) then
       DelTree(WizardDirValue, True, True, True);
   end;
 end;
