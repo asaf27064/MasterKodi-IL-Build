@@ -75,9 +75,12 @@ end;
 // (Documents, a drive root) would have its contents destroyed.
 function LooksLikeKodiInstall(Dir: String): Boolean;
 begin
+  // Require a Kodi-SPECIFIC marker. A bare "addons" subfolder is too generic --
+  // an unrelated project could have one and get recursively deleted.
   Result := FileExists(Dir + '\kodi.exe')
          or DirExists(Dir + '\portable_data')
-         or DirExists(Dir + '\addons');
+         or FileExists(Dir + '\portable_data\kodi.log')
+         or (DirExists(Dir + '\addons') and DirExists(Dir + '\userdata'));
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;

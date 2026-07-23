@@ -350,16 +350,19 @@ class BuildManager:
                 names = z.namelist()
                 if not names:
                     return False, 'הקובץ ריק'
-                # A zip's central directory lives at the END of the file, so a
-                # successful open already proves the download wasn't truncated.
-                # We deliberately do NOT testzip() the whole archive (it would
-                # decompress all ~60 MB and add tens of seconds on a weak Android
-                # box), BUT we DO CRC-check the boot-CRITICAL members now, before
-                # the wipe: guisettings.xml and every addon.xml. Those are small,
-                # so it's cheap, and a corrupt one would otherwise pass this
-                # structural check and only blow up AFTER the box is already wiped.
                 if not any(n.startswith('addons/') for n in names):
                     return False, 'לא נמצאו אדונים בקובץ'
+                # FULL CRC verification BEFORE the wipe. This decompresses the
+                # whole archive (tens of seconds on a weak box), but a corrupt
+                # NON-critical member (a font/module) would otherwise pass a
+                # structural/critical-only check, the wipe would run, and the file
+                # would be silently dropped on extract -> a broken install on a
+                # gutted box. Not bricking the device is worth the one-time cost.
+                bad = z.testzip()
+                if bad is not None:
+                    return False, 'קובץ פגום בהורדה: %s' % bad
+                # (the per-critical-member CRC below is now redundant with testzip
+                # but kept for its specific, actionable message.)
                 critical = [n for n in names
                             if n.replace('\\', '/').endswith('userdata/guisettings.xml')
                             or n.replace('\\', '/').endswith('/addon.xml')]
@@ -1511,8 +1514,13 @@ class BuildManager:
             for i, aid in enumerate(ids):
                 entry = by_id.get(aid)
                 if not entry:
-                    if aid == addon_id:
-                        failed.append(aid)
+                    # A missing manifest entry -- for the skin OR a dependency --
+                    # is a real problem (a skin whose dep is absent won't load).
+                    # Log it loudly and track it instead of silently skipping.
+                    log(f"manifest install: '{aid}' absent from manifest"
+                        f"{'' if aid == addon_id else f' (dependency of {addon_id})'}",
+                        xbmc.LOGERROR)
+                    failed.append(aid)
                     continue
                 progress.update(int(i / max(len(ids), 1) * 100), f"[COLOR yellow]מתקין: {aid}[/COLOR]")
                 try:
