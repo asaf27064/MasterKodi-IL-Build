@@ -34,6 +34,9 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Wizard unit tests (real modules via Kodi shim)
+        run: python tools/tests/run_tests.py
+
       - name: Build addon zips (wizard/firstrun/repo)
         run: python tools/build_addons.py --repo-root . --out dist
 

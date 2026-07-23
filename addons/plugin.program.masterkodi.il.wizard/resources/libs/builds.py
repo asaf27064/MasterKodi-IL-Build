@@ -293,8 +293,16 @@ class BuildManager:
     def wipe(self, progress_dialog):
         """Wipe Kodi - delete everything except wizard and My_Builds"""
         log("Starting wipe...")
-        
-        exclude_dirs = [ADDON_ID, 'packages', 'My_Builds', 'temp', 'cache']
+
+        # The Gears/POV default download dirs live INSIDE addon_data (Movies/TV
+        # Show/Premium/Image Downloads under plugin.video.{gears,pov}). Those hold
+        # the user's own downloaded media -- gigabytes that are NOT addon state and
+        # must survive a reinstall. Pruning by name preserves them wherever they
+        # sit; if the user pointed downloads at external storage the wipe never
+        # reached them anyway.
+        exclude_dirs = [ADDON_ID, 'packages', 'My_Builds', 'temp', 'cache',
+                        'Movies Downloads', 'TV Show Downloads',
+                        'Premium Downloads', 'Image Downloads']
         
         total_files = 0
         for root, dirs, files in os.walk(HOME):
@@ -1259,26 +1267,20 @@ class BuildManager:
             else:
                 ADDON.setSetting('installed_skin', 'Estuary')
             
-            # Step 6: Enable addons in database
-            progress.update(90, "[COLOR yellow]מפעיל אדונים...[/COLOR]")
-            self.enable_addons_in_db(addon_list)
-            self.setup_wizard_repo_in_db()
-            
-            # Step 7: Update
-            progress.update(95, "[COLOR yellow]מעדכן...[/COLOR]")
-            xbmc.executebuiltin('UpdateAddonRepos()')
-            xbmc.executebuiltin('UpdateLocalAddons()')
-
-            # Step 7.5: restore the 'keep' selections onto the fresh build
+            # Step 5.5: restore the 'keep' selections onto the freshly extracted
+            # build BEFORE we register/enable the addons. The kept sqlite files
+            # (watched/maincache/settings) are copied into place here so that no
+            # addon service -- which the UpdateLocalAddons() at Step 7 can start --
+            # can hold them open when they're overwritten (an open-WAL overwrite
+            # corrupts the database). Restored user addons are folded into the
+            # single enable below so they're registered in one pass.
             if keep_keys:
                 try:
                     from resources.libs import keep as keep_mod
-                    progress.update(96, "[COLOR yellow]משחזר נתונים שנשמרו...[/COLOR]")
+                    progress.update(88, "[COLOR yellow]משחזר נתונים שנשמרו...[/COLOR]")
                     restored_extras, restore_failed = keep_mod.restore()
-                    # register + enable any restored user addons
                     if restored_extras:
-                        self.enable_addons_in_db(restored_extras)
-                        xbmc.executebuiltin('UpdateLocalAddons()')
+                        addon_list.extend(a for a in restored_extras if a not in addon_list)
                     # tell the user if some kept data didn't come back -- the
                     # backup was deliberately NOT deleted so it can be recovered.
                     if restore_failed:
@@ -1291,8 +1293,19 @@ class BuildManager:
                             f"({restore_failed} פריטים).[/COLOR]\n\n"
                             "עותק הגיבוי לא נמחק וניתן לשחזר ממנו ידנית:\n"
                             f"{keep_mod.STAGE}")
+                        progress.create(ADDON_NAME, "[COLOR cyan]ממשיך בהתקנה...[/COLOR]")
                 except Exception as e:
                     log(f"keep restore failed: {e}", xbmc.LOGWARNING)
+
+            # Step 6: Enable addons in database
+            progress.update(90, "[COLOR yellow]מפעיל אדונים...[/COLOR]")
+            self.enable_addons_in_db(addon_list)
+            self.setup_wizard_repo_in_db()
+
+            # Step 7: Update
+            progress.update(95, "[COLOR yellow]מעדכן...[/COLOR]")
+            xbmc.executebuiltin('UpdateAddonRepos()')
+            xbmc.executebuiltin('UpdateLocalAddons()')
 
             # Step 8: Complete the build from the manifest BEFORE we exit, so the
             # first re-launch already shows our full defaults. The base zip ships

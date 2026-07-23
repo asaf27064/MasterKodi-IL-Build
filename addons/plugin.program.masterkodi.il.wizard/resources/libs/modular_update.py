@@ -1296,6 +1296,20 @@ def _run_update_impl(silent=False, notify=None, force=False, no_reload=False):
         _save_state(state)
         xbmc.executebuiltin('UpdateLocalAddons')
 
+    # The user CANCELLED mid-update: do NOT proceed to apply config/variant
+    # mutations, and report a CANCELLED (not a false 'ok') result so the caller
+    # can tell it apart from a clean completion.
+    if cancelled:
+        _save_state(state)
+        summary = {'ok': False, 'cancelled': True, 'applied': applied,
+                   'failed': failed, 'removed': removed, 'enabled': enabled,
+                   'wizard_changed': wizard_changed, 'skin_changed': skin_changed,
+                   'active_skin': active_skin, 'config_applied': False,
+                   'variants_applied': False, 'menu_repaired': False,
+                   'up_to_date': False, 'manifest_generated': manifest.get('generated_utc')}
+        log('update summary (CANCELLED): %s' % summary)
+        return summary
+
     # config payload (default userdata) - applied on version bump only
     cfg_applied = _maybe_apply_config(manifest, state, force=force)
     _save_state(state)
@@ -1317,6 +1331,7 @@ def _run_update_impl(silent=False, notify=None, force=False, no_reload=False):
 
     summary = {
         'ok': not failed,
+        'cancelled': False,
         'applied': applied,
         'removed': removed,
         'enabled': enabled,

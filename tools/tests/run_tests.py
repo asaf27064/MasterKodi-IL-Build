@@ -45,7 +45,7 @@ def test_imports():
 
 
 def test_keep():
-    print("\n=== keep: safe_db_copy / db_write / read-errors / POV groups ===")
+    print("\n=== keep: safe_db_copy / db_write / read-errors / POV+gears roundtrip ===")
     d = tempfile.mkdtemp(); src = os.path.join(d, 'w.db'); dst = os.path.join(d, 's.db')
     c = sqlite3.connect(src); c.execute("PRAGMA journal_mode=WAL")
     c.execute("CREATE TABLE t(id int)"); c.executemany("INSERT INTO t VALUES(?)", [(i,) for i in range(20)])
@@ -58,6 +58,55 @@ def test_keep():
     check('db_read absent -> {}', keep._db_read(os.path.join(d, 'no.db'), ['x']) == {})
     keys = [g['key'] for g in keep.GROUPS]
     check("keep has POV services + viewing groups", 'pov_services' in keys and 'pov_content' in keys)
+
+    # --- REAL POV + gears database backup/restore roundtrip -------------------
+    # Proves POV_DB_DIR points at the ACTUAL dir POV uses (plugin.video.pov/<db>
+    # directly, NOT a databases/ subdir): the audit's #1 bug staged ZERO items
+    # because the dir was wrong, and the old name-only assertion never caught it.
+    # A real create -> backup -> wipe -> restore -> verify-rows cycle would.
+    def _mkdb(path, sentinel):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        cc = sqlite3.connect(path); cc.execute("PRAGMA journal_mode=WAL")
+        cc.execute("CREATE TABLE t(k TEXT, v TEXT)")
+        cc.execute("INSERT INTO t VALUES('sentinel', ?)", (sentinel,))
+        cc.commit(); cc.close()
+
+    def _sentinel(path):
+        if not os.path.isfile(path):
+            return None
+        cc = sqlite3.connect(path)
+        try:
+            row = cc.execute("SELECT v FROM t WHERE k='sentinel'").fetchone()
+        finally:
+            cc.close()
+        return row[0] if row else None
+
+    pov_w = os.path.join(keep.POV_DB_DIR, 'watched.db')
+    pov_m = os.path.join(keep.POV_DB_DIR, 'maincache.db')
+    gears_w = os.path.join(keep.GEARS_DB_DIR, 'watched.db')
+    _mkdb(pov_w, 'POV_WATCHED'); _mkdb(pov_m, 'POV_CACHE'); _mkdb(gears_w, 'GEARS_WATCHED')
+
+    # source-aware probe: these groups now report they have real data
+    povg = next(g for g in keep.GROUPS if g['key'] == 'pov_content')
+    gearsg = next(g for g in keep.GROUPS if g['key'] == 'gears_content')
+    check('_group_has_data sees POV + gears viewing data',
+          keep._group_has_data(povg) and keep._group_has_data(gearsg))
+
+    ok_b, n = keep.backup(['pov_content', 'gears_content'])
+    check('backup roundtrip ok + staged 3 dbs', ok_b and n == 3)
+    check('POV dbs staged at correct dir',
+          os.path.isfile(os.path.join(keep.STAGE, 'povdb__watched.db')) and
+          os.path.isfile(os.path.join(keep.STAGE, 'povdb__maincache.db')))
+    check('gears db staged', os.path.isfile(os.path.join(keep.STAGE, 'gearsdb__watched.db')))
+
+    # simulate the wipe destroying the originals, then restore + verify the rows
+    for p in (pov_w, pov_m, gears_w):
+        os.remove(p)
+    _, rf = keep.restore()
+    check('restore reported no failures', rf == 0)
+    check('POV watched.db restored with its row', _sentinel(pov_w) == 'POV_WATCHED')
+    check('POV maincache.db restored with its row', _sentinel(pov_m) == 'POV_CACHE')
+    check('gears watched.db restored with its row', _sentinel(gears_w) == 'GEARS_WATCHED')
     shutil.rmtree(d, ignore_errors=True)
 
 
@@ -184,6 +233,26 @@ def test_update_ordering():
     mu.release_op_lock()
     mu.run_update(silent=True)
     check('successful update -> removals ran', calls['rm'] == 1)
+
+    # --- user cancels mid-update -> removals + config apply BOTH skipped ------
+    calls['rm'] = 0
+    cfg = {'n': 0}
+    mu._maybe_apply_config = lambda m, s, force=False: (cfg.__setitem__('n', cfg['n'] + 1), False)[1]
+    mu._apply_one = lambda entry: None       # would succeed, but we cancel first
+
+    class _CancelProg(object):
+        def __init__(self, silent): pass
+        def update(self, *a, **k): pass
+        def iscanceled(self): return True    # cancel before the first apply
+        def close(self): pass
+    mu._Progress = _CancelProg
+    mu.release_op_lock()
+    sc = mu.run_update(silent=False)
+    check('cancelled -> summary.cancelled True + ok False',
+          sc.get('cancelled') is True and sc.get('ok') is False)
+    check('cancelled -> nothing applied', sc.get('applied') == [])
+    check('cancelled -> removals SKIPPED', calls['rm'] == 0)
+    check('cancelled -> config apply SKIPPED', cfg['n'] == 0)
 
 
 def main():

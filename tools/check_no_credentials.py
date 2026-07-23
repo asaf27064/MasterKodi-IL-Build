@@ -41,6 +41,15 @@ PERSONAL_IDS = {
     'tmdb.session_id',
     'hebrew_subtitles.ktuvit_password', 'hebrew_subtitles.opensubtitles_apikey',
     'os_user_api_key_value', 'kt_enc_pass',
+    # POV list-service / rating-db personal keys
+    'mdblist.token', 'mdblist_user', 'rpdb_api_key',
+    # TMDbHelper per-user OAuth tokens + personal API keys (underscore ids).
+    # NB: the shared public app keys (tmdb_read_token, trakt.client_id/secret,
+    # mdblist_api_key) are NOT here -- those are intentionally baselined.
+    'tmdb_user_token', 'tmdb_user_token_access', 'trakt_token', 'trakt_token_access',
+    'tvdb_token', 'tvdb_token_access', 'gemini_apikey', 'ratingposterdb_apikey',
+    'fanarttv_clientkey', 'fanarttv_clientkey_access',
+    'monitor_userlist', 'monitor_userslug',
 }
 PERSONAL_PAT = re.compile(r'^OSpass', re.I)
 # a value whose ID structurally looks like a key/token/session/account binding

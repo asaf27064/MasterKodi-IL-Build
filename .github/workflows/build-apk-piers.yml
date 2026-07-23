@@ -45,6 +45,9 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Wizard unit tests (real modules via Kodi shim)
+        run: python tools/tests/run_tests.py
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:

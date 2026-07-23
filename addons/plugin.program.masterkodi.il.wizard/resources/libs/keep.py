@@ -74,7 +74,9 @@ def log(msg, level=xbmc.LOGINFO):
 # like Gears), so the keep groups must cover it too -- otherwise a POV box saved
 # NOTHING and lost every login on a reinstall.
 POV_SETTINGS = os.path.join(ADDON_DATA, 'plugin.video.pov', 'settings.xml')
-POV_DB_DIR = os.path.join(ADDON_DATA, 'plugin.video.pov', 'databases')
+# POV keeps its databases DIRECTLY under addon_data/plugin.video.pov (NOT in a
+# databases/ subdir like Gears) -- see plugin.video.pov kodi_utils.py.
+POV_DB_DIR = os.path.join(ADDON_DATA, 'plugin.video.pov')
 _POV_DEBRID = ['pm.token', 'pm.account_id', 'tb.token', 'tb.account_id',
                'oc.token', 'oc.account_id', 'ad.token', 'ad.account_id',
                'rd.token', 'rd.secret', 'rd.username', 'rd.client_id', 'rd.refresh',
@@ -178,7 +180,6 @@ def _db_write(db, values):
     except Exception as e:
         log('settings.db write failed: %s' % e, xbmc.LOGERROR)
         return False
-        return False
 
 
 def _stash_keep_pending(values):
@@ -259,31 +260,53 @@ def has_anything(extras=None):
         if extras:
             return True
         for g in GROUPS:
-            if g.get('gears_ids') and _db_read(GEARS_SETTINGS_DB, g['gears_ids']):
+            if _group_has_data(g):
                 return True
-            for path, ids in g.get('xml_targets', []):
-                if _xml_read(path, ids):
-                    return True
-            for name in g.get('db_files', []):
-                if os.path.isfile(os.path.join(GEARS_DB_DIR, name)):
-                    return True
-            for name in g.get('pov_db_files', []):
-                if os.path.isfile(os.path.join(POV_DB_DIR, name)):
-                    return True
-            for f in g.get('files', []):
-                if os.path.isfile(f) and os.path.getsize(f) > 0:
-                    return True
     except Exception as e:
         log('has_anything probe failed: %s' % e, xbmc.LOGWARNING)
         return True          # unsure -> ask, never silently skip a real backup
     return False
 
 
+def _group_has_data(g):
+    """Cheap probe: does THIS box actually have anything to keep for group g?
+
+    Mirrors exactly what backup() would stage (existence/non-empty only, no full
+    reads). Used to hide empty groups from the checklist -- notably a Gears box
+    has no POV data and a POV box has no Gears data, so this naturally makes the
+    prompt source-aware WITHOUT guessing the content source: a group is shown iff
+    its data is present, and backup() stages nothing for an absent group anyway,
+    so hiding it can never drop a real backup."""
+    try:
+        if g.get('gears_ids') and _db_read(GEARS_SETTINGS_DB, g['gears_ids']):
+            return True
+        for path, ids in g.get('xml_targets', []):
+            if _xml_read(path, ids):
+                return True
+        for name in g.get('db_files', []):
+            if os.path.isfile(os.path.join(GEARS_DB_DIR, name)):
+                return True
+        for name in g.get('pov_db_files', []):
+            if os.path.isfile(os.path.join(POV_DB_DIR, name)):
+                return True
+        for f in g.get('files', []):
+            if os.path.isfile(f) and os.path.getsize(f) > 0:
+                return True
+    except Exception as e:
+        log('group probe failed for %s: %s' % (g.get('key'), e), xbmc.LOGWARNING)
+        return True          # unsure -> show it, never silently hide a real backup
+    return False
+
+
 def prompt(extras=None, default_all=True):
     """Show the 'what to keep' checklist (all ticked by default). Returns a list
     of selected group keys (may include 'extras'). Cancel -> keep the defaults
-    (all) so nothing is lost by accident."""
-    entries = [(g['key'], g['label']) for g in GROUPS]
+    (all) so nothing is lost by accident.
+
+    Only groups that actually have data on this box are listed: this hides the
+    other content source's groups (POV groups on a Gears box, and vice versa) and
+    any empty group, so the checklist shows only real, keepable data."""
+    entries = [(g['key'], g['label']) for g in GROUPS if _group_has_data(g)]
     if extras:
         entries.append(('extras', 'תוספים שהתקנת בעצמך (%d)' % len(extras)))
     labels = [lbl for _k, lbl in entries]
@@ -298,13 +321,14 @@ def prompt(extras=None, default_all=True):
 
 
 def _safe_db_copy(src, dst):
-    """Consistent snapshot of a possibly-live SQLite database (checkpoints WAL via
-    the backup API), falling back to a byte copy for a non-sqlite file. Returns
-    True on success. A plain copy2 of a live db can stage a torn/stale file whose
-    -wal was never applied -- exactly the kind of silent corruption that makes a
-    'kept' watched.db useless after the wipe."""
+    """Consistent snapshot of a live SQLite database via the backup API (which
+    checkpoints WAL), then VERIFY the staged copy with PRAGMA quick_check. Returns
+    True only on a verified-good copy. These are all known SQLite files, so a
+    backup-API error means locked/corrupt -- we do NOT fall back to a raw copy2
+    (that used to stage a torn/corrupt db and report success, so the wipe then
+    destroyed the good original)."""
+    import sqlite3
     try:
-        import sqlite3
         s = sqlite3.connect(src)
         try:
             d = sqlite3.connect(dst)
@@ -314,13 +338,26 @@ def _safe_db_copy(src, dst):
                 d.close()
         finally:
             s.close()
-        return True
-    except Exception:
+    except Exception as e:
+        log('safe_db_copy backup failed for %s: %s' % (os.path.basename(src), e), xbmc.LOGERROR)
         try:
-            shutil.copy2(src, dst)
-            return True
+            if os.path.isfile(dst):
+                os.remove(dst)
         except Exception:
+            pass
+        return False
+    # integrity-verify the STAGED copy before trusting it
+    try:
+        v = sqlite3.connect(dst)
+        row = v.execute('PRAGMA quick_check').fetchone()
+        v.close()
+        if not row or str(row[0]).lower() != 'ok':
+            log('safe_db_copy quick_check FAILED for %s: %s' % (os.path.basename(dst), row), xbmc.LOGERROR)
             return False
+    except Exception as e:
+        log('safe_db_copy verify failed for %s: %s' % (os.path.basename(dst), e), xbmc.LOGERROR)
+        return False
+    return True
 
 
 def backup(keys, extras=None):
