@@ -197,7 +197,6 @@ def _stamp_build_suffix(overlay_dir, addon_dir, addon_id):
     no-ops to the user. Deterministic per commit; the +100 offset keeps the
     number above the historical hand-bumped 4th segments. Fail-open: no git /
     any error -> version left untouched."""
-    import re
     import subprocess
     try:
         count = int(subprocess.check_output(

@@ -53,6 +53,9 @@ jobs:
       - name: Check no user credentials in variants
         run: python tools/check_no_credentials.py
 
+      - name: Wizard unit tests (real modules via Kodi shim)
+        run: python tools/tests/run_tests.py
+
       - name: Verify content-variant invariants
         # POV mode validity, no Gears contamination/labels, trending, pov/ seeds,
         # view coverage -- fails the build on any regression of a known bug class.
