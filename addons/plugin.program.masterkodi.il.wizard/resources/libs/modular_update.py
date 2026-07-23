@@ -686,7 +686,10 @@ def _apply_one(entry):
                 raise Exception('addon.xml id mismatch for %s' % aid)
         except OSError:
             raise Exception('addon.xml missing for %s' % aid)
-        for name in tops:                          # normally just <aid>/
+        # Install ONLY the addon the manifest names -- never any EXTRA top-level
+        # dir that happens to be in the zip (a zip for A that also bundled B would
+        # otherwise replace B too, unrecorded). A single-addon zip is the norm.
+        for name in [aid]:
             live = os.path.join(ADDONS_PATH, name)
             rb = os.path.join(ADDONS_PATH, '.rb_%s' % name)
             shutil.rmtree(rb, ignore_errors=True)
@@ -1251,8 +1254,10 @@ def _run_update_impl(silent=False, notify=None, force=False, no_reload=False):
     dp = _Progress(silent)
 
     total = len(updates)
+    cancelled = False
     for i, entry in enumerate(updates):
         if dp.iscanceled():
+            cancelled = True
             break
         pct = int((i / float(total)) * 100)
         aid = entry['id']
@@ -1275,11 +1280,18 @@ def _run_update_impl(silent=False, notify=None, force=False, no_reload=False):
     xbmc.sleep(500)
     dp.close()
 
-    # Remove addons dropped from the build ONLY NOW -- after the loop above has
-    # installed any replacement. A failed update above leaves the old build fully
-    # intact (nothing removed yet). Then re-enable anything the removal disabled.
-    removed = _apply_removals(manifest, state)
-    enabled = repair_disabled_deps(manifest)
+    # Remove addons dropped from the build ONLY NOW, and ONLY if every update
+    # succeeded and nothing was cancelled. If an update FAILED (or the user
+    # cancelled), a removed dependency whose replacement never installed would
+    # leave the box with neither -- so defer ALL removals to a later pass that
+    # completes cleanly. The old build stays fully intact meanwhile.
+    removed = []
+    if failed or cancelled:
+        log('updates incomplete (failed=%d cancelled=%s) -> deferring removals'
+            % (len(failed), cancelled), xbmc.LOGWARNING)
+    else:
+        removed = _apply_removals(manifest, state)
+    enabled = repair_disabled_deps(manifest)     # safe to run regardless
     if removed or enabled:
         _save_state(state)
         xbmc.executebuiltin('UpdateLocalAddons')

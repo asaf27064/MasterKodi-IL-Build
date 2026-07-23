@@ -74,6 +74,7 @@ def log(msg, level=xbmc.LOGINFO):
 # like Gears), so the keep groups must cover it too -- otherwise a POV box saved
 # NOTHING and lost every login on a reinstall.
 POV_SETTINGS = os.path.join(ADDON_DATA, 'plugin.video.pov', 'settings.xml')
+POV_DB_DIR = os.path.join(ADDON_DATA, 'plugin.video.pov', 'databases')
 _POV_DEBRID = ['pm.token', 'pm.account_id', 'tb.token', 'tb.account_id',
                'oc.token', 'oc.account_id', 'ad.token', 'ad.account_id',
                'rd.token', 'rd.secret', 'rd.username', 'rd.client_id', 'rd.refresh',
@@ -104,6 +105,13 @@ GROUPS = [
     {'key': 'gears_content',
      'label': 'צפייה, המשך צפייה ורשימות (Gears)',
      'db_files': ['watched.db', 'personal_lists.db', 'lists.db', 'tmdb_lists.db', 'favourites.db']},
+    {'key': 'pov_content',
+     'label': 'צפייה, המשך צפייה והיסטוריה (POV)',
+     # watched/resume + search history live in POV's OWN databases dir, NOT the
+     # settings xml -- without this a POV reinstall kept the logins but lost all
+     # viewing state. (navigator/views are re-seeded on install so we don't stage
+     # them here; watched/maincache are pure user data, untouched by the seed.)
+     'pov_db_files': ['watched.db', 'maincache.db']},
     {'key': 'favs',
      'label': 'מועדפים (Kodi)',
      'files': [FAVOURITES]},
@@ -153,14 +161,23 @@ def _db_write(db, values):
         for sid, val in values.items():
             cur = c.execute('UPDATE settings SET setting_value=? WHERE setting_id=?', (val, sid))
             if cur.rowcount == 0:
-                try:
-                    c.execute('INSERT INTO settings (setting_id, setting_value) VALUES (?, ?)', (sid, val))
-                except Exception:
-                    pass
-        c.commit(); c.close()
+                # let an INSERT failure RAISE -> caught below -> False. Swallowing
+                # it (as before) then returned True, so the keep-stage was deleted
+                # even though that credential row was never written.
+                c.execute('INSERT INTO settings (setting_id, setting_value) VALUES (?, ?)', (sid, val))
+        c.commit()
+        # readback: confirm every value actually landed before we report success
+        for sid, val in values.items():
+            row = c.execute('SELECT setting_value FROM settings WHERE setting_id=?', (sid,)).fetchone()
+            if not row or row[0] != val:
+                c.close()
+                log('settings.db write UNVERIFIED for %s' % sid, xbmc.LOGERROR)
+                return False
+        c.close()
         return True
     except Exception as e:
         log('settings.db write failed: %s' % e, xbmc.LOGERROR)
+        return False
         return False
 
 
@@ -249,6 +266,9 @@ def has_anything(extras=None):
                     return True
             for name in g.get('db_files', []):
                 if os.path.isfile(os.path.join(GEARS_DB_DIR, name)):
+                    return True
+            for name in g.get('pov_db_files', []):
+                if os.path.isfile(os.path.join(POV_DB_DIR, name)):
                     return True
             for f in g.get('files', []):
                 if os.path.isfile(f) and os.path.getsize(f) > 0:
@@ -348,6 +368,14 @@ def backup(keys, extras=None):
                 else:
                     failed += 1
                     log('backup db %s FAILED' % name, xbmc.LOGERROR)
+        for name in g.get('pov_db_files', []):
+            src = os.path.join(POV_DB_DIR, name)
+            if os.path.isfile(src):
+                if _safe_db_copy(src, os.path.join(STAGE, 'povdb__' + name)):
+                    staged += 1
+                else:
+                    failed += 1
+                    log('backup POV db %s FAILED' % name, xbmc.LOGERROR)
         for f in g.get('files', []):
             if os.path.isfile(f):
                 try:
@@ -425,6 +453,10 @@ def restore():
                 os.makedirs(GEARS_DB_DIR, exist_ok=True)
                 shutil.copy2(os.path.join(STAGE, name),
                              os.path.join(GEARS_DB_DIR, name[len('gearsdb__'):]))
+            elif name.startswith('povdb__'):
+                os.makedirs(POV_DB_DIR, exist_ok=True)
+                shutil.copy2(os.path.join(STAGE, name),
+                             os.path.join(POV_DB_DIR, name[len('povdb__'):]))
             elif name.startswith('file__'):
                 if name[len('file__'):] == 'favourites.xml':
                     shutil.copy2(os.path.join(STAGE, name), FAVOURITES)

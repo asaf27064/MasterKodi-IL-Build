@@ -119,6 +119,16 @@ def _load_baseline():
 
 def _update_baseline(root):
     items = _collect_repo(root)
+    # REFUSE to bless a PERSONAL login (debrid/Trakt/account_id/...). --update-
+    # baseline is for intentional SHARED keys only; blessing a personal cred would
+    # permanently whitelist a leaked user login. Scrub it first.
+    personal = [(r, sid, val) for (r, sid, val) in items if _is_personal(sid)]
+    if personal:
+        print('REFUSING --update-baseline: personal credential(s) present -- scrub, '
+              'do NOT bless:', file=sys.stderr)
+        for r, sid, v in personal:
+            print('  %s : %s = %s...' % (r, sid, v[:8]), file=sys.stderr)
+        return 1
     lines = sorted(set('%s  # %s = %s…' % (_fp(sid, val), sid, val[:6]) for _r, sid, val in items))
     with io.open(BASELINE, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write('# Baseline of intentional/public credentials currently shipped.\n'
