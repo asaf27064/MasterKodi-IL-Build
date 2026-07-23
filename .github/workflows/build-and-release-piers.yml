@@ -56,6 +56,11 @@ jobs:
       - name: Check no user credentials in variants
         run: python tools/check_no_credentials.py
 
+      - name: Verify content-variant invariants
+        # POV mode validity, no Gears contamination/labels, trending, pov/ seeds,
+        # view coverage -- fails the build on any regression of a known bug class.
+        run: python tools/verify_variants.py --strict
+
       - name: Check config-variant indexes are current
         # index.json is what the wizard's content switcher reads to know which
         # files a variant ships. Hard-coded lists drifted before and silently
