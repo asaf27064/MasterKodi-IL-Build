@@ -16,6 +16,8 @@ on:
       - 'overlays/**'
       - 'overlays-piers/**'
       - 'config/**'
+      - 'config-variants/**'
+      - 'config-variants-piers/**'
       - 'build.json'
       - 'tools/**'
       - '.github/workflows/build-and-release-piers.yml'
