@@ -1198,25 +1198,25 @@ def _run_update_impl(silent=False, notify=None, force=False, no_reload=False):
     # One-time: pin modded addons on existing installs (new installs get pinned
     # by firstrun; updates get pinned by _apply_one).
     _pin_all_modded_once(state)
-    # Uninstall addons we previously installed that are no longer in the build
-    # (e.g. DarkSubs removed) - runs even when everything else is up to date.
-    removed = _apply_removals(manifest, state)
-    # Purge broken legacy repos old builds left behind (they can't serve addons
-    # on 21 but Kodi scans them every pass -- python-invoker noise + insecure).
+    # Purge broken legacy repos old builds left behind (unrelated to addon
+    # replacement -- safe to do up front). Addon REMOVALS are deliberately NOT
+    # done here: they now run AFTER updates so a failed update download can't
+    # leave the box with a removed dep and no replacement (#11).
     junk = remove_junk_repos()
-    if removed or junk:
+    if junk:
         _save_state(state)
-        xbmc.executebuiltin('UpdateLocalAddons')
-
-    # Re-enable any dependency Kodi disabled out from under an installed parent
-    # (e.g. jurialmunkey disabled after a skin removal -> TMDbHelper crashes).
-    # Runs every check, independent of version updates.
-    enabled = repair_disabled_deps(manifest)
-    if enabled:
         xbmc.executebuiltin('UpdateLocalAddons')
 
     updates = compute_updates(manifest, force=force)
     if not updates:
+        # No addon changed -- but still remove addons dropped from the build, and
+        # re-enable any dependency Kodi disabled under a parent (e.g. jurialmunkey
+        # -> TMDbHelper crash). No replacements to install, so order is moot here.
+        removed = _apply_removals(manifest, state)
+        enabled = repair_disabled_deps(manifest)
+        if removed or enabled:
+            _save_state(state)
+            xbmc.executebuiltin('UpdateLocalAddons')
         if not removed and not enabled:
             _say('הבילד מעודכן')
         # still apply config on a version bump even if no addon changed
@@ -1275,6 +1275,15 @@ def _run_update_impl(silent=False, notify=None, force=False, no_reload=False):
     xbmc.sleep(500)
     dp.close()
 
+    # Remove addons dropped from the build ONLY NOW -- after the loop above has
+    # installed any replacement. A failed update above leaves the old build fully
+    # intact (nothing removed yet). Then re-enable anything the removal disabled.
+    removed = _apply_removals(manifest, state)
+    enabled = repair_disabled_deps(manifest)
+    if removed or enabled:
+        _save_state(state)
+        xbmc.executebuiltin('UpdateLocalAddons')
+
     # config payload (default userdata) - applied on version bump only
     cfg_applied = _maybe_apply_config(manifest, state, force=force)
     _save_state(state)
@@ -1297,6 +1306,7 @@ def _run_update_impl(silent=False, notify=None, force=False, no_reload=False):
     summary = {
         'ok': not failed,
         'applied': applied,
+        'removed': removed,
         'enabled': enabled,
         'menu_repaired': menu_repaired,
         'failed': failed,
