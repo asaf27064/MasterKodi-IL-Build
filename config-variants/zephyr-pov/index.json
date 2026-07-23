@@ -4,6 +4,14 @@
   "inherit": true,
   "files": [
     {
+      "src": "skin-overrides/1080i/Includes_Items.xml",
+      "dest": "{addons}/{skin}/1080i/Includes_Items.xml"
+    },
+    {
+      "src": "skin-overrides/shortcuts/template.xml",
+      "dest": "{addons}/{skin}/shortcuts/template.xml"
+    },
+    {
       "src": "skin.zephyr/settings.xml",
       "dest": "{addon_data}/{skin}/settings.xml"
     },
