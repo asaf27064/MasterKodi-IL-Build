@@ -47,32 +47,69 @@ TOKEN_SHAPE = re.compile(r'^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-
 SETTING = re.compile(r'<setting id="([^"]+)"[^>]*>([^<]+)</setting>')
 
 
+def _scan_text(text, rel, leaks):
+    """Apply the setting-credential checks to one XML blob."""
+    for m in SETTING.finditer(text):
+        sid, val = m.group(1), m.group(2).strip()
+        if not val or val.lower() in ('true', 'false', '0', '1', 'default'):
+            continue
+        if sid in PUBLIC_SETTING:
+            continue
+        if USER_CRED.match(sid):
+            leaks.append((rel, sid, val[:10], 'known user-auth id'))
+        elif CREDISH.search(sid) and TOKEN_SHAPE.match(val):
+            leaks.append((rel, sid, val[:10], 'token-shaped value under a credential-ish id'))
+
+
+def _scan_bundles(bundles_dir, leaks):
+    """Scan every settings XML INSIDE each install-bundle zip. Bundles are
+    repacked from a base captured off a live box and copy 'kept-as-was' content
+    verbatim -- exactly where a harvested login can ride along into the published
+    artifact without ever touching the committed config the dir-scan covers."""
+    import zipfile
+    n = 0
+    for z in sorted(glob.glob(os.path.join(bundles_dir, '*.zip'))):
+        try:
+            with zipfile.ZipFile(z) as zf:
+                for name in zf.namelist():
+                    if not name.lower().endswith('.xml'):
+                        continue
+                    n += 1
+                    try:
+                        text = zf.read(name).decode('utf-8', 'replace')
+                    except Exception:
+                        continue
+                    _scan_text(text, '%s!%s' % (os.path.basename(z), name), leaks)
+        except Exception as e:
+            print('  (could not read bundle %s: %s)' % (z, e), file=sys.stderr)
+    return n
+
+
 def main():
-    root = sys.argv[1] if len(sys.argv) > 1 else '.'
+    args = [a for a in sys.argv[1:]]
+    bundles_dir = None
+    if '--bundles' in args:
+        i = args.index('--bundles')
+        bundles_dir = args[i + 1] if i + 1 < len(args) else None
+        del args[i:i + 2]
+    root = args[0] if args else '.'
     leaks = []
     scanned = 0
     for base in SCAN_DIRS:
         for f in glob.glob(os.path.join(root, base, '**', '*.xml'), recursive=True):
             scanned += 1
-            t = io.open(f, encoding='utf-8', errors='replace').read()
-            for m in SETTING.finditer(t):
-                sid, val = m.group(1), m.group(2).strip()
-                if not val or val.lower() in ('true', 'false', '0', '1', 'default'):
-                    continue
-                if sid in PUBLIC_SETTING:
-                    continue
-                rel = os.path.relpath(f, root).replace(os.sep, '/')
-                if USER_CRED.match(sid):
-                    leaks.append((rel, sid, val[:10], 'known user-auth id'))
-                elif CREDISH.search(sid) and TOKEN_SHAPE.match(val):
-                    leaks.append((rel, sid, val[:10], 'token-shaped value under a credential-ish id'))
+            rel = os.path.relpath(f, root).replace(os.sep, '/')
+            _scan_text(io.open(f, encoding='utf-8', errors='replace').read(), rel, leaks)
+    where = '/'.join(SCAN_DIRS)
+    if bundles_dir:
+        scanned += _scan_bundles(bundles_dir, leaks)
+        where += ' + bundles'
     if leaks:
-        print('CREDENTIAL LEAK -- user auth committed in a shipped settings XML:', file=sys.stderr)
+        print('CREDENTIAL LEAK -- user auth in a shipped settings XML:', file=sys.stderr)
         for f, sid, v, why in leaks:
             print('  %s : %s = %s...  (%s)' % (f, sid, v, why), file=sys.stderr)
         return 1
-    print('[check_no_credentials] clean: scanned %d XML file(s) across %s'
-          % (scanned, '/'.join(SCAN_DIRS)))
+    print('[check_no_credentials] clean: scanned %d XML file(s) across %s' % (scanned, where))
     return 0
 
 

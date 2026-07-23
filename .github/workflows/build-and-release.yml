@@ -84,6 +84,12 @@ jobs:
           done
           python tools/build_bundles.py --repo-root . --dist dist --originals originals --out dist/bundles
 
+      - name: Scan rebuilt bundles for leaked credentials
+        # the bundle copies 'kept-as-was' content from a base captured off a live
+        # box -- scan the FINAL artifact so a harvested login can't ride into a
+        # published bundle even though the committed config is clean.
+        run: python tools/check_no_credentials.py --bundles dist/bundles
+
       - name: Upload changed bundles to base-builds
         env:
           GH_TOKEN: ${{ github.token }}
