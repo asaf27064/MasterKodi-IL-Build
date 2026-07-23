@@ -136,18 +136,68 @@ def _post(url, data, headers, timeout=30):
 
 
 # Windows writes a minidump (kodi_crashlog-*.dmp) next to the log on a hard
-# crash -- gold for diagnosing native crashes (they gave us the python3.8.dll
-# PySys_SetObject invoker-race signature). Android never writes these, so this
-# is a no-op there. Uploaded base64-encoded as separate entries so the text
-# log keeps its full MAX_BYTES budget.
-DUMP_MAX_BYTES = 8 * 1024 * 1024
+# crash. The dump is a SNAPSHOT OF KODI'S MEMORY -- it can hold live debrid /
+# Trakt / Gemini tokens, cookies and stream URLs -- so it is NEVER uploaded.
+# Instead we parse out only the crash SIGNATURE (faulting module + offset +
+# exception code, e.g. 'python3.8.dll+0x1c6744'), which is the actual diagnostic
+# value (it gave us the PySys_SetObject invoker-race signature) and contains no
+# PII. Android never writes these, so this is a no-op there.
+DUMP_PARSE_BYTES = 64 * 1024 * 1024   # cap the LOCAL read while parsing
 DUMP_MAX_COUNT = 3
 DUMP_MAX_AGE_DAYS = 7
 
 
-def _collect_dumps():
+def _dump_signature(path):
+    """Parse a Windows minidump for ONLY the faulting module+offset + exception
+    code. Returns e.g. 'python3.8.dll+0x1c6744 (code 0xc0000005)', or None if it
+    can't be parsed. Reads no process memory into the result -- just the module
+    table and the exception address."""
+    import struct
+    try:
+        with open(path, 'rb') as fh:
+            data = fh.read(DUMP_PARSE_BYTES)
+        if data[:4] != b'MDMP':
+            return None
+        n_streams, dir_rva = struct.unpack_from('<II', data, 8)
+        exc_rva = mod_rva = None
+        for i in range(min(n_streams, 4096)):
+            stype, _dsize, rva = struct.unpack_from('<III', data, dir_rva + i * 12)
+            if stype == 6:            # ExceptionStream
+                exc_rva = rva
+            elif stype == 4:          # ModuleListStream
+                mod_rva = rva
+        if exc_rva is None:
+            return None
+        # MINIDUMP_EXCEPTION_STREAM: ThreadId(u32) __align(u32) then the record:
+        # Code(u32) Flags(u32) Record(u64) Address(u64)
+        exc_code = struct.unpack_from('<I', data, exc_rva + 8)[0]
+        exc_addr = struct.unpack_from('<Q', data, exc_rva + 8 + 16)[0]
+        name, base = None, 0
+        if mod_rva is not None:
+            n_mod = struct.unpack_from('<I', data, mod_rva)[0]
+            for i in range(min(n_mod, 4096)):
+                m = mod_rva + 4 + i * 108          # sizeof(MINIDUMP_MODULE)
+                m_base, m_size = struct.unpack_from('<QI', data, m)
+                if m_base <= exc_addr < m_base + m_size:
+                    name_rva = struct.unpack_from('<I', data, m + 20)[0]
+                    slen = struct.unpack_from('<I', data, name_rva)[0]
+                    raw = data[name_rva + 4: name_rva + 4 + min(slen, 520)]
+                    name = raw.decode('utf-16-le', 'replace').replace('\\', '/').rsplit('/', 1)[-1]
+                    base = m_base
+                    break
+        if name:
+            return '%s+0x%x (code 0x%x)' % (name, exc_addr - base, exc_code)
+        return 'addr 0x%x (code 0x%x, module unknown)' % (exc_addr, exc_code)
+    except Exception:
+        return None
+
+
+def _upload_dumps(info):
+    """Upload a crash SIGNATURE for each recent minidump -- never the dump itself
+    (see the note above; the raw dump is memory that can leak tokens). Best-effort;
+    failures never block the main log upload. Returns count uploaded."""
     import time
-    out = []
+    n = 0
     try:
         base = xbmcvfs.translatePath('special://logpath/')
         cutoff = time.time() - DUMP_MAX_AGE_DAYS * 86400
@@ -159,37 +209,23 @@ def _collect_dumps():
                     st = os.stat(p)
                 except Exception:
                     continue
-                if st.st_mtime >= cutoff and 0 < st.st_size <= DUMP_MAX_BYTES:
-                    cands.append((st.st_mtime, fn, p))
+                if st.st_mtime >= cutoff and st.st_size > 0:
+                    cands.append((st.st_mtime, fn, p, st.st_size))
         cands.sort(reverse=True)
-        for _mt, fn, p in cands[:DUMP_MAX_COUNT]:
+        for _mt, fn, p, size in cands[:DUMP_MAX_COUNT]:
+            sig = _dump_signature(p) or '(could not parse)'
+            text = ('======== MASTERKODI IL - CRASH SIGNATURE ========\n'
+                    'device_id: %s\nfile:      %s\nsize:      %d bytes (NOT uploaded)\n'
+                    'signature: %s\n'
+                    '=================================================\n'
+                    % (info.get('device_id', '?'), fn, size, sig))
             try:
-                with open(p, 'rb') as fh:
-                    out.append((fn, fh.read()))
+                if _upload_cloudflare(text, info):
+                    n += 1
             except Exception:
                 pass
     except Exception:
         pass
-    return out
-
-
-def _upload_dumps(info):
-    """Upload recent crash dumps as their own base64 log entries. Best-effort:
-    failures never block the main log upload. Returns count uploaded."""
-    import base64
-    n = 0
-    for fn, blob in _collect_dumps():
-        try:
-            text = ('======== MASTERKODI IL - CRASH DUMP ========\n'
-                    'device_id: %s\nfile:      %s\nsize:      %d\n'
-                    'encoding:  base64\n'
-                    '=============================================\n\n%s'
-                    % (info.get('device_id', '?'), fn, len(blob),
-                       base64.b64encode(blob).decode('ascii')))
-            if _upload_cloudflare(text, info):
-                n += 1
-        except Exception:
-            pass
     return n
 
 

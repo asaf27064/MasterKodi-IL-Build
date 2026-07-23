@@ -38,6 +38,19 @@ def log(msg, level=xbmc.LOGINFO):
     xbmc.log(f'[{ADDON_ID}] Builds: {msg}', level)
 
 
+def _allow_insecure_ssl():
+    """Opt-in (default OFF) escape hatch for ancient embedded OpenSSL that cannot
+    verify modern certificate chains. Kept OFF by default: an AUTOMATIC fallback
+    to an unverified TLS context let an active network attacker force the first
+    (verified) attempt to fail and then MITM the unverified retry -- on the very
+    path that downloads and installs a build over the wiped device. A user who
+    genuinely needs it can set `allow_insecure_ssl=true`."""
+    try:
+        return ADDON.getSetting('allow_insecure_ssl') == 'true'
+    except Exception:
+        return False
+
+
 class SkinPickerDialog(xbmcgui.WindowXMLDialog):
     """Skin picker with a LARGE live preview (skin-picker.xml).
 
@@ -117,7 +130,10 @@ class BuildManager:
             try:
                 data = urlopen(req, timeout=15).read()
             except Exception:
-                # last resort: unverified SSL context (old embedded OpenSSL)
+                # SECURITY: only retry WITHOUT cert verification if the user has
+                # explicitly opted in (default OFF -- see _allow_insecure_ssl).
+                if not _allow_insecure_ssl():
+                    raise
                 ctx = ssl.create_default_context()
                 ctx.check_hostname = False
                 ctx.verify_mode = ssl.CERT_NONE
@@ -157,6 +173,11 @@ class BuildManager:
         try:
             resp = urlopen(req, timeout=30)
         except Exception:
+            # SECURITY: unverified retry is opt-in only (default OFF). This is the
+            # build-ZIP download that feeds the device wipe -- an automatic
+            # downgrade here is a direct MITM-to-arbitrary-install hole.
+            if not _allow_insecure_ssl():
+                raise
             ctx = ssl.create_default_context()
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE

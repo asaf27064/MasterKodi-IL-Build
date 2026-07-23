@@ -236,18 +236,20 @@ def _seed_pov_db(roots):
 
 
 # ------------------------------------------------------------------ per skin
-# ------------------------------------------------------------------ per skin
 # The file lists live in each variant's index.json (see tools/gen_variant_index.py),
 # NOT here -- hard-coded lists drifted and silently dropped files. These wrappers
 # now only carry the steps an index cannot express: database seeding and the
 # skinshortcuts hash reset that forces Zephyr to rebuild its menus.
+# Each returns the number of variant files that FAILED to apply, so the caller
+# can refuse to flip the box onto a half-applied (mixed Gears/POV) state.
 def _apply_estuary(roots, skin_id):
-    _apply_index(roots, skin_id)
+    _applied, failed = _apply_index(roots, skin_id)
     _seed_pov_db(roots)
+    return failed
 
 
 def _apply_nimbus(roots, skin_id):
-    _apply_index(roots, skin_id)
+    _applied, failed = _apply_index(roots, skin_id)
     # cpath compiled menu config (a sqlite seed, not a file copy)
     cp = _fetchv(roots, 'nimbus/cpath_seed.json')
     db = os.path.join(ADDON_DATA_PATH, 'script.nimbus.helper', 'cpath_cache.db')
@@ -264,15 +266,17 @@ def _apply_nimbus(roots, skin_id):
         except Exception as e:
             _log('nimbus cpath seed failed: %s' % e, xbmc.LOGWARNING)
     _seed_pov_db(roots)
+    return failed
 
 
 def _apply_af3(roots, skin_id):
-    _apply_index(roots, skin_id)
+    _applied, failed = _apply_index(roots, skin_id)
     _seed_pov_db(roots)
+    return failed
 
 
 def _apply_zephyr(roots, skin_id):
-    _apply_index(roots, skin_id)
+    _applied, failed = _apply_index(roots, skin_id)
     # Force skinshortcuts to rebuild the menus from the DATA files we just wrote.
     # Without dropping the hash it keeps serving the previously compiled menu.
     h = os.path.join(ADDON_DATA_PATH, 'script.skinshortcuts',
@@ -283,6 +287,7 @@ def _apply_zephyr(roots, skin_id):
     except Exception:
         pass
     _seed_pov_db(roots)
+    return failed
 
 
 
@@ -328,10 +333,15 @@ def _apply_pov_core(skin_id):
         return False, 'POV install failed'
     roots = _variant_roots(skin_id)
     try:
-        _APPLY[skin_id](roots, skin_id)
+        failed = _APPLY[skin_id](roots, skin_id)
     except Exception as e:
         _log('apply failed: %s' % e, xbmc.LOGERROR)
         return False, str(e)
+    # A partial fetch (network drop mid-apply) must NOT be reported as success:
+    # flipping the box to POV with only some variant files written leaves a mixed
+    # Gears/POV menu. Fail so the caller keeps the prior source and retries later.
+    if failed:
+        return False, '%d variant file(s) failed to apply' % failed
     return True, None
 
 
@@ -372,13 +382,19 @@ def switch_to(source):
         prog = xbmcgui.DialogProgress()
         prog.create(ADDON_NAME, '[COLOR cyan]מחליף מקור תוכן ל-POV...[/COLOR]')
         try:
-            _APPLY[skin_id](roots, skin_id)
+            failed = _APPLY[skin_id](roots, skin_id)
         except Exception as e:
             prog.close()
             _log('apply failed: %s' % e, xbmc.LOGERROR)
             dialog.ok(ADDON_NAME, '[COLOR %s]ההחלפה נכשלה:[/COLOR] %s' % (COLOR_ERROR, e))
             return False
         prog.close()
+        # partial fetch -> do NOT switch source; leave the box on Gears so it
+        # isn't left with a half-POV menu. The user can retry.
+        if failed:
+            dialog.ok(ADDON_NAME, '[COLOR %s]ההחלפה נכשלה: %d קבצים לא הורדו. נסה שוב.[/COLOR]'
+                      % (COLOR_ERROR, failed))
+            return False
         _set_source('pov')
     else:  # gears -> restore from the .pre_gears backups
         restored = _restore_gears(skin_id)
