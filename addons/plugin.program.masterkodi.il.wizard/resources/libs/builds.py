@@ -1783,6 +1783,11 @@ def builds_menu():
     installed_build = manager.get_installed_build_name()
     installed_skin = manager.get_installed_skin()
 
+    # POV is the recommended content source -> list POV builds FIRST, Gears
+    # after. Stable sort keeps any other ordering from build.txt intact within
+    # each group. The '(מומלץ)' tag is added to the POV row label below.
+    builds.sort(key=lambda b: 0 if (b.get('content') or '').strip().lower() == 'pov' else 1)
+
     while True:
         # Branded rows (same custom window as the wizard menu), with a parallel
         # 'kind' list so we act on the choice by index, not by matching text.
@@ -1791,10 +1796,15 @@ def builds_menu():
         for b in builds:
             name = b.get('name', 'Unknown')
             ver = b.get('version', '?')
+            # POV is the recommended source -> tag its row; Gears stays the
+            # secondary option. Only the DISPLAY label changes; the installed-
+            # build match below still uses the raw name.
+            is_pov = (b.get('content') or '').strip().lower() == 'pov'
+            label = f"{name} (מומלץ)" if is_pov else name
             if name == installed_build:
-                rows.append(menu_item(name, f"v{ver}  |  מותקן ({installed_skin})", 'DefaultAddonProgram.png'))
+                rows.append(menu_item(label, f"v{ver}  |  מותקן ({installed_skin})", 'DefaultAddonProgram.png'))
             else:
-                rows.append(menu_item(name, f"v{ver}", 'DefaultAddonProgram.png'))
+                rows.append(menu_item(label, f"v{ver}", 'DefaultAddonProgram.png'))
             row_kind.append(('build', b))
 
         # (Removed: the "הוסף סקין Arctic Fuse" row. It dated from when AF3 was
@@ -1864,12 +1874,13 @@ def builds_menu():
         # dialog for a legacy build.txt that doesn't carry `content`.
         content_choice = (selected_build.get('content') or '').strip().lower()
         if content_choice not in ('gears', 'pov'):
+            # POV first (recommended); Gears second (secondary).
             cs_sel = dialog.select('מקור תוכן', [
-                'Gears (ברירת מחדל)',
-                'POV (חלופה - אותם סקינים וכתוביות)'])
+                'POV (מומלץ)',
+                'Gears (חלופה - אותם סקינים וכתוביות)'])
             if cs_sel < 0:
                 continue
-            content_choice = 'pov' if cs_sel == 1 else 'gears'
+            content_choice = 'gears' if cs_sel == 1 else 'pov'
 
         # Confirm installation
         confirm_msg = (
