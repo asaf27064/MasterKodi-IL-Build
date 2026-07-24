@@ -91,7 +91,7 @@ class SourceResults(BaseDialog):
 
 	def _add_tried_source(self, source):
 		try:
-			identifier = source.get('hash') or source.get('URLName', '')
+			identifier = source.get('hash') or source.get('display_name', '')
 			if identifier:
 				tried = self._get_tried_sources()
 				tried.add(identifier)
@@ -102,7 +102,7 @@ class SourceResults(BaseDialog):
 
 	def _is_tried_source(self, source):
 		try:
-			identifier = source.get('hash') or source.get('URLName', '')
+			identifier = source.get('hash') or source.get('display_name', '')
 			return identifier in self._get_tried_sources()
 		except: return False
 
@@ -211,7 +211,7 @@ class SourceResults(BaseDialog):
 					source = get('source')
 					quality = get('quality', 'SD')
 					basic_quality, quality_icon = self.get_quality_and_path(lower(quality))
-					try: name = upper(get('URLName', 'N/A'))
+					try: name = upper(get('display_name', 'N/A'))
 					except: name = 'N/A'
 					pack = get('package', 'false') in pack_check
 #					if pack: extra_info = '[B]PACK[/B] | %s' % get('extraInfo', '')
@@ -264,7 +264,7 @@ class SourceResults(BaseDialog):
 					subtitle_matches_text = ''
 					if enable_hebrew_subtitles and (total_subtitles_found_list or hebrew_embedded_taglines):
 						try:
-							original_video_tagline = get('URLName') or name or ''
+							original_video_tagline = get('display_name') or name or ''
 							external_matched, embedded_matched, subtitle_matches_text, quality_counts = hebrew_subtitles_search_utils.calculate_highest_sync_percent_and_set_match_text(total_subtitles_found_list, original_video_tagline, quality, hebrew_embedded_taglines)
 							self.total_subtitles_matches_count += external_matched + embedded_matched
 							self.total_hebrew_embedded_subtitles_matches_count += embedded_matched

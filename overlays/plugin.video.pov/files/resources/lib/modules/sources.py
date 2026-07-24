@@ -297,7 +297,7 @@ class Sources:
 					if monitor.abortRequested(): break
 					elif self.progress_dialog.full_screen and self.progress_dialog.iscanceled(): break
 					percent = int(((total_items := len(items))-count)/total_items*100)
-					name = (item.get('URLName') or item['name']).upper()
+					name = (item.get('display_name') or item['name']).upper()
 					line1 = item.get('scrape_provider'), item.get('cache_provider'), item.get('provider')
 					if source_index is not None: line1 = ('[B]%02d[/B]' % (source_index + count), *line1)
 					line2 = item.get('size_label', ''), item.get('extraInfo', '')
@@ -866,7 +866,7 @@ class ExternalSource:
 			try:
 				i_get = i.get
 				if 'hash' in i: i['hash'] = str(i['hash']).lower()
-				URLName = source_utils.clean_file_name(i_get('name')).replace('html', ' ')
+				display_name = source_utils.clean_file_name(i_get('name')).replace('html', ' ')
 				quality, extraInfo = get_file_info(name_info=i_get('name_info'))
 				size, size_label, divider = 0, None, None
 				try:
@@ -879,8 +879,10 @@ class ExternalSource:
 					else: size_label = '%.2f GB' % size
 				except: pass
 				i.update({
-					'external': True, 'provider': provider, 'scrape_provider': self.scrape_provider, 'URLName': URLName,
-					'extraInfo': extraInfo, 'quality': quality, 'size_label': size_label, 'size': round(size, 2)
+					'external': True, 'scrape_provider': self.scrape_provider,
+					'provider': provider, 'display_name': display_name,
+					'extraInfo': extraInfo, 'quality': quality,
+					'size_label': size_label, 'size': round(size, 2)
 				})
 				if quality not in self.resolutions: self.resolutions['SD'] += 1
 				else: self.resolutions[quality] += 1
