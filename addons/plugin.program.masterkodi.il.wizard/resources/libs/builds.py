@@ -362,8 +362,12 @@ class BuildManager:
             log("Wipe complete")
         return del_fail
 
-    def validate_build_zip(self, zip_path):
+    def validate_build_zip(self, zip_path, expected_addon_id=None):
         """Is this a complete, readable build zip? Returns (ok, reason).
+
+        When expected_addon_id is given (optional-skin installs), the archive must
+        actually contain that addon -- a mistaken catalog URL pointing at another
+        VALID zip would otherwise pass CRC + structure and be set as the wrong skin.
 
         MUST be called BEFORE the wipe. A corrupt/truncated download used to slip
         through (only size>0 was checked, and grab_addons_from_zip swallowed the
@@ -377,6 +381,13 @@ class BuildManager:
                     return False, 'הקובץ ריק'
                 if not any(n.startswith('addons/') for n in names):
                     return False, 'לא נמצאו אדונים בקובץ'
+                # identity: the archive must contain the REQUESTED addon, not just
+                # SOME addon (guards against a wrong-but-valid zip being installed
+                # and then selected as a skin that was never delivered).
+                if expected_addon_id:
+                    want = 'addons/%s/addon.xml' % expected_addon_id
+                    if not any(n.replace('\\', '/') == want for n in names):
+                        return False, 'הקובץ אינו מכיל את הסקין המבוקש (%s)' % expected_addon_id
                 # FULL CRC verification BEFORE the wipe. This decompresses the
                 # whole archive (tens of seconds on a weak box), but a corrupt
                 # NON-critical member (a font/module) would otherwise pass a
@@ -851,11 +862,13 @@ class BuildManager:
         
         zin.close()
 
-        # Report FAILURE when files didn't extract, instead of always returning
-        # True. A partially-extracted skin (e.g. filesystem/lock errors) must not
-        # be set as the default skin -- the caller falls back to Estuary. A tiny
-        # tolerance absorbs a stray non-critical file without failing the install.
-        ok = errors <= 2
+        # Report FAILURE on ANY extraction error. A partially-extracted skin must
+        # not be set as the default -- a single missing critical file (addon.xml,
+        # the primary skin XML, a required module) breaks the skin, and there's no
+        # cheap way here to tell critical from optional. Since Estuary is a safe
+        # fallback, zero tolerance is the correct trade (a stray failure just means
+        # the user keeps Estuary, not a broken skin).
+        ok = (errors == 0)
         log(f"Skin extraction complete. Extracted: {extracted}, Errors: {errors}, ok={ok}")
         return ok, errors
 
@@ -1274,6 +1287,15 @@ class BuildManager:
                     self.set_default_skin(skin['id'])
                     ADDON.setSetting('installed_skin', skin['name'])
                 else:
+                    # authoritative fallback (same as the ZIP branch): reset skin +
+                    # skin_name so stack-sync, the POV variant target and the restart
+                    # label all use Estuary, not the manifest skin that never
+                    # installed. Kodi 22 always takes THIS branch, so without the
+                    # reset a failed Zephyr/Piers install kept driving later steps.
+                    log(f"manifest skin {skin['name']} install failed; using Estuary",
+                        xbmc.LOGWARNING)
+                    skin = None
+                    skin_name = "Estuary"
                     ADDON.setSetting('installed_skin', 'Estuary')
             elif skin and skin_zip_url:
                 # Small delay between downloads to avoid GitHub rate limiting
@@ -1297,7 +1319,7 @@ class BuildManager:
                 # CRC); on any failure we fall back to Estuary and never set the
                 # broken skin as default.
                 if success and os.path.exists(skin_zip) and os.path.getsize(skin_zip) > 0:
-                    skin_ok, skin_why = self.validate_build_zip(skin_zip)
+                    skin_ok, skin_why = self.validate_build_zip(skin_zip, expected_addon_id=skin['id'])
                 else:
                     skin_ok, skin_why = False, 'download failed'
 
@@ -1440,10 +1462,19 @@ class BuildManager:
             # finish -- tell the user rather than showing an unqualified success.
             # It's not fatal: the next update pass completes the config/defaults.
             if completion_incomplete:
+                # The service SKIPS the update check on the first boot after an
+                # install (skip_update_check). That's fine when completion
+                # succeeded, but here it DIDN'T -- so clear the flag, or the retry
+                # wouldn't run until the SECOND boot. With it cleared the very next
+                # boot runs the update and completes the config.
+                try:
+                    ADDON.setSetting('skip_update_check', 'false')
+                except Exception:
+                    pass
                 self.dialog.ok(ADDON_NAME,
                     f"[COLOR {COLOR_WARNING}]הבילד הותקן, אך חלק מברירות המחדל לא הושלמו "
                     f"(ייתכן שהשרת לא היה זמין).[/COLOR]\n\n"
-                    "ההגדרות יושלמו אוטומטית בעדכון הבא, או שניתן להריץ עדכון ידני מהאשף.")
+                    "ההגדרות יושלמו אוטומטית בהפעלה הבאה של Kodi, או שניתן להריץ עדכון ידני מהאשף.")
 
             # Countdown and restart
             self._countdown_restart(build_name, skin_name)
@@ -1725,6 +1756,15 @@ class BuildManager:
             if not ok or not os.path.exists(skin_zip) or os.path.getsize(skin_zip) == 0:
                 progress.close()
                 self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]ההורדה נכשלה![/COLOR]")
+                return False
+            # verify the download is intact AND is actually the requested skin
+            # before extracting -- this standalone path had no CRC/identity guard,
+            # so a corrupt or wrong zip would extract partially and be selected.
+            v_ok, v_why = self.validate_build_zip(skin_zip, expected_addon_id=skin.get('id'))
+            if not v_ok:
+                progress.close()
+                log(f"install_skin: zip invalid ({v_why})", xbmc.LOGWARNING)
+                self.dialog.ok(ADDON_NAME, f"[COLOR {COLOR_ERROR}]הקובץ פגום או שגוי![/COLOR]")
                 return False
             progress.update(50, "[COLOR yellow]סורק אדונים...[/COLOR]")
             skin_addons = self.grab_addons_from_zip(skin_zip)

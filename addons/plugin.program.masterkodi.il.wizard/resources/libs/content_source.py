@@ -163,6 +163,12 @@ def _apply_index(roots, skin_id):
         # keeps the prior source and retries on the next pass.
         _log('no index.json for %s (roots=%s)' % (skin_id, roots), xbmc.LOGERROR)
         return 0, 1
+    if not merged:
+        # index parsed OK but declares no applicable file ({} / {"files": []} /
+        # entries missing src|dest). Every real variant ships files, so zero merged
+        # entries is a failure, not a silent (0, 0) success.
+        _log('index for %s declares no files -> treating as failure' % skin_id, xbmc.LOGWARNING)
+        return 0, 1
     subs = {'{addons}': ADDONS, '{addon_data}': ADDON_DATA_PATH,
             '{userdata}': USERDATA, '{home}': HOME, '{skin}': skin_id}
     applied = failed = 0

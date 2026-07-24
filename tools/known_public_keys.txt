@@ -11,10 +11,14 @@ api_key	4d1180d8bd43e7c2  # API_KEY
 api_key	a50e0071397e5283  # API_KEY
 api_key	c610c6a04f717f9a  # api_key
 api_read_access_token	9069b552af9fc821  # API_READ_ACCESS_TOKEN
+client_id	75e41058b8cc7a85  # client_ID
+client_id	75e41058b8cc7a85  # client_id
+client_id	f27ba13cbcdf246c  # CLIENT_ID
 client_secret	62801aa0fa037719  # CLIENT_SECRET
 default_api_key	8282efbc8f3d5395  # DEFAULT_API_KEY
 default_api_key	d2009cebda8a7745  # DEFAULT_API_KEY
 default_pool_token	de8ca87f585e28a1  # DEFAULT_POOL_TOKEN
+default_username	70104c827994d660  # DEFAULT_USERNAME
 email	4d21854f14ecca9f  # email
 introdb_api_key	0299a65da3b3ca41  # INTRODB_API_KEY
 ktemail	888aa46271538858  # ktEmail

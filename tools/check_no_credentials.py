@@ -58,6 +58,9 @@ CREDISH = re.compile(r'(token|secret|passw|api_?key|session|account_id|client_id
 SHAPE = re.compile(r'^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
                    r'|[A-Za-z0-9._-]{12,})$')
 SETTING = re.compile(r'<setting id="([^"]+)"[^>]*>([^<]+)</setting>')
+# also catch a credential parked in a default= attribute of a self-closing setting
+# (<setting id="x.password" default="secret"/>) -- the text-content regex misses it.
+SETTING_DEFAULT = re.compile(r'<setting\s+id="([^"]+)"[^>]*\bdefault="([^"]+)"[^>]*/?>')
 _SKIP_VALS = {'true', 'false', '0', '1', 'default'}
 
 
@@ -76,12 +79,13 @@ def _fp(sid, val):
 
 
 def _iter_settings_text(text):
-    for sid, val in SETTING.findall(text):
-        val = val.strip()
-        if not val or val.lower() in _SKIP_VALS:
-            continue
-        if _cred_shaped(sid, val):
-            yield sid, val
+    for rx in (SETTING, SETTING_DEFAULT):
+        for sid, val in rx.findall(text):
+            val = val.strip()
+            if not val or val.lower() in _SKIP_VALS:
+                continue
+            if _cred_shaped(sid, val):
+                yield sid, val
 
 
 def _collect_repo(root):
@@ -109,7 +113,8 @@ PY_ASSIGN = re.compile(r'''(?P<id>[A-Za-z_][A-Za-z0-9_]*)\s*(?::\s*[A-Za-z_][\w.
 # dict-literal entry: "id": "v"  (credential-named key -> string literal)
 PY_DICT = re.compile(r'''(?P<q1>['"])(?P<id>[A-Za-z_][A-Za-z0-9_]*)(?P=q1)\s*:\s*'''
                      r'''(?P<q2>['"])(?P<val>[^'"\n]{6,})(?P=q2)''')
-PY_ID_CRED = re.compile(r'(password|passwd|secret|token|api_?key|apikey|access_key|auth_key|email)', re.I)
+PY_ID_CRED = re.compile(r'(password|passwd|secret|token|api_?key|apikey|access_key|auth_key|email|'
+                        r'account_id|session|client_id|username|user_id)', re.I)
 B64ISH = re.compile(r'^[A-Za-z0-9+/]{16,}={0,2}$')
 EMAILISH = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 

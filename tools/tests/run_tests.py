@@ -181,6 +181,10 @@ def test_switch_transactional():
         cs._fetch = lambda rel: None
         applied, failed = cs._apply_index(['root'], 'skin.test')
         check('#1 missing index -> failure (not 0,0 success)', applied == 0 and failed >= 1)
+        # #6 -- a valid but EMPTY index (parses, declares no files) is a failure too
+        cs._fetch = lambda rel: (b'{"files": []}' if rel.endswith('index.json') else None)
+        applied, failed = cs._apply_index(['root'], 'skin.test')
+        check('#6 empty index -> failure (not 0,0 success)', applied == 0 and failed >= 1)
     finally:
         cs._fetch, cs._fetchv = orig_fetch, orig_fetchv
 
@@ -261,6 +265,11 @@ def test_validate_zip():
         zi = zipfile.ZipInfo('addons/plugin.x/resources/font.ttf'); zi.compress_type = zipfile.ZIP_STORED
         z.writestr(zi, MARK)
     check('valid zip -> ok', bm.validate_build_zip(good)[0] is True)
+    # #3 -- identity check: a valid zip for the WRONG addon is rejected
+    check('#3 identity: requested addon present -> ok',
+          bm.validate_build_zip(good, expected_addon_id='plugin.x')[0] is True)
+    check('#3 identity: wrong-but-valid zip rejected',
+          bm.validate_build_zip(good, expected_addon_id='skin.other')[0] is False)
     bad = os.path.join(d, 'b.zip'); shutil.copy(good, bad)
     data = bytearray(open(bad, 'rb').read()); i = data.find(MARK)
     for j in range(i, i + 60):
