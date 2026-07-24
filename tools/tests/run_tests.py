@@ -176,6 +176,11 @@ def test_switch_transactional():
         check('#3 all fetched -> both written, no failures',
               applied == 2 and failed == 0 and
               os.path.isfile(os.path.join(d, 'a.xml')) and os.path.isfile(os.path.join(d, 'b.xml')))
+        # #1 -- a MISSING/malformed index must be a FAILURE, not silent (0,0)
+        # success (which let _apply_pov_core flip the box to POV with no files).
+        cs._fetch = lambda rel: None
+        applied, failed = cs._apply_index(['root'], 'skin.test')
+        check('#1 missing index -> failure (not 0,0 success)', applied == 0 and failed >= 1)
     finally:
         cs._fetch, cs._fetchv = orig_fetch, orig_fetchv
 

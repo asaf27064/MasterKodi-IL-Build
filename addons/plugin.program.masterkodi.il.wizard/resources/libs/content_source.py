@@ -156,8 +156,13 @@ def _apply_index(roots, skin_id):
             if entry.get('src') and entry.get('dest'):
                 merged[entry['dest']] = entry
     if not found:
-        _log('no index.json for %s (roots=%s)' % (skin_id, roots), xbmc.LOGWARNING)
-        return 0, 0
+        # No index could be fetched/parsed (raw.githubusercontent down, or every
+        # index.json malformed). This is a FAILURE, not "nothing to do": returning
+        # (0, 0) let _apply_pov_core read zero-failures as success and flip the box
+        # to POV with NO menu/skin files applied. Return a failure so the caller
+        # keeps the prior source and retries on the next pass.
+        _log('no index.json for %s (roots=%s)' % (skin_id, roots), xbmc.LOGERROR)
+        return 0, 1
     subs = {'{addons}': ADDONS, '{addon_data}': ADDON_DATA_PATH,
             '{userdata}': USERDATA, '{home}': HOME, '{skin}': skin_id}
     applied = failed = 0

@@ -850,9 +850,14 @@ class BuildManager:
                 progress_dialog.update(pct, f"[COLOR yellow]{title}[/COLOR]\n{extracted}/{total} קבצים")
         
         zin.close()
-        
-        log(f"Skin extraction complete. Extracted: {extracted}, Errors: {errors}")
-        return True, errors
+
+        # Report FAILURE when files didn't extract, instead of always returning
+        # True. A partially-extracted skin (e.g. filesystem/lock errors) must not
+        # be set as the default skin -- the caller falls back to Estuary. A tiny
+        # tolerance absorbs a stray non-critical file without failing the install.
+        ok = errors <= 2
+        log(f"Skin extraction complete. Extracted: {extracted}, Errors: {errors}, ok={ok}")
+        return ok, errors
 
     def extract_zip(self, zip_path, dest, progress_dialog, title="מחלץ..."):
         """Extract ZIP to destination"""
@@ -1298,15 +1303,11 @@ class BuildManager:
 
                 if skin_ok:
                     progress.update(0, f"[COLOR yellow]מתקין {skin['name']}...[/COLOR]")
-
-                    # Get skin addons from zip
                     skin_addons = self.grab_addons_from_zip(skin_zip)
-                    addon_list.extend(skin_addons)
-
                     # Use special extraction that merges database
-                    success, _ = self.extract_and_merge_skin(skin_zip, progress, f"מתקין {skin['name']}...")
-
-                    if success:
+                    ok_extract, _ = self.extract_and_merge_skin(skin_zip, progress, f"מתקין {skin['name']}...")
+                    if ok_extract:
+                        addon_list.extend(skin_addons)
                         self.set_default_skin(skin['id'])
                         ADDON.setSetting('installed_skin', skin['name'])
                         # don't re-download what the bundle just delivered
@@ -1319,18 +1320,26 @@ class BuildManager:
                         # Also records __config__ so step 8 won't re-apply the
                         # config in fresh mode over the choices made here.
                         self._apply_build_config(skin['id'])
-
+                    else:
+                        skin_ok, skin_why = False, 'extraction failed'
                     try:
                         os.remove(skin_zip)
                     except Exception:
                         pass
-                else:
-                    log(f"skin {skin['name']} unavailable/invalid ({skin_why}); using Estuary",
+
+                if not skin_ok:
+                    # ANY optional-skin failure (download / CRC / extraction) must
+                    # fall back AUTHORITATIVELY to Estuary: reset skin + skin_name
+                    # too, or later steps (stack sync, POV variant target, restart
+                    # label) keep using the skin that never actually installed.
+                    log(f"optional skin unavailable/invalid ({skin_why}); using Estuary",
                         xbmc.LOGWARNING)
                     try:
                         os.remove(skin_zip)
                     except Exception:
                         pass
+                    skin = None
+                    skin_name = "Estuary"
                     ADDON.setSetting('installed_skin', 'Estuary')
             else:
                 ADDON.setSetting('installed_skin', 'Estuary')
@@ -1353,6 +1362,7 @@ class BuildManager:
             # menu, home arrangement, skin-switch button -- and the config live in
             # the manifest. Applying it now (while the user is already waiting on
             # the install) means re-entry is complete, with no extra restart.
+            completion_incomplete = False
             try:
                 progress.update(97, "[COLOR yellow]מחיל את ברירות המחדל של הבילד...[/COLOR]")
                 from resources.libs import modular_update as mu
@@ -1360,8 +1370,16 @@ class BuildManager:
                 # background service is already held off by skip_update_check) and
                 # this completion MUST run -- routing through the lock-guarded
                 # run_update could see the lock briefly held and skip it.
-                mu._run_update_impl(silent=True, no_reload=True)
+                # Most failures are RETURNED as {'ok': False}, not raised, so the
+                # except below wouldn't catch them -- inspect the summary too, or
+                # a manifest server going down after the wipe would be reported as
+                # a clean install of an INCOMPLETE build.
+                _summary = mu._run_update_impl(silent=True, no_reload=True)
+                if isinstance(_summary, dict) and _summary.get('ok') is False:
+                    completion_incomplete = True
+                    log(f"post-install manifest completion incomplete: {_summary}", xbmc.LOGWARNING)
             except Exception as e:
+                completion_incomplete = True
                 log(f"post-install manifest completion failed: {e}", xbmc.LOGWARNING)
 
             # Save build info
@@ -1417,10 +1435,19 @@ class BuildManager:
             progress.update(100, "[COLOR lime]ההתקנה הושלמה![/COLOR]")
             xbmc.sleep(500)
             progress.close()
-            
+
+            # The base build extracted, but Step 8 (manifest completion) didn't
+            # finish -- tell the user rather than showing an unqualified success.
+            # It's not fatal: the next update pass completes the config/defaults.
+            if completion_incomplete:
+                self.dialog.ok(ADDON_NAME,
+                    f"[COLOR {COLOR_WARNING}]הבילד הותקן, אך חלק מברירות המחדל לא הושלמו "
+                    f"(ייתכן שהשרת לא היה זמין).[/COLOR]\n\n"
+                    "ההגדרות יושלמו אוטומטית בעדכון הבא, או שניתן להריץ עדכון ידני מהאשף.")
+
             # Countdown and restart
             self._countdown_restart(build_name, skin_name)
-            
+
             return True
             
         except Exception as e:

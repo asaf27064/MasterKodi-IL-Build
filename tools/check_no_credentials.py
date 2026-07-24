@@ -103,7 +103,12 @@ def _collect_repo(root):
 # human messages don't trip it. Intentional shared creds (e.g. the Ktuvit account)
 # are baselined exactly like the shared XML keys.
 PY_SCAN_DIRS = ('addons', 'overlays', 'overlays-piers')
-PY_ASSIGN = re.compile(r'''(?P<id>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?P<q>['"])(?P<val>[^'"\n]{6,})(?P=q)''')
+# plain + ANNOTATED assignment: id = "v"  /  id: type = "v"
+PY_ASSIGN = re.compile(r'''(?P<id>[A-Za-z_][A-Za-z0-9_]*)\s*(?::\s*[A-Za-z_][\w.\[\], ]*?)?\s*=\s*'''
+                       r'''(?P<q>['"])(?P<val>[^'"\n]{6,})(?P=q)''')
+# dict-literal entry: "id": "v"  (credential-named key -> string literal)
+PY_DICT = re.compile(r'''(?P<q1>['"])(?P<id>[A-Za-z_][A-Za-z0-9_]*)(?P=q1)\s*:\s*'''
+                     r'''(?P<q2>['"])(?P<val>[^'"\n]{6,})(?P=q2)''')
 PY_ID_CRED = re.compile(r'(password|passwd|secret|token|api_?key|apikey|access_key|auth_key|email)', re.I)
 B64ISH = re.compile(r'^[A-Za-z0-9+/]{16,}={0,2}$')
 EMAILISH = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
@@ -118,7 +123,10 @@ def _py_cred(pid, val):
 
 
 def _collect_python(root):
-    """[(rel, id, val)] for every credential-shaped hardcoded literal in shipped .py."""
+    """[(rel, id, val)] for every credential-shaped hardcoded literal in shipped
+    .py -- plain/annotated assignments AND dict-literal entries. A regex net for
+    an ACCIDENTAL commit, not a determined-attacker boundary (bytes/obfuscation
+    are out of scope); shipped creds are also baselined as intentional."""
     out = []
     for base in PY_SCAN_DIRS:
         for f in glob.glob(os.path.join(root, base, '**', '*.py'), recursive=True):
@@ -127,10 +135,11 @@ def _collect_python(root):
                 text = io.open(f, encoding='utf-8', errors='replace').read()
             except Exception:
                 continue
-            for m in PY_ASSIGN.finditer(text):
-                pid, val = m.group('id'), m.group('val').strip()
-                if PY_ID_CRED.search(pid) and _py_cred(pid, val):
-                    out.append((rel, pid, val))
+            for rx in (PY_ASSIGN, PY_DICT):
+                for m in rx.finditer(text):
+                    pid, val = m.group('id'), m.group('val').strip()
+                    if PY_ID_CRED.search(pid) and _py_cred(pid, val):
+                        out.append((rel, pid, val))
     return out
 
 
@@ -174,12 +183,15 @@ def _update_baseline(root):
         print('REFUSING --update-baseline: personal credential(s) present -- scrub, '
               'do NOT bless:', file=sys.stderr)
         for r, sid, v in personal:
-            print('  %s : %s = %s...' % (r, sid, v[:8]), file=sys.stderr)
+            # location + id only -- never any of the value (this can run in CI)
+            print('  %s : %s' % (r, sid), file=sys.stderr)
         return 1
-    lines = sorted(set('%s  # %s = %s…' % (_fp(sid, val), sid, val[:6]) for _r, sid, val in items))
+    # id + value-HASH only in the committed baseline; do NOT write a value prefix
+    # (even 6 chars of a real secret shouldn't land in a public file).
+    lines = sorted(set('%s  # %s' % (_fp(sid, val), sid) for _r, sid, val in items))
     with io.open(BASELINE, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write('# Baseline of intentional/public credentials currently shipped.\n'
-                 '# <id-lowercase>\\t<sha256(value)[:16]>  # id = value-prefix\n'
+                 '# <id-lowercase>\\t<sha256(value)[:16]>  # id\n'
                  '# Regenerate after adding/rotating a shared key:\n'
                  '#   python tools/check_no_credentials.py --update-baseline\n')
         for l in lines:
