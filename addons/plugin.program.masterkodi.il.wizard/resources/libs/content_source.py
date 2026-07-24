@@ -663,7 +663,20 @@ def menu():
             return False
     else:
         _apply_gears_content(skin_id)
-    xbmc.executebuiltin('ReloadSkin()')
-    dialog.notification(ADDON_NAME, 'התצורה הוחלה מחדש (%s)' % cur.upper(),
-                        xbmcgui.NOTIFICATION_INFO, 4000)
+    # Do NOT ReloadSkin() in place: that is the known python3.8.dll NATIVE crash
+    # when the skin's Python widgets are live (which they are right after a
+    # re-apply). Arm the boot-time rebuild and restart cleanly instead -- the exact
+    # pattern switch_to() uses, which is why switching sources never crashes.
+    try:
+        wiz_data = os.path.join(ADDON_DATA_PATH, 'plugin.program.masterkodi.il.wizard')
+        os.makedirs(wiz_data, exist_ok=True)
+        _write(os.path.join(wiz_data, 'pending_view_rebuild'), skin_id.encode('utf-8'))
+    except Exception:
+        pass
+    if dialog.yesno(ADDON_NAME,
+                    'התצורה (%s) הוחלה מחדש.\nיש להפעיל את Kodi מחדש כדי להחיל. להפעיל מחדש עכשיו?'
+                    % cur.upper(), yeslabel='הפעל מחדש', nolabel='אחר כך'):
+        xbmc.executebuiltin('RestartApp')
+    else:
+        dialog.notification(ADDON_NAME, 'יוחל בהפעלה הבאה', xbmcgui.NOTIFICATION_INFO, 4000)
     return True

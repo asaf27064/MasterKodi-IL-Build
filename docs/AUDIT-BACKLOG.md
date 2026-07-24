@@ -27,7 +27,9 @@ failure for a visible bug (frozen home, stale menus, half-installed build), so e
   in place:
   - active-skin update — `resources/libs/modular_update.py` (skin-update path)
   - automatic menu repair — `resources/libs/modular_update.py` (`repair_skin_menu`)
-  - reapply-current-source — `resources/libs/content_source.py`
+  - ~~reapply-current-source — `resources/libs/content_source.py`~~ **FIXED in
+    2.4.142** (crash reproduced live on this path, then converted to the
+    deferred-restart pattern switch_to uses; pending final device re-confirm)
   - startup service — `service.py`
   - Nimbus power menu — `config-variants/nimbus-pov/skin-overrides/DialogButtonMenu.xml`
 - **Fix approach:** convert to the deferred pattern already used elsewhere (arm
