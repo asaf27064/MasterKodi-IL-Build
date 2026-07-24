@@ -1285,7 +1285,18 @@ class BuildManager:
 
                 success = self.download_file(skin_zip_url, skin_zip, progress, dl_msg)
 
+                # verify the downloaded skin zip is INTACT before extracting. A
+                # corrupt/truncated skin download used to extract PARTIALLY and
+                # still be set as the default skin, leaving a broken skin on the
+                # box. validate_build_zip runs a full testzip() (+ critical-file
+                # CRC); on any failure we fall back to Estuary and never set the
+                # broken skin as default.
                 if success and os.path.exists(skin_zip) and os.path.getsize(skin_zip) > 0:
+                    skin_ok, skin_why = self.validate_build_zip(skin_zip)
+                else:
+                    skin_ok, skin_why = False, 'download failed'
+
+                if skin_ok:
                     progress.update(0, f"[COLOR yellow]מתקין {skin['name']}...[/COLOR]")
 
                     # Get skin addons from zip
@@ -1314,8 +1325,12 @@ class BuildManager:
                     except Exception:
                         pass
                 else:
-                    log(f"Failed to download {skin['name']} skin")
-                    skin_name = "Estuary"
+                    log(f"skin {skin['name']} unavailable/invalid ({skin_why}); using Estuary",
+                        xbmc.LOGWARNING)
+                    try:
+                        os.remove(skin_zip)
+                    except Exception:
+                        pass
                     ADDON.setSetting('installed_skin', 'Estuary')
             else:
                 ADDON.setSetting('installed_skin', 'Estuary')

@@ -105,8 +105,11 @@ class BackupManager:
                             # copied, or the archived copy can be torn/inconsistent.
                             snap = self._snapshot_db(src)
                             if not snap:
-                                log(f'quick backup: could not snapshot {src}', xbmc.LOGWARNING)
-                                continue
+                                # this db EXISTS (items are existence-filtered) but
+                                # couldn't be snapshotted -> the backup would be
+                                # missing the user's creds. FAIL loudly rather than
+                                # hand back a 'success' that silently omits them.
+                                raise RuntimeError('could not snapshot %s' % src)
                             try:
                                 z.write(snap, arc)
                             finally:

@@ -37,7 +37,12 @@ _PROTECTED = {WIZARD_ID, 'service.kodi.il.firstrun', 'repository.masterkodi.il',
               # resurrect them onto FRESH installs, and the junk purge then had
               # to re-delete them (seen on the 2026-07-18 Windows install)
               'repository.burekasKodi', 'repository.funstersplace',
-              'repository.jenrepo', 'repository.universalscrapers'}
+              'repository.jenrepo', 'repository.universalscrapers',
+              # dead kodi7rd repo -- purged from bundles, but a box that still has
+              # it must NOT carry it across a reinstall as a "user extra" (it would
+              # be restored + enabled before the junk-purge, and survive if that
+              # completion ever failed). Keep in sync with modular_update.JUNK_REPOS.
+              'repository.KodiRealDebridIsrael'}
 
 
 def detect_extras(manifest_ids):
@@ -500,17 +505,22 @@ def restore():
             elif name.startswith('addon__'):
                 aid = name[len('addon__'):]
                 dst = os.path.join(HOME_ADDONS, aid)
-                # MERGE into an existing dir (dirs_exist_ok) rather than skip it.
-                # A fresh Kodi/bundle can create addon_data/<id> before restore
-                # runs; the old skip-if-exists then silently DROPPED the user's
-                # staged data yet still reported success and deleted the only
-                # backup. The staged copy is the user's real pre-wipe data, so it
-                # wins on conflict. A failure now raises -> counted -> STAGE kept.
-                shutil.copytree(os.path.join(STAGE, name), dst, dirs_exist_ok=True)
+                # An ADDON is executable code: MERGING a staged tree over an
+                # existing one would leave a hybrid of old + new .py/.so (mismatched
+                # modules -> import errors). Replace it wholesale. On a fresh
+                # install dst won't exist anyway; if it does we clear it first so
+                # the restored addon is internally consistent. A failure raises ->
+                # counted -> STAGE kept.
+                if os.path.isdir(dst):
+                    shutil.rmtree(dst, ignore_errors=True)
+                shutil.copytree(os.path.join(STAGE, name), dst)
                 restored_addons.append(aid)
             elif name.startswith('addondata__'):
                 aid = name[len('addondata__'):]
                 dst = os.path.join(ADDON_DATA, aid)
+                # addon_data is user STATE, not code -> MERGE (staged wins) so a
+                # dir a fresh Kodi/bundle pre-created doesn't cause us to silently
+                # drop the user's settings (which then deleted the only backup).
                 shutil.copytree(os.path.join(STAGE, name), dst, dirs_exist_ok=True)
         except Exception as e:
             failed += 1

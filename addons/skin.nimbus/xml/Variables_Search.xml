@@ -57,7 +57,7 @@
 	</variable>
 
 	<variable name="SearchProviderCollectionsVar">
-		<value conditiom="String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.gears/?mode=build_movie_list&amp;action=tmdb_movies_search_sets&amp;query=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
+		<value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.encoded)) + String.IsEqual(Skin.String(current_search_provider),0)">plugin://plugin.video.gears/?mode=build_movie_list&amp;action=tmdb_movies_search_sets&amp;query=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
     <value condition="!String.IsEmpty(Window(home).Property(nimbus.search.input.encoded)) + String.IsEqual(Skin.String(current_search_provider),3)">plugin://plugin.video.pov/?mode=build_movie_list&amp;action=tmdb_movies_search_collections&amp;query=$INFO[Window(home).Property(nimbus.search.input.encoded)]</value>
 	</variable>
 

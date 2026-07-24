@@ -128,6 +128,24 @@ def test_keep():
     check('#8 existing addon_data dir MERGED (staged file restored)',
           os.path.isfile(landed) and open(landed).read() == 'USER_STAGED')
     check('#8 restore reported no failure', rf8 == 0)
+
+    # --- #16: an executable addon dir is REPLACED, not merged (no old+new hybrid)
+    if os.path.isdir(keep.STAGE):
+        shutil.rmtree(keep.STAGE, ignore_errors=True)
+    os.makedirs(keep.STAGE)
+    _json.dump({'keys': ['extras'], 'settings': {}, 'xml': {}},
+               open(os.path.join(keep.STAGE, 'manifest.json'), 'w'))
+    astg = os.path.join(keep.STAGE, 'addon__plugin.user.y')
+    os.makedirs(astg)
+    open(os.path.join(astg, 'new.py'), 'w').write('NEW')
+    adst = os.path.join(keep.HOME_ADDONS, 'plugin.user.y')
+    os.makedirs(adst, exist_ok=True)
+    open(os.path.join(adst, 'old.py'), 'w').write('OLD')   # stale module present at dst
+    _, rf16 = keep.restore()
+    check('#16 addon dir REPLACED (stale old.py gone, new.py present)',
+          os.path.isfile(os.path.join(adst, 'new.py')) and
+          not os.path.isfile(os.path.join(adst, 'old.py')))
+    check('#16 restore reported no failure', rf16 == 0)
     shutil.rmtree(d, ignore_errors=True)
 
 
@@ -298,6 +316,17 @@ def test_backup_quick_creds():
             check('Gears settings.db snapshot preserved the cred row',
                   bool(row) and row[0] == 'USER_RD_TOKEN')
             shutil.rmtree(td, ignore_errors=True)
+
+    # #8 -- a db snapshot FAILURE must FAIL the whole quick backup (no false
+    # success that silently omits the user's creds).
+    _orig = backup.BackupManager._snapshot_db
+    try:
+        backup.BackupManager._snapshot_db = lambda self, src: None
+        zp2, mf2 = backup.BackupManager().create('quick')
+        check('#8 snapshot failure -> quick backup FAILS (not false success)',
+              zp2 is None and mf2 is None)
+    finally:
+        backup.BackupManager._snapshot_db = _orig
 
 
 def test_update_ordering():

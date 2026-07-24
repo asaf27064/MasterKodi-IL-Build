@@ -96,6 +96,44 @@ def _collect_repo(root):
     return out
 
 
+# --- Python source scan: catch a hardcoded credential in shipped .py. The Ktuvit
+# subs login lived directly in Python and XML-only scanning missed it. Tight by
+# design: only a STRING-LITERAL assignment to a credential-NAMED variable, with a
+# secret-SHAPED value -- so `x = get_setting(...)`, URLs, templates, headers, and
+# human messages don't trip it. Intentional shared creds (e.g. the Ktuvit account)
+# are baselined exactly like the shared XML keys.
+PY_SCAN_DIRS = ('addons', 'overlays', 'overlays-piers')
+PY_ASSIGN = re.compile(r'''(?P<id>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?P<q>['"])(?P<val>[^'"\n]{6,})(?P=q)''')
+PY_ID_CRED = re.compile(r'(password|passwd|secret|token|api_?key|apikey|access_key|auth_key|email)', re.I)
+B64ISH = re.compile(r'^[A-Za-z0-9+/]{16,}={0,2}$')
+EMAILISH = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+
+
+def _py_cred(pid, val):
+    if any(c in val for c in ('://', ' ', '{', '}', '%', '$')) or val.lower() in _SKIP_VALS:
+        return False
+    if 'email' in pid.lower():
+        return bool(EMAILISH.match(val))
+    return bool(SHAPE.match(val) or B64ISH.match(val))
+
+
+def _collect_python(root):
+    """[(rel, id, val)] for every credential-shaped hardcoded literal in shipped .py."""
+    out = []
+    for base in PY_SCAN_DIRS:
+        for f in glob.glob(os.path.join(root, base, '**', '*.py'), recursive=True):
+            rel = os.path.relpath(f, root).replace(os.sep, '/')
+            try:
+                text = io.open(f, encoding='utf-8', errors='replace').read()
+            except Exception:
+                continue
+            for m in PY_ASSIGN.finditer(text):
+                pid, val = m.group('id'), m.group('val').strip()
+                if PY_ID_CRED.search(pid) and _py_cred(pid, val):
+                    out.append((rel, pid, val))
+    return out
+
+
 def _collect_bundles(bundles_dir):
     import zipfile
     out = []
@@ -127,7 +165,7 @@ def _load_baseline():
 
 
 def _update_baseline(root):
-    items = _collect_repo(root)
+    items = _collect_repo(root) + _collect_python(root)
     # REFUSE to bless a PERSONAL login (debrid/Trakt/account_id/...). --update-
     # baseline is for intentional SHARED keys only; blessing a personal cred would
     # permanently whitelist a leaked user login. Scrub it first.
@@ -162,8 +200,8 @@ def main():
         del args[i:i + 2]
     root = args[0] if args else '.'
     known = _load_baseline()
-    found = _collect_repo(root)
-    where = '/'.join(SCAN_DIRS)
+    found = _collect_repo(root) + _collect_python(root)
+    where = '/'.join(SCAN_DIRS) + ' + *.py'
     if bundles_dir:
         found += _collect_bundles(bundles_dir)
         where += ' + bundles'
@@ -173,7 +211,10 @@ def main():
         print('If this value is an intentional shared key, add it with:', file=sys.stderr)
         print('  python tools/check_no_credentials.py --update-baseline', file=sys.stderr)
         for rel, sid, val in leaks:
-            print('  %s : %s = %s...' % (rel, sid, val[:10]), file=sys.stderr)
+            # print the LOCATION only, never any of the value -- this runs in CI
+            # and its output is world-readable; echoing even a prefix of a live
+            # credential into the build log is itself a leak.
+            print('  %s : %s' % (rel, sid), file=sys.stderr)
         return 1
     print('[check_no_credentials] clean: %d credential-shaped value(s), all in baseline (%s)'
           % (len(found), where))
