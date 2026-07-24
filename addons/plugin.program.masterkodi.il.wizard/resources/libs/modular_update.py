@@ -205,22 +205,62 @@ OP_LOCK = os.path.join(ADDON_DATA, 'operation.lock')
 OP_LOCK_STALE = 1800   # a lock held longer than this is presumed abandoned (crash)
 
 
+def _pid_alive(pid):
+    """Best-effort: is process `pid` still running? Returns False ONLY when we can
+    positively tell it's gone; on ANY uncertainty returns True -- so we never steal
+    a lock a live process still holds (that would reintroduce the race the lock
+    prevents). NB: the wizard service and the manual menu run in the SAME Kodi
+    process, so a lock's pid is Kodi's pid; after a crash+restart the new Kodi has a
+    different pid and the old one is dead -> reclaimable at once."""
+    try:
+        pid = int(pid)
+    except (TypeError, ValueError):
+        return False                         # missing/garbage pid -> treat as gone
+    if pid <= 0:
+        return False
+    try:
+        if os.name == 'nt':
+            import ctypes
+            k = ctypes.windll.kernel32
+            h = k.OpenProcess(0x1000, False, pid)     # PROCESS_QUERY_LIMITED_INFORMATION
+            if not h:
+                return False                          # no such process
+            code = ctypes.c_ulong()
+            got = k.GetExitCodeProcess(h, ctypes.byref(code))
+            k.CloseHandle(h)
+            return (not got) or code.value == 259     # 259 = STILL_ACTIVE
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False                                  # definitely gone
+    except PermissionError:
+        return True                                   # exists, not signalable -> alive
+    except Exception:
+        return True                                   # unknown -> assume alive (safe)
+
+
 def acquire_op_lock(name):
     """Mutex for MUTATING wizard operations. True if acquired. Uses an ATOMIC
     O_CREAT|O_EXCL create so two contenders can't both win (the old check-then-
-    write let both see no file and both 'acquire'). A lock older than
-    OP_LOCK_STALE is reclaimed. Fail-open on filesystem errors."""
+    write let both see no file and both 'acquire'). A lock is reclaimed when its
+    owner process is DEAD (a crash never runs release_op_lock, so the lock would
+    otherwise block every op for OP_LOCK_STALE -- this is what killed boot
+    auto-updates after a native crash), or, as a backstop for an unknown owner,
+    once it is older than OP_LOCK_STALE. Fail-open on filesystem errors."""
     try:
-        # reclaim a stale/unparseable lock first
+        # reclaim a dead-owner / stale / unparseable lock first
         if os.path.isfile(OP_LOCK):
             try:
                 d = json.load(open(OP_LOCK, encoding='utf-8'))
                 age = time.time() - float(d.get('ts', 0))
-                if 0 <= age < OP_LOCK_STALE:
-                    log('op-lock held by "%s" (%ds) -- refusing "%s"'
-                        % (d.get('name'), int(age), name), xbmc.LOGWARNING)
+                owner = d.get('pid')
+                alive = _pid_alive(owner)
+                if alive and 0 <= age < OP_LOCK_STALE:
+                    log('op-lock held by "%s" pid=%s (%ds) -- refusing "%s"'
+                        % (d.get('name'), owner, int(age), name), xbmc.LOGWARNING)
                     return False
-                log('reclaiming stale op-lock from "%s" (%ds)' % (d.get('name'), int(age)))
+                log('reclaiming op-lock from "%s" pid=%s (%ds, owner_alive=%s)'
+                    % (d.get('name'), owner, int(age), alive))
             except Exception:
                 pass
             try:

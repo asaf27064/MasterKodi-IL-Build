@@ -247,6 +247,20 @@ def test_lock_and_recovery():
     mu.release_op_lock()
     check('after release -> True', mu.acquire_op_lock('t3') is True)
     mu.release_op_lock()
+    # pid liveness: our own pid is alive, an absurd pid is dead
+    check('_pid_alive(own) True', mu._pid_alive(os.getpid()) is True)
+    check('_pid_alive(bogus) False', mu._pid_alive(2 ** 30) is False)
+    # a lock left by a DEAD owner (crash) must be reclaimed IMMEDIATELY, not held
+    # for OP_LOCK_STALE -- this is the boot-auto-update-blocked bug.
+    mu.release_op_lock()
+    mu.acquire_op_lock('crashed')                 # fresh lock owned by this (live) pid
+    _orig_alive = mu._pid_alive
+    try:
+        mu._pid_alive = lambda pid: False         # simulate the owner having crashed
+        check('dead-owner lock reclaimed at once', mu.acquire_op_lock('recover') is True)
+    finally:
+        mu._pid_alive = _orig_alive
+    mu.release_op_lock()
     AP = mu.ADDONS_PATH
     os.makedirs(os.path.join(AP, '.rb_addonA'), exist_ok=True)
     os.makedirs(os.path.join(AP, '.stage_addonC'), exist_ok=True)
