@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-23T22:11:50Z",
+  "generated_utc": "2026-07-24T11:48:49Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -45,12 +45,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.136",
+      "version": "2.4.137",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.136.zip",
-      "sha256": "91a8f057e8d8c7e696b445af60be5fc603492604b0bf392d58090a9de21140e1",
-      "size": 2409895,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.136.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.137.zip",
+      "sha256": "eff397900e01256b1b678727bd0172ffb199457472740c554f2054c7922efba6",
+      "size": 2410471,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.137.zip"
     },
     {
       "id": "plugin.video.gears",
@@ -532,8 +532,8 @@
       "version": "0.1.43.103",
       "channel": "optional",
       "zip": "skin.nimbus-0.1.43.103.zip",
-      "sha256": "2ab349e18ee1dad609de181795d51ba271c1281d11a85329b1ea56823f929568",
-      "size": 10587648,
+      "sha256": "5b3c0691e0fab6c98e753c78ce2ef6f4cf4835505c1700a8bd3ae093262edfd2",
+      "size": 10587642,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.nimbus-0.1.43.103.zip"
     }
   ],
