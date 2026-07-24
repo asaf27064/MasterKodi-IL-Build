@@ -2204,6 +2204,7 @@ def skins_menu():
         items = [
             menu_item('החלפת סקין', 'בחר את הסקין הפעיל (יותקן אם צריך)', 'DefaultAddonSkin.png'),
             menu_item('הסרת סקינים לא בשימוש', 'פנה מקום - משאיר את הפעיל ואת Estuary', 'DefaultAddonService.png'),
+            menu_item('פתח את האשף', 'חזרה לתפריט הראשי של האשף', 'DefaultAddonProgram.png'),
         ]
         sel = wizard_select('סקינים', items)
         if sel == -1:
@@ -2212,6 +2213,15 @@ def skins_menu():
             _skin_switch_flow()
         elif sel == 1:
             _skin_cleanup_flow()
+        elif sel == 2:
+            # Open the wizard's MAIN page. This menu is reached from the skin's
+            # power-menu button (RunPlugin ?mode=skins), which only exposes skin
+            # switch/remove -- this lets the user jump to the full wizard instead
+            # of navigating Add-ons > Program add-ons by hand. RunAddon re-invokes
+            # the addon's default entry (-> main_menu), exactly like launching it
+            # from the Programs list; return first so this run ends cleanly.
+            xbmc.executebuiltin('RunAddon(%s)' % ADDON_ID)
+            return
 
 
 def _skin_switch_flow():
