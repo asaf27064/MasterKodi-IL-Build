@@ -21,23 +21,30 @@ failure for a visible bug (frozen home, stale menus, half-installed build), so e
 "fix + verify live" together, not static edits.
 
 ### A1. `ReloadSkin` crash paths — **recommended to do first**
+- **Progress:** 1 of 5 paths closed. The deferred-restart approach is now **proven on
+  device** (the reapply path below) — the remaining 4 convert the same way.
 - **What:** `ReloadSkin()` tears down + rebuilds the whole skin; if a Python widget is
   loading at that instant, Kodi hits a native `python3.8.dll` access violation (the crash
   we chased). The main content-switch path already uses `RestartApp`; these still reload
   in place:
   - active-skin update — `resources/libs/modular_update.py` (skin-update path)
   - automatic menu repair — `resources/libs/modular_update.py` (`repair_skin_menu`)
-  - ~~reapply-current-source — `resources/libs/content_source.py`~~ **FIXED in
-    2.4.142** (crash reproduced live on this path, then converted to the
-    deferred-restart pattern switch_to uses; pending final device re-confirm)
+  - ~~reapply-current-source — `resources/libs/content_source.py`~~ ✅ **CLOSED in
+    2.4.142** — crash reproduced live on this path, converted to the deferred-restart
+    pattern `switch_to` uses, and **confirmed fixed on device** (2026-07-24).
   - startup service — `service.py`
   - Nimbus power menu — `config-variants/nimbus-pov/skin-overrides/DialogButtonMenu.xml`
 - **Fix approach:** convert to the deferred pattern already used elsewhere (arm
   `pending_view_rebuild` + restart, or defer the reload to next boot) instead of an
-  in-place `ReloadSkin`.
+  in-place `ReloadSkin`. (Exactly what 2.4.142 did for the reapply path.)
 - **Caveat (important):** per our own investigation the crash is **addon-agnostic** and the
   real driver was widget count (tmdb-service widgets), so removing reloads *narrows* the
   window but may not eliminate the crash. Treat `ReloadSkin` as a trigger, not the root.
+- **Downstream damage now contained:** a crash on ANY of these paths mid-`run_update` left
+  the op-lock stranded (dead owner), which silently blocked boot auto-updates for up to 30
+  min. Fixed in **2.4.143** (`acquire_op_lock` reclaims a dead-owner lock at once — see
+  [[oplock-dead-pid-fix]]). So a remaining ReloadSkin crash no longer strands updates, but
+  it still crashes Kodi — hence still worth converting.
 - **Verify live:** trigger each path on the box, watch `kodi.log` for the crash window and
   confirm the home screen still refreshes (no frozen/stale menu).
 
