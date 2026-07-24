@@ -597,47 +597,73 @@ def _set_source(source):
 
 
 def menu():
-    """Wizard menu action: show current source + let the user switch."""
+    """Branded content-source switcher (Gears / POV).
+
+    Renders through the wizard's OWN WizardMenu window (wizard_select) -- the same
+    RTL list + branded detail panel every other wizard menu uses -- instead of
+    Kodi's plain dialog.select, which looked nothing like the rest of the wizard.
+
+    Each source is one row: selecting the INACTIVE source switches to it; selecting
+    the ACTIVE source re-applies its config to the current skin. (That re-apply is
+    the only way to pick up a fixed/updated variant short of a full reinstall -- a
+    plain switch refuses to run when you're already on that source.)"""
+    from resources.libs.ui import wizard_select, menu_item
     dialog = xbmcgui.Dialog()
     cur = current_source()
     skin_id = xbmc.getSkinDir()
     has_pov = bool(_variant_dir(skin_id))
-    body = ('מקור התוכן הנוכחי: [B]%s[/B]\n\n'
-            'Gears = ברירת המחדל. POV = חלופה (אותם סקינים, אותן כתוביות).\n'
-            'ההחלפה משנה את התפריטים/וידג\'טים/חיפוש של הסקין הנוכחי בלבד.'
-            % cur.upper())
-    if not has_pov:
-        body += '\n\n[COLOR %s](אין וריאנט POV לסקין/גרסה זו)[/COLOR]' % COLOR_WARNING
-    choices = ['החלף ל-POV' if cur != 'pov' else 'כבר על POV',
-               'החזר ל-Gears' if cur != 'gears' else 'כבר על Gears',
-               # Re-apply the CURRENT source for the CURRENT skin. Without this
-               # there was no way to pick up a fixed/updated variant short of a
-               # full reinstall: the switch options refuse to run when you are
-               # already on that source, so a corrected menu/widget file could
-               # never reach an existing box.
-               'החל מחדש את התצורה (%s) לסקין הנוכחי' % cur.upper(),
-               'ביטול']
-    sel = dialog.select(ADDON_NAME + ' · מקור תוכן', choices)
-    if sel == 0 and cur != 'pov' and has_pov:
-        switch_to('pov')
-    elif sel == 1 and cur != 'gears':
-        switch_to('gears')
-    elif sel == 2:
-        if cur == 'pov':
-            if not has_pov:
-                dialog.ok(ADDON_NAME,
-                          '[COLOR %s]אין וריאנט POV לסקין/גרסה זו.[/COLOR]' % COLOR_WARNING)
-                return False
-            prog = xbmcgui.DialogProgress()
-            prog.create(ADDON_NAME, '[COLOR cyan]מחיל מחדש את תצורת POV...[/COLOR]')
-            ok, err = _apply_pov_core(skin_id)
-            prog.close()
-            if not ok:
-                dialog.ok(ADDON_NAME, '[COLOR %s]ההחלה נכשלה:[/COLOR] %s' % (COLOR_ERROR, err))
-                return False
-        else:
-            _apply_gears_content(skin_id)
-        xbmc.executebuiltin('ReloadSkin()')
-        dialog.notification(ADDON_NAME, 'התצורה הוחלה מחדש (%s)' % cur.upper(),
-                            xbmcgui.NOTIFICATION_INFO, 4000)
+    ICON = 'DefaultAddonVideo.png'
+
+    rows, actions = [], []
+    # --- Gears row ---
+    if cur == 'gears':
+        rows.append(menu_item('Gears · פעיל', 'החלה מחדש של תצורת Gears לסקין הנוכחי', ICON))
+        actions.append(('reapply', 'gears'))
+    else:
+        rows.append(menu_item('מעבר ל-Gears',
+                              'החזרת התפריטים, הווידג\'טים והחיפוש של הסקין ל-Gears (ברירת המחדל)', ICON))
+        actions.append(('switch', 'gears'))
+    # --- POV row ---
+    if cur == 'pov':
+        rows.append(menu_item('POV · פעיל', 'החלה מחדש של תצורת POV לסקין הנוכחי', ICON))
+        actions.append(('reapply', 'pov'))
+    elif has_pov:
+        rows.append(menu_item('מעבר ל-POV',
+                              'החלפת התפריטים, הווידג\'טים והחיפוש של הסקין ל-POV (אותם סקינים, אותן כתוביות)', ICON))
+        actions.append(('switch', 'pov'))
+    else:
+        rows.append(menu_item('POV · לא זמין', 'אין וריאנט POV לסקין או לגרסת קודי הזו', ICON))
+        actions.append(None)
+
+    sel = wizard_select(ADDON_NAME + ' · מקור תוכן', rows)
+    if sel is None or sel < 0 or sel >= len(actions) or actions[sel] is None:
+        return
+    kind, val = actions[sel]
+    if kind == 'switch':
+        switch_to(val)
         return True
+    # reapply the CURRENT source's config to the CURRENT skin. Confirm first --
+    # selecting the active source is easy to do by reflex, and re-apply triggers a
+    # visible skin reload.
+    if not dialog.yesno(ADDON_NAME,
+                        'להחיל מחדש את תצורת %s לסקין הנוכחי?\n'
+                        'זה ירענן את התפריטים, הווידג\'טים והחיפוש.' % cur.upper(),
+                        yeslabel='החל מחדש', nolabel='ביטול'):
+        return
+    if val == 'pov':
+        if not has_pov:
+            dialog.ok(ADDON_NAME, '[COLOR %s]אין וריאנט POV לסקין/גרסה זו.[/COLOR]' % COLOR_WARNING)
+            return False
+        prog = xbmcgui.DialogProgress()
+        prog.create(ADDON_NAME, '[COLOR cyan]מחיל מחדש את תצורת POV...[/COLOR]')
+        ok, err = _apply_pov_core(skin_id)
+        prog.close()
+        if not ok:
+            dialog.ok(ADDON_NAME, '[COLOR %s]ההחלה נכשלה:[/COLOR] %s' % (COLOR_ERROR, err))
+            return False
+    else:
+        _apply_gears_content(skin_id)
+    xbmc.executebuiltin('ReloadSkin()')
+    dialog.notification(ADDON_NAME, 'התצורה הוחלה מחדש (%s)' % cur.upper(),
+                        xbmcgui.NOTIFICATION_INFO, 4000)
+    return True
