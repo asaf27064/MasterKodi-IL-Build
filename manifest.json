@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-07-24T14:19:14Z",
+  "generated_utc": "2026-07-25T13:49:18Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -18,12 +18,12 @@
     },
     {
       "id": "metadata.themoviedb.org.python",
-      "version": "3.2.0",
+      "version": "3.2.1",
       "channel": "core",
-      "zip": "metadata.themoviedb.org.python-3.2.0.zip",
-      "sha256": "707bda294717946e4eccb68e2e80eb6afbc4f0f807386098753baa7b9635171e",
-      "size": 174996,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/metadata.themoviedb.org.python-3.2.0.zip"
+      "zip": "metadata.themoviedb.org.python-3.2.1.zip",
+      "sha256": "74d26729ea260f29da5eb2e1222f6b0794c47ef90404626a1b8e9d441aec881c",
+      "size": 177513,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/metadata.themoviedb.org.python-3.2.1.zip"
     },
     {
       "id": "metadata.tvshows.themoviedb.org.python",
