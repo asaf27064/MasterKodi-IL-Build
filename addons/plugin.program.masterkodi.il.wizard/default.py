@@ -441,11 +441,20 @@ def maintenance_menu():
     dialog = xbmcgui.Dialog()
     
     while True:
+        try:
+            from resources.libs.maintenance import current_sizes
+            sizes = current_sizes()
+        except Exception:
+            sizes = {'cache': '?', 'packages': '?', 'thumbnails': '?', 'total': '?'}
+
         menu_items = [
-            menu_item('ניקוי Cache', 'מחיקת מטמון זמני להאצת Kodi ופינוי מקום', 'DefaultAddonService.png'),
-            menu_item('ניקוי Packages', 'מחיקת קובצי התקנה שמורים (packages)', 'DefaultAddonService.png'),
-            menu_item('ניקוי Thumbnails', 'מחיקת תמונות ממוזערות שמורות', 'DefaultAddonService.png'),
-            menu_item('ניקוי הכל', 'Cache | Packages | Thumbnails יחד', 'DefaultAddonService.png'),
+            # keep every description Hebrew-leading with ONE Latin run (the size)
+            # at the end -- mixed Hebrew/Latin runs get reordered by bidi and the
+            # size lands in the middle of the sentence
+            menu_item('ניקוי Cache', f'מחיקת מטמון זמני ופינוי מקום  |  {sizes["cache"]}', 'DefaultAddonService.png'),
+            menu_item('ניקוי Packages', f'מחיקת קובצי התקנה שמורים  |  {sizes["packages"]}', 'DefaultAddonService.png'),
+            menu_item('ניקוי Thumbnails', f'מחיקת תמונות ממוזערות שמורות  |  {sizes["thumbnails"]}', 'DefaultAddonService.png'),
+            menu_item('ניקוי הכל', f'מטמון, חבילות ותמונות יחד  |  {sizes["total"]}', 'DefaultAddonService.png'),
             menu_item('סגירת Kodi', 'סגירה מלאה (לרענון אחרי שינויים)', 'DefaultAddonService.png'),
             menu_item('הגדרות OLED', 'חיסכון בשחיקת מסך | בהירות | הגנת פיקסלים', 'DefaultAddonPVRClient.png'),
         ]
@@ -501,14 +510,25 @@ def clear_packages():
 def clear_thumbnails():
     """Clear thumbnails"""
     dialog = xbmcgui.Dialog()
-    
+
     if not dialog.yesno('ניקוי Thumbnails', 'האם לנקות את ה-Thumbnails?\n\nפעולה זו תמחק את כל התמונות השמורות.'):
         return
-    
+
+    # Textures*.db is OPEN by Kodi. Dropping it without restarting leaves the
+    # texture cache broken (SQLITE_READONLY_DBMOVED on Android), so we only drop
+    # it when the user agrees to restart right away.
+    restart = dialog.yesno(
+        'ניקוי Thumbnails',
+        'לניקוי מלא (כולל מסד התמונות) צריך לסגור את Kodi.\n\n'
+        'לסגור את Kodi בסיום?',
+        yeslabel='סגור בסיום', nolabel='ניקוי חלקי')
+
     try:
         from resources.libs.maintenance import clear_thumbnails as do_clear
-        cleared = do_clear()
+        cleared = do_clear(drop_texture_db=restart)
         dialog.ok('הצלחה', f'{color("Thumbnails נוקה!", COLOR_SUCCESS)}\n\nנמחקו: {cleared}')
+        if restart:
+            fast_exit()
     except Exception as e:
         dialog.ok('שגיאה', str(e))
 
@@ -516,7 +536,7 @@ def clear_thumbnails():
 def clear_all():
     """Clear everything"""
     dialog = xbmcgui.Dialog()
-    
+
     if not dialog.yesno(
         'ניקוי הכל',
         f'{color("אזהרה!", COLOR_WARNING)}\n\n'
@@ -527,24 +547,26 @@ def clear_all():
         'האם להמשיך?'
     ):
         return
-    
+
     try:
         from resources.libs.maintenance import clear_cache, clear_packages, clear_thumbnails
-        
+
         progress = xbmcgui.DialogProgress()
         progress.create('ניקוי', 'מנקה...')
-        
+
         progress.update(0, 'מנקה Cache...')
         cache = clear_cache()
-        
+
         progress.update(33, 'מנקה Packages...')
         packages = clear_packages()
-        
+
         progress.update(66, 'מנקה Thumbnails...')
-        thumbs = clear_thumbnails()
-        
+        # keep Textures*.db -- clear_all runs unattended behind a progress bar,
+        # so there is no restart to pair a DB drop with
+        thumbs = clear_thumbnails(drop_texture_db=False)
+
         progress.close()
-        
+
         dialog.ok(
             'הצלחה',
             f'{color("הכל נוקה!", COLOR_SUCCESS)}\n\n'

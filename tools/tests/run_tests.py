@@ -496,6 +496,47 @@ def test_set_default_skin_no_guisettings():
           ok2 is not False and 'skin.nimbus' in body2 and 'skin.arctic.fuse.3' not in body2)
 
 
+def test_maintenance_keeps_logs():
+    """Clearing the cache must not unlink kodi.log: it lives in special://temp
+    and Kodi holds it OPEN, so deleting it silently kills logging for the rest
+    of the session -- i.e. it destroys the only support channel we have."""
+    print("\n=== maintenance: cache clear keeps kodi.log, drops everything else ===")
+    import resources.libs.maintenance as mnt
+    tmp = os.path.join(HOME, 'temp')
+    cache = os.path.join(HOME, 'cache')
+    for p in (tmp, cache):
+        os.makedirs(p, exist_ok=True)
+    open(os.path.join(tmp, 'kodi.log'), 'w').write('x' * 100)
+    open(os.path.join(tmp, 'kodi.old.log'), 'w').write('x' * 100)
+    open(os.path.join(tmp, 'archive_cache.bin'), 'w').write('x' * 500)
+    os.makedirs(os.path.join(tmp, 'subdir'), exist_ok=True)
+    open(os.path.join(tmp, 'subdir', 'junk'), 'w').write('x' * 200)
+    open(os.path.join(cache, 'junk'), 'w').write('x' * 300)
+
+    res = mnt.clear_cache()
+    check('kodi.log survives the cache clear', os.path.isfile(os.path.join(tmp, 'kodi.log')))
+    check('kodi.old.log survives the cache clear', os.path.isfile(os.path.join(tmp, 'kodi.old.log')))
+    check('non-log temp file removed', not os.path.exists(os.path.join(tmp, 'archive_cache.bin')))
+    check('temp subdir removed', not os.path.exists(os.path.join(tmp, 'subdir')))
+    check('home/cache emptied', not os.path.exists(os.path.join(cache, 'junk')))
+    check('clear_cache returns a human summary (not None)',
+          isinstance(res, str) and res and 'None' not in res)
+
+    # thumbnails: Textures*.db only dropped when the caller commits to a restart
+    dbdir = os.path.join(HOME, 'userdata', 'Database')
+    thumbs = os.path.join(HOME, 'userdata', 'Thumbnails')
+    os.makedirs(dbdir, exist_ok=True); os.makedirs(thumbs, exist_ok=True)
+    open(os.path.join(thumbs, 'a.jpg'), 'w').write('x' * 10)
+    tex = os.path.join(dbdir, 'Textures13.db')
+    open(tex, 'w').write('x' * 10)
+    mnt.clear_thumbnails(drop_texture_db=False)
+    check('thumbnail files removed', not os.path.exists(os.path.join(thumbs, 'a.jpg')))
+    check('Textures db KEPT when no restart is planned', os.path.isfile(tex))
+    check('thumbnail shard folders recreated', os.path.isdir(os.path.join(thumbs, 'a')))
+    mnt.clear_thumbnails(drop_texture_db=True)
+    check('Textures db dropped when a restart IS planned', not os.path.exists(tex))
+
+
 def test_dbmoved_install():
     """The 2026-07-30 Android reinstall bug: wipe+extract must NOT replace the
     LIVE (open) Addons33.db. Simulates Kodi's open handle across a full
@@ -571,7 +612,8 @@ def main():
               test_logs, test_lock_and_recovery,
               test_validate_zip, test_backup_restore, test_backup_quick_creds,
               test_update_ordering, test_cross_source_keep,
-              test_set_default_skin_no_guisettings, test_dbmoved_install):
+              test_set_default_skin_no_guisettings, test_maintenance_keeps_logs,
+              test_dbmoved_install):
         try:
             t()
         except Exception as e:

@@ -78,6 +78,53 @@ Log: `backed up groups: pov_services, pov_content, extras (7 staged, 0 failed)` 
 - The credential sentinel survived all four switches (`preserved user login` in the
   log = the POV cred-preserving merge working on every variant re-apply).
 
+## Follow-up sweep: search / backup / maintenance (same box, 2.4.147 -> 2.4.148)
+
+| Flow | Result | Bug found -> fix |
+|------|--------|------------------|
+| חיפוש (search) | PASS | — |
+| גיבוי מהיר (quick backup) | PASS | — |
+| תחזוקה (maintenance) | FAIL -> re-run PASS | 3 defects -> **2.4.148** |
+
+- **Search**: RPC probes movies 21 / tv 21 / **collections 13** (the flow the `conditiom`
+  typo had broken) / people 20; driven through the skin UI, "batman" -> "תוצאות עבור
+  BATMAN" with 21 movies + 20 series, Hebrew posters.
+- **Quick backup**: `MasterKodiIL_quick_20260730_165648.zip`, 9 items / 16 KB.
+  Contents verified to include `addon_data/plugin.video.pov/settings.xml` **with the
+  planted credential sentinel**, gearsai, all three skins' settings, guisettings /
+  sources / favourites -- the 2.4.137 quick-backup fix confirmed live.
+
+### The three maintenance defects (2.4.148)
+
+1. **Cache clear deleted kodi.log.** `clear_cache` wiped all of `special://temp`,
+   including `kodi.log` / `kodi.old.log`. Kodi holds that file OPEN, so unlinking it
+   on Android leaves a dangling handle: every later log line goes nowhere and the
+   log is unrecoverable until Kodi restarts. Measured on device -- after one cache
+   clear the temp dir was completely empty and the log was gone. This silently
+   destroys the only support channel we have (see memory log-reading-workflow).
+   Fixed: `purge_dir(..., keep_suffixes=('.log',))` protects log files in the temp
+   root; everything else still goes. Verified: `cache cleared: 3 items, 0.0 B
+   (logs kept)` with kodi.log intact.
+2. **Double dialog, English text, `נמחקו: None`.** The lib workers ran their own
+   confirm + result dialogs in **English** and returned `None`, while `default.py`
+   wrapped them in its own Hebrew confirm and printed the return value. Actual UX
+   was: Hebrew confirm -> English confirm -> English result -> Hebrew result reading
+   "נמחקו: None". `clear_all` was worse -- three nested English prompts on top of a
+   progress bar. Fixed: workers are now silent and return a real summary
+   (`17 פריטים (13.4 MB)`); the caller owns every dialog, all Hebrew.
+3. **Thumbnail clear dropped the OPEN Textures DB.** `clear_thumbnails` deleted
+   `Textures*.db` unconditionally, then merely *offered* a restart -- decline it and
+   the texture cache is broken for the rest of the session. Same class as the bug
+   that bricked the Shield. Fixed: `drop_texture_db` is only True when the caller is
+   actually restarting; the menu now asks "סגור בסיום" vs "ניקוי חלקי" (default:
+   partial). Verified on device: partial clear freed 28.7 MB, kept Textures13.db,
+   **0 DBMOVED**, and thumbnails regenerated (0 -> 2.0 MB) with the DB still growing.
+
+Also added: live sizes on every maintenance row (Cache 61.2 KB / Packages 13.4 MB /
+Thumbnails 28.7 MB / total), with descriptions kept Hebrew-leading + one Latin run so
+bidi doesn't drop the size into the middle of the sentence. Regression test
+`test_maintenance_keeps_logs` added (suite now 92 checks, 0 failures).
+
 ## Known / accepted, not bugs
 
 - **First-boot flicker (POV + Zephyr):** the Zephyr bundle ships a Gears-oriented
