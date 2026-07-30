@@ -125,6 +125,53 @@ Thumbnails 28.7 MB / total), with descriptions kept Hebrew-leading + one Latin r
 bidi doesn't drop the size into the middle of the sentence. Regression test
 `test_maintenance_keeps_logs` added (suite now 92 checks, 0 failures).
 
+## Android never restarts — measured, and what replaced the restart (2.4.149)
+
+Asaf caught this live: after a skin switch the box sat on the Android launcher.
+The cause was in plain sight -- `_countdown_restart` armed a relauncher **only on
+Windows** (`if sys.platform.startswith('win')`) and otherwise just called
+`os._exit(0)`. The whole device sweep missed it because the sweep itself issued
+`am start` after every install, papering over the failure with its own tooling.
+
+Three candidate mechanisms were then tried on the Xiaomi. **All three failed**,
+and each was measured rather than assumed:
+
+| mechanism | result |
+|---|---|
+| detached child (`sh -c 'sleep N; am start'`) | child killed the moment Kodi's process died -- its own log stops after the first line, before `am` runs. Android reaps the app's whole process group. |
+| `RestartApp` | activity destroyed, process left as a zombie with the same pid and no window; never comes back. The launcher takes the foreground. |
+| graceful `Quit` | Kodi re-saves guisettings from MEMORY: a disk-written `skin.estuary` reverted to `skin.nimbus`. This is why the hard exit exists. |
+
+So on Android there is no restart to fix -- there is no restart at all. The skin
+switch now **does not restart**: it is applied in-process (`_apply_skin_live`),
+which is also better UX than the Windows path, since the user never leaves Kodi.
+A full build install still hard-exits (the entire addon tree changed underneath
+Kodi) and its countdown now says so plainly instead of implying a relaunch.
+
+Two non-obvious things were needed to make the live switch work:
+
+1. **The running Kodi has to be told about the enabled addons.**
+   `sync_skin_stacks` enables the new skin's dependency stack by writing straight
+   into `Addons33.db`, which Kodi does not re-read while running. The first live
+   switch therefore asked for Zephyr while Kodi still believed its deps were
+   disabled -- the skin failed to load and Kodi silently fell back to **Estuary**.
+   Fixed by mirroring the enables through `Addons.SetAddonEnabled`. (Only the
+   enables: disabling addons under the skin that is still rendering is asking for
+   trouble, and the disables are next-start housekeeping anyway.)
+2. **Kodi's "Keep this skin?" prompt must actually be answered.** One SendClick is
+   not enough -- it can land while the dialog is still initialising and be
+   dropped, leaving the prompt open behind whatever the wizard shows next. On the
+   first attempt it sat there for two minutes until a stray Back press cancelled
+   it and reverted the skin. Now the prompt is clicked, verified closed, retried,
+   and the switch only reports success if the skin is *still* the requested one
+   afterwards. The wizard also no longer opens its own modal during the switch,
+   because that swallowed the click.
+
+Verified on device, both directions, no intervention: Zephyr -> Nimbus and
+Nimbus -> Zephyr, each `is active and confirmed (no restart needed)`, **same pid
+throughout**, memory and disk in agreement, still correct 20s later, and the skin
+survives Back presses. Nimbus rendered fully (widgets, Hebrew posters, menus).
+
 ## Known / accepted, not bugs
 
 - **First-boot flicker (POV + Zephyr):** the Zephyr bundle ships a Gears-oriented

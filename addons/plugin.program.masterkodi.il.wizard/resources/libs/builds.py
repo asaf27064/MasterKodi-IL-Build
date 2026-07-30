@@ -38,6 +38,155 @@ def log(msg, level=xbmc.LOGINFO):
     xbmc.log(f'[{ADDON_ID}] Builds: {msg}', level)
 
 
+def _is_android():
+    try:
+        return bool(xbmc.getCondVisibility('System.Platform.Android'))
+    except Exception:
+        return False
+
+
+# Why Android never restarts, measured on the Xiaomi 2026-07-30 -- all three
+# candidate mechanisms were tried on real hardware and all three failed:
+#   * detached child (`sh -c 'sleep N; am start'`): the child is killed the
+#     moment our process dies -- Android reaps the app's whole process group.
+#     Its own log stopped after the first line, before `am` ever ran.
+#   * `RestartApp`: tears the activity down and leaves the process as a zombie
+#     with no window. It never comes back.
+#   * graceful Quit: Kodi re-saves guisettings from MEMORY, reverting whatever
+#     the install wrote to disk (measured: skin.estuary -> skin.nimbus).
+# So on Android a skin switch must NOT restart at all -- it is applied in-process
+# by _apply_skin_live below. A full build install still has to hard-exit (the
+# whole addon tree changed under Kodi), and there the user is told plainly that
+# they need to reopen Kodi.
+
+
+def _enable_addons_live(addon_ids):
+    """Tell the RUNNING Kodi about addons we just enabled in Addons33.db.
+
+    sync_skin_stacks enables a skin's dependency stack by writing straight into
+    the DB, which Kodi does not re-read while running. An in-process skin switch
+    therefore asks for a skin whose dependencies Kodi still believes are
+    disabled: the skin fails to load and Kodi silently falls back to Estuary
+    (measured on the Xiaomi -- asked for Zephyr, memory came back skin.estuary).
+    Pushing the same enables through the API makes the live switch possible.
+
+    Only ENABLES are mirrored. The matching disables stay DB-only on purpose:
+    they are housekeeping for the next start, and turning addons off underneath
+    the skin that is still rendering is a good way to destabilise it.
+    """
+    import json as _json
+    done = 0
+    for aid in addon_ids:
+        req = {'jsonrpc': '2.0', 'id': 1, 'method': 'Addons.SetAddonEnabled',
+               'params': {'addonid': aid, 'enabled': True}}
+        try:
+            resp = _json.loads(xbmc.executeJSONRPC(_json.dumps(req)))
+            if not resp.get('error'):
+                done += 1
+        except Exception:
+            pass
+    log('live enable: %d/%d addons enabled in the running Kodi'
+        % (done, len(addon_ids)))
+    return done
+
+
+def _apply_skin_live(skin_id, timeout=25):
+    """Switch Kodi to `skin_id` in-process, without a restart.
+
+    Writing the skin into guisettings.xml is not enough on its own: Kodi saves
+    that file from MEMORY on the next graceful exit and would revert us. Pushing
+    the value through the settings API instead keeps memory and disk in
+    agreement AND loads the skin immediately.
+
+    Kodi asks "Keep this skin?" after a settings-driven skin change and reverts
+    if nobody answers, so a watcher thread confirms it for us.
+
+    Returns True once Kodi reports the new skin as active.
+    """
+    import json as _json
+
+    getter = {'jsonrpc': '2.0', 'id': 1, 'method': 'Settings.GetSettingValue',
+              'params': {'setting': 'lookandfeel.skin'}}
+
+    def _current():
+        try:
+            return _json.loads(xbmc.executeJSONRPC(
+                _json.dumps(getter))).get('result', {}).get('value')
+        except Exception:
+            return None
+
+    def _prompt_open():
+        try:
+            return bool(xbmc.getCondVisibility('Window.IsVisible(yesnodialog)'))
+        except Exception:
+            return False
+
+    def _dismiss_prompt():
+        """Answer "Keep this skin?" with YES, and make sure it actually closed.
+
+        A single click is not enough: the click can land while the dialog is
+        still initialising and is then dropped, leaving the prompt open behind
+        whatever the wizard shows next. If nobody answers it, Kodi reverts to
+        the previous skin -- which is what happened on the first attempt (the
+        prompt sat there for two minutes and a stray Back press cancelled it).
+        """
+        for _ in range(10):
+            if not _prompt_open():
+                return True
+            xbmc.executebuiltin('SendClick(10100,11)')   # 11 = yes, 10 = no
+            xbmc.sleep(400)
+        return not _prompt_open()
+
+    req = {'jsonrpc': '2.0', 'id': 1, 'method': 'Settings.SetSettingValue',
+           'params': {'setting': 'lookandfeel.skin', 'value': skin_id}}
+    try:
+        resp = _json.loads(xbmc.executeJSONRPC(_json.dumps(req)))
+    except Exception as e:
+        log('live skin switch failed to call settings API: %s' % e, xbmc.LOGERROR)
+        return False
+    if resp.get('error'):
+        log('live skin switch rejected: %s' % resp['error'], xbmc.LOGERROR)
+        return False
+
+    # 1) wait for the skin to load, answering the keep-skin prompt on the way
+    deadline = time.time() + timeout
+    active = False
+    while time.time() < deadline:
+        if _prompt_open():
+            _dismiss_prompt()
+            continue
+        if _current() == skin_id:
+            active = True
+            break
+        xbmc.sleep(300)
+    if not active:
+        log('live skin switch: %s did not become active within %ss'
+            % (skin_id, timeout), xbmc.LOGWARNING)
+        return False
+
+    # 2) the prompt can still appear just AFTER the skin loads -- settle until
+    #    it has been gone for a couple of consecutive seconds
+    settle = time.time() + 8
+    while time.time() < settle:
+        if _prompt_open():
+            if not _dismiss_prompt():
+                log('live skin switch: could not dismiss the keep-skin prompt',
+                    xbmc.LOGWARNING)
+                return False
+            settle = time.time() + 4     # restart the quiet period
+        xbmc.sleep(400)
+
+    # 3) the real acceptance test: an unanswered prompt reverts the skin, so
+    #    only report success if it is STILL the one we asked for
+    final = _current()
+    if final != skin_id:
+        log('live skin switch: reverted to %s after the prompt' % final,
+            xbmc.LOGWARNING)
+        return False
+    log('live skin switch: %s is active and confirmed (no restart needed)' % skin_id)
+    return True
+
+
 def _allow_insecure_ssl():
     """Opt-in (default OFF) escape hatch for ancient embedded OpenSSL that cannot
     verify modern certificate chains. Kept OFF by default: an AUTOMATIC fallback
@@ -2099,11 +2248,17 @@ class BuildManager:
             f"[COLOR cyan]בילד:[/COLOR] {build_name}\n[COLOR cyan]סקין:[/COLOR] {skin_name}"
         )
         
+        # Android cannot relaunch itself (see the note above _apply_skin_live),
+        # so do not imply that it will -- tell the user they have to reopen Kodi.
+        tail = ('\n\n[B]קודי ייסגר בעוד %d שניות[/B]\n[COLOR yellow]יש לפתוח את '
+                'Kodi מחדש כדי לסיים[/COLOR]') if _is_android() \
+            else '\n\n[B]קודי ייסגר בעוד %d שניות...[/B]'
         for i in range(5, 0, -1):
             pct = int((5 - i) / 5.0 * 100)
-            progress.update(pct, f"[COLOR cyan]בילד:[/COLOR] {build_name}\n[COLOR cyan]סקין:[/COLOR] {skin_name}\n\n[B]קודי ייסגר בעוד {i} שניות...[/B]")
+            progress.update(pct, f"[COLOR cyan]בילד:[/COLOR] {build_name}\n"
+                                 f"[COLOR cyan]סקין:[/COLOR] {skin_name}" + (tail % i))
             xbmc.sleep(1000)
-        
+
         progress.close()
         # HARD exit on purpose -- NO graceful Quit here. The install wrote the
         # new skin/font/Hebrew baseline directly into guisettings.xml ON DISK;
@@ -2143,6 +2298,9 @@ class BuildManager:
                     log("post-install restart: relauncher armed")
             except Exception as e:
                 log(f"relauncher arm failed (manual relaunch needed): {e}", xbmc.LOGWARNING)
+        # No Android branch on purpose: nothing can relaunch Kodi there (all
+        # three mechanisms were measured and fail -- see the note above
+        # _apply_skin_live). The countdown above says so instead of pretending.
         log("post-install restart: hard exit, skipping Kodi's exit-save (disk is authoritative)")
         os._exit(0)
 
@@ -2503,8 +2661,38 @@ def _skin_switch_flow():
     except Exception as e:
         log(f"POV re-apply on skin switch failed: {e}", xbmc.LOGWARNING)
 
-    # restart to apply the new skin (service removes the old one on next launch)
-    manager._countdown_restart(manager.get_installed_build_name(), name)
+    # Apply the new skin. Android has no working restart of any kind (see the
+    # note above _apply_skin_live), so there the switch is done in-process --
+    # which is also better UX: the user never leaves Kodi. Everywhere else the
+    # proven restart path is kept.
+    if _is_android():
+        # the stack was enabled in the DB above; the running Kodi has to be told
+        # too, or it refuses to load the skin and drops back to Estuary
+        try:
+            stack = manager.SKIN_STACKS.get(sid, set()) | {sid}
+            _enable_addons_live(sorted(
+                a for a in stack
+                if os.path.isfile(os.path.join(ADDONS, a, 'addon.xml'))))
+        except Exception as e:
+            log(f"live enable of the skin stack failed: {e}", xbmc.LOGWARNING)
+        # deliberately NO progress dialog here: Kodi's "keep this skin?" prompt
+        # has to be clickable, and our own modal on top of it swallows the click
+        xbmcgui.Dialog().notification(ADDON_NAME, f'מחליף לסקין {name}...',
+                                      xbmcgui.NOTIFICATION_INFO, 4000)
+        ok = _apply_skin_live(sid)
+        if ok:
+            dialog.ok('סקינים',
+                      f'[COLOR lime]הסקין הוחלף![/COLOR]\n\nהסקין הפעיל: {name}')
+        else:
+            # fall back to the hard exit -- disk already holds the new skin, so
+            # reopening Kodi lands on it
+            dialog.ok('סקינים',
+                      f'[COLOR {COLOR_WARNING}]הסקין הוגדר[/COLOR]\n\n'
+                      'צריך לסגור ולפתוח את Kodi כדי להחיל אותו.')
+            manager._countdown_restart(manager.get_installed_build_name(), name)
+    else:
+        # restart to apply the new skin (service removes the old one on next launch)
+        manager._countdown_restart(manager.get_installed_build_name(), name)
 
 
 def _skin_cleanup_flow():
