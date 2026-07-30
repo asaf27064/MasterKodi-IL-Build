@@ -413,11 +413,81 @@ def test_update_ordering():
     check('cancelled -> config apply SKIPPED', cfg['n'] == 0)
 
 
+def test_dbmoved_install():
+    """The 2026-07-30 Android reinstall bug: wipe+extract must NOT replace the
+    LIVE (open) Addons33.db. Simulates Kodi's open handle across a full
+    wipe -> extract -> merge -> reconcile cycle. NOTE: wipes the test HOME --
+    keep this test LAST."""
+    print("\n=== install: live Addons33.db preserved + merged + reconciled (DBMOVED) ===")
+    import json as _json
+    dbdir = os.path.join(HOME, 'userdata', 'Database')
+    os.makedirs(dbdir, exist_ok=True)
+    live = os.path.join(dbdir, 'Addons33.db')
+    c = sqlite3.connect(live)
+    c.execute("CREATE TABLE installed (id INTEGER PRIMARY KEY, addonID TEXT, enabled INTEGER, "
+              "installDate TEXT, lastUpdated TEXT, lastUsed TEXT, origin TEXT, disabledReason INTEGER)")
+    c.execute("CREATE TABLE update_rules (id INTEGER PRIMARY KEY, addonID TEXT, addonRule INTEGER)")
+    c.execute("INSERT INTO installed (addonID, enabled) VALUES ('plugin.old.ghost', 1)")
+    c.execute("INSERT INTO installed (addonID, enabled) VALUES ('xbmc.python', 1)")
+    c.commit()
+    kodi_handle = sqlite3.connect(live)          # simulates Kodi's OPEN connection
+
+    # bundle: one addon + guisettings + a SEED Addons33.db registering it enabled
+    d = tempfile.mkdtemp()
+    seed = os.path.join(d, 'seed.db')
+    s = sqlite3.connect(seed)
+    s.execute("CREATE TABLE installed (id INTEGER PRIMARY KEY, addonID TEXT, enabled INTEGER, "
+              "installDate TEXT, lastUpdated TEXT, lastUsed TEXT, origin TEXT, disabledReason INTEGER)")
+    s.execute("CREATE TABLE update_rules (id INTEGER PRIMARY KEY, addonID TEXT, addonRule INTEGER)")
+    s.execute("INSERT INTO installed (addonID, enabled, origin) VALUES ('plugin.new', 1, '')")
+    s.execute("INSERT INTO update_rules (addonID, addonRule) VALUES ('plugin.new', 2)")
+    s.commit(); s.close()
+    zp = os.path.join(d, 'build.zip')
+    with zipfile.ZipFile(zp, 'w') as z:
+        z.writestr('addons/plugin.new/addon.xml', '<addon id="plugin.new" version="1.0"/>')
+        z.writestr('userdata/guisettings.xml', '<settings/>')
+        z.write(seed, 'userdata/Database/Addons33.db')
+
+    bm = builds.BuildManager()
+    os.makedirs(builds.TEMP_FOLDER, exist_ok=True)
+
+    class _P:                                     # progress stub
+        def update(self, *a, **k): pass
+    wipe_fail = bm.wipe(_P())
+    check('wipe: 0 undeletable files', wipe_fail == 0)
+    check('wipe: LIVE Addons33.db preserved (not unlinked)', os.path.isfile(live))
+
+    ok, errs = bm.extract_zip(zp, HOME, _P())
+    check('extract ok', ok is True)
+    check('bundle addon extracted', os.path.isfile(os.path.join(HOME, 'addons', 'plugin.new', 'addon.xml')))
+
+    # THE core assertion: Kodi's pre-existing handle still writes to the SAME file
+    try:
+        kodi_handle.execute("INSERT INTO installed (addonID, enabled) VALUES ('handle.probe', 1)")
+        kodi_handle.commit()
+        handle_ok = True
+    except Exception:
+        handle_ok = False
+    fresh = sqlite3.connect(live)
+    probe = fresh.execute("SELECT COUNT(*) FROM installed WHERE addonID='handle.probe'").fetchone()[0]
+    check('LIVE handle still writes to the real db (no DBMOVED)', handle_ok and probe == 1)
+    merged = fresh.execute("SELECT enabled FROM installed WHERE addonID='plugin.new'").fetchone()
+    check('bundle registry row MERGED into live db (enabled)', bool(merged) and merged[0] == 1)
+    rule = fresh.execute("SELECT addonRule FROM update_rules WHERE addonID='plugin.new'").fetchone()
+    check('bundle update_rules (pinning) merged', bool(rule) and rule[0] == 2)
+    ghost = fresh.execute("SELECT COUNT(*) FROM installed WHERE addonID='plugin.old.ghost'").fetchone()[0]
+    check('stale GHOST row reconciled away', ghost == 0)
+    virt = fresh.execute("SELECT COUNT(*) FROM installed WHERE addonID='xbmc.python'").fetchone()[0]
+    check('virtual xbmc.* row kept', virt == 1)
+    fresh.close(); kodi_handle.close()
+    shutil.rmtree(d, ignore_errors=True)
+
+
 def main():
     for t in (test_imports, test_keep, test_cred_preserve, test_switch_transactional,
               test_logs, test_lock_and_recovery,
               test_validate_zip, test_backup_restore, test_backup_quick_creds,
-              test_update_ordering):
+              test_update_ordering, test_dbmoved_install):
         try:
             t()
         except Exception as e:

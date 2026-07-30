@@ -334,6 +334,19 @@ class BuildManager:
                 if name.endswith('.log') or name.endswith('.old.log'):
                     continue
 
+                # NEVER unlink the LIVE addon registry (Addons33.db + its WAL/SHM).
+                # Kodi (and this wizard) hold it OPEN; deleting it mid-session makes
+                # every later write fail with SQLITE_READONLY_DBMOVED -- enable_
+                # addons_in_db then silently no-ops and the reinstalled build boots
+                # with EVERYTHING unregistered/disabled (the 2026-07-30 Xiaomi/
+                # Shield breakage; Android enforces DBMOVED strictly). The bundle's
+                # Addons DB is MERGED into this live file at extract time instead,
+                # and stale rows are reconciled after extraction.
+                if (os.path.basename(root) == 'Database'
+                        and name.startswith('Addons')
+                        and '.db' in name):
+                    continue
+
                 try:
                     os.remove(filepath)
                 except Exception as e:
@@ -574,6 +587,60 @@ class BuildManager:
             
         except Exception as e:
             log(f"Error setting up wizard repo: {e}", xbmc.LOGWARNING)
+
+    def _reconcile_addons_db(self):
+        """Delete registry rows for addons that no longer exist on disk.
+
+        After a wipe+reinstall the LIVE Addons33.db (deliberately preserved --
+        replacing the open file causes SQLITE_READONLY_DBMOVED) still holds the
+        previous build's rows. An ENABLED row whose addon files are gone trips
+        Kodi's dependency resolver at boot: it cascades disables onto real,
+        healthy addons (observed un-fixing the 2026-07-30 Xiaomi twice). Rows are
+        kept only for addons present in home/addons or Kodi's own system addons."""
+        try:
+            import sqlite3
+            db_dir = xbmcvfs.translatePath('special://database/')
+            target = None
+            best = -1
+            for f in os.listdir(db_dir):
+                if f.startswith('Addons') and f.endswith('.db'):
+                    try:
+                        num = int(f[len('Addons'):-len('.db')])
+                    except ValueError:
+                        continue
+                    if num > best:
+                        best, target = num, os.path.join(db_dir, f)
+            if not target:
+                return
+            present = set()
+            for base in (os.path.join(HOME, 'addons'),
+                         xbmcvfs.translatePath('special://xbmc/addons')):
+                try:
+                    present.update(d for d in os.listdir(base)
+                                   if os.path.isdir(os.path.join(base, d)))
+                except Exception:
+                    pass
+            if not present:
+                return                       # can't list -> don't guess-delete
+            conn = sqlite3.connect(target)
+            removed = 0
+            for table in ('installed', 'update_rules'):
+                try:
+                    rows = [r[0] for r in conn.execute(
+                        f"SELECT DISTINCT addonID FROM {table}")]
+                except Exception:
+                    continue
+                for aid in rows:
+                    # xbmc.* / kodi.* virtual deps have no folder -- keep them
+                    if aid in present or aid.startswith(('xbmc.', 'kodi.')):
+                        continue
+                    conn.execute(f"DELETE FROM {table} WHERE addonID=?", (aid,))
+                    removed += 1
+            conn.commit()
+            conn.close()
+            log(f"addons-db reconcile: removed {removed} stale row(s)")
+        except Exception as e:
+            log(f"addons-db reconcile failed: {e}", xbmc.LOGWARNING)
 
     def merge_addon_databases(self, source_db_path):
         """Merge addon entries from source database into existing Kodi database"""
@@ -898,6 +965,7 @@ class BuildManager:
         # matched the seed -> discarded -> completion re-downloaded the WHOLE
         # build every install).
         _skip_code = ('addons/%s/' % ADDON_ID, 'addons\\%s\\' % ADDON_ID)
+        bundle_addons_db = None       # bundle's Addons DB -> MERGED, never extracted raw
         for i, item in enumerate(zin.infolist()):
             filename = item.filename
 
@@ -905,6 +973,18 @@ class BuildManager:
                 continue
 
             if ADDON_ID in filename and not filename.endswith('applied_manifest.json'):
+                continue
+
+            # The bundle's Addons registry must NOT be extracted over the LIVE
+            # Addons33.db: Kodi holds that file open, and replacing it makes every
+            # later write fail with SQLITE_READONLY_DBMOVED (nothing gets enabled,
+            # the box boots broken -- the 2026-07-30 Android reinstall bug). The
+            # wipe now preserves the live file; the bundle's rows are merged into
+            # it (by addonID) after extraction, exactly like the skin path does.
+            _norm_db = filename.replace('\\', '/')
+            if ('/Database/' in _norm_db and _norm_db.endswith('.db')
+                    and os.path.basename(_norm_db).startswith('Addons')):
+                bundle_addons_db = filename
                 continue
 
             if '__pycache__' in filename or filename.endswith('.pyc') or filename.endswith('.pyo'):
@@ -927,7 +1007,46 @@ class BuildManager:
                 pct = int(i * 100 / total)
                 progress_dialog.update(pct, f"[COLOR yellow]{title}[/COLOR]\n{extracted}/{total} קבצים")
         
+        # Deliver the bundle's Addons registry into the LIVE db (see skip above):
+        # merge by addonID -- keeps Kodi's open handle valid (no DBMOVED), brings
+        # in the bundle's enabled/origin/update_rules pinning rows. Raw-extract
+        # only if no live db exists at all (first-ever run before Kodi created one).
+        if bundle_addons_db:
+            try:
+                _dbdir = xbmcvfs.translatePath('special://database/')
+                _has_live = any(f.startswith('Addons') and f.endswith('.db')
+                                for f in os.listdir(_dbdir)) if os.path.isdir(_dbdir) else False
+                if _has_live:
+                    _tmp = os.path.join(TEMP_FOLDER, 'bundle_addons.db')
+                    try:
+                        os.remove(_tmp)
+                    except Exception:
+                        pass
+                    with zin.open(bundle_addons_db) as _src, open(_tmp, 'wb') as _dst:
+                        _dst.write(_src.read())
+                    self.merge_addon_databases(_tmp)
+                    try:
+                        os.remove(_tmp)
+                    except Exception:
+                        pass
+                    log("bundle Addons db MERGED into live registry (not extracted raw)")
+                else:
+                    zin.extract(bundle_addons_db, dest)
+                    log("no live Addons db -- bundle registry extracted as-is")
+            except Exception as e:
+                errors += 1
+                log(f"bundle Addons db merge failed: {e}", xbmc.LOGERROR)
+
         zin.close()
+
+        # Drop STALE registry rows: the live db still carries the PREVIOUS build's
+        # addons (their files were just wiped). An enabled row whose addon no
+        # longer exists trips Kodi's dependency cascade at boot (it re-disables
+        # dependents) -- that ghost-cascade is what kept un-breaking fixes on the
+        # 2026-07-30 Xiaomi. Remove every row with no matching addon on disk
+        # (home/addons) and not a system addon (special://xbmc/addons).
+        if bundle_addons_db:
+            self._reconcile_addons_db()
 
         log(f"Extraction complete. Extracted: {extracted}, Errors: {errors}")
         # A handful of per-file errors (locked thumbnail etc.) is survivable;
