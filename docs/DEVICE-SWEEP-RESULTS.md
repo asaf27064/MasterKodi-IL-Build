@@ -90,10 +90,33 @@ Log: `backed up groups: pov_services, pov_content, extras (7 staged, 0 failed)` 
 - Dialog button layout differs per skin (AF3 stacks vertically, Nimbus/Estuary
   horizontally) -- only relevant when scripting input over ADB.
 
-## Open item
+## Open item — RESOLVED (re-checked on device)
 
-- Phase 9's keep list did not offer "מועדפים (Kodi)". Most likely correct (the
-  zephyr-pov variant ships no favourites.xml, so there is nothing to keep -- Zephyr
-  uses skinshortcuts menus), but re-confirm on the device: if favourites.xml exists
-  non-empty and the group is still not offered, that is a real gap in
-  `keep._group_has_data`.
+Phase 9's keep list did not offer "מועדפים (Kodi)" -- **correct behaviour, not a
+bug.** Only `estuary-pov` ships a favourites.xml (verified across all 9 variant
+index.json files); `zephyr-pov` does not, because Zephyr's home comes from
+skinshortcuts. So on the Zephyr+POV box at phase 9 there was genuinely no
+favourites.xml to keep. The file that exists now (23 POV entries) was written at
+16:24 -- during phase 10, when the sweep switched through **Estuary** -- and
+persisted after switching back. `keep._group_has_data` behaved correctly throughout.
+
+## Final box state (verified after the sweep)
+
+skin `skin.arctic.zephyr.2.resurrection.mod` · content_source `pov` · wizard
+2.4.147 · only POV on disk (isolation holds) · POV engine answering (11 root items,
+21 popular movies) · favourites 23/23 POV · phase-9 credential sentinel still
+present · **0** boot errors, **0** DBMOVED, **0** failed-skin, **0** missing-plugin.
+
+## Two false alarms worth recording (so they are not re-chased)
+
+1. **"22 ghost registry rows"** -- they are Kodi's OWN system addons
+   (`audioencoder.kodi.builtin.*`, `game.controller.*`, `repository.xbmc.org`,
+   `resource.language.en_gb`, `script.module.pil`, `webinterface.default`, ...),
+   which live in `special://xbmc/addons`, not in home/addons. The measurement
+   script only listed home addons. `_reconcile_addons_db` checks BOTH dirs, so it
+   never deletes them. Any future ghost audit must include the system addon dir.
+2. **"POV engine returns 0 items"** -- an artifact of probing while the box was
+   dozing/just-woken (JSON-RPC times out or answers empty). After a wake +
+   `am start` + RPC ping, the same probe returned 11 root items and 21 movies.
+   Always confirm `mWakefulness=Awake` + a successful ping before trusting a probe
+   (see memory adb-device-driving).
