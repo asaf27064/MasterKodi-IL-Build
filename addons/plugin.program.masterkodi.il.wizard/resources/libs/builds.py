@@ -90,7 +90,7 @@ def _enable_addons_live(addon_ids):
     return done
 
 
-def _apply_skin_live(skin_id, timeout=25):
+def _apply_skin_live(skin_id, fontset=None, timeout=25):
     """Switch Kodi to `skin_id` in-process, without a restart.
 
     Writing the skin into guisettings.xml is not enough on its own: Kodi saves
@@ -183,6 +183,25 @@ def _apply_skin_live(skin_id, timeout=25):
         log('live skin switch: reverted to %s after the prompt' % final,
             xbmc.LOGWARNING)
         return False
+
+    # 4) the font is GLOBAL (lookandfeel.font) and names a fontset that belongs
+    #    to the skin. set_skin_font only writes it to disk, which a restart used
+    #    to pick up -- without one, Kodi keeps the previous skin's fontset, the
+    #    new skin has no such set, and every Hebrew glyph renders as a box.
+    #    Must be set AFTER the skin loads, so the fontset exists.
+    if fontset:
+        freq = {'jsonrpc': '2.0', 'id': 1, 'method': 'Settings.SetSettingValue',
+                'params': {'setting': 'lookandfeel.font', 'value': fontset}}
+        try:
+            fresp = _json.loads(xbmc.executeJSONRPC(_json.dumps(freq)))
+            if fresp.get('error'):
+                log('live skin switch: could not set fontset %s: %s'
+                    % (fontset, fresp['error']), xbmc.LOGWARNING)
+            else:
+                log('live skin switch: fontset set to %s' % fontset)
+        except Exception as e:
+            log('live skin switch: fontset call failed: %s' % e, xbmc.LOGWARNING)
+
     log('live skin switch: %s is active and confirmed (no restart needed)' % skin_id)
     return True
 
@@ -2679,7 +2698,7 @@ def _skin_switch_flow():
         # has to be clickable, and our own modal on top of it swallows the click
         xbmcgui.Dialog().notification(ADDON_NAME, f'מחליף לסקין {name}...',
                                       xbmcgui.NOTIFICATION_INFO, 4000)
-        ok = _apply_skin_live(sid)
+        ok = _apply_skin_live(sid, manager.SKIN_FONTSET.get(sid, 'Default'))
         if ok:
             dialog.ok('סקינים',
                       f'[COLOR lime]הסקין הוחלף![/COLOR]\n\nהסקין הפעיל: {name}')
