@@ -472,6 +472,30 @@ def test_cross_source_keep():
           mf.get('source_content') == 'gears' and mf.get('target_content') == 'pov')
 
 
+def test_set_default_skin_no_guisettings():
+    """REGRESSION (found on-device 2026-07-30, POV+AF3): set_default_skin used to
+    log 'guisettings.xml not found' and give up, silently losing the user's skin
+    choice -- the POV bundle ships no guisettings.xml, so every POV install with a
+    non-default skin booted ESTUARY (the Shield 'chose Zephyr, got Estuary' bug).
+    It must CREATE the file instead."""
+    print("\n=== builds.set_default_skin: creates guisettings when missing ===")
+    bm = builds.BuildManager()
+    gs = os.path.join(builds.USERDATA, 'guisettings.xml')
+    if os.path.isfile(gs):
+        os.remove(gs)
+    ok = bm.set_default_skin('skin.arctic.fuse.3')
+    check('returns True with no pre-existing guisettings', ok is True)
+    check('guisettings.xml created', os.path.isfile(gs))
+    body = open(gs, encoding='utf-8').read() if os.path.isfile(gs) else ''
+    check('skin written into it', 'skin.arctic.fuse.3' in body)
+    check('font also set (Hebrew fontset)', 'lookandfeel.font' in body)
+    # and the normal path (file exists) still works
+    ok2 = bm.set_default_skin('skin.nimbus')
+    body2 = open(gs, encoding='utf-8').read()
+    check('existing-file path still updates the skin',
+          ok2 is not False and 'skin.nimbus' in body2 and 'skin.arctic.fuse.3' not in body2)
+
+
 def test_dbmoved_install():
     """The 2026-07-30 Android reinstall bug: wipe+extract must NOT replace the
     LIVE (open) Addons33.db. Simulates Kodi's open handle across a full
@@ -546,7 +570,8 @@ def main():
     for t in (test_imports, test_keep, test_cred_preserve, test_switch_transactional,
               test_logs, test_lock_and_recovery,
               test_validate_zip, test_backup_restore, test_backup_quick_creds,
-              test_update_ordering, test_cross_source_keep, test_dbmoved_install):
+              test_update_ordering, test_cross_source_keep,
+              test_set_default_skin_no_guisettings, test_dbmoved_install):
         try:
             t()
         except Exception as e:

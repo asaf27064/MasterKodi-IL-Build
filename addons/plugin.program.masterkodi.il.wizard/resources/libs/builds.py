@@ -1067,13 +1067,36 @@ class BuildManager:
         return True, errors
 
     def set_default_skin(self, skin_id):
-        """Set the default skin in guisettings.xml"""
+        """Set the default skin in guisettings.xml.
+
+        CREATES a minimal guisettings.xml when it doesn't exist yet. It used to
+        just log "not found" and return False -- which silently LOST the user's
+        skin choice on every POV install: the Gears bundle ships a guisettings.xml
+        but the POV bundle does not, so on POV + any non-default skin (AF3 /
+        Nimbus / Zephyr) nothing was written here, Kodi later recreated the file
+        with its own default, and the box booted ESTUARY. That is exactly the
+        "בחרתי Zephyr וקיבלתי Estuary" symptom from the Shield/Xiaomi incident,
+        reproduced on-device 2026-07-30 (POV+AF3). The config's guisettings entry
+        is merge_id/merge_seed, so the value written here is preserved, not
+        clobbered, when the config applies later in the install."""
         try:
             guisettings = os.path.join(USERDATA, 'guisettings.xml')
             if not os.path.exists(guisettings):
-                log("guisettings.xml not found")
-                return False
-            
+                log("guisettings.xml missing -- creating it so the skin choice sticks",
+                    xbmc.LOGWARNING)
+                try:
+                    os.makedirs(USERDATA, exist_ok=True)
+                    with open(guisettings, 'w', encoding='utf-8') as f:
+                        f.write('<settings version="2">\n'
+                                '    <setting id="lookandfeel.skin">%s</setting>\n'
+                                '</settings>\n' % skin_id)
+                    log(f"created guisettings.xml with skin {skin_id}")
+                    self.set_skin_font(skin_id)
+                    return True
+                except Exception as e:
+                    log(f"could not create guisettings.xml: {e}", xbmc.LOGERROR)
+                    return False
+
             with open(guisettings, 'r', encoding='utf-8') as f:
                 content = f.read()
             
