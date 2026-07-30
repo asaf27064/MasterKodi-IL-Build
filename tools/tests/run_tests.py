@@ -92,21 +92,24 @@ def test_keep():
     check('_group_has_data sees POV + gears viewing data',
           keep._group_has_data(povg) and keep._group_has_data(gearsg))
 
-    ok_b, n = keep.backup(['pov_content', 'gears_content'])
-    check('backup roundtrip ok + staged 3 dbs', ok_b and n == 3)
+    # roundtrip PER TARGET (source-aware restore only writes the target engine's
+    # dbs): pov-target cycle restores the POV dbs, gears-target the gears db.
+    ok_b, n = keep.backup(['pov_content'], target_content='pov')
+    check('POV backup ok + staged 2 dbs', ok_b and n == 2)
     check('POV dbs staged at correct dir',
           os.path.isfile(os.path.join(keep.STAGE, 'povdb__watched.db')) and
           os.path.isfile(os.path.join(keep.STAGE, 'povdb__maincache.db')))
-    check('gears db staged', os.path.isfile(os.path.join(keep.STAGE, 'gearsdb__watched.db')))
-
-    # simulate the wipe destroying the originals, then restore + verify the rows
-    for p in (pov_w, pov_m, gears_w):
-        os.remove(p)
+    os.remove(pov_w); os.remove(pov_m)          # simulate the wipe
     _, rf = keep.restore()
     check('restore reported no failures', rf == 0)
     check('POV watched.db restored with its row', _sentinel(pov_w) == 'POV_WATCHED')
     check('POV maincache.db restored with its row', _sentinel(pov_m) == 'POV_CACHE')
-    check('gears watched.db restored with its row', _sentinel(gears_w) == 'GEARS_WATCHED')
+
+    ok_b, n = keep.backup(['gears_content'], target_content='gears')
+    check('gears db staged', ok_b and os.path.isfile(os.path.join(keep.STAGE, 'gearsdb__watched.db')))
+    os.remove(gears_w)
+    _, rf = keep.restore()
+    check('gears watched.db restored with its row', rf == 0 and _sentinel(gears_w) == 'GEARS_WATCHED')
 
     # --- #8: restore MERGES into an existing addon_data dir (doesn't skip it) ---
     # A fresh Kodi/bundle can create addon_data/<id> before restore; the old
@@ -413,6 +416,50 @@ def test_update_ordering():
     check('cancelled -> config apply SKIPPED', cfg['n'] == 0)
 
 
+def test_cross_source_keep():
+    """Cross-source reinstall (Gears->POV): the old engine's dbs are NOT restored,
+    favourites are PARKED (not clobbering the new config's), gears creds are not
+    stashed forever; source-agnostic creds (gearsai xml) still restore."""
+    print("\n=== keep: cross-source restore is source-aware ===")
+    import json as _json
+    if os.path.isdir(keep.STAGE):
+        shutil.rmtree(keep.STAGE, ignore_errors=True)
+    os.makedirs(keep.STAGE)
+    ga_xml = os.path.join(keep.ADDON_DATA, 'service.subtitles.gearsai', 'settings.xml')
+    os.makedirs(os.path.dirname(ga_xml), exist_ok=True)
+    open(ga_xml, 'w', encoding='utf-8').write('<settings><setting id="api_key"></setting></settings>')
+    _json.dump({'keys': ['gears_content', 'favs', 'gemini', 'debrid'],
+                'settings': {'gears': {'rd.token': 'USER_RD'}},
+                'xml': {ga_xml: {'api_key': 'USER_GEMINI'}},
+                'source_content': 'gears', 'target_content': 'pov'},
+               open(os.path.join(keep.STAGE, 'manifest.json'), 'w'))
+    # staged artifacts: a gears viewing db + the old favourites
+    sqlite3.connect(os.path.join(keep.STAGE, 'gearsdb__watched.db')).execute('CREATE TABLE t(x)')
+    open(os.path.join(keep.STAGE, 'file__favourites.xml'), 'w', encoding='utf-8').write(
+        '<favourites><favourite name="x">plugin://plugin.video.gears/</favourite></favourites>')
+    # the NEW (POV) config's favourites already in place -- must survive
+    open(keep.FAVOURITES, 'w', encoding='utf-8').write('<favourites>POV_CONFIG</favourites>')
+    pending_before = os.path.isfile(keep.KEEP_PENDING)
+    # clear leftovers from earlier tests so the not-restored assertion is real
+    try:
+        os.remove(os.path.join(keep.GEARS_DB_DIR, 'watched.db'))
+    except Exception:
+        pass
+
+    _, rf = keep.restore()
+    check('cross: restore no failures', rf == 0)
+    check('cross: gears db NOT restored',
+          not os.path.isfile(os.path.join(keep.GEARS_DB_DIR, 'watched.db')))
+    check('cross: POV config favourites SURVIVED (not clobbered)',
+          'POV_CONFIG' in open(keep.FAVOURITES, encoding='utf-8').read())
+    park = keep.FAVOURITES.replace('favourites.xml', 'favourites.pre_gears.xml')
+    check('cross: old favourites PARKED for recovery', os.path.isfile(park))
+    check('cross: gears creds NOT stashed to pending (would wait forever)',
+          os.path.isfile(keep.KEEP_PENDING) == pending_before)
+    check('cross: source-agnostic gearsai key still restored',
+          'USER_GEMINI' in open(ga_xml, encoding='utf-8').read())
+
+
 def test_dbmoved_install():
     """The 2026-07-30 Android reinstall bug: wipe+extract must NOT replace the
     LIVE (open) Addons33.db. Simulates Kodi's open handle across a full
@@ -487,7 +534,7 @@ def main():
     for t in (test_imports, test_keep, test_cred_preserve, test_switch_transactional,
               test_logs, test_lock_and_recovery,
               test_validate_zip, test_backup_restore, test_backup_quick_creds,
-              test_update_ordering, test_dbmoved_install):
+              test_update_ordering, test_cross_source_keep, test_dbmoved_install):
         try:
             t()
         except Exception as e:

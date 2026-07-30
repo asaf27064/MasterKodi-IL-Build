@@ -303,15 +303,20 @@ def _group_has_data(g):
     return False
 
 
-def prompt(extras=None, default_all=True):
+def prompt(extras=None, default_all=True, exclude=None):
     """Show the 'what to keep' checklist (all ticked by default). Returns a list
     of selected group keys (may include 'extras'). Cancel -> keep the defaults
     (all) so nothing is lost by accident.
 
     Only groups that actually have data on this box are listed: this hides the
     other content source's groups (POV groups on a Gears box, and vice versa) and
-    any empty group, so the checklist shows only real, keepable data."""
-    entries = [(g['key'], g['label']) for g in GROUPS if _group_has_data(g)]
+    any empty group, so the checklist shows only real, keepable data. `exclude`
+    drops keys the CALLER already decided not to offer -- a CROSS-source
+    reinstall (Gears->POV or back) excludes the old source's viewing data and
+    the favourites (they'd be orphans / clobber the new source's config)."""
+    exclude = set(exclude or ())
+    entries = [(g['key'], g['label']) for g in GROUPS
+               if g['key'] not in exclude and _group_has_data(g)]
     if extras:
         entries.append(('extras', 'תוספים שהתקנת בעצמך (%d)' % len(extras)))
     labels = [lbl for _k, lbl in entries]
@@ -365,8 +370,13 @@ def _safe_db_copy(src, dst):
     return True
 
 
-def backup(keys, extras=None):
+def backup(keys, extras=None, target_content=None):
     """Snapshot the selected groups to STAGE (call BEFORE the wipe).
+
+    target_content ('gears'/'pov') is the CONTENT SOURCE of the build being
+    installed; together with this box's current source it's recorded in the
+    manifest so restore() can be source-aware on a CROSS-source reinstall
+    (skip data that belongs to an engine the new build doesn't ship).
 
     Returns (ok, staged_count). ok is False if the stage can't be created OR any
     selected item that exists failed to copy OR the manifest couldn't be written
@@ -382,7 +392,13 @@ def backup(keys, extras=None):
         return False, 0
     staged = 0
     failed = 0
-    saved = {'keys': keys, 'settings': {}, 'xml': {}}
+    try:
+        import xbmcaddon
+        _src_content = xbmcaddon.Addon().getSetting('content_source') or 'gears'
+    except Exception:
+        _src_content = 'gears'
+    saved = {'keys': keys, 'settings': {}, 'xml': {},
+             'source_content': _src_content, 'target_content': target_content or _src_content}
     for g in GROUPS:
         if g['key'] not in keys:
             continue
@@ -473,35 +489,69 @@ def restore():
     except Exception as e:
         log('restore: manifest unreadable, keeping STAGE: %s' % e, xbmc.LOGERROR)
         return restored_addons, 1            # staged data exists but unreadable
+    # Source-awareness: on a CROSS-source reinstall (Gears->POV or back) the new
+    # build does NOT ship the old engine, so its viewing dbs would be orphans and
+    # the old favourites (plugin:// links into the absent engine) would CLOBBER
+    # the favourites the new source's config just delivered. Skip those; the old
+    # favourites are parked next to favourites.xml for manual recovery.
+    _src = saved.get('source_content') or 'gears'
+    _tgt = saved.get('target_content') or _src
+    cross = (_src != _tgt)
+    if cross:
+        log('keep: cross-source restore (%s -> %s) -- source-specific data skipped'
+            % (_src, _tgt))
+
     # gears settings.db credentials. On a fresh install the db isn't born yet
     # (the base zip ships none) -> defer to the first-boot catch-up instead of
     # silently dropping the creds (which then deleted the only backup).
+    # On a POV-target cross install there will NEVER be a gears settings.db --
+    # writing/stashing would wait forever, so skip (debrid login is redone in POV).
     gears_creds = saved.get('settings', {}).get('gears', {})
-    if gears_creds:
+    if gears_creds and not (cross and _tgt == 'pov'):
         res = _db_write(GEARS_SETTINGS_DB, gears_creds)
         if res == 'nodb':
             if not _stash_keep_pending(gears_creds):
                 failed += 1                  # couldn't even defer -> keep STAGE
         elif res is False:
             failed += 1                      # real write error -> keep STAGE
-    # xml settings (gearsai key, tmdb-helper trakt)
+    elif gears_creds:
+        log('keep: skipping %d gears cred(s) (POV build has no Gears)' % len(gears_creds))
+    # xml settings (gearsai key, tmdb-helper trakt, pov logins). On a GEARS-target
+    # cross install don't write into plugin.video.pov's addon_data (the addon
+    # isn't shipped -- it would just plant orphan credential files).
     for path, values in saved.get('xml', {}).items():
+        if cross and _tgt == 'gears' and 'plugin.video.pov' in path.replace('\\', '/'):
+            log('keep: skipping POV xml restore (Gears build has no POV)')
+            continue
         if not _xml_write(path, values):
             failed += 1                      # real write error -> keep STAGE
+
     # staged db files, plain files, and extra addons/addon_data
     for name in os.listdir(STAGE):
         try:
             if name.startswith('gearsdb__'):
+                if _tgt == 'pov':
+                    log('keep: skipping %s (POV build has no Gears)' % name)
+                    continue
                 os.makedirs(GEARS_DB_DIR, exist_ok=True)
                 shutil.copy2(os.path.join(STAGE, name),
                              os.path.join(GEARS_DB_DIR, name[len('gearsdb__'):]))
             elif name.startswith('povdb__'):
+                if _tgt == 'gears':
+                    log('keep: skipping %s (Gears build has no POV)' % name)
+                    continue
                 os.makedirs(POV_DB_DIR, exist_ok=True)
                 shutil.copy2(os.path.join(STAGE, name),
                              os.path.join(POV_DB_DIR, name[len('povdb__'):]))
             elif name.startswith('file__'):
                 if name[len('file__'):] == 'favourites.xml':
-                    shutil.copy2(os.path.join(STAGE, name), FAVOURITES)
+                    if cross:
+                        park = FAVOURITES.replace('favourites.xml',
+                                                  'favourites.pre_%s.xml' % _src)
+                        shutil.copy2(os.path.join(STAGE, name), park)
+                        log('keep: favourites parked at %s (cross-source)' % park)
+                    else:
+                        shutil.copy2(os.path.join(STAGE, name), FAVOURITES)
             elif name.startswith('addon__'):
                 aid = name[len('addon__'):]
                 dst = os.path.join(HOME_ADDONS, aid)

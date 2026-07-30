@@ -1316,7 +1316,8 @@ class BuildManager:
                 try:
                     from resources.libs import keep as keep_mod
                     progress.update(0, "[COLOR yellow]שומר נתונים נבחרים...[/COLOR]")
-                    keep_ok, keep_n = keep_mod.backup(keep_keys, extras=keep_extras)
+                    keep_ok, keep_n = keep_mod.backup(keep_keys, extras=keep_extras,
+                                                      target_content=content_choice)
                 except Exception as e:
                     keep_ok = False
                     log(f"keep backup failed: {e}", xbmc.LOGWARNING)
@@ -2254,7 +2255,25 @@ def builds_menu():
             # over (fresh/just-reinstalled). Both paths keep EVERYTHING, so
             # skipping the dialog can never cause data loss -- it only removes a
             # pointless confirmation.
-            _all_keys = [g['key'] for g in keep_mod.GROUPS] + (['extras'] if extras else [])
+            # CROSS-source reinstall (Gears->POV or back): the new build doesn't
+            # ship the old engine, so its viewing data + the old favourites are
+            # NOT offered (they'd be orphans / clobber the new source's config).
+            # Debrid/Trakt/Gemini + extras + downloads stay -- those are the
+            # user's own accounts/data, not engine state. Favourites are still
+            # STAGED (not shown) so restore can park them for manual recovery.
+            try:
+                _prev_source = ADDON.getSetting('content_source') or 'gears'
+            except Exception:
+                _prev_source = 'gears'
+            _cross = (_prev_source != content_choice)
+            _excl = set()
+            if _cross:
+                _excl.add('gears_content' if _prev_source == 'gears' else 'pov_content')
+                _excl.add('favs')
+                log(f"keep: cross-source install ({_prev_source} -> {content_choice}); "
+                    f"not offering {sorted(_excl)}")
+            _all_keys = [g['key'] for g in keep_mod.GROUPS if g['key'] not in _excl] \
+                        + (['extras'] if extras else [])
             try:
                 _ask = ADDON.getSetting('keep_ask') != 'false'
             except Exception:
@@ -2266,7 +2285,9 @@ def builds_menu():
                 keep_keys = _all_keys
                 log("keep prompt skipped (nothing on this box to keep)")
             else:
-                keep_keys = keep_mod.prompt(extras=extras, default_all=True)
+                keep_keys = keep_mod.prompt(extras=extras, default_all=True, exclude=_excl)
+            if _cross and 'favs' not in keep_keys:
+                keep_keys.append('favs')       # staged for the parked side-save only
             manager.install_build(selected_build, skin_choice=skin_choice,
                                   keep_keys=keep_keys, keep_extras=extras,
                                   content_choice=content_choice)
