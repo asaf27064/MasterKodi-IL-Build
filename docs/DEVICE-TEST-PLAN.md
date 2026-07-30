@@ -13,18 +13,32 @@ visual proof, log pulls from `.kodi/temp/kodi.log`. Recovery playbook ready
 
 ---
 
-## Phase order (risk-ranked; full 8-combo fresh matrix goes to CI, the device gets
-the flows that touch real risk)
+## Phase order — the FULL matrix on device
 
-| # | Flow | Why |
-|---|------|-----|
-| 1 | **Cross-source reinstall: Gears+Zephyr → POV+Zephyr, keep-everything** | The exact flow that broke Shield+Xiaomi; exercises the DBMOVED fix AND source-aware keep |
-| 2 | Post-install boot + full checklist (below) on POV+Zephyr | The result state |
-| 3 | **Skin sweep on POV:** Zephyr → AF3 → Nimbus → Estuary → Zephyr | Every skin's install/switch path + per-skin traps |
-| 4 | **In-place content switch:** POV → Gears → POV | switch_to + variant apply + restore-gears path |
-| 5 | **Cross-source reinstall back:** POV → Gears+Zephyr | The reverse direction of source-aware keep |
-| 6 | Same-source reinstall (Gears → Gears, keep-everything) | The keep roundtrip incl. viewing data + favourites |
-| 7 | Auto-update pass (bump arrives) | op-lock fix, silent update, config apply |
+Install-time skin selection is a DIFFERENT code path per skin (Estuary baked-in,
+AF3/Nimbus bundled-zip, Zephyr manifest-install; on POV each also triggers its own
+variant apply), so every skin is chosen AT INSTALL TIME on BOTH sources. The
+sequence alternates sources, so every reinstall is also a cross-source keep test
+(both directions, 8 times). Starting state: POV+Zephyr (post-recovery).
+
+| # | Reinstall to | Uniquely covers |
+|---|---|-----|
+| 1 | Gears + Estuary | cross POV->Gears; default-skin path |
+| 2 | POV + Estuary | cross Gears->POV; estuary-pov variant |
+| 3 | Gears + AF3 | install-time non-default skin (bundled-zip) |
+| 4 | POV + AF3 | af3-pov variant applied at install |
+| 5 | Gears + Nimbus | Nimbus bundled-zip + cpath seed |
+| 6 | POV + Nimbus | nimbus-pov variant (incl. the search fix) |
+| 7 | Gears + Zephyr | Zephyr MANIFEST-install path (breakage suspect) |
+| 7b | in-place switch ->POV ->back to Gears | switch_to both ways from a Gears state; then verify a clean-POV box REFUSES in-place Gears (by design) |
+| 8 | POV + Zephyr | THE combo that broke Shield/Xiaomi; ends at today's state |
+| 9 | POV + Zephyr (same-source) | keep roundtrip: watched/favourites/creds survive |
+| 10 | Skin sweep on POV: Zephyr->AF3->Nimbus->Estuary->Zephyr | every skin as a SWITCH target + per-skin traps |
+| 11 | Auto-update pass (next bump) | op-lock fix, silent update, config apply |
+
+Estimated 2.5-3.5h supervised; the sequence is RESUMABLE (state recorded after
+every phase — can split across sittings). Cross-source phases log debrid out by
+design (re-login once when asked). The full checklist below runs after EVERY state.
 
 ## Per-state checklist (run after EVERY phase; ✎ = Asaf confirms on TV, rest is
 checked from logs/DB/screencap automatically)
