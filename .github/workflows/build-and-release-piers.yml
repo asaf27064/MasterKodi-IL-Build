@@ -56,6 +56,9 @@ jobs:
       - name: Check no user credentials in variants
         run: python tools/check_no_credentials.py
 
+      - name: Check config delivery (no undelivered config files)
+        run: python tools/check_config_delivery.py
+
       - name: Wizard unit tests (real modules via Kodi shim)
         run: python tools/tests/run_tests.py
 

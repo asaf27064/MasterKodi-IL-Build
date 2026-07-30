@@ -1,5 +1,5 @@
 {
-  "config_version": 53,
+  "config_version": 54,
   "_comment": "Declarative policy for how the wizard applies the shipped build-config onto a device. Bump build.json config_version whenever ANY file under config/ changes. Modes: replace (overwrite whole file), seed_if_absent (write only if missing), merge_id (per <setting id>, build value wins - CLOBBERS user changes), merge_seed (per <setting id>, add-if-absent - our value is the DEFAULT but a user's own change is NEVER overwritten), merge_name (per <source><name>, add build's, keep user's). To DELIBERATELY push a changed default to every device with merge_seed: add that id to the file's optional \"force_ids\" list (overwrites even user-set values) and bump config_version; remove it once propagated if you want user changes to stick again. exclude_ids always win over force_ids to protect credentials. gears_settings enforces critical values in Gears' binary settings.db.",
   "files": [
     {
@@ -111,6 +111,55 @@
     {
       "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-powermenu.json",
       "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-powermenu.json",
+      "fresh": "replace",
+      "update": "replace",
+      "content": "gears"
+    },
+    {
+      "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1101widgets.json",
+      "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1101widgets.json",
+      "fresh": "replace",
+      "update": "replace",
+      "content": "gears"
+    },
+    {
+      "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-homewidgets.json",
+      "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-homewidgets.json",
+      "fresh": "replace",
+      "update": "replace",
+      "content": "gears"
+    },
+    {
+      "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1101submenu.json",
+      "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1101submenu.json",
+      "fresh": "replace",
+      "update": "replace",
+      "content": "gears"
+    },
+    {
+      "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1102submenu.json",
+      "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-1102submenu.json",
+      "fresh": "replace",
+      "update": "replace",
+      "content": "gears"
+    },
+    {
+      "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-homesubmenu.json",
+      "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-homesubmenu.json",
+      "fresh": "replace",
+      "update": "replace",
+      "content": "gears"
+    },
+    {
+      "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-powertray.json",
+      "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-powertray.json",
+      "fresh": "replace",
+      "update": "replace",
+      "content": "gears"
+    },
+    {
+      "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-searchwidgets.json",
+      "dest": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-searchwidgets.json",
       "fresh": "replace",
       "update": "replace",
       "content": "gears"
