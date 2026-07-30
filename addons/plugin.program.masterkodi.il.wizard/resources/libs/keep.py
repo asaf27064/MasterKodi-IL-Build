@@ -370,7 +370,7 @@ def _safe_db_copy(src, dst):
     return True
 
 
-def backup(keys, extras=None, target_content=None):
+def backup(keys, extras=None, target_content=None, source_content=None):
     """Snapshot the selected groups to STAGE (call BEFORE the wipe).
 
     target_content ('gears'/'pov') is the CONTENT SOURCE of the build being
@@ -392,11 +392,19 @@ def backup(keys, extras=None, target_content=None):
         return False, 0
     staged = 0
     failed = 0
-    try:
-        import xbmcaddon
-        _src_content = xbmcaddon.Addon().getSetting('content_source') or 'gears'
-    except Exception:
-        _src_content = 'gears'
+    # The CALLER must pass source_content: install_build flips the live
+    # content_source setting to the TARGET before the keep step runs, so reading
+    # the setting here yields the target and cross-source detection silently
+    # collapses (caught on-device 2026-07-30: gears creds were still deferred on a
+    # POV-target install). Only fall back to the setting when not supplied.
+    if source_content:
+        _src_content = source_content
+    else:
+        try:
+            import xbmcaddon
+            _src_content = xbmcaddon.Addon().getSetting('content_source') or 'gears'
+        except Exception:
+            _src_content = 'gears'
     saved = {'keys': keys, 'settings': {}, 'xml': {},
              'source_content': _src_content, 'target_content': target_content or _src_content}
     for g in GROUPS:

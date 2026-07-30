@@ -459,6 +459,18 @@ def test_cross_source_keep():
     check('cross: source-agnostic gearsai key still restored',
           'USER_GEMINI' in open(ga_xml, encoding='utf-8').read())
 
+    # REGRESSION (caught on-device 2026-07-30): install_build flips the live
+    # content_source setting to the TARGET *before* keep.backup runs, so backup
+    # must take source_content from the CALLER -- reading the setting made
+    # source==target, cross collapsed to False, and gears creds were still
+    # deferred on a POV-target install.
+    import xbmcaddon as _xa
+    _xa.Addon().setSetting('content_source', 'pov')      # already flipped to target
+    ok_b, _n = keep.backup(['debrid'], target_content='pov', source_content='gears')
+    mf = _json.load(open(os.path.join(keep.STAGE, 'manifest.json'), encoding='utf-8'))
+    check('cross: backup records CALLER source (not the flipped setting)',
+          mf.get('source_content') == 'gears' and mf.get('target_content') == 'pov')
+
 
 def test_dbmoved_install():
     """The 2026-07-30 Android reinstall bug: wipe+extract must NOT replace the

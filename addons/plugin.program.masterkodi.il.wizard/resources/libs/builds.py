@@ -1317,7 +1317,8 @@ class BuildManager:
                     from resources.libs import keep as keep_mod
                     progress.update(0, "[COLOR yellow]שומר נתונים נבחרים...[/COLOR]")
                     keep_ok, keep_n = keep_mod.backup(keep_keys, extras=keep_extras,
-                                                      target_content=content_choice)
+                                                      target_content=content_choice,
+                                                      source_content=_prev_content_source)
                 except Exception as e:
                     keep_ok = False
                     log(f"keep backup failed: {e}", xbmc.LOGWARNING)
@@ -1563,6 +1564,18 @@ class BuildManager:
                     _xa.Addon().setSetting('content_source', 'gears')
                 except Exception:
                     pass
+
+            # Reconcile the registry ONE MORE TIME at the very end: extract-time
+            # reconcile can't see what Step 8 changed (manifest completion removes
+            # addons dropped from the build, and the bundle's seed DB carries rows
+            # for addons this device doesn't have). Observed on-device: 22 ghost
+            # rows survived to the end of a clean install. Harmless on this boot,
+            # but an enabled row for a missing addon is exactly what feeds Kodi's
+            # dependency cascade later.
+            try:
+                self._reconcile_addons_db()
+            except Exception as e:
+                log(f"final addons-db reconcile failed: {e}", xbmc.LOGWARNING)
 
             # Create first-run marker (so wizard won't auto-launch again)
             try:
