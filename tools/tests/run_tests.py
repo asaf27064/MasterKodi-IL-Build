@@ -640,6 +640,69 @@ def test_maintenance_keeps_logs():
     check('Textures db dropped when a restart IS planned', not os.path.exists(tex))
 
 
+def test_remove_skin_purges_residue():
+    """Removing an optional skin must leave NO residue named after it: the skin
+    folder, its addon_data, its DB rows (installed/addons/repo/update_rules), and
+    the per-skin files the helper addons keep (skinshortcuts skin.X.*,
+    skinvariables nodes/skin.X + skin.X-*.json). Exclusive helper ADDONS are
+    intentionally kept (disabled, harmless)."""
+    print("\n=== remove_skin: purges all skin-named residue (files + DB rows) ===")
+    import resources.libs.config as _C
+    sid = 'skin.nimbus'
+    ad = os.path.join(_C.USERDATA, 'addon_data')
+    # plant the full residue surface
+    skin_dir = os.path.join(_C.ADDONS, sid)
+    os.makedirs(skin_dir, exist_ok=True); open(os.path.join(skin_dir, 'addon.xml'), 'w').write('x')
+    os.makedirs(os.path.join(ad, sid), exist_ok=True); open(os.path.join(ad, sid, 'settings.xml'), 'w').write('x')
+    ss = os.path.join(ad, 'script.skinshortcuts'); os.makedirs(ss, exist_ok=True)
+    for suf in ('.hash', '.properties', '.DATA.xml', '.properties.pre_gears'):
+        open(os.path.join(ss, sid + suf), 'w').write('x')
+    open(os.path.join(ss, 'mainmenu.DATA.xml'), 'w').write('KEEP')      # not skin-named
+    sv = os.path.join(ad, 'script.skinvariables'); os.makedirs(os.path.join(sv, 'nodes', sid), exist_ok=True)
+    open(os.path.join(sv, 'nodes', sid, 'x.json'), 'w').write('x')
+    open(os.path.join(sv, sid + '-viewtypes.json'), 'w').write('x')
+    open(os.path.join(sv, 'skin.arctic.fuse.3-viewtypes.json'), 'w').write('KEEP')  # other skin
+    # DB rows incl. update_rules
+    dbdir = os.path.join(_C.USERDATA, 'Database'); os.makedirs(dbdir, exist_ok=True)
+    live = os.path.join(dbdir, 'Addons33.db')
+    c = sqlite3.connect(live)
+    c.execute("CREATE TABLE IF NOT EXISTS installed (addonID TEXT, enabled INTEGER)")
+    c.execute("CREATE TABLE IF NOT EXISTS update_rules (addonID TEXT, addonRule INTEGER)")
+    c.execute("INSERT INTO installed VALUES (?,1)", (sid,))
+    c.execute("INSERT INTO update_rules VALUES (?,2)", (sid,))
+    c.commit(); c.close()
+
+    bm = builds.BuildManager()
+    # active skin must differ so remove_skin proceeds
+    import xbmc as _x
+    orig = _x.getSkinDir
+    _x.getSkinDir = lambda: 'skin.estuary'
+    try:
+        ok = bm.remove_skin(sid)
+    finally:
+        _x.getSkinDir = orig
+    check('remove_skin returned True', ok is True)
+    check('skin folder gone', not os.path.exists(skin_dir))
+    check('skin addon_data gone', not os.path.exists(os.path.join(ad, sid)))
+    left_ss = [n for n in os.listdir(ss) if n.startswith(sid)]
+    check('skinshortcuts skin.X.* purged', left_ss == [])
+    check('skinshortcuts shared file kept', os.path.isfile(os.path.join(ss, 'mainmenu.DATA.xml')))
+    check('skinvariables nodes/skin.X purged', not os.path.exists(os.path.join(sv, 'nodes', sid)))
+    check('skinvariables skin.X-*.json purged', not os.path.exists(os.path.join(sv, sid + '-viewtypes.json')))
+    check('skinvariables OTHER skin json kept', os.path.isfile(os.path.join(sv, 'skin.arctic.fuse.3-viewtypes.json')))
+    fresh = sqlite3.connect(live)
+    inst = fresh.execute("SELECT COUNT(*) FROM installed WHERE addonID=?", (sid,)).fetchone()[0]
+    rule = fresh.execute("SELECT COUNT(*) FROM update_rules WHERE addonID=?", (sid,)).fetchone()[0]
+    fresh.close()
+    check('installed row removed', inst == 0)
+    check('update_rules row removed (pinning residue)', rule == 0)
+    # leave the shared HOME's Addons33.db clean for later tests
+    try:
+        os.remove(live)
+    except Exception:
+        pass
+
+
 def test_dbmoved_install():
     """The 2026-07-30 Android reinstall bug: wipe+extract must NOT replace the
     LIVE (open) Addons33.db. Simulates Kodi's open handle across a full
@@ -717,7 +780,7 @@ def main():
               test_update_ordering, test_cross_source_keep,
               test_set_default_skin_no_guisettings, test_maintenance_keeps_logs,
               test_pov_shortcut_folder_seed_is_json,
-              test_maintenance_folder_contents,
+              test_maintenance_folder_contents, test_remove_skin_purges_residue,
               test_dbmoved_install):
         try:
             t()

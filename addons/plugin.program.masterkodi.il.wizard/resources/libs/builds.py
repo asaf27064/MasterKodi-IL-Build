@@ -2172,14 +2172,16 @@ class BuildManager:
             log("_pin_addons_in_db error: %s" % e, xbmc.LOGERROR)
 
     def _db_remove_addon(self, aid):
-        """Delete an addon's rows from every Addons*.db (so Kodi forgets it)."""
+        """Delete an addon's rows from every Addons*.db (so Kodi forgets it).
+        Includes update_rules -- the pinning row -- so a removed skin leaves no
+        stale rule behind (it accumulated across reinstalls otherwise)."""
         try:
             import sqlite3
             dbdir = xbmcvfs.translatePath('special://database/')
             for f in os.listdir(dbdir):
                 if f.startswith('Addons') and f.endswith('.db'):
                     c = sqlite3.connect(os.path.join(dbdir, f))
-                    for t in ('installed', 'addons', 'repo'):
+                    for t in ('installed', 'addons', 'repo', 'update_rules'):
                         try:
                             c.execute('DELETE FROM %s WHERE addonID=?' % t, (aid,))
                         except Exception:
@@ -2187,6 +2189,37 @@ class BuildManager:
                     c.commit(); c.close()
         except Exception as e:
             log(f"_db_remove_addon {aid} failed: {e}", xbmc.LOGWARNING)
+
+    def _purge_skin_residue(self, skin_id):
+        """Delete the per-skin files the helper addons keep for skin_id, so a
+        removed skin leaves nothing behind in skinshortcuts / skinvariables.
+        These are named after the skin, so purging them is unambiguous and can
+        never touch another skin's data. (The skin's exclusive helper ADDONS --
+        e.g. script.nimbus.helper -- are deliberately NOT removed: they are
+        disabled by sync_skin_stacks and harmless, and auto-removing an addon
+        risks one that Estuary or another kept skin shares.)"""
+        ad = os.path.join(USERDATA, 'addon_data')
+        # 1) skinshortcuts: skin.X.hash / .properties / .DATA.xml (+ .pre_gears)
+        ss = os.path.join(ad, 'script.skinshortcuts')
+        try:
+            for name in os.listdir(ss):
+                if name.startswith(skin_id):
+                    p = os.path.join(ss, name)
+                    (shutil.rmtree if os.path.isdir(p) else os.remove)(p)
+        except Exception:
+            pass
+        # 2) skinvariables: nodes/skin.X/ dir + skin.X-*.json (viewtypes etc.)
+        sv = os.path.join(ad, 'script.skinvariables')
+        try:
+            nodes = os.path.join(sv, 'nodes', skin_id)
+            if os.path.isdir(nodes):
+                shutil.rmtree(nodes, ignore_errors=True)
+            for name in os.listdir(sv):
+                if name.startswith(skin_id):
+                    p = os.path.join(sv, name)
+                    (shutil.rmtree if os.path.isdir(p) else os.remove)(p)
+        except Exception:
+            pass
 
     def remove_skin(self, skin_id):
         """Uninstall an optional skin (folder + addon_data + db rows). Never
@@ -2206,8 +2239,9 @@ class BuildManager:
             if os.path.isdir(ad):
                 shutil.rmtree(ad, ignore_errors=True)
             self._db_remove_addon(skin_id)
+            self._purge_skin_residue(skin_id)
             xbmc.executebuiltin('UpdateLocalAddons()')
-            log(f"removed skin {skin_id}")
+            log(f"removed skin {skin_id} (+ residue purged)")
             return True
         except Exception as e:
             log(f"remove_skin {skin_id} failed: {e}", xbmc.LOGWARNING)
