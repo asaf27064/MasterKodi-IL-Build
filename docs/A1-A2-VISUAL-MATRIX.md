@@ -143,3 +143,24 @@ surface is only correct on Estuary.
    movies submenu is also English on Nimbus (Trending/Popular/Premieres...).
 5. **zephyr-pov-tmdb** ships a power-menu cache-clear that **zephyr-gears-tmdb**
    lacks (no skin-overrides dir) — from the CI checker, engine-asymmetric.
+
+---
+
+## CORRECTION (2026-07-31, after Asaf review)
+
+**Finding #6 ("POV+Zephyr launches Real-Debrid pairing") was a MISREAD and is
+withdrawn.** `mode=myservices` is POV's **My Services picker** (9 services: Trakt,
+MDBList, TMDBList, Real-Debrid, Premiumize, AllDebrid, TorBox, Offcloud, EasyNews,
+each "Unauthorized: Select to Add") -- verified on screen. Earlier the Connect
+Services folder was EMPTY (the repr bug, fixed in 2.4.151), and while navigating I
+pressed OK on the Real-Debrid row INSIDE the picker; that is what showed the RD
+device screen. It never bypassed to RD. Asaf keeps the picker on purpose -- it
+allows connecting to another service in the future. NO change made.
+
+**Finding: "missing disconnect" (2 vs 3 entries) is NOT a bug either.** The connect
+entry toggles: `myservices` -> TorBox `set()` clears the token when already
+connected. 2 entries (connect-toggle + account) is correct by design.
+
+**Net real defect from this thread: the repr()->json seed bug (fixed 2.4.151),**
+which made the Connect Services folder render empty on AF3/Nimbus. That is the
+one genuine fix; the services surface is otherwise working as intended.
