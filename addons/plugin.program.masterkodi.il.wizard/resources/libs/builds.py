@@ -164,32 +164,16 @@ def _apply_skin_live(skin_id, fontset=None, timeout=25):
             % (skin_id, timeout), xbmc.LOGWARNING)
         return False
 
-    # 2) the prompt can still appear just AFTER the skin loads -- settle until
-    #    it has been gone for a couple of consecutive seconds
-    settle = time.time() + 8
-    while time.time() < settle:
-        if _prompt_open():
-            if not _dismiss_prompt():
-                log('live skin switch: could not dismiss the keep-skin prompt',
-                    xbmc.LOGWARNING)
-                return False
-            settle = time.time() + 4     # restart the quiet period
-        xbmc.sleep(400)
-
-    # 3) the real acceptance test: an unanswered prompt reverts the skin, so
-    #    only report success if it is STILL the one we asked for
-    final = _current()
-    if final != skin_id:
-        log('live skin switch: reverted to %s after the prompt' % final,
-            xbmc.LOGWARNING)
-        return False
-
-    # 4) the font is GLOBAL (lookandfeel.font) and names a fontset that belongs
-    #    to the skin. set_skin_font only writes it to disk, which a restart used
-    #    to pick up -- without one, Kodi keeps the previous skin's fontset, the
-    #    new skin has no such set, and every Hebrew glyph renders as a box.
-    #    Must be set AFTER the skin loads, so the fontset exists.
-    if fontset:
+    def _set_font():
+        # The font is GLOBAL (lookandfeel.font) and names a fontset that belongs
+        # to the skin. Changing the skin makes Kodi RESET the font to 'Default'
+        # (the font list is skin-specific), which renders Hebrew as boxes/tofu.
+        # We re-apply the skin's Hebrew fontset. Must run AFTER the skin loads
+        # (the fontset only exists then), and as EARLY as possible after that --
+        # doing it here rather than after the settle loop shrinks the tofu flash
+        # from up to ~8s down to the skin-load time.
+        if not fontset:
+            return
         freq = {'jsonrpc': '2.0', 'id': 1, 'method': 'Settings.SetSettingValue',
                 'params': {'setting': 'lookandfeel.font', 'value': fontset}}
         try:
@@ -201,6 +185,37 @@ def _apply_skin_live(skin_id, fontset=None, timeout=25):
                 log('live skin switch: fontset set to %s' % fontset)
         except Exception as e:
             log('live skin switch: fontset call failed: %s' % e, xbmc.LOGWARNING)
+
+    # 2) fix the font IMMEDIATELY (kills the tofu as soon as possible)
+    _set_font()
+
+    # 3) the keep-skin prompt can still appear just AFTER the skin loads --
+    #    settle until it has been gone for a couple of consecutive seconds
+    settle = time.time() + 8
+    while time.time() < settle:
+        if _prompt_open():
+            if not _dismiss_prompt():
+                log('live skin switch: could not dismiss the keep-skin prompt',
+                    xbmc.LOGWARNING)
+                return False
+            settle = time.time() + 4     # restart the quiet period
+        xbmc.sleep(400)
+
+    # 4) the real acceptance test: an unanswered prompt reverts the skin, so
+    #    only report success if it is STILL the one we asked for
+    final = _current()
+    if final != skin_id:
+        log('live skin switch: reverted to %s after the prompt' % final,
+            xbmc.LOGWARNING)
+        return False
+
+    # if the revert-check or the keep-prompt bounced the font back to Default,
+    # re-apply it once more so the box lands with Hebrew intact
+    if fontset and _json.loads(xbmc.executeJSONRPC(_json.dumps(
+            {'jsonrpc': '2.0', 'id': 1, 'method': 'Settings.GetSettingValue',
+             'params': {'setting': 'lookandfeel.font'}}))).get(
+                 'result', {}).get('value') != fontset:
+        _set_font()
 
     log('live skin switch: %s is active and confirmed (no restart needed)' % skin_id)
     return True
@@ -2563,7 +2578,10 @@ def skins_menu():
         if sel == -1:
             return
         if sel == 0:
-            _skin_switch_flow()
+            # a successful live (Android) switch closes the wizard and lands on
+            # the new skin's home -- don't re-draw this menu on top of it
+            if _skin_switch_flow() == 'close':
+                return
         elif sel == 1:
             _skin_cleanup_flow()
         elif sel == 2:
@@ -2700,8 +2718,16 @@ def _skin_switch_flow():
                                       xbmcgui.NOTIFICATION_INFO, 4000)
         ok = _apply_skin_live(sid, manager.SKIN_FONTSET.get(sid, 'Default'))
         if ok:
-            dialog.ok('סקינים',
-                      f'[COLOR lime]הסקין הוחלף![/COLOR]\n\nהסקין הפעיל: {name}')
+            # Brief toast, NOT a modal ok(): a modal here would sit on top of the
+            # freshly-loaded skin and, when dismissed, drop the user back into the
+            # wizard's skins menu (the loop below). The user asked to switch the
+            # skin -- so land them on the NEW skin's home, not back in the wizard.
+            xbmcgui.Dialog().notification(
+                ADDON_NAME, f'הסקין הוחלף ל-{name}',
+                xbmcgui.NOTIFICATION_INFO, 3000)
+            xbmc.executebuiltin('Dialog.Close(all,true)')
+            xbmc.executebuiltin('ActivateWindow(home)')
+            return 'close'          # tell skins_menu to stop looping
         else:
             # fall back to the hard exit -- disk already holds the new skin, so
             # reopening Kodi lands on it
