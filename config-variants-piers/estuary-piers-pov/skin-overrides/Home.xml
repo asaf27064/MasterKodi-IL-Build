@@ -163,10 +163,10 @@
 							<include content="InfoWallMusicLayout"><param name="fallback_image" value="DefaultAddonService.png"/><param name="focused" value="true"/></include>
 						</control></focusedlayout>
 						<content>
-							<item><label>ניקוי מטמון POV</label><onclick>RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)</onclick><thumb>DefaultAddonService.png</thumb></item>
-							<item><label>ניקוי מטמון GearsAI</label><onclick>RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</onclick><thumb>DefaultAddonService.png</thumb></item>
-							<item><label>שלח לוגים לתמיכה</label><onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)</onclick><thumb>DefaultAddonService.png</thumb></item>
-							<item><label>עדכון מהיר</label><onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=check_updates)</onclick><thumb>DefaultAddonService.png</thumb></item>
+							<item><label>ניקוי קאש POV</label><onclick>RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)</onclick><thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/broom.png</thumb></item>
+							<item><label>ניקוי קאש Gears AI</label><onclick>RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</onclick><thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/broom-ball.png</thumb></item>
+							<item><label>שלח לוגים לתמיכה</label><onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)</onclick><thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/circle-info.png</thumb></item>
+							<item><label>עדכון מהיר</label><onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=check_updates)</onclick><thumb>special://home/addons/plugin.program.masterkodi.il.wizard/resources/art/maint/arrows-rotate.png</thumb></item>
 						</content>
 					</control>
 				</control>
