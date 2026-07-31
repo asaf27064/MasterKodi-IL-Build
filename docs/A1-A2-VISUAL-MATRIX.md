@@ -116,6 +116,13 @@ surface is only correct on Estuary.
 | POV+Nimbus    | ✗ EMPTY "Connect Services / .." | 4 items ✓ (plain list) |
 
 ### HEADLINE FINDINGS
+1. **[ROOT-CAUSED + FIXED in 2.4.151] POV services empty on AF3/Nimbus.**
+   The wizard seeded POV's Connect-Services folder with `repr()`; POV reads
+   it with `json.loads`, which failed -> empty widget. Fixed with `json.dumps`.
+   Verified on-device: POV+Nimbus services now renders its 2 entries.
+   STILL OPEN (content/presentation, not the bug): POV ships 2 service entries
+   vs Gears' 3 (no disconnect); Zephyr+POV launches Real-Debrid pairing; Nimbus
+   shows an English breadcrumb. See memory pov-gears-serialization.
 1. **POV services broken on 3 of 4 skins.** Gears services are correct on ALL
    four skins (3 TorBox tiles). POV services are correct ONLY on Estuary; on
    Zephyr it launches Real-Debrid device-pairing (Asaf uses TorBox), and on AF3 +
