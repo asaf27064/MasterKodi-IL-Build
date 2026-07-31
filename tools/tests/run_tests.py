@@ -496,6 +496,63 @@ def test_set_default_skin_no_guisettings():
           ok2 is not False and 'skin.nimbus' in body2 and 'skin.arctic.fuse.3' not in body2)
 
 
+def test_maintenance_folder_contents():
+    """The תחזוקה menu must not just EXIST -- it must be POPULATED, and its
+    content-cache tile must match the engine actually installed. Presence-only
+    checks miss a menu that opens empty or points at the wrong engine (Asaf,
+    2026-07-31: "אתה בודק שיטחי... רק אם יש או אין את הקטגוריה אבל לא מה יש
+    בתוכה"). Measured baseline on the Xiaomi: 4 entries, and the cache tile is
+    maint_gears on a Gears box / maint_pov on a POV box."""
+    print("\n=== maintenance folder: populated + engine-correct cache tile ===")
+    import importlib, types
+    wiz = os.path.join(_bootstrap.ADDON, 'default.py')
+
+    def folder_items(pov_installed):
+        """Run maintenance_folder() with a stubbed plugin API and capture rows."""
+        povdir = os.path.join(HOME, 'addons', 'plugin.video.pov')
+        if pov_installed:
+            os.makedirs(povdir, exist_ok=True)
+        else:
+            shutil.rmtree(povdir, ignore_errors=True)
+        rows = []
+        import xbmcplugin, xbmcgui, sys as _s
+        real_add = xbmcplugin.addDirectoryItem
+        xbmcplugin.addDirectoryItem = lambda h, url, li, isFolder=False: rows.append(url)
+        old_argv = list(_s.argv)
+        _s.argv = ['plugin://plugin.program.masterkodi.il.wizard/', '1', '']
+        try:
+            src = open(wiz, encoding='utf-8').read()
+            mod = types.ModuleType('wiz_probe')
+            mod.__dict__['__name__'] = 'wiz_probe'      # skip the __main__ block
+            exec(compile(src, wiz, 'exec'), mod.__dict__)
+            mod.maintenance_folder()
+        finally:
+            xbmcplugin.addDirectoryItem = real_add
+            _s.argv = old_argv
+        return rows
+
+    try:
+        gears_rows = folder_items(pov_installed=False)
+        pov_rows = folder_items(pov_installed=True)
+    except Exception as e:
+        check('maintenance_folder ran under the shim (%s)' % e, False)
+        return
+
+    check('gears box: 4 maintenance entries', len(gears_rows) == 4)
+    check('gears box: cache tile is maint_gears',
+          any('mode=maint_gears' in u and 'gearsai' not in u for u in gears_rows))
+    check('gears box: no POV cleaner offered',
+          not any('mode=maint_pov' in u for u in gears_rows))
+    check('pov box: 4 maintenance entries', len(pov_rows) == 4)
+    check('pov box: cache tile is maint_pov',
+          any('mode=maint_pov' in u for u in pov_rows))
+    check('pov box: no Gears cleaner offered',
+          not any('mode=maint_gears' in u and 'gearsai' not in u for u in pov_rows))
+    for must in ('maint_gearsai', 'send_logs', 'check_updates'):
+        check('both boxes offer %s' % must,
+              any(must in u for u in gears_rows) and any(must in u for u in pov_rows))
+
+
 def test_maintenance_keeps_logs():
     """Clearing the cache must not unlink kodi.log: it lives in special://temp
     and Kodi holds it OPEN, so deleting it silently kills logging for the rest
@@ -613,6 +670,7 @@ def main():
               test_validate_zip, test_backup_restore, test_backup_quick_creds,
               test_update_ordering, test_cross_source_keep,
               test_set_default_skin_no_guisettings, test_maintenance_keeps_logs,
+              test_maintenance_folder_contents,
               test_dbmoved_install):
         try:
             t()

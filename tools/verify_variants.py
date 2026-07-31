@@ -160,7 +160,13 @@ def classify(plug, qs):
         fn = 'continue'
     elif 'clear_all_cache' in blob or 'clear_cache' in blob:
         fn = 'cache'
-    elif 'maintenance_folder' in blob:
+    elif ('maintenance' in blob or 'send_logs' in blob or 'check_updates' in blob
+            or mode.startswith('maint_')):
+        # Skins expose maintenance two different ways and BOTH are valid: AF3 /
+        # Nimbus / Zephyr point at the wizard's maintenance_folder, while Estuary
+        # inlines the individual actions (send_logs / check_updates) straight in
+        # its menu. Requiring the folder specifically reported estuary-pov as
+        # having "no maintenance" when the actions are right there.
         fn = 'maintenance'
     elif 'myservices' in blob or 'torbox' in blob or 'authenticate' in blob \
             or 'build_shortcut_folder' in blob or 'account_info' in blob:
@@ -215,7 +221,42 @@ def summarize(v):
     contamination = sorted({(k, r) for e, f, k, r in items if e == other})
 
     uses_services = bool([1 for e, f, k, r in items if f == 'services'])
+
+    # Search is not always a plugin:// URL. Arctic Zephyr implements it natively
+    # as Skin.SetString(SearchTerm) and renders the results from that skin
+    # string, so scanning only plugin URLs reported "search: none found" for
+    # zephyr-gears even though the box searches fine (verified on the Xiaomi
+    # 2026-07-31: "batman" -> 21 movies / 21 series). Count the skin-native form
+    # as a valid search provider, tagged 'skin' so it is visibly different from
+    # an engine-backed one.
+    skin_search = bool(re.search(r'Skin\.SetString\(\s*SearchTerm', raw))
+
+    # Does this variant define the MAIN menu at all? Several variants override
+    # only the submenus (zephyr-gears ships srtym-1 / sdrvt-1 / hybvrtorbox-1 and
+    # nothing else) -- their main menu, and therefore search / cache-clear /
+    # maintenance, comes from the BASE build bundle. Warning that those are
+    # "missing" from such a variant is crying wolf: verified on the Xiaomi
+    # 2026-07-31 that a zephyr-gears box has all three working (search returned
+    # 21 movies / 21 series, maintenance listed 4 engine-correct entries).
+    defines_mainmenu = any(
+        os.path.basename(rel).lower() in ('mainmenu.data.xml', 'home.xml',
+                                          'favourites.xml')
+        for rel, _ in read_all(vdir))
+
+    # CONTENTS, not presence: how many service entries the variant actually
+    # ships, and how many of them belong to the intended engine. A services menu
+    # that exists but comes up empty (or half-populated) is the failure mode
+    # that presence-only checks miss entirely.
+    service_items = [(e, k) for e, f, k, r in items if f == 'services']
+    service_count = len(service_items)
+    service_wrong = sorted({k for e, k in service_items
+                            if e not in (want, 'wizard')})
+
     return {
+        'skin_search': skin_search,
+        'defines_mainmenu': defines_mainmenu,
+        'service_count': service_count,
+        'service_wrong': service_wrong,
         'variant': v,
         'vdir': vdir,
         'intended': want,
@@ -241,6 +282,12 @@ def check(s):
     def one_engine(fn, allow_tmdb=False):
         engs = s[fn]
         if not engs:
+            # a skin that implements search itself (Zephyr's SearchTerm string)
+            # is a real, working search -- not a missing one
+            if fn == 'search' and s.get('skin_search'):
+                return
+            if fn in ('search', 'cache') and not s.get('defines_mainmenu'):
+                return          # base bundle owns the main menu for this variant
             probs.append(('WARN', '%s: none found' % fn))
             return
         for e in engs:
@@ -253,8 +300,20 @@ def check(s):
     one_engine('continue')         # must be the addon
     one_engine('cache')            # pov|gears matching
     one_engine('services')         # pov|gears matching
-    if not s['maintenance']:
+    if not s['maintenance'] and s.get('defines_mainmenu'):
         probs.append(('WARN', 'no maintenance entry found'))
+
+    # CONTENTS of the services menu. NOTE the deliberate limit: a variant ships
+    # only PART of this menu -- the skin and the content addon compose the rest
+    # at install time, so the on-disk entry count is NOT the menu the user sees
+    # (measured: zephyr-gears ships 2, the installed box renders 3). Asserting a
+    # count here produces false alarms, so we only assert what the config alone
+    # can prove: every service entry it does ship must be on the right engine.
+    # The real "is the menu populated" check has to run against a live box --
+    # see docs/DEVICE-TEST-PLAN.md.
+    if s['uses_services'] and s['service_wrong']:
+        probs.append(('FAIL', 'services entries on the wrong engine: %s'
+                      % ', '.join(s['service_wrong'][:5])))
     if s['contamination']:
         keys = ', '.join(sorted({k for k, r in s['contamination']})[:5])
         probs.append(('FAIL', 'contains %s refs on a %s variant: %s'
