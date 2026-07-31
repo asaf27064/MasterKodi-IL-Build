@@ -48,7 +48,14 @@ _PROTECTED = {WIZARD_ID, 'service.kodi.il.firstrun', 'repository.masterkodi.il',
 def detect_extras(manifest_ids):
     """Addons under home/addons that the user installed themselves -- i.e. not
     part of the build (manifest) and not our own machinery. Kodi's bundled
-    system addons live in special://xbmc/addons, so they don't appear here."""
+    system addons normally live in special://xbmc/addons, but SOME (the default
+    music metadata scrapers metadata.album.universal / metadata.artists.universal
+    / metadata.generic.albums, and others) get copied into the profile
+    home/addons dir. Those were being offered as "addons you installed yourself",
+    which is a false positive -- the user never installed them. Skip anything
+    that ALSO exists in Kodi's own addons dir: an id present there is a Kodi
+    default, not a user addon."""
+    kodi_addons = xbmcvfs.translatePath('special://xbmc/addons')
     out = []
     try:
         for name in sorted(os.listdir(HOME_ADDONS)):
@@ -56,6 +63,10 @@ def detect_extras(manifest_ids):
             if not os.path.isdir(p) or name in manifest_ids or name in _PROTECTED:
                 continue
             if '_old_' in name or name.endswith('_old'):
+                continue
+            # Kodi's own default addons (present in special://xbmc/addons) are
+            # never "user-installed" even when a copy lives in the profile dir.
+            if os.path.isdir(os.path.join(kodi_addons, name)):
                 continue
             if os.path.isfile(os.path.join(p, 'addon.xml')):
                 out.append(name)

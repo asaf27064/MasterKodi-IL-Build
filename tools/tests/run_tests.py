@@ -640,6 +640,34 @@ def test_maintenance_keeps_logs():
     check('Textures db dropped when a restart IS planned', not os.path.exists(tex))
 
 
+def test_detect_extras_skips_kodi_defaults():
+    """detect_extras must NOT flag Kodi's own default addons (e.g. the music
+    metadata scrapers metadata.album.universal) as 'addons you installed
+    yourself'. They live in special://xbmc/addons; a copy in the profile dir is
+    still a Kodi default, not a user addon. Regression for the false positive
+    Asaf hit on the Windows install (offered 3 'user addons' = music scrapers)."""
+    print("\n=== keep.detect_extras: skips Kodi default addons (music scrapers) ===")
+    import resources.libs.keep as _keep
+    ha = _keep.HOME_ADDONS
+    os.makedirs(ha, exist_ok=True)
+    # a Kodi default + a genuine user addon, both in the profile addons dir
+    for name in ('metadata.album.universal', 'plugin.user.myaddon'):
+        d = os.path.join(ha, name); os.makedirs(d, exist_ok=True)
+        open(os.path.join(d, 'addon.xml'), 'w').write('<addon id="%s"/>' % name)
+    # a SEPARATE fake xbmc/addons dir containing the Kodi default only
+    xbmc_addons = tempfile.mkdtemp(prefix='xbmcaddons_')
+    os.makedirs(os.path.join(xbmc_addons, 'metadata.album.universal'), exist_ok=True)
+    orig = _keep.xbmcvfs.translatePath
+    _keep.xbmcvfs.translatePath = (lambda p: xbmc_addons if p == 'special://xbmc/addons'
+                                   else orig(p))
+    try:
+        extras = _keep.detect_extras(set())    # empty manifest -> nothing filtered by build
+    finally:
+        _keep.xbmcvfs.translatePath = orig
+    check('user addon flagged as extra', 'plugin.user.myaddon' in extras)
+    check('Kodi default (music scraper) NOT flagged', 'metadata.album.universal' not in extras)
+
+
 def test_remove_skin_purges_residue():
     """Removing an optional skin must leave NO residue named after it: the skin
     folder, its addon_data, its DB rows (installed/addons/repo/update_rules), and
@@ -780,7 +808,7 @@ def main():
               test_update_ordering, test_cross_source_keep,
               test_set_default_skin_no_guisettings, test_maintenance_keeps_logs,
               test_pov_shortcut_folder_seed_is_json,
-              test_maintenance_folder_contents, test_remove_skin_purges_residue,
+              test_maintenance_folder_contents, test_remove_skin_purges_residue, test_detect_extras_skips_kodi_defaults,
               test_dbmoved_install):
         try:
             t()
