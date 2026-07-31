@@ -291,8 +291,16 @@ def _seed_pov_db(roots):
             con = sqlite3.connect(ndb)
             con.execute("CREATE TABLE IF NOT EXISTS navigator (list_name TEXT, list_type TEXT, list_contents TEXT, UNIQUE(list_name,list_type))")
             for name, items in folders.items():
+                # POV reads list_contents with json.loads (BaseCache.jsloads), so
+                # it MUST be JSON. repr() produced a Python literal (single quotes)
+                # that json.loads rejected -> the folder read as an empty list and
+                # every POV services widget came up blank on AF3/Nimbus (and drove
+                # the wrong behaviour on Zephyr). This is COPIED FROM the Gears
+                # seed, which is correct FOR GEARS because Gears reads its folder
+                # with ast.literal_eval -- POV does not. Keep the two engines'
+                # serialisers distinct: json for POV, repr for Gears.
                 con.execute("INSERT OR REPLACE INTO navigator VALUES (?,?,?)",
-                            (name, 'shortcut_folder', repr(items)))
+                            (name, 'shortcut_folder', json.dumps(items)))
             con.commit(); con.close()
             _log('seeded %d POV shortcut folder(s)' % len(folders))
         except Exception as e:

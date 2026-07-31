@@ -496,6 +496,52 @@ def test_set_default_skin_no_guisettings():
           ok2 is not False and 'skin.nimbus' in body2 and 'skin.arctic.fuse.3' not in body2)
 
 
+def test_pov_shortcut_folder_seed_is_json():
+    """The wizard seeds POV's shortcut folders into navigator.db. POV reads
+    list_contents with json.loads (BaseCache.jsloads), so the seed MUST write
+    JSON. An earlier repr() wrote a Python literal (single quotes) that
+    json.loads rejected -> the folder read as an empty list and every POV
+    services widget came up blank (AF3/Nimbus). Regression: seed a folder, then
+    parse the stored row EXACTLY like POV does."""
+    print("\n=== content_source: POV shortcut-folder seed is JSON (POV uses json.loads) ===")
+    import json as _json
+    folders = {'Connect Services': [
+        {'mode': 'myservices', 'name': 'חיבור שירותים',
+         'iconImage': 'x.png', 'isFolder': 'false'},
+        {'mode': 'torbox.show_account_info', 'name': 'פרטי חשבון',
+         'iconImage': 'y.png', 'isFolder': 'false'}]}
+    orig = cs._fetchv
+
+    def fake_fetchv(roots, rel):
+        if rel == 'pov/shortcut_folders.json':
+            return _json.dumps(folders).encode('utf-8')
+        return None      # skip views.json / settings.xml
+    cs._fetchv = fake_fetchv
+    try:
+        cs._seed_pov_db(['dummy'])
+    finally:
+        cs._fetchv = orig
+
+    ndb = os.path.join(cs.ADDON_DATA_PATH, 'plugin.video.pov', 'navigator.db')
+    check('navigator.db created by the seed', os.path.isfile(ndb))
+    con = sqlite3.connect(ndb)
+    row = con.execute("SELECT list_contents FROM navigator WHERE "
+                      "list_name='Connect Services' AND "
+                      "list_type='shortcut_folder'").fetchone()
+    con.close()
+    check('Connect Services row seeded', row is not None)
+    stored = row[0] if row else ''
+    ok_json, parsed = False, None
+    try:
+        parsed = _json.loads(stored); ok_json = True     # exactly POV's jsloads
+    except Exception:
+        pass
+    check('list_contents is valid JSON (POV json.loads succeeds)', ok_json)
+    check('parses to the 2 seeded items',
+          ok_json and isinstance(parsed, list) and len(parsed) == 2)
+    check("NOT a python repr (no single-quoted keys)", "'mode'" not in stored)
+
+
 def test_maintenance_folder_contents():
     """The תחזוקה menu must not just EXIST -- it must be POPULATED, and its
     content-cache tile must match the engine actually installed. Presence-only
@@ -670,6 +716,7 @@ def main():
               test_validate_zip, test_backup_restore, test_backup_quick_creds,
               test_update_ordering, test_cross_source_keep,
               test_set_default_skin_no_guisettings, test_maintenance_keeps_logs,
+              test_pov_shortcut_folder_seed_is_json,
               test_maintenance_folder_contents,
               test_dbmoved_install):
         try:
