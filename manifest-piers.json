@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-01T09:06:47Z",
+  "generated_utc": "2026-08-01T12:18:33Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -67,8 +67,8 @@
       "version": "6.07.89",
       "channel": "optional",
       "zip": "plugin.video.pov-6.07.89.zip",
-      "sha256": "c611b064b91bfb44a37bb15c9d3eea39795a21d8cafec07b7a69b15ae921d65a",
-      "size": 3615293,
+      "sha256": "45bd39e915694720c82894ff9c477e11ee365f621833dc88fb2f1345c48974a4",
+      "size": 3615528,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.07.89.zip",
       "content": "pov"
     },
@@ -477,10 +477,10 @@
       "id": "service.subtitles.gearsai",
       "version": "1.0.44",
       "channel": "core",
-      "zip": "service.subtitles.gearsai-1.0.43.zip",
-      "sha256": "24b8f60434012d4fa7b240a5b76082dfd92a51f2c847540c6849969714e92fc8",
-      "size": 4030686,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/service.subtitles.gearsai-1.0.43.zip"
+      "zip": "service.subtitles.gearsai-1.0.44.zip",
+      "sha256": "7abd3dfb90ac3728c3593859f085dade748b5518f406fc98fb54dfa5c73ac81a",
+      "size": 4030803,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/service.subtitles.gearsai-1.0.44.zip"
     },
     {
       "id": "service.subtitles.localsubtitle",
