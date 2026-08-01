@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-01T14:30:07Z",
+  "generated_utc": "2026-08-01T14:45:18Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -64,12 +64,12 @@
     },
     {
       "id": "plugin.video.pov",
-      "version": "6.07.89",
+      "version": "6.08.01",
       "channel": "optional",
-      "zip": "plugin.video.pov-6.07.89.zip",
-      "sha256": "ffbae87919b76081e3dc348bf59b0a486e1fe113e9923b9e57b1137f7f9731a9",
-      "size": 3617239,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.pov-6.07.89.zip",
+      "zip": "plugin.video.pov-6.08.01.zip",
+      "sha256": "f36a3a6d79b2506f2d01d7b953fa37012a97fed3facd58efa616b53b0daa86ec",
+      "size": 3618396,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.pov-6.08.01.zip",
       "content": "pov"
     },
     {
