@@ -77,6 +77,11 @@ def tmdb_oscar_winners(page_no):
 	results = [[{'id': x} for x in i] for i in chunks(oscar_winners, 20)]
 	return {'page': page_no, 'total_pages': len(results), 'results': results[page_no - 1]}
 
+def tmdb_movies_trending(page_no):
+	string = 'tmdb_movies_trending_%s' % page_no
+	url = '%s/trending/movie/week?language=en-US&page=%s' % (base_url, page_no)
+	return cache_object(get_tmdb, string, url, expiration=EXPIRES_2_DAYS)
+
 def tmdb_movies_popular(page_no):
 	string = 'tmdb_movies_popular_%s' % page_no
 	url = '%s/discover/movie?with_original_language=en&language=en-US&region=US&page=%s' % (base_url, page_no)
@@ -158,6 +163,11 @@ def tmdb_tv_title_year(title, year=None):
 		string = 'tmdb_tv_title_year_%s' % title
 		url = '%s/search/tv?query=%s&language=en-US' % (base_url, title)
 	return cache_object(get_tmdb, string, url, expiration=EXPIRES_1_MONTH)
+
+def tmdb_tv_trending(page_no):
+	string = 'tmdb_tv_trending_%s' % page_no
+	url = '%s/trending/tv/week?language=en-US&page=%s' % (base_url, page_no)
+	return cache_object(get_tmdb, string, url, expiration=EXPIRES_2_DAYS)
 
 def tmdb_tv_popular(page_no):
 	string = 'tmdb_tv_popular_%s' % page_no

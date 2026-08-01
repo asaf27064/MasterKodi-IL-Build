@@ -294,23 +294,23 @@ def widget_hide_watched():
 	return get_setting('widget_hide_watched') == 'true'
 
 cloud_scrapers = ('ad_cloud', 'pm_cloud', 'rd_cloud', 'tb_cloud', 'oc_cloud')
-default_internal_scrapers = (*cloud_scrapers, 'torboxnews', 'easynews')
+default_internal_scrapers = (*cloud_scrapers, 'easynews', 'aiostreams')
 
 def active_internal_scrapers():
+	if get_setting('provider.aiostreams') == 'true': return ['aiostreams']
 	settings = ['provider.external', 'provider.easynews']
 	settings.extend(item[1] for item in (
 		('ad', 'provider.ad_cloud'),
 		('pm', 'provider.pm_cloud'),
 		('rd', 'provider.rd_cloud'),
 		('tb', 'provider.tb_cloud'),
-		('tb', 'provider.torboxnews'),
 		('oc', 'provider.oc_cloud')
 	) if enabled_debrids_check(item[0]))
 	active = [i.split('.')[1] for i in settings if get_setting(i) == 'true']
 	return active
 
 def check_prescrape_sources(scraper, mediatype):
-	if scraper in default_internal_scrapers[:-1]: return get_setting('check.%s' % scraper) == 'true'
+	if scraper in default_internal_scrapers[:-3]: return get_setting('check.%s' % scraper) == 'true'
 	if get_setting('check.%s' % scraper) == 'true' and get_setting('auto_play_%s' % mediatype) != 'true': return True
 	else: return False
 
@@ -323,10 +323,11 @@ def provider_sort_ranks():
 	rd_priority = int(get_setting('rd.priority', '10'))
 	return {
 		'alldebrid': ad_priority, 'ad_cloud': ad_priority,
-		'premiumize.me': pm_priority, 'pm_cloud': pm_priority,
-		'real-debrid': rd_priority, 'rd_cloud': rd_priority,
-		'torbox': tb_priority, 'tb_cloud': tb_priority, 'torboxnews': tb_priority,
-		'offcloud': oc_priority, 'oc_cloud': oc_priority, 'easynews': en_priority
+		'premiumize': pm_priority, 'pm_cloud': pm_priority,
+		'realdebrid': rd_priority, 'rd_cloud': rd_priority,
+		'torbox': tb_priority, 'tb_cloud': tb_priority,
+		'offcloud': oc_priority, 'oc_cloud': oc_priority,
+		'easynews': en_priority
 	}
 
 def sort_to_top(provider):
@@ -368,8 +369,8 @@ def scraping_settings():
 	return {
 		'alldebrid': ad_highlight, 'ad_cloud': debrid_cloud_highlight,
 		'premiumize': pm_highlight, 'pm_cloud': debrid_cloud_highlight,
-		'real-debrid': rd_highlight, 'rd_cloud': debrid_cloud_highlight,
-		'torbox': tb_highlight, 'tb_cloud': debrid_cloud_highlight, 'torboxnews': debrid_cloud_highlight,
+		'realdebrid': rd_highlight, 'rd_cloud': debrid_cloud_highlight,
+		'torbox': tb_highlight, 'tb_cloud': debrid_cloud_highlight,
 		'offcloud': oc_highlight, 'oc_cloud': debrid_cloud_highlight, 'easynews': easynews_highlight,
 		'uncached': 'dimgray', 'highlight_type': highlight_type, 'folders': folders_highlight,
 		'hoster_highlight': hoster_highlight, 'torrent_highlight': torrent_highlight,
@@ -381,8 +382,8 @@ def info_icons():
 	return (
 		('alldebrid', 'alldebrid.png'), ('ad_cloud', 'alldebrid.png'),
 		('premiumize', 'premiumize.png'), ('pm_cloud', 'premiumize.png'),
-		('real-debrid', 'realdebrid.png'), ('rd_cloud', 'realdebrid.png'),
-		('torbox', 'torbox.png'), ('tb_cloud', 'torbox.png'), ('torboxnews', 'torbox.png'),
+		('realdebrid', 'realdebrid.png'), ('rd_cloud', 'realdebrid.png'),
+		('torbox', 'torbox.png'), ('tb_cloud', 'torbox.png'),
 		('offcloud', 'offcloud.png'), ('oc_cloud', 'offcloud.png'),
 		('easynews', 'easynews.png'), ('folders', 'folder.png'),
 		('4k', 'flag4k.png'), ('1080p', 'flag1080p.png'), ('720p', 'flag720p.png'),

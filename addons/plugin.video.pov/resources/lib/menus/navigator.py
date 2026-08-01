@@ -42,8 +42,8 @@ class Navigator:
 		from modules.debrid import debrid_enabled
 		easynews, debrids = ks.easynews_active(), debrid_enabled()
 		if easynews: self.easynews()
-		if 'real-debrid' in debrids: self.real_debrid()
-		if 'premiumize.me' in debrids: self.premiumize()
+		if 'realdebrid' in debrids: self.real_debrid()
+		if 'premiumize' in debrids: self.premiumize()
 		if 'alldebrid' in debrids: self.alldebrid()
 		if 'torbox' in debrids: self.torbox()
 		if 'offcloud' in debrids: self.offcloud()
@@ -107,7 +107,7 @@ class Navigator:
 		self._end_directory()
 
 	def my_content(self):
-		trakt_str, coll_str, wlist_str, fav_str, ls_str = ls(32037), ls(32499), ls(32500), ls(32453), ls(32501)
+		trakt_str, coll_str, wlist_str, fav_str, ls_str, ll_str = ls(32037), ls(32499), ls(32500), ls(32453), ls(32501), ls(32502)
 		t_n_ins, m_n_ins = _in_str % (trakt_str.upper(), ''), _in_str % ('MDBList'.upper(), '')
 		t_str, user_str, l_str, ai_str, ml_str, drp_str = ls(32037), ls(32065), ls(32501), ls(32494), ls(32454), 'Dropped TV Shows'
 		tu_str, pu_str = '%s %s %s' % (ls(32458), user_str, l_str), '%s %s %s' % (ls(32459), user_str, l_str)
@@ -127,15 +127,16 @@ class Navigator:
 		self._add_item({'mode': 'build_trakt_list.get_trakt_trending_popular_lists', 'list_type': 'popular' , 'name': pu_str }, 'trakt.png', n_ins)
 		self._add_item({'mode': 'build_trakt_list.search_trakt_lists',                                        'name': sea_str}, 'trakt.png', n_ins)
 		if mdblist_status:
-			self._add_item({'mode': 'build_mdbl_list.get_mdbl_lists', 'list_type': 'my_lists', 'name': ml_str    }, 'mdblist.png', m_n_ins)
-			self._add_item({'mode': 'build_movie_list', 'action': 'mdblist_watchlist',         'name': mdb_mw_str}, 'mdblist.png', m_n_ins)
-			self._add_item({'mode': 'build_tvshow_list', 'action': 'mdblist_watchlist',        'name': mdb_tw_str}, 'mdblist.png', m_n_ins)
-			self._add_item({'mode': 'build_movie_list', 'action': 'mdblist_collection',        'name': mdb_mc_str}, 'mdblist.png', m_n_ins)
-			self._add_item({'mode': 'build_tvshow_list', 'action': 'mdblist_collection',       'name': mdb_tc_str}, 'mdblist.png', m_n_ins)
-			self._add_item({'mode': 'build_tvshow_list', 'action': 'mdblist_droplist',         'name': drp_str   }, 'mdblist.png', m_n_ins)
-			self._add_item({'mode': 'mdblist.mdbl_account_info',                               'name': ai_str    }, 'mdblist.png', m_n_ins, False)
-			self._add_item({'mode': 'build_mdbl_list.get_mdbl_top_lists',                      'name': pu_str    }, 'mdblist.png', m_n_ins)
-			self._add_item({'mode': 'build_mdbl_list.search_mdbl_lists',                       'name': sea_str   }, 'mdblist.png', m_n_ins)
+			self._add_item({'mode': 'build_mdbl_list.get_mdbl_lists', 'list_type': 'my_lists'   , 'name': ml_str    }, 'mdblist.png', m_n_ins)
+			self._add_item({'mode': 'build_mdbl_list.get_mdbl_lists', 'list_type': 'liked_lists', 'name': ll_str    }, 'mdblist.png', m_n_ins)
+			self._add_item({'mode': 'build_movie_list', 'action': 'mdblist_watchlist',            'name': mdb_mw_str}, 'mdblist.png', m_n_ins)
+			self._add_item({'mode': 'build_tvshow_list', 'action': 'mdblist_watchlist',           'name': mdb_tw_str}, 'mdblist.png', m_n_ins)
+			self._add_item({'mode': 'build_movie_list', 'action': 'mdblist_collection',           'name': mdb_mc_str}, 'mdblist.png', m_n_ins)
+			self._add_item({'mode': 'build_tvshow_list', 'action': 'mdblist_collection',          'name': mdb_tc_str}, 'mdblist.png', m_n_ins)
+			self._add_item({'mode': 'build_tvshow_list', 'action': 'mdblist_droplist',            'name': drp_str   }, 'mdblist.png', m_n_ins)
+			self._add_item({'mode': 'mdblist.mdbl_account_info',                                  'name': ai_str    }, 'mdblist.png', m_n_ins, False)
+			self._add_item({'mode': 'build_mdbl_list.get_mdbl_top_lists',                         'name': pu_str    }, 'mdblist.png', m_n_ins)
+			self._add_item({'mode': 'build_mdbl_list.search_mdbl_lists',                          'name': sea_str   }, 'mdblist.png', m_n_ins)
 		if tmdb_status:
 			self._add_item({'mode': 'build_tmdb_list.get_tmdb_lists',                      'name': 'My Lists'               }, 'tmdb.png', '[B]TMDB:[/B] ')
 			self._add_item({'mode': 'build_movie_list', 'action': 'tmdb_watchlist',        'name': 'Movie Watchlist'        }, 'tmdb.png', '[B]TMDB:[/B] ')
@@ -213,7 +214,7 @@ class Navigator:
 		self._end_directory()
 
 	def settings(self):
-		pov_str, manager_str, changelog_str, short_str = ls(32036), ls(32513), ls(32508), ls(32514)
+		pov_str, manager_str, changelog_str, short_str = ls(32000), ls(32513), ls(32508), ls(32514)
 		log_utils, views_str, clean_str, lang_inv_str, ms_str = ls(32777), ls(32510), ls(32512), ls(32978), ls(32455)
 		settings_str, changelog_log_viewer_str = ls(32247), '%s & %s' % (changelog_str, log_utils)
 		shortcut_manager_str = '%s %s' % (short_str, manager_str)
@@ -225,8 +226,6 @@ class Navigator:
 		self._add_item({'mode': 'navigator.set_view_modes',      'name': views_str               }, 'settings.png', n_ins)
 		self._add_item({'mode': 'navigator.shortcut_folders',    'name': shortcut_manager_str    }, 'settings.png', n_ins)
 		self._add_item({'mode': 'toggle_language_invoker',       'name': lang_inv_str            }, 'settings.png', n_ins, False)
-		self._add_item({'mode': 'refer_link', 'query': 'rd',     'name': 'Real Debrid Referral Link'}, 'realdebrid.png', l_str, False)
-		self._add_item({'mode': 'refer_link', 'query': 'tb',     'name': 'TorBox Referral Link'     }, 'torbox.png',     l_str, False)
 		self._end_directory()
 
 	def clear_info(self):
@@ -277,7 +276,7 @@ class Navigator:
 	def log_utils(self):
 		pov_vstr, pov_istr = ku.get_addoninfo('version'), ku.get_addoninfo('id')
 		kl_loc, mt_str = 'special://logpath/kodi.log', 'special://home/addons/%s/changelog.txt' % pov_istr
-		pov_str, cl_str, lut_str, k_str, lv_str = ls(32036), ls(32508), ls(32777), ls(32538), ls(32509)
+		pov_str, cl_str, lut_str, k_str, lv_str = ls(32000), ls(32508), ls(32777), ls(32538), ls(32509)
 		mh_str, klv_h, klu_h = '%s  [I](v.%s)[/I]' % (pov_str, pov_vstr), '%s %s' % (k_str, lv_str), ls(32853)
 		cl_n_ins, lu_n_ins, k_n_ins = _in_str % (cl_str.upper(), ''), _in_str % (lut_str.upper(), ''), _in_str % ('Kodi'.upper(), '')
 		self._add_item({'mode': 'show_text', 'heading': mh_str, 'file': mt_str, 'exclude_external': 'true',                    'name': mh_str}, 'lists.png', cl_n_ins, False)

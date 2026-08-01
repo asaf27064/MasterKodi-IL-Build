@@ -582,10 +582,12 @@ def test_pov_publishes_player_release():
               'def publish_player_release(' in src)
         check('%s: writes the property GearsAI reads' % label,
               "'subs.player_filename'" in src)
-        # 4 play-selection paths: direct, manual magnet/nzb, seekable easynews,
-        # browse packs. A re-merge that keeps only some would half-fix the bug.
-        check('%s: called at all 4 play-selection sites' % label,
-              src.count('publish_player_release(') == 5)   # 4 calls + 1 def
+        # 3 play-selection paths since POV 6.08.01: direct, seekable easynews,
+        # browse packs (upstream changed the UNCACHED click to add-to-cloud
+        # only -- no playback, nothing to publish). A re-merge that keeps only
+        # some would half-fix the bug.
+        check('%s: called at all 3 play-selection sites' % label,
+              src.count('publish_player_release(') == 4)   # 3 calls + 1 def
         # A STALE name is worse than none -- it matches the PREVIOUS release.
         check('%s: cleared when the source list opens' % label,
               "set_window_property('subs.player_filename', '')" in src)
