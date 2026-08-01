@@ -2060,10 +2060,15 @@ def _enforce_gears_settings(home, gears_settings, exclude):
         for sid, val in gears_settings.items():
             if sid in exclude:
                 continue
-            cur = c.execute('UPDATE settings SET setting_value=? WHERE setting_id=?', (str(val), sid))
+            # JSON booleans MUST land as lowercase 'true'/'false': Gears reads
+            # its settings with string compares (== 'true'), so str(True) ->
+            # 'True' left provider.external "applied" yet DISABLED -- external
+            # scrapers showed off + no scraper selected on fresh installs.
+            sval = ('true' if val is True else 'false' if val is False else str(val))
+            cur = c.execute('UPDATE settings SET setting_value=? WHERE setting_id=?', (sval, sid))
             if cur.rowcount == 0:
                 c.execute('INSERT OR REPLACE INTO settings (setting_id, setting_value) VALUES (?, ?)',
-                          (sid, str(val)))
+                          (sid, sval))
         c.commit(); c.close()
         log('enforced %d gears settings' % len(gears_settings))
         return True

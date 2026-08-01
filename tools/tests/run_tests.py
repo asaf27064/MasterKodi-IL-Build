@@ -640,6 +640,37 @@ def test_maintenance_keeps_logs():
     check('Textures db dropped when a restart IS planned', not os.path.exists(tex))
 
 
+def test_gears_settings_bool_serialization():
+    """gears_settings enforcement must write JSON booleans as lowercase
+    'true'/'false' -- Gears reads with string compares (== 'true'), so the old
+    str(True)='True' left provider.external effectively DISABLED on fresh
+    installs (external scrapers off + no scraper selected, Asaf's find)."""
+    print("\n=== modular_update: gears_settings booleans land as 'true'/'false' ===")
+    import resources.libs.modular_update as _mu
+    home = tempfile.mkdtemp(prefix='gsbool_')
+    dbdir = os.path.join(home, 'userdata', 'addon_data', 'plugin.video.gears', 'databases')
+    os.makedirs(dbdir, exist_ok=True)
+    db = os.path.join(dbdir, 'settings.db')
+    c = sqlite3.connect(db)
+    c.execute("CREATE TABLE settings (setting_id TEXT UNIQUE, setting_value TEXT)")
+    c.execute("INSERT INTO settings VALUES ('provider.external', 'false')")
+    c.commit(); c.close()
+    ok = _mu._enforce_gears_settings(home, {
+        'provider.external': True,                       # JSON true -> must be 'true'
+        'external.cache_check': False,                   # -> 'false'
+        'external_scraper.module': 'script.module.magneto',
+        'results.timeout': 12,
+    }, set())
+    check('enforce returned True', ok is True)
+    c = sqlite3.connect(db)
+    rows = dict(c.execute("SELECT setting_id, setting_value FROM settings").fetchall())
+    c.close()
+    check("bool True -> 'true' (lowercase)", rows.get('provider.external') == 'true')
+    check("bool False -> 'false'", rows.get('external.cache_check') == 'false')
+    check("string value unchanged", rows.get('external_scraper.module') == 'script.module.magneto')
+    check("int stays str(12)", rows.get('results.timeout') == '12')
+
+
 def test_detect_extras_skips_kodi_defaults():
     """detect_extras must NOT flag Kodi's own default addons (e.g. the music
     metadata scrapers metadata.album.universal) as 'addons you installed
@@ -809,6 +840,7 @@ def main():
               test_set_default_skin_no_guisettings, test_maintenance_keeps_logs,
               test_pov_shortcut_folder_seed_is_json,
               test_maintenance_folder_contents, test_remove_skin_purges_residue, test_detect_extras_skips_kodi_defaults,
+              test_gears_settings_bool_serialization,
               test_dbmoved_install):
         try:
             t()
