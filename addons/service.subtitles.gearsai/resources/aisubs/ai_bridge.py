@@ -743,6 +743,30 @@ def sync_current_sub():
         return None
 
 
+def _apply_hi_clean(path):
+    """Strip SDH/HI noise ([door slams], (whispering), ♪) from an AI/pool
+    output file, honoring the user's auto_remove_hi_tags setting.
+
+    The classic path cleans these only via download_sub's exit hook, and that
+    hook is keyed on the ROW's hearing_imp flag -- every AI writer (pool hit,
+    synced, retranslate, embedded translate) bypasses download_sub entirely, so
+    tags survived to the screen (Asaf, 2026-08-01). They survive OFTEN, not
+    rarely: the translation source deliberately PREFERS SDH subs (speaker tags
+    give the AI much better Hebrew gender), so the input usually has them.
+    Cleaning after translation keeps that benefit and drops the noise."""
+    try:
+        if not path:
+            return path
+        from resources.aisubs import kodi_utils
+        if not kodi_utils.get_bool('auto_remove_hi_tags', True):
+            return path
+        from resources.modules import engine
+        engine.remove_hi_tags_and_write(path)
+    except Exception as e:
+        xbmc.log('[gearsai-ai] hi-clean failed: {0}'.format(e), xbmc.LOGWARNING)
+    return path
+
+
 def _write_synced_srt(text):
     try:
         from resources.modules import general
@@ -753,7 +777,7 @@ def _write_synced_srt(text):
         path = os.path.join(folder, 'gearsai_synced_%d.he.srt' % int(time.time()))
         with open(path, 'w', encoding='utf-8', newline='') as f:
             f.write(text)
-        return path
+        return _apply_hi_clean(path)
     except Exception as e:
         xbmc.log('[gearsai-ai] write synced failed: {0}'.format(e), xbmc.LOGWARNING)
         return None
@@ -841,7 +865,7 @@ def _write_srt(text, name='gearsai_ai_he.srt'):
         path = os.path.join(kodi_utils.temp_dir(), name)
         with open(path, 'w', encoding='utf-8', newline='') as f:
             f.write(text)
-        return path
+        return _apply_hi_clean(path)
     except Exception as e:
         xbmc.log('[gearsai-ai] write failed: {0}'.format(e), xbmc.LOGERROR)
         return None

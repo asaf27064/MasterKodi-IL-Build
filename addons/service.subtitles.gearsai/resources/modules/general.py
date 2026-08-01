@@ -836,3 +836,49 @@ def get_db_data(video_data):
     # log.warning(f"DEBUG | videoInfo.getIMDBNumber()={videoInfo.getIMDBNumber()}")
     # log.warning(f"DEBUG | videoInfo.getTagLine()={videoInfo.getTagLine()}")
 ##########################################################################################
+
+
+##########################################################################################
+# MASTERKODI: which Hebrew subtitle is currently on screen.
+#
+# Published as the window property `gearsai.current_heb_sub`. TWO features read
+# it: the footer sync button (sub_window control 105, shown only while a placed
+# Hebrew sub is active) and the per-row action "סנכרן לפי שורה זו".
+#
+# Only autosub's AUTOMATIC paths ever set it, so any MANUAL pick from the Wand
+# window (sub_window.download_and_set_sub) left it empty -- the sync button
+# stayed hidden and the row action failed with "אין כתובית עברית פעילה לסנכרון"
+# even with a Hebrew sub plainly on screen (Asaf, 2026-08-01: loaded the AI
+# Hebrew sub at 16:18:24, pressed sync at 16:19:18, got the red error).
+#
+# Hebrew is detected from the OUTPUT PATH first, not the language field: a
+# translated sub lands in trans_subs/ and an AI one is named *_he.srt, while the
+# row's `language` still reads English because it describes the SOURCE that was
+# translated.
+#
+# Non-Hebrew picks CLEAR the property: the value means "the Hebrew sub showing
+# right now", so leaving a stale path would re-time a subtitle that is no longer
+# on screen.
+##########################################################################################
+def remember_active_heb_sub(sub_file, language=''):
+    try:
+        ok = False
+        if sub_file and isinstance(sub_file, str) and sub_file not in (
+                'EmbeddedSubSelected', 'FaultSubException', '0'):
+            low = sub_file.replace('\\', '/').lower()
+            base = low.rsplit('/', 1)[-1]
+            ok = ('/trans_subs/' in low or 'hebrew' in base
+                  or base.endswith('_he.srt') or '_he.' in base)
+            if not ok:
+                lang = str(language or '')
+                ok = ('hebrew' in lang.lower() or 'עברית' in lang)
+        w = xbmcgui.Window(10000)
+        if ok:
+            w.setProperty('gearsai.current_heb_sub', sub_file)
+        else:
+            w.clearProperty('gearsai.current_heb_sub')
+        log.warning('remember_active_heb_sub | hebrew=%s | %s' % (ok, sub_file))
+        return ok
+    except Exception as e:
+        log.warning('remember_active_heb_sub failed: %s' % e)
+        return False

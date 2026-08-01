@@ -15,6 +15,7 @@ import os, sys, tempfile, shutil, sqlite3, struct, zipfile
 import _bootstrap  # noqa: E402  (same dir)
 _bootstrap.setup_path()
 HOME = _bootstrap.make_home()
+REPO = _bootstrap.REPO                       # repo root, for static source checks
 
 import resources.libs.config as C            # noqa: E402
 import resources.libs.keep as keep           # noqa: E402
@@ -542,6 +543,56 @@ def test_pov_shortcut_folder_seed_is_json():
     check("NOT a python repr (no single-quoted keys)", "'mode'" not in stored)
 
 
+def test_pov_publishes_player_release():
+    """POV must publish the chosen source's release name as the window property
+    `subs.player_filename` -- the ONLY channel a subtitle service has to learn
+    which release is playing, because debrid streams resolve to a bare UUID
+    (getPlayingFile() -> '997ec702-0c77-...'). Without it GearsAI fell back to
+    VideoPlayer.Tagline (the marketing tagline), match.player_release() returned
+    empty, and the community pool served an out-of-sync subtitle (Supergirl,
+    2026-08-01). Gears has always set this in modules/player.py.
+
+    This is a STATIC check on both copies of the overlaid file because a POV
+    re-merge is exactly how such a read/write gets silently dropped -- see the
+    URLName -> display_name breakage repaired in overlay 0.1.2."""
+    print("\n=== POV: publishes subs.player_filename at every play-selection ===")
+    import ast as _ast
+    copies = (
+        ('overlay', os.path.join(REPO, 'overlays', 'plugin.video.pov', 'files',
+                                 'resources', 'lib', 'windows', 'sources.py')),
+        ('addon',   os.path.join(REPO, 'addons', 'plugin.video.pov',
+                                 'resources', 'lib', 'windows', 'sources.py')),
+    )
+    for label, path in copies:
+        src = ''
+        try:
+            with open(path, encoding='utf-8') as fh:
+                src = fh.read()
+        except Exception:
+            pass
+        check('%s: sources.py readable' % label, bool(src))
+        if not src:
+            continue
+        try:
+            _ast.parse(src); parsed = True
+        except Exception:
+            parsed = False
+        check('%s: parses (valid AST)' % label, parsed)
+        check('%s: helper defined' % label,
+              'def publish_player_release(' in src)
+        check('%s: writes the property GearsAI reads' % label,
+              "'subs.player_filename'" in src)
+        # 4 play-selection paths: direct, manual magnet/nzb, seekable easynews,
+        # browse packs. A re-merge that keeps only some would half-fix the bug.
+        check('%s: called at all 4 play-selection sites' % label,
+              src.count('publish_player_release(') == 5)   # 4 calls + 1 def
+        # A STALE name is worse than none -- it matches the PREVIOUS release.
+        check('%s: cleared when the source list opens' % label,
+              "set_window_property('subs.player_filename', '')" in src)
+        check('%s: prefers display_name (upstream renamed URLName)' % label,
+              "get('display_name')" in src and 'URLName' not in src)
+
+
 def test_maintenance_folder_contents():
     """The תחזוקה menu must not just EXIST -- it must be POPULATED, and its
     content-cache tile must match the engine actually installed. Presence-only
@@ -839,6 +890,7 @@ def main():
               test_update_ordering, test_cross_source_keep,
               test_set_default_skin_no_guisettings, test_maintenance_keeps_logs,
               test_pov_shortcut_folder_seed_is_json,
+              test_pov_publishes_player_release,
               test_maintenance_folder_contents, test_remove_skin_purges_residue, test_detect_extras_skips_kodi_defaults,
               test_gears_settings_bool_serialization,
               test_dbmoved_install):

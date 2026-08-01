@@ -575,6 +575,7 @@ def place_sub(video_data,f_result,last_sub_name_in_cache,last_sub_language_in_ca
 
             xbmc.sleep(200)
             xbmc.Player().setSubtitles(sub_file)
+            general.remember_active_heb_sub(sub_file, language)
             save_file_name(params["filename"],language,video_data,source=source)
 
             f_count=0
@@ -615,12 +616,10 @@ def place_sub(video_data,f_result,last_sub_name_in_cache,last_sub_language_in_ca
             ################################################################################################################################
             
             # MASTERKODI: remember the active Hebrew sub so the manual "sync this
-            # subtitle" action knows which file to re-time.
-            try:
-                if 'Hebrew' in str(language) or 'עברית' in str(language):
-                    xbmcgui.Window(10000).setProperty('gearsai.current_heb_sub', sub_file)
-            except Exception:
-                pass
+            # subtitle" action knows which file to re-time. One shared rule --
+            # the old inline `'Hebrew' in language` test missed translated subs,
+            # whose language field names the ENGLISH source they came from.
+            general.remember_active_heb_sub(sub_file, language)
 
             # Break the loop since setting external subtitle was successful.
             log.warning(f"DEBUG | place_sub | Number of try: {place_sub_count} | Successfuly set external sub: {sub_file}")
@@ -816,11 +815,7 @@ def sub_from_main(arg):
             xbmc.sleep(100)
             xbmc.Player().setSubtitles(sub_file)
             # MASTERKODI: remember the active Hebrew sub for the manual sync action.
-            try:
-                if 'Hebrew' in str(language) or 'עברית' in str(language):
-                    xbmcgui.Window(10000).setProperty('gearsai.current_heb_sub', sub_file)
-            except Exception:
-                pass
+            general.remember_active_heb_sub(sub_file, language)
             save_file_name(filename,language,video_data,source=source)
             f_count=0
             max_sub_cache=int(Addon.getSetting("subtitle_trans_cache"))
@@ -864,6 +859,8 @@ def sub_from_main(arg):
         return_result=json.dumps(action)
     elif action=='disable_subs':
         xbmc.Player().setSubtitles("")
+        # No sub on screen -> nothing to sync against.
+        general.remember_active_heb_sub('')
         return_result=json.dumps(action)
         notify("כתוביות בוטלו")
     elif action=='sub_window':
@@ -960,6 +957,7 @@ def sub_from_main(arg):
             general.show_msg="מוכן"
             if (sub_file!='EmbeddedSubSelected') and (sub_file!='FaultSubException'):
                 xbmc.Player().setSubtitles(sub_file)
+                general.remember_active_heb_sub(sub_file, language)
             save_file_name(filename,language,video_data,source=source)
 
         else:
@@ -1020,6 +1018,7 @@ def sub_from_main(arg):
             xbmc.sleep(100)
             if (sub_file!='EmbeddedSubSelected') and (sub_file!='FaultSubException'):
                 xbmc.Player().setSubtitles(sub_file)
+                general.remember_active_heb_sub(sub_file, language)
                 save_file_name(filename,language,video_data,source=source)
             else:
                 save_file_name(unque(filename),language,video_data,source=source)

@@ -29,6 +29,25 @@ string, upper, lower = str, str.upper, str.lower
 from kodirdil import hebrew_subtitles_search_utils
 from kodirdil import db_utils
 from kodirdil.websites import hebrew_embedded
+from modules.kodi_utils import set_property as set_window_property
+
+def publish_player_release(source):
+	"""Publish the chosen source's release name on Window(10000) as
+	`subs.player_filename`.
+
+	Subtitle services (GearsAI/DarkSubs) read this property to learn WHICH
+	release is playing. POV never set it -- and for debrid streams the player's
+	own file is a bare UUID (e.g. 997ec702-0c77-...), so there is no other
+	channel to recover the name from. Without it GearsAI fell back to
+	VideoPlayer.Tagline (the movie's marketing tagline) and matched subtitles
+	with an EMPTY release, which is how an out-of-sync pool subtitle got served.
+	Gears publishes the same property in modules/player.py.
+	"""
+	try:
+		if not isinstance(source, dict): return
+		name = source.get('display_name') or source.get('name') or ''
+		if name: set_window_property('subs.player_filename', string(name))
+	except: pass
 
 def is_hebrew_subtitles_enabled():
 	return get_setting('hebrew_subtitles.enable_matching', 'true') == 'true'
@@ -56,6 +75,20 @@ class SourceResults(BaseDialog):
 			self.tried_sources_key = 'tried_sources_unknown'
 		##############################################################################
 		self.info_highlights_dict = kwargs.get('scraper_settings')
+		########### KODIRDIL - Drop the previous item's release name ###########
+		# Gears clears subs.player_filename when playback stops; POV has no such
+		# hook, so clear it as the source list opens. A STALE name is worse than
+		# none -- GearsAI would match subtitles against the previous release.
+		# ONLY when nothing is playing: browsing the source list MID-PLAYBACK
+		# and backing out must keep the ACTIVE item's release, or every later
+		# subtitle ranking falls back to the marketing tagline and the match
+		# percentages flip (Asaf, 2026-08-01: 44/40/38 became 25/25/23).
+		try:
+			import xbmc as _xbmc
+			if not _xbmc.Player().isPlaying():
+				set_window_property('subs.player_filename', '')
+		except: pass
+		########################################################################
 		self.prescrape = kwargs.get('prescrape')
 		if kwargs.get('filters_ignored'): self.filters_ignored = ignored_str % filters_ignored
 		else: self.filters_ignored = ''
@@ -142,6 +175,7 @@ class SourceResults(BaseDialog):
 				########### KODIRDIL - Mark source as tried (red badge next visit) ###########
 				try: self._add_tried_source(self.selected[1])
 				except: pass
+				publish_player_release(self.selected[1])
 				##############################################################################
 				return self.close()
 #			source = json.loads(chosen_listitem.getProperty('source'))
@@ -151,6 +185,7 @@ class SourceResults(BaseDialog):
 			else: link = Source(source, self.meta).manual_add_nzb_to_cloud()
 			if link is None: return
 			self.selected = ('play', {**source, 'unrestricted_link': link})
+			publish_player_release(source)
 			return self.close()
 		elif action == self.info_actions:
 			self.open_info_window(chosen_listitem)
@@ -169,12 +204,14 @@ class SourceResults(BaseDialog):
 				link = Source(source, self.meta).resolve_internal_sources(True)
 				if link is None: return
 				self.selected = ('play', {**source, 'unrestricted_link': link})
+				publish_player_release(source)
 				return self.close()
 			elif 'browse_packs' in choice:
 				link = Source(source, self.meta).browse_packs(highlight)
 				if link == 'cancel': return
 				source['unrestricted_link'] = link
 				self.selected = ('play', source)
+				publish_player_release(source)
 				return self.close()
 			elif 'manual_add_magnet_to_cloud' in choice: Source(source, self.meta).manual_add_magnet_to_cloud()
 			elif 'manual_airlock_to_cloud' in choice: Source(source, self.meta).manual_airlock_to_cloud()

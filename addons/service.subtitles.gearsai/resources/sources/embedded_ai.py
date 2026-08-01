@@ -20,5 +20,8 @@ def download(download_data, MySubFolder):
     path = os.path.join(MySubFolder, 'embedded_ai_he.srt')
     with open(path, 'w', encoding='utf-8', newline='') as f:
         f.write(hebrew)
+    # download_sub's HI-clean exit hook is keyed on the row's hearing_imp flag,
+    # which embedded rows never carry -- clean here instead (setting-gated).
+    ai_bridge._apply_hi_clean(path)
     log.warning('[gearsai-emb] embedded AI subtitle written: %s' % path)
     return path

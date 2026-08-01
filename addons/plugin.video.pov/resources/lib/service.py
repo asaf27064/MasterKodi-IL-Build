@@ -11,11 +11,16 @@ from entry import logger, POVMonitor
 # field, or any exception. A startup banner must never break boot.
 DEBRID_SUBS = (
 	# (display_name, enabled_setting, token_setting, api_module, api_class, field_path, ts_format)
-	('Real Debrid', 'rd.enabled', 'rd.token', 'debrids.real_debrid_api', 'RealDebridAPI', 'expiration',            'iso'),
-	('AllDebrid',   'ad.enabled', 'ad.token', 'debrids.alldebrid_api',   'AllDebridAPI',  'data.user.premiumUntil', 'unix_s'),
-	('Premiumize',  'pm.enabled', 'pm.token', 'debrids.premiumize_api',  'PremiumizeAPI', 'premium_until',          'unix_s'),
-	('Offcloud',    'oc.enabled', 'oc.token', 'debrids.offcloud_api',    'OffcloudAPI',   'expirationDate',         'unix_ms'),
-	('TorBox',      'tb.enabled', 'tb.token', 'debrids.torbox_api',      'TorBoxAPI',     'data.premium_expires_at','iso'),
+	# Field paths are relative to what account_info() RETURNS: POV's TorBox and
+	# AllDebrid _request already unwrap the 'data' envelope (see torbox_api's
+	# own days_remaining(), which reads 'premium_expires_at' flat). The Gears
+	# overlay's 'data.'-prefixed paths dug into a key that no longer exists, so
+	# _dig returned None and the banner silently never showed (Asaf, 2026-08-01).
+	('Real Debrid', 'rd.enabled', 'rd.token', 'debrids.real_debrid_api', 'RealDebridAPI', 'expiration',         'iso'),
+	('AllDebrid',   'ad.enabled', 'ad.token', 'debrids.alldebrid_api',   'AllDebridAPI',  'user.premiumUntil',  'unix_s'),
+	('Premiumize',  'pm.enabled', 'pm.token', 'debrids.premiumize_api',  'PremiumizeAPI', 'premium_until',      'unix_s'),
+	('Offcloud',    'oc.enabled', 'oc.token', 'debrids.offcloud_api',    'OffcloudAPI',   'expirationDate',     'unix_ms'),
+	('TorBox',      'tb.enabled', 'tb.token', 'debrids.torbox_api',      'TorBoxAPI',     'premium_expires_at', 'iso'),
 )
 
 def _dig(obj, dotted):
@@ -44,6 +49,19 @@ def _show_debrid_banners():
 	import xbmc
 	from datetime import datetime, timezone
 	from modules.kodi_utils import get_setting, notification
+	# Boot race: this thread starts before the skin/GUI is ready, and a toast
+	# fired that early is silently dropped. Wait for the window manager, then a
+	# small settle. Bounded -- never block more than ~15s.
+	try:
+		mon = xbmc.Monitor()
+		for _ in range(30):
+			if xbmc.getCondVisibility('Window.IsVisible(home)') or mon.abortRequested():
+				break
+			mon.waitForAbort(0.5)
+		mon.waitForAbort(2)
+		if mon.abortRequested(): return
+	except Exception:
+		pass
 	for name, en_set, tok_set, mod_path, cls_name, field, fmt in DEBRID_SUBS:
 		try:
 			if get_setting(en_set, 'false') != 'true': continue
@@ -52,21 +70,31 @@ def _show_debrid_banners():
 			api_cls = getattr(importlib.import_module(mod_path), cls_name)
 			info = api_cls().account_info()
 			expiry = _parse_expiry(_dig(info, field), fmt)
-			if expiry is None: continue
+			if expiry is None:
+				logger('POV', 'kodirdil banner: %s no expiry in account_info' % name)
+				continue
 			now = datetime.now(timezone.utc)
 			remaining = expiry - now
 			total_hours = remaining.total_seconds() / 3600.0
 			if total_hours <= 0: continue
+			# Bidi-safe single line: Hebrew-leading with ONE Latin run at the
+			# END. The old 'Name · N ימים נותרו | פג תוקף: date' had Latin at
+			# the front + two mixed runs, and Kodi's RTL rendering shuffled it
+			# into 'TORBOX · 28 30/08 | ...' (Asaf, 2026-08-01).
 			if total_hours < 24:
-				heading = '%s · %d שעות נותרו' % (name, int(total_hours))
-				body = 'פג תוקף: %s' % expiry.strftime('%d/%m %H:%M')
+				msg = 'נותרו %d שעות · בתוקף עד %s · %s' % (
+					int(total_hours), expiry.strftime('%d/%m %H:%M'), name)
 			else:
-				heading = '%s · %d ימים נותרו' % (name, int(remaining.days))
-				body = 'פג תוקף: %s' % expiry.strftime('%d/%m')
-			notification('%s | %s' % (heading, body), 6000)
+				msg = 'נותרו %d ימים · בתוקף עד %s · %s' % (
+					int(remaining.days), expiry.strftime('%d/%m'), name)
+			notification(msg, 6000)
+			logger('POV', 'kodirdil banner shown: %s' % msg)
 			xbmc.sleep(1000)
-		except Exception:
-			pass
+		except Exception as e:
+			# Never break boot -- but never be INVISIBLE either: a silent pass
+			# here cost a full debugging round (2026-08-01).
+			try: logger('POV', 'kodirdil banner: %s failed: %s' % (name, e))
+			except Exception: pass
 
 def _start_debrid_banner_thread():
 	try:

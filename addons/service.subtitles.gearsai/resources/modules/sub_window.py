@@ -3,6 +3,13 @@ import re as _re
 Addon=xbmcaddon.Addon()
 ADDON_PATH=Addon.getAddonInfo('path')
 from resources.modules import log
+# Module-level, NOT only function-local: this file historically imported
+# `general` inside each function that used it, so a `general.` reference in any
+# OTHER method raised NameError -- the 1.0.47 remember_active_heb_sub calls in
+# _sync_from_row/_retranslate_from_row died exactly like that ("row sync
+# failed: name 'general' is not defined", Asaf 2026-08-01 16:32), AFTER the sub
+# was already applied, so the UI showed הסנכרון נכשל on a successful sync.
+from resources.modules import general
 from resources.modules.engine import download_sub
 from resources.modules.general import CachedSubFolder
 from urllib.parse import parse_qsl
@@ -242,6 +249,9 @@ def _download_row(items_row, video_data):
         if sub_file == 'FaultSubException' or not sub_file or sub_file == '0':
             return 'fault', filename, language
         xbmc.Player().setSubtitles(sub_file)
+        # Record it as the active Hebrew sub (or clear if this pick is not
+        # Hebrew) -- the footer sync button and the row sync action both read it.
+        general.remember_active_heb_sub(sub_file, language)
         log.warning('My Window Sub result:' + str(sub_file))
         save_file_name(filename, language, video_data, source=source)
         # Keep a copy in Cached_subs (respecting the cache-size setting).
@@ -485,6 +495,9 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
                 # Mirror the normal-download path exactly (that reliably selects +
                 # shows the sub): a plain setSubtitles to a fresh MySubFolder file.
                 xbmc.Player().setSubtitles(path)
+                # Re-point at the NEW file so a second sync chains off the
+                # already-synced sub instead of the original one.
+                general.remember_active_heb_sub(path, 'Hebrew')
             except Exception as e:
                 log.warning('apply synced sub failed: %s' % e)
             self._set_status('הכתובית סונכרנה!', 'springgreen')
@@ -519,20 +532,50 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         return 'hebrew' in lang or 'heb' in lang or 'עבר' in lang
 
     def _fetch_row_file(self, row):
-        """Download a result row and return its local path WITHOUT applying it
-        as the active subtitle (the click path applies; these actions consume
-        the text instead)."""
+        """Download a result row RAW and return its local path WITHOUT applying
+        it as the active subtitle (the click path applies; these actions consume
+        the text instead).
+
+        Deliberately NOT download_sub() (Asaf's 2026-08-01 session exposed all
+        three of its side effects here):
+        1. it rmtree's MySubFolder first -- deleting the currently ACTIVE sub
+           file this very action is about to re-time ("לא selected");
+        2. with auto_translate on it machine-translates English rows, so the
+           'English reference' arrived as a Google-translated HEBREW file (and
+           retranslate would then feed that Hebrew to Gemini as 'English');
+        3. it fires the telegram-upload and HI-clean side effects.
+        So: import the provider module directly and download into a private
+        folder that nothing else owns."""
         p = self._row_params(row)
-        if not p:
+        if not p or not p.get('source'):
             return None
-        from resources.modules import general
-        general.ai_manual, general.break_all = True, False
         try:
-            f = download_sub(p['source'], json.loads(unque(p['download_data'])),
-                             MySubFolder, p['language'], p['filename'])
-        finally:
-            general.ai_manual = False
-        if not f or f in ('FaultSubException', '0', 'EmbeddedSubSelected'):
+            dl = json.loads(unque(p['download_data']))
+        except Exception:
+            return None
+        try:
+            int(dl.get('url'))
+            return None          # embedded-stream row: no file to fetch
+        except (TypeError, ValueError):
+            pass
+        import sys as _sys
+        src_dir = os.path.join(
+            xbmcaddon.Addon().getAddonInfo('path'), 'resources', 'sources')
+        if src_dir not in _sys.path:
+            _sys.path.append(src_dir)
+        fetch_dir = os.path.join(user_dataDir, 'row_fetch')
+        try:
+            shutil.rmtree(fetch_dir)     # ours alone -- safe to wipe
+        except Exception:
+            pass
+        try:
+            os.makedirs(fetch_dir, exist_ok=True)
+            impmodule = __import__(p['source'])
+            f = impmodule.download(dl, fetch_dir)
+        except Exception as e:
+            log.warning('row fetch failed: %s' % e)
+            return None
+        if not f or not isinstance(f, str) or not os.path.isfile(f):
             return None
         return f
 
@@ -590,17 +633,25 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         if not cur or not os.path.exists(cur):
             self._set_status('אין כתובית עברית פעילה לסנכרון', 'red')
             return
+        # Read the Hebrew text BEFORE any download: the active sub lives in a
+        # shared working folder, and a fetch that wipes it (download_sub did)
+        # would hand the aligner an empty string.
+        cur_text = self._read(cur)
+        if not cur_text.strip():
+            self._set_status('הכתובית הפעילה לא ניתנת לקריאה', 'red')
+            return
         eng_path = self._fetch_row_file(row)
         if not eng_path:
             self._set_status('הורדת הכתובית נכשלה', 'red')
             return
         try:
             from resources.aisubs import sync_align, ai_bridge
-            al = sync_align.align(self._read(cur), self._read(eng_path))
+            al = sync_align.align(cur_text, self._read(eng_path))
             if al and al.get('ok') and al.get('srt'):
                 out = ai_bridge._write_synced_srt(al['srt'])
                 if out:
                     xbmc.Player().setSubtitles(out)
+                    general.remember_active_heb_sub(out, 'Hebrew')
                     self._set_status('סונכרן לפי הכתובית שנבחרה!', 'springgreen')
                     return
             self._set_status('הסנכרון לא הצליח - הכתובית נשארה כפי שהיא', 'red')
@@ -627,6 +678,7 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
             out = ai_bridge._write_synced_srt(heb)
             if out:
                 xbmc.Player().setSubtitles(out)
+                general.remember_active_heb_sub(out, 'Hebrew')
                 self._set_status('תורגם מחדש והועלה למאגר!', 'springgreen')
             else:
                 self._set_status('התרגום הצליח אך הקובץ לא נכתב', 'orange')
