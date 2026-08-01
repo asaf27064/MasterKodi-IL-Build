@@ -1118,6 +1118,23 @@ class KodiMonitor(xbmc.Monitor):
             xbmcgui.Window(10000).setProperty("subs.player_filename","")
             break_wait=True
         if method=='Player.OnPlay':
+            # MASTERKODI: ignore PLACEHOLDER playbacks. TMDb Helper plays its own
+            # resources/dummy.mp4 while it resolves the real source (see
+            # tmdbhelper/lib/player/action/dummy.py). Kodi fires Player.OnPlay for
+            # it, and we used to treat it as a real video: the filename parsed to
+            # the title "dummy", TMDb matched the 2002 movie "Dummy", and we
+            # downloaded + offered to AI-translate ENGLISH subs for the wrong
+            # title -- on screen while the user was still picking a source for
+            # something else entirely (Asaf, 2026-08-01: clicked Supergirl, got a
+            # "subtitle selected" + no-Hebrew-subs prompt before the source list
+            # even loaded). tmdbhelper guards for this file by name itself.
+            try:
+                _pf = (xbmc.Player().getPlayingFile() or '').lower()
+                if _pf.endswith('dummy.mp4') or _pf.endswith('/dummy.mp4'):
+                    log.warning('Skipping placeholder playback (tmdbhelper dummy.mp4)')
+                    return
+            except Exception:
+                pass
             log.warning('Player ONONON::')
             manual_search=""
             while  manual_search!='':
