@@ -296,8 +296,11 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         try:
             self.getControl(102).setLabel('[B]{0}[/B]'.format(self.title))
             self._status_ctrl(self.header_text)
+            # ...and tell the user the per-row actions exist at all: a context
+            # menu is invisible unless advertised (Asaf, 2026-08-01).
             self.getControl(104).setLabel(
-                '[COLOR gold][B]{0}[/B][/COLOR] כתוביות · מסודר לפי אחוז התאמה'.format(len(self.list_o)))
+                '[COLOR gold][B]{0}[/B][/COLOR] כתוביות · מסודר לפי אחוז התאמה'
+                ' · [COLOR gold]C[/COLOR] / לחיצה ארוכה = פעולות'.format(len(self.list_o)))
             self._fill_list()
             # results are ON SCREEN -> the search phase is over. Publish END so
             # show_results' top overlay ('מסדר כתוביות X/Y') closes instead of
@@ -501,6 +504,16 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         except Exception:
             return {}
 
+    def _row_title(self, row):
+        """The row's real release/file name, used as the action-menu heading so
+        it is unambiguous WHICH subtitle the action applies to."""
+        try:
+            name = unque(self._row_params(row).get('filename') or '')
+            name = _re.sub(r'\[/?COLOR[^\]]*\]|\[/?B\]', '', name).strip()
+            return (name[:60] + '…') if len(name) > 61 else (name or 'פעולות על הכתובית')
+        except Exception:
+            return 'פעולות על הכתובית'
+
     def _row_is_hebrew(self, row):
         lang = (self._row_params(row).get('language') or '').lower()
         return 'hebrew' in lang or 'heb' in lang or 'עבר' in lang
@@ -538,10 +551,16 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         row = self.full_list[idx]
         opts, acts = [], []
         if not self._row_is_hebrew(row):
-            opts.append('סנכרן את הכתובית הנוכחית לפי שורה זו'); acts.append('sync')
-            opts.append('תרגם מחדש מהשורה הזו (AI)');             acts.append('retrans')
-        opts.append('דווח: הכתובית לא מסונכרנת');                  acts.append('report')
-        sel = xbmcgui.Dialog().contextmenu(opts)
+            # SHORT labels: the context list truncates and then slowly
+            # focus-scrolls long text, so the action was unreadable until the
+            # marquee came round (Asaf, 2026-08-01).
+            opts.append('סנכרן לפי שורה זו');       acts.append('sync')
+            opts.append('תרגם מחדש (AI)');          acts.append('retrans')
+        opts.append('דווח: לא מסונכרנת');           acts.append('report')
+        # Use select() rather than contextmenu(): it takes a HEADING, so the row
+        # you are acting on is named on screen. contextmenu() showed only the
+        # movie poster/title, leaving it ambiguous which subtitle was targeted.
+        sel = xbmcgui.Dialog().select(self._row_title(row), opts)
         if sel < 0:
             return
         act = acts[sel]
