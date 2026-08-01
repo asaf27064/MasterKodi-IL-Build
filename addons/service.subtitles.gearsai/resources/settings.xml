@@ -5,7 +5,10 @@
 		<setting label="אתרי כתוביות ישראליים" type="lsep"/>
 		<setting id="ktuvit" label="[COLOR springgreen][B]Ktuvit[/B][/COLOR] [COLOR blue](https://www.ktuvit.me)[/COLOR]" type="bool" default="true" />
 		<setting id="wizdom" label="[COLOR yellow][B]Wizdom[/B][/COLOR] [COLOR blue](https://wizdom.xyz)[/COLOR]" type="bool" default="true" />
-		<setting id="telegram" label="[COLOR deepskyblue][B]Telegram[/B][/COLOR]" type="bool" default="true" />
+		<!-- default OFF: with no Telegram account configured the source just spams
+		     "Failed to connect to Telegram client" on every search. Users who want
+		     it tick the box and log in (Asaf, 2026-08-01). -->
+		<setting id="telegram" label="[COLOR deepskyblue][B]Telegram[/B][/COLOR]" type="bool" default="false" />
 		<setting label="הסבר קצר" type="action" action="RunScript(service.subtitles.gearsai, telegram_helper_window)" visible="eq(-1,true)" />
 		<setting label="[COLOR limegreen]התחבר[/COLOR]" type="action" action="RunScript(service.subtitles.gearsai, login_to_telegram)" visible="eq(-2,true)" />
 		<setting id="telegram_first_and_last_name" type="text" label="[B]מחובר לחשבון[/B]" default="[B]לא מחובר[/B]" visible="eq(-3,true)" enable="false" />

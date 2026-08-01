@@ -349,7 +349,22 @@ class SourceResults(BaseDialog):
 		kwargs = {'items': json.dumps(list_items), 'heading': heading, 'multi_line': 'false'}
 		main_choice = select_dialog([i[1] for i in choices], **kwargs)
 		if main_choice is None: return
-		if main_choice == 'extra_info':
+		########### KODIRDIL - Hebrew/SDR filters are SINGLE-ACTION choices ###########
+		# They must be handled BEFORE the quality/provider fall-through: that
+		# branch builds its option list from a 'tikiskins.<choice>' property,
+		# which doesn't exist for these -- so it opened an EMPTY second dialog
+		# (0/0) whose אישור returned None and bailed before the real filter code
+		# below ever ran (Asaf, 2026-08-01, Windows POV sweep).
+		if main_choice == 'hebrew_subs_only':
+			filtered_list = [i for i in self.item_list if i.getProperty('tikiskins.has_hebrew_subs') == 'true']
+		elif main_choice == 'sort_hebrew_subs':
+			_with = [i for i in self.item_list if i.getProperty('tikiskins.has_hebrew_subs') == 'true']
+			_without = [i for i in self.item_list if i.getProperty('tikiskins.has_hebrew_subs') != 'true']
+			filtered_list = _with + _without
+		elif main_choice == 'sdr_only':
+			filtered_list = [i for i in self.item_list if not self._is_hdr_item(i)]
+		###############################################################################
+		elif main_choice == 'extra_info':
 			list_items = [{'line1': item[0]} for item in extra_info_choices]
 			kwargs = {'items': json.dumps(list_items), 'heading': heading, 'multi_choice': 'true', 'multi_line': 'false'}
 			choice = select_dialog(extra_info_choices, **kwargs)
@@ -378,16 +393,6 @@ class SourceResults(BaseDialog):
 			choice = select_dialog(provider_choices, **kwargs)
 			if choice is None: return
 			filtered_list = [i for i in self.item_list if any(x in i.getProperty(filter_property) for x in choice)]
-		########### KODIRDIL - Hebrew/SDR filter branches ###########
-		if main_choice == 'hebrew_subs_only':
-			filtered_list = [i for i in self.item_list if i.getProperty('tikiskins.has_hebrew_subs') == 'true']
-		elif main_choice == 'sort_hebrew_subs':
-			_with = [i for i in self.item_list if i.getProperty('tikiskins.has_hebrew_subs') == 'true']
-			_without = [i for i in self.item_list if i.getProperty('tikiskins.has_hebrew_subs') != 'true']
-			filtered_list = _with + _without
-		elif main_choice == 'sdr_only':
-			filtered_list = [i for i in self.item_list if not self._is_hdr_item(i)]
-		#############################################################
 		if not filtered_list: return ok_dialog(text=32760)
 		self.filter_applied = True
 		self.win.reset()
