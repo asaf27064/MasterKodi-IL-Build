@@ -22,6 +22,7 @@ default_username	70104c827994d660  # DEFAULT_USERNAME
 email	4d21854f14ecca9f  # email
 introdb_api_key	0299a65da3b3ca41  # INTRODB_API_KEY
 ktemail	888aa46271538858  # ktEmail
+mdblist.client_id	609f94e5dd35d7ea  # mdblist.client_id
 mdblist_api_key	26a54bb6beda02ec  # mdblist_api_key
 mdblist_apikey	26a54bb6beda02ec  # mdblist_apikey
 os_api_key_name	2c36b870b9c5d74f  # OS_API_KEY_NAME
