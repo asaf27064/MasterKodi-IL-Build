@@ -214,3 +214,27 @@ present · **0** boot errors, **0** DBMOVED, **0** failed-skin, **0** missing-pl
    `am start` + RPC ping, the same probe returned 11 root items and 21 movies.
    Always confirm `mWakefulness=Awake` + a successful ping before trusting a probe
    (see memory adb-device-driving).
+
+## Windows manual sweep -- POV x 4 skins (Asaf-driven, 2026-08-01)
+
+Asaf tested by hand; Claude tracked live via two watchers (log-anomaly tail +
+10s DB/skin/settings state diffs). POV base 6.08.01 / overlay 0.1.10, gearsai
+1.0.48, wizard 2.4.154.
+
+| skin | switch | deps rebalance | notes |
+|---|---|---|---|
+| Estuary + AF3 | earlier phase | ok | search/services/maintenance verified |
+| Nimbus 0.1.43 | extract 1198/0 err, pinned, restart clean | AF3 stack (11 rows incl. skinvariables/tmdbhelper) disabled; nimbus.helper enabled | debrid banner shown correctly post-fix |
+| Zephyr | one restart, font ok | nimbus stack joins disabled (6 rows total); jurialmunkey/skinvariables/tmdbhelper re-enabled (zephyr-pov-tmdb variant) | frozen-home bools verified: all 4 layout bools false (no stacking) |
+
+Playback spot-checks: Supergirl (AI sub pipeline: release-name channel,
+sync-by-row, HI-clean) and The Batman + Ktuvit human sub
+(remember_active_heb_sub hebrew=True via the language channel).
+
+Fixed during this sweep (all shipped): POV overlay 0.1.5-0.1.10
+(subs.player_filename publish/clear, debrid banner unwrap+bidi+boot-race,
+6.08.01 re-merge), gearsai 1.0.47-1.0.48 (active-sub tracking, raw row fetch,
+NameError, HI-clean on AI writers), pool: both Supergirl entries cleaned
+in place (639+569 tagged lines -> 0).
+
+Remaining on Windows: the same sweep on the GEARS content source.
