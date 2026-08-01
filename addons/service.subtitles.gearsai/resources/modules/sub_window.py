@@ -488,7 +488,158 @@ class SubsXMLWindow(xbmcgui.WindowXMLDialog):
         else:
             self._set_status('הסנכרון לא הצליח - הכתובית נשארה כפי שהיא', 'red')
 
+    # ------------- MASTERKODI: per-row actions (context menu) ---------------
+    # A plain CLICK still just downloads the row -- unchanged. The context menu
+    # (menu key / long-press) adds the per-row actions: use THIS English sub as
+    # the timing reference, re-translate FROM it, or report that the Hebrew sub
+    # we served is out of sync. Footer buttons were the alternative, but these
+    # are per-ROW actions (they need the row you are pointing at) and the footer
+    # is already 4 packed slots. (Asaf, 2026-08.)
+    def _row_params(self, row):
+        try:
+            return _get_params(row[4])
+        except Exception:
+            return {}
+
+    def _row_is_hebrew(self, row):
+        lang = (self._row_params(row).get('language') or '').lower()
+        return 'hebrew' in lang or 'heb' in lang or 'עבר' in lang
+
+    def _fetch_row_file(self, row):
+        """Download a result row and return its local path WITHOUT applying it
+        as the active subtitle (the click path applies; these actions consume
+        the text instead)."""
+        p = self._row_params(row)
+        if not p:
+            return None
+        from resources.modules import general
+        general.ai_manual, general.break_all = True, False
+        try:
+            f = download_sub(p['source'], json.loads(unque(p['download_data'])),
+                             MySubFolder, p['language'], p['filename'])
+        finally:
+            general.ai_manual = False
+        if not f or f in ('FaultSubException', '0', 'EmbeddedSubSelected'):
+            return None
+        return f
+
+    @staticmethod
+    def _read(path):
+        try:
+            with open(path, encoding='utf-8', errors='replace') as fh:
+                return fh.read()
+        except Exception:
+            return ''
+
+    def _row_menu(self):
+        idx = self.getControl(100).getSelectedPosition()
+        if idx < 0 or idx >= len(self.full_list):
+            return
+        row = self.full_list[idx]
+        opts, acts = [], []
+        if not self._row_is_hebrew(row):
+            opts.append('סנכרן את הכתובית הנוכחית לפי שורה זו'); acts.append('sync')
+            opts.append('תרגם מחדש מהשורה הזו (AI)');             acts.append('retrans')
+        opts.append('דווח: הכתובית לא מסונכרנת');                  acts.append('report')
+        sel = xbmcgui.Dialog().contextmenu(opts)
+        if sel < 0:
+            return
+        act = acts[sel]
+        if act == 'report':
+            self._report_unsynced()
+            return
+        if getattr(self, '_dl_busy', False):
+            self._set_status('פעולה אחרת כבר רצה…', 'orange')
+            return
+        self._dl_busy = True
+
+        def _bg():
+            try:
+                if act == 'sync':
+                    self._sync_from_row(row)
+                else:
+                    self._retranslate_from_row(row)
+            finally:
+                self._dl_busy = False
+        Thread(target=_bg).start()
+
+    def _sync_from_row(self, row):
+        """Re-time the Hebrew sub currently on screen onto the timing of the
+        English row the user picked. Free -- no translation, no AI quota."""
+        self._set_status('מסנכרן לפי הכתובית שנבחרה…')
+        cur = xbmcgui.Window(10000).getProperty('gearsai.current_heb_sub')
+        if not cur or not os.path.exists(cur):
+            self._set_status('אין כתובית עברית פעילה לסנכרון', 'red')
+            return
+        eng_path = self._fetch_row_file(row)
+        if not eng_path:
+            self._set_status('הורדת הכתובית נכשלה', 'red')
+            return
+        try:
+            from resources.aisubs import sync_align, ai_bridge
+            al = sync_align.align(self._read(cur), self._read(eng_path))
+            if al and al.get('ok') and al.get('srt'):
+                out = ai_bridge._write_synced_srt(al['srt'])
+                if out:
+                    xbmc.Player().setSubtitles(out)
+                    self._set_status('סונכרן לפי הכתובית שנבחרה!', 'springgreen')
+                    return
+            self._set_status('הסנכרון לא הצליח - הכתובית נשארה כפי שהיא', 'red')
+        except Exception as e:
+            log.warning('row sync failed: %s' % e)
+            self._set_status('הסנכרון נכשל', 'red')
+
+    def _retranslate_from_row(self, row):
+        """AI-translate the picked English row into a NEW Hebrew sub. Uses
+        Gemini quota by explicit user choice, and (via translate_english_text)
+        contributes the result to the pool as a SECOND entry for this release --
+        so both versions coexist and best_match picks per viewer."""
+        self._set_status('מתרגם מחדש מהכתובית שנבחרה… (זה לוקח זמן)')
+        eng_path = self._fetch_row_file(row)
+        if not eng_path:
+            self._set_status('הורדת הכתובית נכשלה', 'red')
+            return
+        try:
+            from resources.aisubs import ai_bridge
+            heb = ai_bridge.translate_english_text(self._read(eng_path))
+            if not heb:
+                self._set_status('התרגום נכשל', 'red')
+                return
+            out = ai_bridge._write_synced_srt(heb)
+            if out:
+                xbmc.Player().setSubtitles(out)
+                self._set_status('תורגם מחדש והועלה למאגר!', 'springgreen')
+            else:
+                self._set_status('התרגום הצליח אך הקובץ לא נכתב', 'orange')
+        except Exception as e:
+            log.warning('row retranslate failed: %s' % e)
+            self._set_status('התרגום נכשל', 'red')
+
+    def _report_unsynced(self):
+        """Wire the pool feedback that existed but was never called: flag the
+        pooled entry we served so it sinks for the next viewer too."""
+        try:
+            pid = xbmcgui.Window(10000).getProperty('gearsai.pool_id')
+            if not pid:
+                self._set_status('הכתובית הנוכחית לא הגיעה מהמאגר', 'orange')
+                return
+            from resources.aisubs import pool
+            pool.flag(pid)
+            pool.vote(pid, -1)
+            self._set_status('הדיווח נשלח - תודה!', 'springgreen')
+        except Exception as e:
+            log.warning('pool report failed: %s' % e)
+            self._set_status('הדיווח נכשל', 'red')
+
     def onAction(self, action):
+        # 117 = ACTION_CONTEXT_MENU (menu key / long-press) on a result row
+        if action.getId() == 117:
+            try:
+                if self.getFocusId() == 100:
+                    self._row_menu()
+                    return
+            except Exception:
+                pass
         if action.getId() in (10, 92, 216, 247, 257, 275, 61467, 61448):
             self.close_window = True
             self.close()

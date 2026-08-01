@@ -120,6 +120,31 @@ def _pick_info():
         return '', 0, ''
 
 
+def _remember_pool_pick(best):
+    """Record which pool entry we served, so the subtitle window can report it
+    as bad (pool.flag) if the user says it is out of sync. Without this the
+    vote/flag API existed but nothing could ever call it."""
+    try:
+        w = xbmcgui.Window(10000)
+        w.setProperty('gearsai.pool_id', str(best.get('id') or ''))
+        w.setProperty('gearsai.pool_match', str(best.get('_match', '')))
+    except Exception:
+        pass
+
+
+def _verify_pool_timing(hebrew_srt):
+    """Ground-truth timing check for a pooled Hebrew sub: align it to the
+    PLAYING file's embedded subtitle track. Returns a re-timed SRT when the
+    file's own timings disagree with the pooled ones, else None (use as-is).
+    Free + local: no Gemini quota, and it works even when the release name is
+    unknown -- which is exactly when the release-token match tells us nothing."""
+    try:
+        return _mkv_oracle_retime(hebrew_srt, force=True)
+    except Exception as e:
+        xbmc.log('[gearsai-ai] pool timing verify failed: {0}'.format(e), xbmc.LOGWARNING)
+        return None
+
+
 def _pool_hebrew(info, release):
     """Return a ready-made Hebrew SRT from the community pool for the playing
     media (instant, free, no Gemini quota -- works even for keyless users), or
@@ -139,15 +164,33 @@ def _pool_hebrew(info, release):
         heb = pool.fetch(best.get('id'), 'he')
         if not (heb and heb.strip()):
             return None
-        # Good release/timing match (or we can't tell -> no release detected):
-        # use it as-is, instantly.
+        _remember_pool_pick(best)
+        # A high release-token overlap is decent evidence the timing fits. NO
+        # release detected (debrid/stream paths that never set the filename
+        # property) is ZERO evidence -- yet the old code took that branch as a
+        # "good match" and shipped the sub untouched while reporting success.
+        # That is how a pooled Supergirl sub arrived completely out of sync
+        # (Asaf, 2026-08). When we have no evidence, verify against the playing
+        # file's OWN embedded track (ground truth, free, no Gemini quota) and
+        # re-time if it is off. Fail-open: no embedded track -> use as-is.
+        if not release:
+            fixed = _verify_pool_timing(heb)
+            if fixed:
+                xbmc.log('[gearsai-ai] pool hit ({0}) verified+retimed via embedded oracle'.format(
+                    best.get('id')), xbmc.LOGINFO)
+                _step('סונכרן לפי הקובץ המתנגן', 100)
+                _set_origin('מאגר קהילתי · סונכרן')
+                _notify('נשלף מהמאגר הקהילתי · סונכרן לקובץ שלך')
+                return fixed
         if not release or best.get('_match', 0) >= 80:
             xbmc.log('[gearsai-ai] pool hit ({0}, sync {1}) -> instant Hebrew'.format(
                 best.get('id'), best.get('_match', '?')), xbmc.LOGINFO)
             _step('נמצא תרגום מוכן במאגר · סנכרון {0}%'.format(best.get('_match', '?')), 100)
             _m = best.get('_match')
             _set_origin('מאגר קהילתי')
-            _notify('נשלף מהמאגר הקהילתי' + (' · סנכרון {0}%'.format(_m) if _m else ''))
+            # Do NOT claim a sync percentage we never measured: with no release
+            # detected the number is unknown, and printing one reads as verified.
+            _notify('נשלף מהמאגר הקהילתי' + (' · סנכרון {0}%'.format(_m) if (release and _m) else ''))
             return heb
         # Timing mismatch -> try re-timing this Hebrew onto the user's EXACT
         # release for free (no re-translation), using the stored English anchor.

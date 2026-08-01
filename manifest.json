@@ -475,7 +475,7 @@
     },
     {
       "id": "service.subtitles.gearsai",
-      "version": "1.0.42",
+      "version": "1.0.43",
       "channel": "core",
       "zip": "service.subtitles.gearsai-1.0.42.zip",
       "sha256": "bf00b45da8d882ce1d9b462683c54babaff6f1bb5d83258933d2a2f35762b2b5",
