@@ -337,12 +337,24 @@ class SourceResults(BaseDialog):
 	def filter_results(self):
 		choices = [(filter_quality, 'quality'), (filter_provider, 'provider'), (filter_title, 'keyword_title'), (filter_extraInfo, 'extra_info')]
 		########### KODIRDIL - Hebrew subtitles + SDR filter options ###########
+		# ALL our filters go FIRST (they are the ones actually used day to day),
+		# in a fixed order, each marked with a bullet so they read as one group
+		# above POV's generic filters.
+		#
+		# NO [COLOR] markup here on purpose: select_dialog builds each row with
+		# `line1.upper()`, which uppercases the tag itself ([COLOR cyan] ->
+		# [COLOR CYAN]). Kodi then fails to resolve the colour, and a label that
+		# is ENTIRELY wrapped in the tag renders as an EMPTY row -- which is
+		# exactly why 'מיין לפי כתוביות עבריות' showed up blank (Asaf,
+		# 2026-08-01). Plain text always renders.
+		_ours = []
 		if getattr(self, 'total_subtitles_matches_count', 0) > 0:
-			choices.insert(0, ('[COLOR lime]הצג עם כתוביות עבריות בלבד[/COLOR] | [B]%d[/B] תוצאות' % self.total_subtitles_matches_count, 'hebrew_subs_only'))
-			choices.insert(1, ('[COLOR cyan]מיין לפי כתוביות עבריות[/COLOR]', 'sort_hebrew_subs'))
+			_ours.append(('• הצג עם כתוביות עבריות בלבד | %d תוצאות' % self.total_subtitles_matches_count, 'hebrew_subs_only'))
+			_ours.append(('• מיין לפי כתוביות עבריות (עברית קודם)', 'sort_hebrew_subs'))
 		_sdr_count = len([i for i in self.item_list if not self._is_hdr_item(i)])
 		if 0 < _sdr_count < len(self.item_list):
-			choices.append(('[COLOR yellow]הצג SDR בלבד (ללא HDR/DV)[/COLOR] | [B]%d[/B] תוצאות' % _sdr_count, 'sdr_only'))
+			_ours.append(('• הצג SDR בלבד (ללא HDR/DV) | %d תוצאות' % _sdr_count, 'sdr_only'))
+		choices = _ours + choices
 		########################################################################
 		list_items = [{'line1': item[0]} for item in choices]
 		heading = filter_str.replace('[B]', '').replace('[/B]', '')
