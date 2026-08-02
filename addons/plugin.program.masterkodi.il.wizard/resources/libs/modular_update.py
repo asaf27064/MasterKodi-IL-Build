@@ -2235,7 +2235,23 @@ def _enforce_gears_settings(home, gears_settings, exclude):
                 c.execute('INSERT OR REPLACE INTO settings (setting_id, setting_value) VALUES (?, ?)',
                           (sid, sval))
         c.commit(); c.close()
-        log('enforced %d gears settings' % len(gears_settings))
+        # The db alone is NOT enough mid-session. Gears reads its settings as
+        # WINDOW PROPERTIES (gears.<id>), mirrored from the db only by its own
+        # boot sync -- so a db-only write stayed invisible until the next
+        # restart: the settings UI still showed EXTERNAL SCRAPERS off, and the
+        # running scrape used the stale value, returned nothing and surfaced as
+        # an error right after a fresh install (Asaf, 2026-08-02). The views
+        # enforcement already mirrors for exactly this reason; settings did not.
+        try:
+            home_win = xbmcgui.Window(10000)
+            for sid, val in gears_settings.items():
+                if sid in exclude:
+                    continue
+                home_win.setProperty('gears.%s' % sid, (
+                    'true' if val is True else 'false' if val is False else str(val)))
+        except Exception:
+            pass
+        log('enforced %d gears settings (db + live properties)' % len(gears_settings))
         return True
     except Exception as e:
         log('gears settings enforce failed: %s' % e, xbmc.LOGERROR)

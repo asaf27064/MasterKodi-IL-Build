@@ -1112,6 +1112,45 @@ def test_maintenance_keeps_logs():
     check('Textures db dropped when a restart IS planned', not os.path.exists(tex))
 
 
+def test_gears_settings_go_live_without_restart():
+    """Enforcing Gears settings must ALSO mirror them into the window properties.
+
+    Gears reads its settings as `gears.<id>` window properties, refreshed from
+    settings.db only by its own boot sync. A db-only write therefore stayed
+    invisible until the next restart: right after a fresh Gears install the
+    settings UI still showed EXTERNAL SCRAPERS off, the running scrape used the
+    stale value, found no sources and surfaced as an error (Asaf, 2026-08-02).
+    The views enforcement already mirrored for this reason; settings did not."""
+    print("\n=== gears settings: applied live, not only in the db ===")
+    import sqlite3 as _sq
+    import xbmcgui as _gui
+
+    dbdir = os.path.join(HOME, 'userdata', 'addon_data', 'plugin.video.gears', 'databases')
+    os.makedirs(dbdir, exist_ok=True)
+    db = os.path.join(dbdir, 'settings.db')
+    if os.path.exists(db):
+        os.remove(db)
+    con = _sq.connect(db)
+    con.execute('CREATE TABLE settings (setting_id TEXT PRIMARY KEY, setting_value TEXT)')
+    con.execute("INSERT INTO settings VALUES ('provider.external','false')")
+    con.commit(); con.close()
+
+    win = _gui.Window(10000)
+    win.setProperty('gears.provider.external', 'false')      # stale in-memory value
+    ok = mu._enforce_gears_settings(HOME, {'provider.external': True,
+                                           'rd.token': 'SECRET'}, {'rd.token'})
+    check('enforcement reports success', ok is True)
+
+    con = _sq.connect(db)
+    val = con.execute("SELECT setting_value FROM settings WHERE setting_id='provider.external'").fetchone()[0]
+    con.close()
+    check('db updated with a lowercase boolean', val == 'true')
+    check('window property mirrored -> live without a restart',
+          win.getProperty('gears.provider.external') == 'true')
+    check('excluded credential NOT mirrored into a window property',
+          win.getProperty('gears.rd.token') == '')
+
+
 def test_gears_settings_bool_serialization():
     """gears_settings enforcement must write JSON booleans as lowercase
     'true'/'false' -- Gears reads with string compares (== 'true'), so the old
@@ -1332,6 +1371,7 @@ def main():
               test_active_skin_update_on_windows,
               test_maintenance_folder_contents, test_remove_skin_purges_residue, test_detect_extras_skips_kodi_defaults,
               test_gears_settings_bool_serialization,
+              test_gears_settings_go_live_without_restart,
               test_dbmoved_install):
         try:
             t()
