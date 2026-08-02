@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-02T09:57:22Z",
+  "generated_utc": "2026-08-02T10:09:08Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -538,13 +538,13 @@
     }
   ],
   "config": {
-    "version": "55",
-    "zip": "config-55.zip",
-    "sha256": "204f98e92f4acf9e063da05454104004ff1b13d4e2e4a6a5e15f46d6653fccc5",
-    "size": 2698340,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-55.zip"
+    "version": "56",
+    "zip": "config-56.zip",
+    "sha256": "1a280ee1ababf4215a1af2d31e708b39805e7a578349f289300fe9bba3bd7bf1",
+    "size": 2698362,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-56.zip"
   },
   "content_variants": {
-    "version": "ca0511fb32ee3f28"
+    "version": "a9790046f1c45920"
   }
 }
