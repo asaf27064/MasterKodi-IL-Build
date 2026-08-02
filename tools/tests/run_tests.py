@@ -366,6 +366,16 @@ def test_update_ordering():
     fake = {'addons': [{'id': 'plugin.new', 'version': '2.0', 'sha256': 'x' * 64, 'url': 'http://x'}],
             'generated_utc': 'now', 'config': None, 'content_variants': None}
     calls = {'rm': 0, 'one': 0}
+    # These stubs used to leak into EVERY later test (they were never restored),
+    # so a subsequent test calling e.g. mu.repair_skin_menu silently exercised
+    # the lambda instead of the real code and could not fail. Snapshot the real
+    # attributes and restore them at the end of this test.
+    _saved = {n: getattr(mu, n) for n in (
+        'fetch_manifest', '_recover_orphaned_rollbacks', '_pin_all_modded_once',
+        'remove_junk_repos', 'repair_disabled_deps', 'repair_skin_menu',
+        '_maybe_apply_config', '_maybe_apply_content_variants', '_active_skin',
+        '_load_state', '_save_state', 'compute_updates', '_apply_removals',
+        '_apply_one')}
     mu.fetch_manifest = lambda force=False: fake
     mu._recover_orphaned_rollbacks = lambda: None
     mu._pin_all_modded_once = lambda s: None
@@ -415,6 +425,8 @@ def test_update_ordering():
     check('cancelled -> nothing applied', sc.get('applied') == [])
     check('cancelled -> removals SKIPPED', calls['rm'] == 0)
     check('cancelled -> config apply SKIPPED', cfg['n'] == 0)
+    for _n, _v in _saved.items():          # un-leak: later tests get the REAL code
+        setattr(mu, _n, _v)
 
 
 def test_cross_source_keep():
@@ -593,6 +605,120 @@ def test_pov_publishes_player_release():
               "set_window_property('subs.player_filename', '')" in src)
         check('%s: prefers display_name (upstream renamed URLName)' % label,
               "get('display_name')" in src and 'URLName' not in src)
+
+
+def test_menu_bundle_never_laid_on_pov():
+    """repair_skin_menu ships GEARS home menus (every widget is a
+    plugin://plugin.video.gears/ path). Laying them on a POV box replaces a
+    WORKING POV menu with widgets pointing at an addon that isn't installed --
+    home goes empty, log fills with 'Unable to find plugin plugin.video.gears'.
+
+    Asaf hit this live 2026-08-02 on Zephyr: the trigger was NOT a broken menu
+    but a bundle VERSION bump alone (`broken=False stale=True`), so the guard
+    must hold for the stale path specifically. On POV the variant config owns
+    those menu files, so the correct action is re-applying the POV variant.
+
+    Also asserts the shipped bundles really are Gears-only -- if a POV bundle is
+    ever added, this test should be revisited rather than silently passing."""
+    print("\n=== repair_skin_menu: GEARS bundle never laid on a POV box ===")
+    import shutil as _sh
+
+    ZEPHYR = 'skin.arctic.zephyr.2.resurrection.mod'
+    bundle = os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                          'resources', 'menu_defaults', ZEPHYR)
+    check('zephyr menu bundle ships', os.path.isdir(bundle))
+
+    # the bundle is Gears-only -- the premise of the whole guard
+    hits = {'gears': 0, 'pov': 0}
+    for root, _dirs, files in os.walk(bundle):
+        for fn in files:
+            try:
+                with open(os.path.join(root, fn), encoding='utf-8',
+                          errors='replace') as fh:
+                    txt = fh.read()
+            except Exception:
+                continue
+            hits['gears'] += txt.count('plugin.video.gears')
+            hits['pov'] += txt.count('plugin.video.pov')
+    check('bundle is GEARS menus (that is why the guard exists)',
+          hits['gears'] > 0 and hits['pov'] == 0)
+
+    # --- stage a POV box whose menu is healthy but whose bundle marker is old
+    skin_dir = os.path.join(mu.ADDONS_PATH, ZEPHYR, '1080i')
+    os.makedirs(skin_dir, exist_ok=True)
+    inc = os.path.join(skin_dir, 'script-skinshortcuts-includes.xml')
+    with open(inc, 'w', encoding='utf-8') as fh:
+        fh.write('<includes><shortcut>plugin://plugin.video.pov/?mode=x</shortcut></includes>')
+    open(os.path.join(skin_dir, 'Home.xml'), 'w').close()
+    ss_dst = os.path.join(HOME, 'userdata', 'addon_data', 'script.skinshortcuts')
+    os.makedirs(ss_dst, exist_ok=True)
+    povdata = os.path.join(ss_dst, 'mainmenu.DATA.xml')
+    with open(povdata, 'w', encoding='utf-8') as fh:
+        fh.write('<shortcuts><shortcut>plugin://plugin.video.pov/?mode=y</shortcut></shortcuts>')
+    os.makedirs(mu.ADDON_DATA, exist_ok=True)
+    marker = os.path.join(mu.ADDON_DATA, 'menu_ver_%s.txt' % ZEPHYR)
+    with open(marker, 'w', encoding='utf-8') as fh:
+        fh.write('0')                      # older than the shipped VERSION -> stale
+
+    orig_skin, orig_src, orig_major = mu._active_skin, mu._content_source, mu.KODI_MAJOR
+    calls = {'pov_apply': 0}
+    try:
+        mu._active_skin = lambda: ZEPHYR
+        mu._content_source = lambda: 'pov'
+        mu.KODI_MAJOR = 21                 # Piers returns early for other reasons
+        from resources.libs import content_source as _cs
+        orig_core, orig_vdir = _cs._apply_pov_core, _cs._variant_dir
+
+        def fake_core(skin_id):
+            calls['pov_apply'] += 1
+            return True, ''
+        _cs._apply_pov_core = fake_core
+        _cs._variant_dir = lambda s: 'zephyr-pov-tmdb'
+        try:
+            restored = mu.repair_skin_menu(no_reload=True)
+        finally:
+            _cs._apply_pov_core, _cs._variant_dir = orig_core, orig_vdir
+    finally:
+        mu._active_skin, mu._content_source = orig_skin, orig_src
+        mu.KODI_MAJOR = orig_major
+
+    check('POV variant re-applied instead of the Gears bundle',
+          calls['pov_apply'] == 1)
+    # the smoking gun from the live incident: the box's menu got Gears URLs
+    with open(povdata, encoding='utf-8') as fh:
+        after = fh.read()
+    check('box menu NOT overwritten with gears URLs',
+          'plugin.video.gears' not in after and 'plugin.video.pov' in after)
+    with open(inc, encoding='utf-8') as fh:
+        inc_after = fh.read()
+    check('skin includes NOT overwritten with gears URLs',
+          'plugin.video.gears' not in inc_after)
+    check('reports the POV path, not a bundle relay',
+          'skinshortcuts-data' not in restored and 'skin-includes' not in restored)
+
+    # --- and when the POV variant cannot be applied: SKIP, never fall back
+    with open(marker, 'w', encoding='utf-8') as fh:
+        fh.write('0')
+    try:
+        mu._active_skin = lambda: ZEPHYR
+        mu._content_source = lambda: 'pov'
+        mu.KODI_MAJOR = 21
+        from resources.libs import content_source as _cs
+        orig_vdir = _cs._variant_dir
+        _cs._variant_dir = lambda s: None          # no variant for this skin/version
+        try:
+            restored2 = mu.repair_skin_menu(no_reload=True)
+        finally:
+            _cs._variant_dir = orig_vdir
+    finally:
+        mu._active_skin, mu._content_source = orig_skin, orig_src
+        mu.KODI_MAJOR = orig_major
+    with open(povdata, encoding='utf-8') as fh:
+        after2 = fh.read()
+    check('no POV variant -> skips (still no gears URLs on the box)',
+          'plugin.video.gears' not in after2 and not restored2)
+
+    _sh.rmtree(os.path.join(mu.ADDONS_PATH, ZEPHYR), ignore_errors=True)
 
 
 def test_maintenance_folder_contents():
@@ -893,6 +1019,7 @@ def main():
               test_set_default_skin_no_guisettings, test_maintenance_keeps_logs,
               test_pov_shortcut_folder_seed_is_json,
               test_pov_publishes_player_release,
+              test_menu_bundle_never_laid_on_pov,
               test_maintenance_folder_contents, test_remove_skin_purges_residue, test_detect_extras_skips_kodi_defaults,
               test_gears_settings_bool_serialization,
               test_dbmoved_install):

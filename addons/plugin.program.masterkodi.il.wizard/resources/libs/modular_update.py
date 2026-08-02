@@ -994,6 +994,32 @@ def repair_skin_menu(no_reload=False):
         stale = bool(bver) and applied != bver
         if not broken and not stale:
             return restored                     # menu already good AND current
+        # The bundled menus are GEARS menus (every widget is a
+        # plugin://plugin.video.gears/ path). Laying them on a POV box replaces a
+        # working POV menu with widgets pointing at an addon that isn't even
+        # installed -- "Unable to find plugin plugin.video.gears", empty home
+        # (Asaf, 2026-08-02: a bundle_ver bump alone triggered it, menu was NOT
+        # broken). On POV the variant config owns the menu, so re-apply THAT
+        # instead; _apply_pov_core never touches the stored source flag.
+        if _content_source() == 'pov':
+            try:
+                from resources.libs import content_source
+                if skin in content_source.SKIN_VARIANTS and content_source._variant_dir(skin):
+                    ok, err = content_source._apply_pov_core(skin)
+                    log('menu %s on POV -> re-applied POV variant (ok=%s%s)'
+                        % ('broken' if broken else 'stale', ok,
+                           '' if ok else ': %s' % err))
+                    if ok:
+                        _write_text(marker, bver)   # bundle level reached, POV way
+                        restored.append('pov-variant-menu')
+                        if not no_reload:
+                            xbmc.sleep(500)
+                            xbmc.executebuiltin('ReloadSkin()')
+                    return restored
+            except Exception as e:
+                log('POV menu re-apply failed: %s' % e, xbmc.LOGERROR)
+            log('POV box: skipping the GEARS menu bundle for %s' % skin)
+            return restored
         log('re-laying %s home menu (broken=%s stale=%s bundle_ver=%s)'
             % (skin, broken, stale, bver))
         ss_dst = xbmcvfs.translatePath('special://profile/addon_data/script.skinshortcuts/')
