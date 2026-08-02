@@ -2208,6 +2208,16 @@ class BuildManager:
                     (shutil.rmtree if os.path.isdir(p) else os.remove)(p)
         except Exception:
             pass
+        # 1b) our own menu-bundle marker for this skin. It is written but never
+        # otherwise deleted, so a removed skin left "bundle vN already applied"
+        # behind -- on a later REINSTALL that makes repair_skin_menu see
+        # stale=False and skip, suppressing the very repair that exists because
+        # a fresh install caches an EMPTY skinshortcuts menu (found in Asaf's
+        # 2026-08-02 removal sweep, after we purged this skin's menu DATA above).
+        try:
+            os.remove(os.path.join(ad, ADDON_ID, 'menu_ver_%s.txt' % skin_id))
+        except Exception:
+            pass
         # 2) skinvariables: nodes/skin.X/ dir + skin.X-*.json (viewtypes etc.)
         sv = os.path.join(ad, 'script.skinvariables')
         try:

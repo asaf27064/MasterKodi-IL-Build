@@ -900,6 +900,16 @@ def test_remove_skin_purges_residue():
     open(os.path.join(sv, 'nodes', sid, 'x.json'), 'w').write('x')
     open(os.path.join(sv, sid + '-viewtypes.json'), 'w').write('x')
     open(os.path.join(sv, 'skin.arctic.fuse.3-viewtypes.json'), 'w').write('KEEP')  # other skin
+    # our own menu-bundle marker: written by repair_skin_menu, never otherwise
+    # deleted. Left behind, a REINSTALL of this skin sees stale=False and skips
+    # the menu repair -- the repair that exists because a fresh install caches an
+    # EMPTY skinshortcuts menu (found in Asaf's 2026-08-02 removal sweep).
+    wiz_ad = os.path.join(ad, _C.ADDON_ID)
+    os.makedirs(wiz_ad, exist_ok=True)
+    marker = os.path.join(wiz_ad, 'menu_ver_%s.txt' % sid)
+    open(marker, 'w').write('4')
+    other_marker = os.path.join(wiz_ad, 'menu_ver_skin.arctic.fuse.3.txt')
+    open(other_marker, 'w').write('4')
     # DB rows incl. update_rules
     dbdir = os.path.join(_C.USERDATA, 'Database'); os.makedirs(dbdir, exist_ok=True)
     live = os.path.join(dbdir, 'Addons33.db')
@@ -934,6 +944,9 @@ def test_remove_skin_purges_residue():
     fresh.close()
     check('installed row removed', inst == 0)
     check('update_rules row removed (pinning residue)', rule == 0)
+    check('menu-bundle marker removed (else a reinstall skips the menu repair)',
+          not os.path.exists(marker))
+    check('OTHER skin menu marker kept', os.path.isfile(other_marker))
     # leave the shared HOME's Addons33.db clean for later tests
     try:
         os.remove(live)
