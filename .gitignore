@@ -41,3 +41,6 @@ wrangler.toml
 # pool/logs admin secrets live NEXT TO the scripts, never in git
 pool_admin_token.txt
 logs_admin_key.txt
+
+# transient marker written by tools/trace_playback.py
+.playback_trace_mark

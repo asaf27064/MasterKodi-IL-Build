@@ -1,0 +1,62 @@
+[
+ {
+  "t": "11:28:39.913",
+  "stage": "tmdbhelper: resolving dummy",
+  "msg": "lib.player - resolving dummy path to url"
+ },
+ {
+  "t": "11:28:39.966",
+  "stage": "kodi: opens the dummy",
+  "msg": "VideoPlayer::OpenFile: plugin://plugin.video.themoviedb.helper/?info=play&tmdb_id=1081003&tmdb_type=movie"
+ },
+ {
+  "t": "11:28:40.530",
+  "stage": "gearsai: placeholder skipped",
+  "msg": "/*MasterKodi AI Subs*/ Line: 1133,autosub.py-> Skipping placeholder playback (tmdbhelper dummy.mp4)"
+ },
+ {
+  "t": "11:28:43.088",
+  "stage": "tmdbhelper: dummy finished",
+  "msg": "lib.player - successfully resolved dummy file"
+ },
+ {
+  "t": "11:28:47.089",
+  "stage": "engine: scrape starts",
+  "msg": "###Gears-HEBSUBS###: Starting Hebrew subtitles search thread..."
+ },
+ {
+  "t": "11:28:47.092",
+  "stage": "gearsai: prefetch notified",
+  "msg": "###Gears-HEBSUBS###: GearsAI prefetch notified"
+ },
+ {
+  "t": "11:28:47.131",
+  "stage": "engine: scraping window",
+  "msg": "Loading skin file: C:\\MasterKodi IL\\portable_data\\addons\\plugin.video.gears\\resources\\skins\\Default\\1080i\\sources_playback.xml, load type: LOAD_ON_GUI_INIT"
+ },
+ {
+  "t": "11:28:47.448",
+  "stage": "hebrew subs: per-site results",
+  "msg": "###Gears-HEBSUBS###: [WIZDOM] Found 0 subtitles"
+ },
+ {
+  "t": "11:28:47.452",
+  "stage": "hebrew subs: per-site results",
+  "msg": "###Gears-HEBSUBS###: [OPENSUBTITLES] Found 0 subtitles"
+ },
+ {
+  "t": "11:28:51.068",
+  "stage": "hebrew subs: matched sources",
+  "msg": "###Gears-HEBSUBS###: Sources with matched subtitles: 0"
+ },
+ {
+  "t": "11:28:51.097",
+  "stage": "engine: SOURCE LIST shown",
+  "msg": "Loading skin file: C:\\MasterKodi IL\\portable_data\\addons\\plugin.video.gears\\resources\\skins\\Default\\1080i\\sources_results.xml, load type: LOAD_ON_GUI_INIT"
+ },
+ {
+  "t": "11:28:53.034",
+  "stage": "gearsai: prefetch ready",
+  "msg": "/*MasterKodi AI Subs*/ Line: 94,autosub.py-> PREFETCH | ready: 23 subs for tt8814476|0|0"
+ }
+]
