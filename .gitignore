@@ -44,3 +44,6 @@ logs_admin_key.txt
 
 # transient marker written by tools/trace_playback.py
 .playback_trace_mark
+
+# KEEP-verification snapshots: per-box state with credential fingerprints -- never in git
+.keep_snapshots/
