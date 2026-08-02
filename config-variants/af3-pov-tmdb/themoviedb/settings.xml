@@ -78,8 +78,8 @@
     <setting id="startup_notifications" default="true">true</setting>
     <setting id="sync_notifications" default="true">true</setting>
     <setting id="connection_notifications" default="true">true</setting>
-    <setting id="dummy_duration" default="true">1.0</setting>
-    <setting id="dummy_delay" default="true">1.0</setting>
+    <setting id="dummy_duration" default="true">0.1</setting>
+    <setting id="dummy_delay" default="true">0.1</setting>
     <setting id="only_resolve_strm" default="true">false</setting>
     <setting id="force_recache_kodidb" default="true">false</setting>
     <setting id="use_alternate_api_url" default="true">false</setting>
