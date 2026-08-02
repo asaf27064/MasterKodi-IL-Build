@@ -334,16 +334,70 @@ GEARS_TORBOX_FOLDER = ('TorBox Services', [
 GEARS_SEED_FOLDERS = [GEARS_NETWORKS_FOLDER, GEARS_TORBOX_FOLDER]
 
 
+def seed_nimbus_missing_cpaths():
+    """Add shipped Nimbus menu rows that the live box is missing.
+
+    Nimbus' home widgets are driven by script.nimbus.helper's cpath_cache.db,
+    whose config policy is `update: skip` -- deliberately, because the user can
+    customise widgets and a blanket overwrite would clobber that. The cost is
+    that a row ADDED to the shipped config never reaches an existing box.
+
+    That is how Nimbus-on-Gears ended up with no ז'אנרים under סדרות while
+    Nimbus-on-POV had it: the POV variant ships tvshow.widget.5 (Genres,
+    menu_type=tvshow) and the Gears base config never got that row (Asaf,
+    2026-08-02).
+
+    Only rows whose KEY is absent are inserted, so an existing row the user has
+    edited is never touched.
+    """
+    try:
+        import sqlite3
+        live = xbmcvfs.translatePath(
+            'special://profile/addon_data/script.nimbus.helper/cpath_cache.db')
+        if not os.path.isfile(live):
+            return                      # fresh install seeds the whole file
+        shipped = os.path.join(ADDON_PATH, 'resources', 'config_seed',
+                               'nimbus_cpaths.json')
+        if not os.path.isfile(shipped):
+            return
+        with open(shipped, encoding='utf-8') as fh:
+            rows = json.load(fh)
+        con = sqlite3.connect(live)
+        cols = [c[1] for c in con.execute('PRAGMA table_info(custom_paths)')]
+        if 'cpath_setting' not in cols:
+            con.close()
+            return
+        added = []
+        for r in rows:
+            key = r[0]
+            if con.execute('SELECT 1 FROM custom_paths WHERE cpath_setting=?',
+                           (key,)).fetchone():
+                continue
+            con.execute('INSERT INTO custom_paths VALUES (?,?,?,?,?)', tuple(r))
+            added.append(key)
+        if added:
+            con.commit()
+            log('nimbus cpaths: added missing row(s) %s' % ', '.join(added))
+        con.close()
+    except Exception as e:
+        log('nimbus cpath seed failed: %s' % e, xbmc.LOGWARNING)
+
+
 def seed_gears_shortcut_folder():
     """Insert the build's Gears shortcut folders (SELECTED NETWROKS +
     TorBox Services) into Gears' navigator.db if absent. These back the
     רשתות סטרימינג + חיבור שירותים home widgets, which render empty on a
     fresh box (Gears databases are never shipped). Each folder is seeded
-    only if absent, so a user who edits one isn't fought. Bump the marker
-    _v suffix to re-seed the fleet."""
-    marker = os.path.join(ADDON_DATA, 'gears_networks_seed_v2')
-    if os.path.isfile(marker):
-        return
+    only if absent, so a user who edits one isn't fought.
+
+    Gated on the DATABASE, never on a marker file. The wipe deliberately keeps
+    the wizard's own addon_data, so a marker written on the OLD build survives a
+    reinstall while Gears' navigator.db is recreated empty -- the seed then
+    thought it had already run and skipped forever. That is exactly how
+    "סדרות > רשתות סטרימינג" came up empty on Asaf's 2026-08-02 Gears reinstall
+    (marker dated the previous day, POV era). The per-folder absence check below
+    is what actually protects a user's edits, so the marker only ever added a
+    silent failure mode."""
     try:
         import sqlite3
         dbdir = xbmcvfs.translatePath(
@@ -365,9 +419,12 @@ def seed_gears_shortcut_folder():
                 log('seeded gears shortcut folder: %s (%d items)' % (name, len(items)))
         con.commit()
         con.close()
-        os.makedirs(ADDON_DATA, exist_ok=True)
-        with open(marker, 'w', encoding='utf-8') as fh:
-            fh.write('1')
+        # Retire the old marker if it is still lying around: leaving it would
+        # make an older wizard skip the seed again after a downgrade.
+        try:
+            os.remove(os.path.join(ADDON_DATA, 'gears_networks_seed_v2'))
+        except Exception:
+            pass
     except Exception as e:
         log('gears shortcut-folder seed failed: %s' % e, xbmc.LOGWARNING)
 

@@ -707,6 +707,82 @@ def test_pov_publishes_player_release():
               "get('display_name')" in src and 'URLName' not in src)
 
 
+def test_seeds_survive_a_reinstall():
+    """One-time seeds must be gated on the actual STATE, not on a marker file.
+
+    The wipe deliberately preserves the wizard's own addon_data, so a marker
+    written by the OLD build survives a reinstall while the seeded database is
+    recreated empty -- the seed then believes it already ran and skips forever.
+    That is exactly how "סדרות > רשתות סטרימינג" came up empty on Asaf's
+    2026-08-02 Gears reinstall (marker dated the previous day, POV era).
+
+    Also covers the sibling gap: cpath_cache.db is `update: skip` in the config
+    policy, so a row ADDED to the shipped config (the TV-genres widget) never
+    reaches an existing box unless something inserts it."""
+    print("\n=== seeds are state-gated, not marker-gated ===")
+    import sqlite3 as _sq
+
+    # --- gears shortcut folders: stale marker must NOT suppress the seed ----
+    dbdir = os.path.join(HOME, 'userdata', 'addon_data',
+                         'plugin.video.gears', 'databases')
+    os.makedirs(dbdir, exist_ok=True)
+    ndb = os.path.join(dbdir, 'navigator.db')
+    if os.path.exists(ndb):
+        os.remove(ndb)
+    os.makedirs(mu.ADDON_DATA, exist_ok=True)
+    stale = os.path.join(mu.ADDON_DATA, 'gears_networks_seed_v2')
+    with open(stale, 'w', encoding='utf-8') as fh:
+        fh.write('1')                      # marker from the PREVIOUS build
+
+    mu.seed_gears_shortcut_folder()
+
+    con = _sq.connect(ndb)
+    names = [r[0] for r in con.execute(
+        "SELECT list_name FROM navigator WHERE list_type='shortcut_folder'")]
+    con.close()
+    check('seeded despite the stale marker', len(names) == len(mu.GEARS_SEED_FOLDERS))
+    check('networks folder present (the empty רשתות סטרימינג row)',
+          any('NETWROKS' in n.upper() for n in names))
+    check('stale marker retired', not os.path.exists(stale))
+
+    # a user's edited folder must not be overwritten on the next run
+    con = _sq.connect(ndb)
+    con.execute("UPDATE navigator SET list_contents='[]' WHERE list_name=?",
+                (mu.GEARS_SEED_FOLDERS[0][0],))
+    con.commit(); con.close()
+    mu.seed_gears_shortcut_folder()
+    con = _sq.connect(ndb)
+    kept = con.execute("SELECT list_contents FROM navigator WHERE list_name=?",
+                       (mu.GEARS_SEED_FOLDERS[0][0],)).fetchone()[0]
+    con.close()
+    check("a user's edited folder is not re-seeded over", kept == '[]')
+
+    # --- nimbus cpaths: a row added to the shipped config reaches old boxes --
+    nh = os.path.join(HOME, 'userdata', 'addon_data', 'script.nimbus.helper')
+    os.makedirs(nh, exist_ok=True)
+    live = os.path.join(nh, 'cpath_cache.db')
+    if os.path.exists(live):
+        os.remove(live)
+    con = _sq.connect(live)
+    con.execute('CREATE TABLE custom_paths (cpath_setting TEXT, cpath_path TEXT,'
+                ' cpath_header TEXT, cpath_type TEXT, cpath_label TEXT)')
+    con.execute("INSERT INTO custom_paths VALUES ('movie.widget.4','USER_EDITED',"
+                "'x','y','z')")            # an existing row the user changed
+    con.commit(); con.close()
+
+    mu.seed_nimbus_missing_cpaths()
+
+    con = _sq.connect(live)
+    rows = dict(con.execute("SELECT cpath_setting, cpath_path FROM custom_paths"))
+    con.close()
+    check('missing TV-genres row added to an existing box',
+          'menu_type=tvshow' in (rows.get('tvshow.widget.5') or ''))
+    check('TV-genres row points at the right engine',
+          'plugin.video.gears' in (rows.get('tvshow.widget.5') or ''))
+    check("the user's edited row is left alone",
+          rows.get('movie.widget.4') == 'USER_EDITED')
+
+
 def test_menu_bundle_never_laid_on_pov():
     """repair_skin_menu ships GEARS home menus (every widget is a
     plugin://plugin.video.gears/ path). Laying them on a POV box replaces a
@@ -1134,6 +1210,7 @@ def main():
               test_pov_shortcut_folder_seed_is_json,
               test_pov_publishes_player_release,
               test_menu_bundle_never_laid_on_pov,
+              test_seeds_survive_a_reinstall,
               test_maintenance_folder_contents, test_remove_skin_purges_residue, test_detect_extras_skips_kodi_defaults,
               test_gears_settings_bool_serialization,
               test_dbmoved_install):

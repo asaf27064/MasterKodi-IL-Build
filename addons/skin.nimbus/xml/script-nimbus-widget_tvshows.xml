@@ -30,5 +30,12 @@
       <param name="list_id" value="22014"/>
     </include>
 
+    <include content="WidgetListCategory">
+      <param name="content_path" value="plugin://plugin.video.gears/?name=Genres&amp;mode=navigator.genres&amp;menu_type=tvshow&amp;random_support=true&amp;iconImage=genres"/>
+      <param name="widget_header" value="ז'אנרים"/>
+      <param name="widget_target" value="videos"/>
+      <param name="list_id" value="22015"/>
+    </include>
+
   </include>
 </includes>

@@ -460,6 +460,10 @@ class POVHebrewService(xbmc.Monitor):
             try:
                 from resources.libs import modular_update
                 modular_update.seed_gears_shortcut_folder()
+                # cpath_cache.db is `update: skip` in the config policy, so a row
+                # ADDED to the shipped config never reaches an existing box --
+                # add the missing ones (key-absent only) here.
+                modular_update.seed_nimbus_missing_cpaths()
             except Exception as e:
                 log(f"gears networks seed error: {e}", xbmc.LOGWARNING)
             _process_pending_view_rebuild()
