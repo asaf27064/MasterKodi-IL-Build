@@ -33,7 +33,25 @@
             <textcolor>FFFFFFFF</textcolor>
             <label>$INFO[Window.Property(heading)]</label>
         </control>
-        <!-- BIG preview (left) driven by the focused list item -->
+        <!-- BIG preview (left) driven by the focused list item.
+             A multiimage SLIDESHOW over the skin's preview folder: both
+             screenshots shown FULL SIZE in turn, instead of one composite
+             image that squeezed two screenshots into half the height each
+             (Asaf, 2026-08-02: "קטן ולא רואים טוב"). Falls back to the single
+             ListItem icon when the item carries no previewdir. -->
+        <control type="multiimage">
+            <left>120</left>
+            <top>200</top>
+            <width>1120</width>
+            <height>630</height>
+            <aspectratio>keep</aspectratio>
+            <imagepath background="true">$INFO[Container(100).ListItem.Property(previewdir)]</imagepath>
+            <timeperimage>3500</timeperimage>
+            <fadetime>500</fadetime>
+            <randomize>false</randomize>
+            <loop>yes</loop>
+            <visible>!String.IsEmpty(Container(100).ListItem.Property(previewdir))</visible>
+        </control>
         <control type="image">
             <left>120</left>
             <top>200</top>
@@ -41,6 +59,7 @@
             <height>630</height>
             <aspectratio>keep</aspectratio>
             <texture background="true">$INFO[Container(100).ListItem.Icon]</texture>
+            <visible>String.IsEmpty(Container(100).ListItem.Property(previewdir))</visible>
         </control>
         <!-- subtle frame under the preview caption -->
         <control type="label">

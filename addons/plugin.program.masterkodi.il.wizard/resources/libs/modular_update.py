@@ -902,6 +902,13 @@ def _apply_one(entry):
         # showing the OLD cached art forever. Purge those entries so the new
         # icons render after this update.
         _purge_texture_cache('%network_icons%')
+    if entry['id'] == ADDON_ID:
+        # Same trap for OUR own shipped media: the skin-preview screenshots
+        # keep their filenames across a refresh (af3.jpg, estuary/1.jpg ...),
+        # so every fleet device would keep showing the OLD previews after a
+        # wizard update (seen live 2026-08-02: Asaf restarted and still saw
+        # the previous screenshots until the rows were purged by hand).
+        _purge_texture_cache('%skin_previews%')
     return True
 
 

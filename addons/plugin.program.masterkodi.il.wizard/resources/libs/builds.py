@@ -263,9 +263,16 @@ class SkinPickerDialog(xbmcgui.WindowXMLDialog):
         self.setProperty('heading', self.heading)
         lst = self.getControl(100)
         lst.reset()
-        for name, desc, img in self.items:
+        for item in self.items:
+            # (name, desc, image) or (name, desc, image, preview_dir). With a
+            # dir the picker runs a full-size SLIDESHOW over every screenshot
+            # in it (multiimage) instead of one composite image that squeezed
+            # two screenshots into half the height each.
+            name, desc, img = item[0], item[1], item[2]
             li = xbmcgui.ListItem(name, desc)
             li.setArt({'icon': img, 'thumb': img})
+            if len(item) > 3 and item[3] and os.path.isdir(item[3]):
+                li.setProperty('previewdir', item[3])
             lst.addItem(li)
         self.setFocusId(100)
 
@@ -2464,7 +2471,8 @@ def builds_menu():
             # Falls back to the old useDetails select if the window fails.
             preview_dir = os.path.join(xbmcvfs.translatePath(ADDON.getAddonInfo('path')),
                                        'resources', 'media', 'skin_previews')
-            picker_items = [(_name, _desc, os.path.join(preview_dir, _img))
+            picker_items = [(_name, _desc, os.path.join(preview_dir, _img),
+                             os.path.join(preview_dir, os.path.splitext(_img)[0]))
                             for _choice, _name, _desc, _img in skin_options]
             try:
                 skin_sel = SkinPickerDialog.pick(f"בחר סקין עבור {build_name}", picker_items)
@@ -2667,7 +2675,8 @@ def _skin_switch_flow():
             tag = 'מותקן'
         else:
             tag = 'לא מותקן'
-        picker.append((name, tag, os.path.join(preview_dir, img)))
+        picker.append((name, tag, os.path.join(preview_dir, img),
+                       os.path.join(preview_dir, os.path.splitext(img)[0])))
         meta.append((key, name, sid, installed))
 
     try:
