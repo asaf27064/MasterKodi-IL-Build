@@ -824,6 +824,71 @@ def test_active_skin_update_on_windows():
     shutil.rmtree(d, ignore_errors=True)
 
 
+def test_menu_bundle_never_overwrites_a_healthy_menu():
+    """A bundle VERSION bump must not re-lay the bundle over a healthy menu.
+
+    The bundle is a frozen snapshot and the base config is the live source of
+    menu content, so re-laying on "stale" silently REVERTED newer content: on a
+    GEARS box it stripped the TMDb widgets config ships (live srtym-1 was
+    12 gears/0 tmdb where config ships 7/5), and on POV it replaced POV widgets
+    with Gears ones. Same bug, both engines, 2026-08-02. The bundle is only the
+    emergency net for skinshortcuts caching an EMPTY menu on a fresh install."""
+    print("\n=== menu bundle: only lays over a BROKEN menu ===")
+    import shutil as _sh
+
+    ZEPHYR = 'skin.arctic.zephyr.2.resurrection.mod'
+    skin_dir = os.path.join(mu.ADDONS_PATH, ZEPHYR, '1080i')
+    os.makedirs(skin_dir, exist_ok=True)
+    inc = os.path.join(skin_dir, 'script-skinshortcuts-includes.xml')
+    open(os.path.join(skin_dir, 'Home.xml'), 'w').close()
+    ss = os.path.join(HOME, 'userdata', 'addon_data', 'script.skinshortcuts')
+    os.makedirs(ss, exist_ok=True)
+    data = os.path.join(ss, 'srtym-1.DATA.xml')
+    os.makedirs(mu.ADDON_DATA, exist_ok=True)
+    marker = os.path.join(mu.ADDON_DATA, 'menu_ver_%s.txt' % ZEPHYR)
+
+    orig_skin, orig_src, orig_major = mu._active_skin, mu._content_source, mu.KODI_MAJOR
+    try:
+        mu._active_skin = lambda: ZEPHYR
+        mu._content_source = lambda: 'gears'
+        mu.KODI_MAJOR = 21
+
+        # A genuinely healthy menu: _menu_is_broken also flags an includes file
+        # smaller than HALF the bundle's, and a mainmenu source with no
+        # <shortcut> -- so model both, not just a stub.
+        bundle_inc = os.path.join(
+            mu.ADDON_PATH, 'resources', 'menu_defaults', ZEPHYR, 'includes',
+            'script-skinshortcuts-includes.xml')
+        pad = max(os.path.getsize(bundle_inc), 1000)
+        with open(inc, 'w', encoding='utf-8') as fh:
+            fh.write('<includes><shortcut>plugin://plugin.video.gears/?x</shortcut>'
+                     + '<!--%s-->' % ('x' * pad) + '</includes>')
+        with open(os.path.join(ss, 'mainmenu.DATA.xml'), 'w', encoding='utf-8') as fh:
+            fh.write('<shortcuts><shortcut>plugin://plugin.video.gears/?m</shortcut></shortcuts>')
+        with open(data, 'w', encoding='utf-8') as fh:
+            fh.write('CONFIG_MENU_WITH_TMDB')
+        with open(marker, 'w', encoding='utf-8') as fh:
+            fh.write('0')
+        restored = mu.repair_skin_menu(no_reload=True)
+        with open(data, encoding='utf-8') as fh:
+            after = fh.read()
+        check('healthy menu NOT overwritten by a version bump',
+              after == 'CONFIG_MENU_WITH_TMDB' and not restored)
+        check('marker still advanced (no repeated checking)',
+              open(marker, encoding='utf-8').read().strip() != '0')
+
+        # genuinely BROKEN menu -> the bundle IS laid (the safety net still works)
+        with open(inc, 'w', encoding='utf-8') as fh:
+            fh.write('<includes></includes>')          # no <shortcut> == broken
+        restored = mu.repair_skin_menu(no_reload=True)
+        check('broken menu IS repaired from the bundle',
+              'skinshortcuts-data' in restored)
+    finally:
+        mu._active_skin, mu._content_source = orig_skin, orig_src
+        mu.KODI_MAJOR = orig_major
+        _sh.rmtree(os.path.join(mu.ADDONS_PATH, ZEPHYR), ignore_errors=True)
+
+
 def test_seeds_survive_a_reinstall():
     """One-time seeds must be gated on the actual STATE, not on a marker file.
 
@@ -1367,6 +1432,7 @@ def main():
               test_pov_shortcut_folder_seed_is_json,
               test_pov_publishes_player_release,
               test_menu_bundle_never_laid_on_pov,
+              test_menu_bundle_never_overwrites_a_healthy_menu,
               test_seeds_survive_a_reinstall,
               test_active_skin_update_on_windows,
               test_maintenance_folder_contents, test_remove_skin_purges_residue, test_detect_extras_skips_kodi_defaults,

@@ -1131,7 +1131,22 @@ def repair_skin_menu(no_reload=False):
         applied = _read_text(marker).strip()
         broken = _menu_is_broken(inc_disk, good_inc)
         stale = bool(bver) and applied != bver
-        if not broken and not stale:
+        # Relay ONLY when the menu is genuinely broken/empty. The bundle used to
+        # be re-laid whenever its VERSION advanced, which meant it OVERWROTE a
+        # perfectly good menu that the config had just delivered -- and the
+        # bundle is a frozen snapshot, so it silently reverted newer content.
+        # It cost us the same bug twice on 2026-08-02: on POV it replaced the POV
+        # menu with Gears widgets, and on GEARS it stripped the TMDb widgets the
+        # base config ships (live srtym-1 was 12 gears/0 tmdb, config 7/5).
+        # Menu CONTENT changes belong in config/, which every box applies; the
+        # bundle is only the emergency net for skinshortcuts caching an empty
+        # menu on a fresh install.
+        if stale and not broken:
+            _write_text(marker, bver)           # record it, change nothing
+            log('menu bundle v%s not laid for %s: the on-box menu is healthy '
+                '(content comes from config/)' % (bver, skin))
+            return restored
+        if not broken:
             return restored                     # menu already good AND current
         # The bundled menus are GEARS menus (every widget is a
         # plugin://plugin.video.gears/ path). Laying them on a POV box replaces a
