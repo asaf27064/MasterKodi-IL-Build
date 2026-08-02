@@ -45,9 +45,14 @@ STAGES = [
     ('kodi: opens the dummy',         r'VideoPlayer::OpenFile.*themoviedb\.helper'),
     ('gearsai: placeholder skipped',  r'Skipping placeholder playback'),
     ('tmdbhelper: dummy finished',    r'successfully resolved dummy file'),
+    # What the user actually LOOKS at between the dummy and the source list.
+    # Asaf reported POV "shows the home screen for ~2s then the sources pop",
+    # which no stage above could confirm -- these three make the gap visible.
+    ('ui: HOME on screen',            r'Loading skin file: Home\.xml'),
+    ('ui: fullscreen video (dummy)',  r'Loading skin file: VideoFullScreen\.xml'),
     ('engine: scrape starts',         r'Starting Hebrew subtitles search thread'),
     ('gearsai: prefetch notified',    r'GearsAI prefetch notified'),
-    ('engine: scraping window',       r'sources_playback\.xml|SourceResults'),
+    ('ui: scraping window',           r'sources_playback\.xml|progress_media\.xml'),
     ('hebrew subs: per-site results', r'\[(WIZDOM|OPENSUBTITLES|KTUVIT|KT|WIZ|OPS)\][^\n]*(Found|_subtitles_list)'),
     ('hebrew subs: matched sources',  r'Sources with matched subtitles'),
     ('engine: SOURCE LIST shown',     r'sources_results\.xml'),

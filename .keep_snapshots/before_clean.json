@@ -1,0 +1,51 @@
+{
+ "engine_on_disk": {
+  "gears": false,
+  "pov": true
+ },
+ "creds_gears": {},
+ "creds_pov": {
+  "tb.token": "sha256:3c85bd725c/len36",
+  "tb.enabled": "sha256:b5bea41b6c/len4",
+  "rd.token": "sha256:11648c1e84/len13",
+  "rd.refresh": "sha256:11648c1e84/len13",
+  "pm.token": "sha256:11648c1e84/len13",
+  "ad.token": "sha256:11648c1e84/len13",
+  "oc.token": "sha256:11648c1e84/len13",
+  "trakt.token": "",
+  "trakt.refresh": ""
+ },
+ "creds_gemini": {
+  "api_key": "",
+  "extra_api_keys": ""
+ },
+ "gears_watched": {
+  "progress": null,
+  "watched_status": null,
+  "favorites": null
+ },
+ "gears_other": {
+  "personal_lists.db": false,
+  "lists.db": false,
+  "tmdb_lists.db": false,
+  "favourites.db": false
+ },
+ "pov_watched": {
+  "progress": 0,
+  "watched_status": 0,
+  "favorites": 0
+ },
+ "favourites": {
+  "count": 26,
+  "engine": "pov",
+  "sha": "d88302fa8e"
+ },
+ "addons": {
+  "total": 95,
+  "disabled": []
+ },
+ "skins_on_disk": [
+  "skin.arctic.zephyr.2.resurrection.mod",
+  "skin.estuary"
+ ]
+}

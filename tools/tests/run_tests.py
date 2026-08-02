@@ -441,57 +441,59 @@ def test_update_ordering():
 
 
 def test_clean_install_option():
-    """The keep checklist offers an explicit "clean install - keep nothing" row.
+    """The KEEP dialog asks the MODE first: keep everything / pick / clean.
 
-    Un-ticking every box already meant the same thing, but that is 7+ presses
-    and CANCEL keeps everything, so there was no obvious way to ask for a truly
-    clean install (Asaf, 2026-08-02). The row must be UNTICKED by default, must
-    win over any other tick, and must confirm first -- and the default path must
-    keep its meaning: an off-by-one in the preselect indexes would silently drop
-    a real group."""
-    print("\n=== keep.prompt: explicit clean-install choice ===")
+    The first attempt put a "keep nothing" row inside the checklist, which read
+    as self-contradictory -- ticking it left every other row ticked too, so the
+    dialog showed "keep nothing" AND "keep Debrid" at once (Asaf, 2026-08-02;
+    Kodi's multiselect cannot untick rows reactively). Three exclusive options
+    remove the ambiguity, and "keep everything" became one press.
+
+    Cancel must still keep everything (never lose data by backing out), and the
+    clean path must confirm first."""
+    print("\n=== keep.prompt: mode question, then the checklist ===")
     import xbmcgui as _gui
 
-    real_ms, real_yesno = _gui.Dialog.multiselect, _gui.Dialog.yesno
+    real_sel, real_ms, real_yesno = (_gui.Dialog.select, _gui.Dialog.multiselect,
+                                     _gui.Dialog.yesno)
     seen = {}
 
-    def run(pick, confirm=True):
-        """pick: callable(labels, preselect) -> chosen indexes (or None)."""
+    def run(mode, pick=None, confirm=True):
+        def sel(self, heading, options, **kw):
+            seen['options'] = options
+            return mode
         def ms(self, heading, labels, preselect=None, **kw):
             seen['labels'] = labels
             seen['preselect'] = list(preselect or [])
-            return pick(labels, list(preselect or []))
-        _gui.Dialog.multiselect = ms
+            return pick(labels) if pick else list(preselect or [])
+        _gui.Dialog.select, _gui.Dialog.multiselect = sel, ms
         _gui.Dialog.yesno = lambda self, *a, **k: confirm
         try:
             return keep.prompt(extras=None, default_all=True)
         finally:
-            _gui.Dialog.multiselect, _gui.Dialog.yesno = real_ms, real_yesno
+            (_gui.Dialog.select, _gui.Dialog.multiselect,
+             _gui.Dialog.yesno) = real_sel, real_ms, real_yesno
 
-    # default path: everything EXCEPT the clean row is preselected
-    keys = run(lambda labels, pre: pre)
-    check('clean row is offered', any('נקייה' in l for l in seen['labels']))
-    check('clean row is FIRST', 'נקייה' in seen['labels'][0])
-    check('clean row NOT preselected by default', 0 not in seen['preselect'])
-    check('every other row IS preselected',
-          seen['preselect'] == list(range(1, len(seen['labels']))))
-    check('default selection returns real groups (no off-by-one)',
-          keys and '__clean__' not in keys and len(keys) == len(seen['labels']) - 1)
+    keys_all = run(0)
+    check('mode question offers exactly 3 options', len(seen['options']) == 3)
+    check('clean option is LAST and marked', 'נקייה' in seen['options'][2])
+    check('checklist NOT shown for "keep everything"', 'labels' not in seen)
+    check('"keep everything" returns every group', bool(keys_all))
 
-    # ticking the clean row wins even with everything else ticked
-    keys = run(lambda labels, pre: list(range(len(labels))))
-    check('clean row overrides other ticks -> keep nothing', keys == [])
+    keys_pick = run(1)
+    check('"pick" opens the checklist', 'labels' in seen)
+    check('checklist has NO clean row (no contradiction possible)',
+          not any('נקייה' in l for l in seen['labels']))
+    check('checklist preselects every row', seen['preselect'] == list(range(len(seen['labels']))))
+    check('"pick" with defaults keeps the same groups as "keep everything"',
+          keys_pick == keys_all)
 
-    # un-ticking everything is the same request, and also confirms
-    keys = run(lambda labels, pre: [])
-    check('empty selection -> keep nothing', keys == [])
-
-    # declining the confirmation must not throw data away, and must NOT recurse
-    # forever if the user keeps choosing clean then declining (it used to blow
-    # the stack -- now a bounded loop that falls back to the defaults).
-    keys = run(lambda labels, pre: [0], confirm=False)
-    check('declining the confirm keeps the defaults, no recursion',
-          keys and '__clean__' not in keys)
+    check('clean choice keeps nothing', run(2) == [])
+    check('un-ticking everything is also the clean choice',
+          run(1, pick=lambda labels: []) == [])
+    check('declining the clean confirm does NOT lose data',
+          run(2, confirm=False) == keys_all)
+    check('cancelling the mode question keeps everything', run(-1) == keys_all)
 
 
 def test_credentials_survive_reinstall():

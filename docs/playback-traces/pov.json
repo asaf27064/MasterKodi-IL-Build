@@ -1,0 +1,72 @@
+[
+ {
+  "t": "12:30:30.650",
+  "stage": "tmdbhelper: resolving dummy",
+  "msg": "lib.player - resolving dummy path to url"
+ },
+ {
+  "t": "12:30:30.717",
+  "stage": "kodi: opens the dummy",
+  "msg": "VideoPlayer::OpenFile: plugin://plugin.video.themoviedb.helper/?info=play&tmdb_id=1081003&tmdb_type=movie"
+ },
+ {
+  "t": "12:30:30.787",
+  "stage": "gearsai: placeholder skipped",
+  "msg": "/*MasterKodi AI Subs*/ Line: 1133,autosub.py-> Skipping placeholder playback (tmdbhelper dummy.mp4)"
+ },
+ {
+  "t": "12:30:30.892",
+  "stage": "ui: fullscreen video (dummy)",
+  "msg": "Loading skin file: VideoFullScreen.xml, load type: KEEP_IN_MEMORY"
+ },
+ {
+  "t": "12:30:33.364",
+  "stage": "tmdbhelper: dummy finished",
+  "msg": "lib.player - successfully resolved dummy file"
+ },
+ {
+  "t": "12:30:35.234",
+  "stage": "ui: HOME on screen",
+  "msg": "Loading skin file: Home.xml, load type: KEEP_IN_MEMORY"
+ },
+ {
+  "t": "12:30:37.913",
+  "stage": "engine: scrape starts",
+  "msg": ">> POV-HEBSUBS <<: Starting Hebrew subtitles search thread..."
+ },
+ {
+  "t": "12:30:37.917",
+  "stage": "gearsai: prefetch notified",
+  "msg": ">> POV-HEBSUBS <<: GearsAI prefetch notified"
+ },
+ {
+  "t": "12:30:38.042",
+  "stage": "hebrew subs: per-site results",
+  "msg": ">> POV-HEBSUBS <<: [OPENSUBTITLES] Found 0 subtitles"
+ },
+ {
+  "t": "12:30:38.063",
+  "stage": "hebrew subs: per-site results",
+  "msg": ">> POV-HEBSUBS <<: [WIZDOM] Found 0 subtitles"
+ },
+ {
+  "t": "12:30:38.107",
+  "stage": "ui: scraping window",
+  "msg": "Loading skin file: special://home/addons/plugin.video.pov/resources/skins/Default/1080i/progress_media.xml, load type: LOAD_ON_GUI_INIT"
+ },
+ {
+  "t": "12:30:42.712",
+  "stage": "gearsai: prefetch ready",
+  "msg": "/*MasterKodi AI Subs*/ Line: 94,autosub.py-> PREFETCH | ready: 23 subs for tt8814476|0|0"
+ },
+ {
+  "t": "12:30:43.818",
+  "stage": "hebrew subs: matched sources",
+  "msg": ">> POV-HEBSUBS <<: Sources with matched subtitles: 0"
+ },
+ {
+  "t": "12:30:43.863",
+  "stage": "engine: SOURCE LIST shown",
+  "msg": "Loading skin file: special://home/addons/plugin.video.pov/resources/skins/Default/1080i/sources_results.xml, load type: LOAD_ON_GUI_INIT"
+ }
+]
