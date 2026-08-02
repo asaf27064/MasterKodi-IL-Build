@@ -238,3 +238,44 @@ NameError, HI-clean on AI writers), pool: both Supergirl entries cleaned
 in place (639+569 tagged lines -> 0).
 
 Remaining on Windows: the same sweep on the GEARS content source.
+
+## Windows manual sweep -- GEARS x 4 skins + install matrix (2026-08-02)
+
+Asaf drove; Claude tracked live (log tail + 10s state diffs). Reinstalled as a
+GEARS build with KEEP, then installed the skins back one at a time -- which also
+exercised fresh skin installation, removal, and the active-skin update path.
+
+Verified per skin: pinning, full dep stack enabled, shipped skin settings
+applied (AF3 237/237, Nimbus 205/207 -- the 2 are skin runtime values), menu
+contents vs the known-good bundle, previous skin kept+neutralized, playback +
+subtitles (Gears engine, remember_active_heb_sub correct on an English pick).
+
+Skin removal (AF3 -> Nimbus -> Zephyr, each verified): addon dir, addon_data,
+skinshortcuts skin.X.*, skinvariables files + nodes dir and BOTH DB rows
+(installed + update_rules) all zeroed, with zero collateral change to the other
+skins.
+
+Cross-source reinstall (POV -> Gears, KEEP): no DBMOVED ("bundle Addons db
+MERGED into live registry"), 2223 files / 0 errors, 26 stale rows reconciled,
+POV removed cleanly, favourites correctly PARKED at favourites.pre_pov.xml.
+The "wipe left 2 undeletable file(s)" warning was Textures.xbt + Textures13.db
+(held open by the running Kodi, both immediately replaced) -- benign and routine
+on Windows.
+
+### Bugs found and shipped the same day
+
+| # | symptom Asaf saw | root cause | fix |
+|---|---|---|---|
+| 2.4.155 | home widgets vanished after a "menu rebuild" | the GEARS menu bundle was laid on a POV box; trigger was a bundle VERSION bump, `broken=False` -- it damaged a HEALTHY menu | relay is content-source aware; on POV re-applies the POV variant, else skips |
+| 2.4.156 | (latent) | `menu_ver_<skin>.txt` was never deleted, so a reinstalled skin computed stale=False and SKIPPED the menu repair | purge the marker in _purge_skin_residue |
+| 2.4.157/158 | TorBox login lost by a KEEP reinstall | the ids listed for Gears (`torbox.api_key` etc.) exist in NEITHER engine -- both use tb.token; only the STORAGE differs. Even Gears->Gears lost it | one verified id list, used for staging and for the cross-source carry |
+| 2.4.159 | סדרות > רשתות סטרימינג empty | the seed was gated on a marker in wizard addon_data, which the wipe PRESERVES -- it survived the reinstall while navigator.db was recreated empty | gate on the database; retire the stale marker |
+| nimbus 0.1.44 | סדרות > ז'אנרים missing | the row does not exist for Gears: home rows are hard-coded in the skin XML, POV ships 5 widgets, Gears shipped 4 | added the 22015 block + a migration for existing boxes |
+| 2.4.160 | "הותקנו 1, נכשלו 1: skin.nimbus" | the swap renames the addon dir; Windows refuses while a file inside is open, so the ACTIVE SKIN could never update (POSIX allows it -> Android/Linux unaffected) | file-by-file in-place fallback, backed up and fully reverted on failure |
+
+tests 137 -> 172 over the day. Two of the new tests caught further bugs while
+being written: the test-suite leaked 14 monkeypatched attributes (so later tests
+could not fail), and the first version of the in-place updater would have
+DELETED every file of an addon when handed an empty staged tree.
+
+Remaining: Android (Xiaomi) + Kodi 22/Piers verification of these same fixes.
