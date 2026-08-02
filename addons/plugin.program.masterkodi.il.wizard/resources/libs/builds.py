@@ -2558,8 +2558,14 @@ def builds_menu():
                 log("keep prompt skipped (nothing on this box to keep)")
             else:
                 keep_keys = keep_mod.prompt(extras=extras, default_all=True, exclude=_excl)
-            if _cross and 'favs' not in keep_keys:
+            # Cross-source: stage favourites purely so the OLD set can be parked
+            # next to the new one. Skipped when the user asked to keep NOTHING --
+            # writing a favourites side-save would contradict an explicit clean
+            # install (an empty selection IS the clean choice; see keep.prompt).
+            if _cross and keep_keys and 'favs' not in keep_keys:
                 keep_keys.append('favs')       # staged for the parked side-save only
+            if not keep_keys:
+                log("keep: CLEAN install requested - nothing will be staged")
             manager.install_build(selected_build, skin_choice=skin_choice,
                                   keep_keys=keep_keys, keep_extras=extras,
                                   content_choice=content_choice)

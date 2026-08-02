@@ -24,6 +24,8 @@ import xbmc
 import xbmcgui
 import xbmcvfs
 
+from resources.libs.config import ADDON_NAME, COLOR_WARNING
+
 USERDATA = xbmcvfs.translatePath('special://userdata/')
 ADDON_DATA = os.path.join(USERDATA, 'addon_data')
 HOME_ADDONS = os.path.join(xbmcvfs.translatePath('special://home/'), 'addons')
@@ -376,15 +378,49 @@ def prompt(extras=None, default_all=True, exclude=None):
                if g['key'] not in exclude and _group_has_data(g)]
     if extras:
         entries.append(('extras', 'תוספים שהתקנת בעצמך (%d)' % len(extras)))
+    # An explicit "keep nothing" row. Un-ticking every box already meant the
+    # same thing, but that is 7+ presses and easy to get wrong -- and CANCEL
+    # keeps everything, so there was no obvious way to ask for a truly clean
+    # install (Asaf, 2026-08-02). Deliberately NOT preselected, and it wins over
+    # any other tick, so it can never be reached by accident.
+    CLEAN = '__clean__'
+    entries.insert(0, (CLEAN, '[COLOR %s]התקנה נקייה - לא לשמור כלום[/COLOR]'
+                       % COLOR_WARNING))
     labels = [lbl for _k, lbl in entries]
-    preselect = list(range(len(entries))) if default_all else []
-    try:
-        chosen = xbmcgui.Dialog().multiselect('מה לשמור בהתקנה?', labels, preselect=preselect)
-    except Exception:
-        chosen = preselect
-    if chosen is None:
-        chosen = preselect
-    return [entries[i][0] for i in chosen]
+    # +1 because the clean row is at index 0 and must stay unticked
+    preselect = list(range(1, len(entries))) if default_all else []
+    # Declining the clean-install confirmation returns to the checklist. A LOOP,
+    # not recursion: re-calling prompt() blew the stack when the choice was made
+    # repeatedly (caught by the test). Bounded so a stuck dialog cannot spin.
+    for _ in range(10):
+        try:
+            chosen = xbmcgui.Dialog().multiselect('מה לשמור בהתקנה?', labels,
+                                                  preselect=preselect)
+        except Exception:
+            chosen = preselect
+        if chosen is None:               # cancel -> keep the defaults, lose nothing
+            chosen = preselect
+        keys = [entries[i][0] for i in chosen]
+        # Confirm before throwing data away -- for the explicit row AND for the
+        # "unticked everything" path, which is the same request by a slower route.
+        if CLEAN not in keys and keys:
+            return keys
+        listed = ', '.join(lbl for _k, lbl in entries[1:]) or 'הנתונים הקיימים'
+        try:
+            ok = xbmcgui.Dialog().yesno(
+                ADDON_NAME,
+                '[COLOR %s]התקנה נקייה: שום דבר לא יישמר.[/COLOR]\n'
+                'יימחקו לצמיתות: %s\n\nלהמשיך?' % (COLOR_WARNING, listed[:180]),
+                yeslabel='התקנה נקייה', nolabel='חזור לבחירה')
+        except Exception:
+            ok = True
+        if ok:
+            log('keep: user chose a CLEAN install -- nothing will be staged')
+            return []
+        # declined -> show the checklist again
+    log('keep: clean-install confirm loop exhausted -- keeping the defaults',
+        xbmc.LOGWARNING)
+    return [entries[i][0] for i in preselect]
 
 
 def _safe_db_copy(src, dst):
