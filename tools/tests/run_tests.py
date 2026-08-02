@@ -12,6 +12,17 @@ Run:  python tools/tests/run_tests.py
 """
 import os, sys, tempfile, shutil, sqlite3, struct, zipfile
 
+# Test names carry Hebrew (the UI strings they assert on). The GitHub Windows
+# runner's console is cp1252, so printing one raised
+# "'charmap' codec can't encode characters ..." and FAILED the build on the test
+# harness rather than on the code under test (2026-08-02). Never let output
+# encoding decide whether a test passes.
+try:
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
+
 import _bootstrap  # noqa: E402  (same dir)
 _bootstrap.setup_path()
 HOME = _bootstrap.make_home()
