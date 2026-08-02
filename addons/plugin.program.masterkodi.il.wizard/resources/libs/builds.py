@@ -2458,14 +2458,19 @@ def builds_menu():
         # build advertises their zip URL.
         if has_skin:
             # (choice, name, one-line desc, preview image under resources/media/skin_previews/)
+            # ORDER = measured boot speed on the weakest fleet device, fastest
+            # first (docs/skin-performance.md, Xiaomi medians: Estuary 1.37s,
+            # Nimbus 1.47s, Zephyr 1.66s, AF3 3.70s). The descriptions carry the
+            # same verdict: the top three are one speed class; only AF3 is
+            # humanly slower.
             skin_options = [('estuary', 'Estuary', 'הרגיל | הכי מהיר | עיצוב פשוט', 'estuary.jpg')]
-            if selected_build.get('skin_url'):
-                skin_options.append(('arctic', 'Arctic Fuse', 'הכי יפה ומעוצב | הכי כבד | למכשירים חזקים', 'af3.jpg'))
             if selected_build.get('nimbus_skin_url'):
-                skin_options.append(('nimbus', 'Nimbus', 'מהיר ויפה יותר מהרגיל | מתאים גם למכשירים חלשים', 'nimbus.jpg'))
+                skin_options.append(('nimbus', 'Nimbus', 'מהיר כמעט כמו הרגיל | יפה ומודרני | מתאים גם למכשירים חלשים', 'nimbus.jpg'))
             # Arctic Zephyr installs from the manifest (not a build.txt url), so it's
             # always offered here.
-            skin_options.append(('zephyr', 'Arctic Zephyr', 'עשיר ומעוצב בסגנון נטפליקס | בינוני-כבד | למכשירים חזקים', 'zephyr.jpg'))
+            skin_options.append(('zephyr', 'Arctic Zephyr', 'עשיר ומעוצב בסגנון נטפליקס | מהיר | מתאים לרוב המכשירים', 'zephyr.jpg'))
+            if selected_build.get('skin_url'):
+                skin_options.append(('arctic', 'Arctic Fuse', 'הכי יפה ומעוצב | הכי איטי בטעינה | למכשירים חזקים', 'af3.jpg'))
 
             # Custom picker window with a LARGE live preview of the focused skin.
             # Falls back to the old useDetails select if the window fails.
@@ -2585,11 +2590,13 @@ def builds_menu():
 # ===================================================================== #
 # (key, display name, addon id, preview image). Estuary is Kodi's built-in
 # fallback skin -- always available, never removable.
+# ORDER = measured boot speed, fastest first (docs/skin-performance.md,
+# Xiaomi medians: Estuary 1.37s, Nimbus 1.47s, Zephyr 1.66s, AF3 3.70s).
 _SKIN_CATALOG = [
     ('estuary', 'Estuary', 'skin.estuary', 'estuary.jpg'),
-    ('arctic', 'Arctic Fuse', 'skin.arctic.fuse.3', 'af3.jpg'),
     ('nimbus', 'Nimbus', 'skin.nimbus', 'nimbus.jpg'),
     ('zephyr', 'Arctic Zephyr', 'skin.arctic.zephyr.2.resurrection.mod', 'zephyr.jpg'),
+    ('arctic', 'Arctic Fuse', 'skin.arctic.fuse.3', 'af3.jpg'),
 ]
 _OPTIONAL_SKIN_IDS = {'skin.arctic.fuse.3', 'skin.nimbus',
                       'skin.arctic.zephyr.2.resurrection.mod'}
