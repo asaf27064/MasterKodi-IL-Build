@@ -140,7 +140,7 @@
 		</control>
 	</include>
 	<!-- POV Extra Ratings Bar -->
-	<include name="POVRatingsBar">
+	<include name="GearsRatingsBar">
 		<definition>
 			<control type="grouplist">
 				<orientation>horizontal</orientation>

@@ -440,6 +440,49 @@ def test_update_ordering():
         setattr(mu, _n, _v)
 
 
+def test_skin_include_names_resolve():
+    """Every <include>NAME</include> a shipped skin view calls must be DEFINED
+    by whatever Includes.xml the variant lays over that skin.
+
+    Kodi silently ignores an unknown include -- no error, no log line, the block
+    just never renders. The estuary-pov variant renamed the ratings bar to
+    POVRatingsBar while the skin's 7 view files still called GearsRatingsBar, so
+    POV boxes showed NO rating flags at all while the data underneath was fine
+    (Asaf, 2026-08-02). The property names are deliberately kept `gears.*` so
+    one skin XML serves both engines; the include name must follow the same
+    rule."""
+    print("\n=== skin overrides: called includes are defined ===")
+    import re as _re
+
+    skin_xml = os.path.join(REPO, 'addons', 'skin.estuary', 'xml')
+    called = set()
+    for fn in os.listdir(skin_xml):
+        if not fn.lower().endswith('.xml'):
+            continue
+        with open(os.path.join(skin_xml, fn), encoding='utf-8', errors='replace') as fh:
+            txt = fh.read()
+        called |= set(_re.findall(r'<include>([A-Za-z0-9_]+)</include>', txt))
+    check('found include calls in the shipped skin', len(called) > 5)
+
+    for variant in ('config-variants/estuary-pov',
+                    'config-variants-piers/estuary-piers-pov'):
+        ov = os.path.join(REPO, variant, 'skin-overrides', 'Includes.xml')
+        if not os.path.isfile(ov):
+            continue
+        with open(ov, encoding='utf-8', errors='replace') as fh:
+            ov_txt = fh.read()
+        defined_ov = set(_re.findall(r'<include name="([A-Za-z0-9_]+)"', ov_txt))
+        base = os.path.join(skin_xml, 'Includes.xml')
+        with open(base, encoding='utf-8', errors='replace') as fh:
+            defined_base = set(_re.findall(r'<include name="([A-Za-z0-9_]+)"', fh.read()))
+        # the override REPLACES Includes.xml, so anything the base defined there
+        # and a view still calls must survive the override
+        lost = (defined_base & called) - defined_ov
+        check('%s keeps every called include the base defined (%s)'
+              % (variant.split('/')[-1], ', '.join(sorted(lost)) or 'none lost'),
+              not lost)
+
+
 def test_clean_install_option():
     """The KEEP dialog asks the MODE first: keep everything / pick / clean.
 
@@ -1427,6 +1470,7 @@ def main():
               test_validate_zip, test_backup_restore, test_backup_quick_creds,
               test_update_ordering, test_cross_source_keep,
               test_credentials_survive_reinstall,
+              test_skin_include_names_resolve,
               test_clean_install_option,
               test_set_default_skin_no_guisettings, test_maintenance_keeps_logs,
               test_pov_shortcut_folder_seed_is_json,
