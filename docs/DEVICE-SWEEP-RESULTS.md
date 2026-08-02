@@ -279,3 +279,23 @@ could not fail), and the first version of the in-place updater would have
 DELETED every file of an addon when handed an empty staged tree.
 
 Remaining: Android (Xiaomi) + Kodi 22/Piers verification of these same fixes.
+
+### Known non-bug: view modes look wrong right after a skin switch
+
+Symptom (Asaf, 2026-08-02): switched Zephyr -> Estuary; the Gears "in progress
+movies" list showed **הזזה** (Shift, 53) instead of **כרזה** (Poster, 51).
+
+Not a fault. The wizard applies the per-skin view map on the switch
+("applied gears views for skin.estuary (7 ids)"), but a container that is
+ALREADY OPEN keeps the view it was built with -- and 53 is exactly Zephyr's
+`view.movies`. Backing out and re-entering the list showed Poster.
+
+Diagnosis method worth reusing: `Container.Viewmode` + `Container.FolderPath`
+via JSON-RPC `XBMC.GetInfoLabels` reports what is on SCREEN, which is what
+separates "stored value wrong" from "stale container". Both stored sources
+(gears settings.db `view.movies` and the ViewModes6.db row) already said 51.
+
+Also established: ViewModes6.db rows for engine plugin paths are largely
+vestigial -- the engine forces the view at runtime when `use_viewtypes=true`
+(the shipped in-progress TVSHOWS row says 500 while `view.tvshows` is 51). So
+the fact that we ship no row for in-progress MOVIES is inert, not a gap.
