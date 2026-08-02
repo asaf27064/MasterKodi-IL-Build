@@ -100,53 +100,38 @@ _POV_DEBRID = ['pm.token', 'pm.account_id', 'tb.token', 'tb.account_id',
 _POV_TRAKT = ['trakt.token', 'trakt.refresh', 'trakt.usertoken', 'trakt.user', 'trakt_user']
 
 # --------------------------------------------------------------------------- #
-# Cross-engine credential mapping (POV settings.xml id  <->  Gears settings.db id)
+# Debrid / Trakt credential ids.
 #
-# The SAME debrid/Trakt account is stored under DIFFERENT ids per engine. Without
-# this map a cross-source reinstall backed the values up, then dropped them:
-# restore skips the POV xml ("Gears build has no POV") and the gears dict was
-# empty because a POV box has no gears settings.db to read from. Asaf lost his
-# TorBox login on the 2026-08-02 POV->Gears KEEP reinstall even though the wizard
-# offered "התחברות Debrid" as preserved.
+# POV and Gears use the SAME setting ids (tb.token, rd.token, pm.token,
+# ad.token, trakt.token ...). What differs is the STORAGE: POV keeps them in
+# addon_data/plugin.video.pov/settings.xml, Gears in its binary settings.db.
+# Carrying credentials between the engines is therefore a COPY, never a rename.
 #
-# Only ids whose VALUE means the same thing on both sides belong here. Notably
-# absent: POV's rd.client_id/rd.secret (its own OAuth app registration) and the
-# *.account_id fields, which each engine re-derives from the token itself.
+# VERIFIED against Asaf's live box 2026-08-02: Gears' settings.db really holds
+# tb.token / tb.enabled / rd.* / pm.token / ad.token / oc.token. The ids
+# previously listed for Gears -- `torbox.api_key`, `premiumize.token`,
+# `alldebrid.token` -- exist in NEITHER engine, so those logins were never
+# staged at all: a plain Gears->Gears KEEP reinstall lost the TorBox login too,
+# not only a cross-source one.
+#
+# Deliberately excluded: the *.account_id fields (each engine re-derives them
+# from the token) and rd.client_id / rd.secret (per-install OAuth app
+# registration -- pushing one box's registration onto another is wrong).
 # --------------------------------------------------------------------------- #
-POV_TO_GEARS = {
-    'tb.token':          'torbox.api_key',
-    'rd.token':          'rd.token',
-    'rd.refresh':        'rd.refresh',
-    'premiumize.token':  'premiumize.token',
-    'pm.token':          'premiumize.token',
-    'ad.token':          'alldebrid.token',
-    'trakt.token':       'trakt.token',
-    'trakt.user':        'trakt.user',
-}
-GEARS_TO_POV = {
-    'torbox.api_key':    'tb.token',
-    'rd.token':          'rd.token',
-    'rd.refresh':        'rd.refresh',
-    'premiumize.token':  'premiumize.token',
-    'alldebrid.token':   'ad.token',
-    'trakt.token':       'trakt.token',
-    'trakt.user':        'trakt.user',
-}
+_DEBRID_IDS = ['tb.token', 'tb.enabled', 'rd.token', 'rd.refresh',
+               'pm.token', 'ad.token', 'oc.token',
+               'easynews_user', 'easynews_password']
+_TRAKT_IDS = ['trakt.token', 'trakt.refresh', 'trakt.user']
+
+# Values meaning "not configured" -- carrying these across would make an empty
+# slot look like a live account.
+_PLACEHOLDERS = (None, '', 'false', 'true', '0', 'None')
 
 
-def _map_creds(values, table):
-    """Translate {id: value} between the engines' id namespaces.
-
-    Empty/placeholder values are dropped: POV writes 'false' into unused token
-    slots, and carrying that across would look like a configured account.
-    """
-    out = {}
-    for k, v in (values or {}).items():
-        dest = table.get(k)
-        if not dest or v in (None, '', 'false', 'true', '0'):
-            continue
-        out[dest] = v
-    return out
+def _real_creds(values, allowed):
+    """{id: value} limited to `allowed` ids, with placeholder values dropped."""
+    return {k: v for k, v in (values or {}).items()
+            if k in allowed and v not in _PLACEHOLDERS}
 _POV_SERVICES = ['tmdb.token', 'tmdb.username', 'tmdb.account_id',
                  'tmdb.session_account_id', 'tmdb.session_id',
                  'mdblist.token', 'mdblist_user', 'rpdb_api_key',
@@ -155,12 +140,11 @@ _POV_SERVICES = ['tmdb.token', 'tmdb.username', 'tmdb.account_id',
 GROUPS = [
     {'key': 'debrid',
      'label': 'התחברות Debrid (RD / TorBox / Premiumize / AllDebrid)',
-     'gears_ids': ['rd.token', 'rd.client_id', 'rd.secret', 'rd.refresh',
-                   'torbox.api_key', 'premiumize.token', 'alldebrid.token'],
+     'gears_ids': _DEBRID_IDS,
      'xml_targets': [(POV_SETTINGS, _POV_DEBRID)]},
     {'key': 'trakt',
      'label': 'התחברות Trakt',
-     'gears_ids': ['trakt.token', 'trakt.secret', 'trakt.user'],
+     'gears_ids': _TRAKT_IDS,
      'xml_targets': [(TMDBH_SETTINGS, ['trakt.token', 'trakt.refreshtoken', 'trakt.usertoken']),
                      (POV_SETTINGS, _POV_TRAKT)]},
     {'key': 'gemini',
@@ -581,14 +565,14 @@ def restore():
     # logins -- translate them into gears ids instead of dropping them. Values
     # already read from a real gears db win over anything mapped.
     if cross and _tgt == 'gears':
-        _mapped = {}
+        _carried = {}
         for path, values in saved.get('xml', {}).items():
             if 'plugin.video.pov' in path.replace('\\', '/'):
-                _mapped.update(_map_creds(values, POV_TO_GEARS))
-        if _mapped:
-            _mapped.update(gears_creds)
-            gears_creds = _mapped
-            log('keep: carried %d credential(s) POV -> Gears' % len(_mapped))
+                _carried.update(_real_creds(values, _DEBRID_IDS + _TRAKT_IDS))
+        if _carried:
+            _carried.update(gears_creds)        # a real gears value always wins
+            gears_creds = _carried
+            log('keep: carried %d credential(s) POV -> Gears' % len(_carried))
     if gears_creds and not (cross and _tgt == 'pov'):
         res = _db_write(GEARS_SETTINGS_DB, gears_creds)
         if res == 'nodb':
@@ -609,11 +593,11 @@ def restore():
     if cross and _tgt == 'pov' and gears_creds:
         _pov_path = next((p for p in _xml if 'plugin.video.pov' in p.replace('\\', '/')),
                          POV_SETTINGS)
-        _mapped = _map_creds(gears_creds, GEARS_TO_POV)
-        if _mapped:
-            _mapped.update(_xml.get(_pov_path) or {})
-            _xml[_pov_path] = _mapped
-            log('keep: carried %d credential(s) Gears -> POV' % len(_mapped))
+        _carried = _real_creds(gears_creds, _DEBRID_IDS + _TRAKT_IDS)
+        if _carried:
+            _carried.update(_xml.get(_pov_path) or {})   # staged POV value wins
+            _xml[_pov_path] = _carried
+            log('keep: carried %d credential(s) Gears -> POV' % len(_carried))
     for path, values in _xml.items():
         if cross and _tgt == 'gears' and 'plugin.video.pov' in path.replace('\\', '/'):
             log('keep: skipping POV xml restore (Gears build has no POV)')
