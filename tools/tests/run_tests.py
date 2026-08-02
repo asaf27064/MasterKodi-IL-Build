@@ -429,6 +429,75 @@ def test_update_ordering():
         setattr(mu, _n, _v)
 
 
+def test_cross_source_credential_mapping():
+    """A cross-source reinstall must CARRY the user's debrid/Trakt logins across
+    the engines' different id namespaces (POV settings.xml tb.token <-> Gears
+    settings.db torbox.api_key).
+
+    Before this mapping existed the values were backed up and then silently
+    dropped: restore skips the POV xml ("Gears build has no POV") and the gears
+    dict was empty because a POV box has no gears settings.db to read. Asaf lost
+    his TorBox login on the 2026-08-02 POV->Gears KEEP reinstall -- while the
+    wizard listed 'התחברות Debrid' as preserved."""
+    print("\n=== keep: credentials survive a POV<->Gears reinstall ===")
+    import json as _json
+
+    # ---------- POV -> Gears : lands in the gears settings.db --------------
+    shutil.rmtree(keep.STAGE, ignore_errors=True)
+    os.makedirs(keep.STAGE, exist_ok=True)
+    pov_xml = keep.POV_SETTINGS
+    os.makedirs(os.path.dirname(pov_xml), exist_ok=True)
+    _json.dump({'keys': ['debrid', 'trakt'], 'settings': {},
+                'xml': {pov_xml: {'tb.token': 'TORBOX_KEY', 'ad.token': 'false',
+                                  'rd.token': 'RD_KEY', 'trakt.user': 'asaf'}},
+                'source_content': 'pov', 'target_content': 'gears'},
+               open(os.path.join(keep.STAGE, 'manifest.json'), 'w'))
+    os.makedirs(keep.GEARS_DB_DIR, exist_ok=True)
+    gdb = keep.GEARS_SETTINGS_DB
+    if os.path.exists(gdb):
+        os.remove(gdb)
+    con = sqlite3.connect(gdb)
+    con.execute("CREATE TABLE settings (setting_id TEXT PRIMARY KEY, setting_value TEXT)")
+    con.commit(); con.close()
+
+    keep.restore()
+    con = sqlite3.connect(gdb)
+    got = dict(con.execute("SELECT setting_id, setting_value FROM settings").fetchall())
+    con.close()
+    check('POV->Gears: TorBox key mapped to torbox.api_key',
+          got.get('torbox.api_key') == 'TORBOX_KEY')
+    check('POV->Gears: same-name id carried too', got.get('rd.token') == 'RD_KEY')
+    check('POV->Gears: trakt user carried', got.get('trakt.user') == 'asaf')
+    # POV writes 'false' into unused slots -- carrying that would fake an account
+    check("POV->Gears: placeholder 'false' NOT carried",
+          'alldebrid.token' not in got)
+
+    # ---------- Gears -> POV : lands in the POV settings.xml ---------------
+    shutil.rmtree(keep.STAGE, ignore_errors=True)
+    os.makedirs(keep.STAGE, exist_ok=True)
+    with open(pov_xml, 'w', encoding='utf-8') as fh:
+        fh.write('<settings><setting id="tb.token"></setting>'
+                 '<setting id="trakt.user"></setting></settings>')
+    _json.dump({'keys': ['debrid', 'trakt'],
+                'settings': {'gears': {'torbox.api_key': 'TORBOX_KEY2',
+                                       'alldebrid.token': 'AD_KEY'}},
+                'xml': {},
+                'source_content': 'gears', 'target_content': 'pov'},
+               open(os.path.join(keep.STAGE, 'manifest.json'), 'w'))
+    keep.restore()
+    with open(pov_xml, encoding='utf-8') as fh:
+        xml_after = fh.read()
+    check('Gears->POV: torbox.api_key mapped back to tb.token',
+          'TORBOX_KEY2' in xml_after)
+    check('Gears->POV: alldebrid mapped to ad.token',
+          'AD_KEY' in xml_after)
+
+    try:
+        os.remove(gdb)
+    except Exception:
+        pass
+
+
 def test_cross_source_keep():
     """Cross-source reinstall (Gears->POV): the old engine's dbs are NOT restored,
     favourites are PARKED (not clobbering the new config's), gears creds are not
@@ -1029,6 +1098,7 @@ def main():
               test_logs, test_lock_and_recovery,
               test_validate_zip, test_backup_restore, test_backup_quick_creds,
               test_update_ordering, test_cross_source_keep,
+              test_cross_source_credential_mapping,
               test_set_default_skin_no_guisettings, test_maintenance_keeps_logs,
               test_pov_shortcut_folder_seed_is_json,
               test_pov_publishes_player_release,

@@ -98,6 +98,55 @@ _POV_DEBRID = ['pm.token', 'pm.account_id', 'tb.token', 'tb.account_id',
                'rd.token', 'rd.secret', 'rd.username', 'rd.client_id', 'rd.refresh',
                'premiumize.token', 'easynews_user', 'easynews_password']
 _POV_TRAKT = ['trakt.token', 'trakt.refresh', 'trakt.usertoken', 'trakt.user', 'trakt_user']
+
+# --------------------------------------------------------------------------- #
+# Cross-engine credential mapping (POV settings.xml id  <->  Gears settings.db id)
+#
+# The SAME debrid/Trakt account is stored under DIFFERENT ids per engine. Without
+# this map a cross-source reinstall backed the values up, then dropped them:
+# restore skips the POV xml ("Gears build has no POV") and the gears dict was
+# empty because a POV box has no gears settings.db to read from. Asaf lost his
+# TorBox login on the 2026-08-02 POV->Gears KEEP reinstall even though the wizard
+# offered "התחברות Debrid" as preserved.
+#
+# Only ids whose VALUE means the same thing on both sides belong here. Notably
+# absent: POV's rd.client_id/rd.secret (its own OAuth app registration) and the
+# *.account_id fields, which each engine re-derives from the token itself.
+# --------------------------------------------------------------------------- #
+POV_TO_GEARS = {
+    'tb.token':          'torbox.api_key',
+    'rd.token':          'rd.token',
+    'rd.refresh':        'rd.refresh',
+    'premiumize.token':  'premiumize.token',
+    'pm.token':          'premiumize.token',
+    'ad.token':          'alldebrid.token',
+    'trakt.token':       'trakt.token',
+    'trakt.user':        'trakt.user',
+}
+GEARS_TO_POV = {
+    'torbox.api_key':    'tb.token',
+    'rd.token':          'rd.token',
+    'rd.refresh':        'rd.refresh',
+    'premiumize.token':  'premiumize.token',
+    'alldebrid.token':   'ad.token',
+    'trakt.token':       'trakt.token',
+    'trakt.user':        'trakt.user',
+}
+
+
+def _map_creds(values, table):
+    """Translate {id: value} between the engines' id namespaces.
+
+    Empty/placeholder values are dropped: POV writes 'false' into unused token
+    slots, and carrying that across would look like a configured account.
+    """
+    out = {}
+    for k, v in (values or {}).items():
+        dest = table.get(k)
+        if not dest or v in (None, '', 'false', 'true', '0'):
+            continue
+        out[dest] = v
+    return out
 _POV_SERVICES = ['tmdb.token', 'tmdb.username', 'tmdb.account_id',
                  'tmdb.session_account_id', 'tmdb.session_id',
                  'mdblist.token', 'mdblist_user', 'rpdb_api_key',
@@ -525,7 +574,21 @@ def restore():
     # silently dropping the creds (which then deleted the only backup).
     # On a POV-target cross install there will NEVER be a gears settings.db --
     # writing/stashing would wait forever, so skip (debrid login is redone in POV).
-    gears_creds = saved.get('settings', {}).get('gears', {})
+    gears_creds = dict(saved.get('settings', {}).get('gears', {}))
+    # CROSS-SOURCE credential carry-over. The same account lives under different
+    # ids per engine, so on POV->Gears the POV xml values (which we are about to
+    # skip, since the new build has no POV) are the ONLY copy of the user's
+    # logins -- translate them into gears ids instead of dropping them. Values
+    # already read from a real gears db win over anything mapped.
+    if cross and _tgt == 'gears':
+        _mapped = {}
+        for path, values in saved.get('xml', {}).items():
+            if 'plugin.video.pov' in path.replace('\\', '/'):
+                _mapped.update(_map_creds(values, POV_TO_GEARS))
+        if _mapped:
+            _mapped.update(gears_creds)
+            gears_creds = _mapped
+            log('keep: carried %d credential(s) POV -> Gears' % len(_mapped))
     if gears_creds and not (cross and _tgt == 'pov'):
         res = _db_write(GEARS_SETTINGS_DB, gears_creds)
         if res == 'nodb':
@@ -534,11 +597,24 @@ def restore():
         elif res is False:
             failed += 1                      # real write error -> keep STAGE
     elif gears_creds:
-        log('keep: skipping %d gears cred(s) (POV build has no Gears)' % len(gears_creds))
+        log('keep: %d gears cred(s) not written directly (POV build has no Gears)'
+            % len(gears_creds))
     # xml settings (gearsai key, tmdb-helper trakt, pov logins). On a GEARS-target
     # cross install don't write into plugin.video.pov's addon_data (the addon
     # isn't shipped -- it would just plant orphan credential files).
-    for path, values in saved.get('xml', {}).items():
+    _xml = {k: dict(v) for k, v in saved.get('xml', {}).items()}
+    # ...and the mirror of the carry-over above: on Gears->POV the gears db values
+    # are the only copy, so translate them INTO the POV settings.xml we are about
+    # to write. POV's own staged values (if any) win.
+    if cross and _tgt == 'pov' and gears_creds:
+        _pov_path = next((p for p in _xml if 'plugin.video.pov' in p.replace('\\', '/')),
+                         POV_SETTINGS)
+        _mapped = _map_creds(gears_creds, GEARS_TO_POV)
+        if _mapped:
+            _mapped.update(_xml.get(_pov_path) or {})
+            _xml[_pov_path] = _mapped
+            log('keep: carried %d credential(s) Gears -> POV' % len(_mapped))
+    for path, values in _xml.items():
         if cross and _tgt == 'gears' and 'plugin.video.pov' in path.replace('\\', '/'):
             log('keep: skipping POV xml restore (Gears build has no POV)')
             continue
