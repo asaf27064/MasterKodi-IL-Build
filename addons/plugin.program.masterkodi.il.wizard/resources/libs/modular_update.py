@@ -743,6 +743,73 @@ def _recover_orphaned_rollbacks():
         log('rollback recovery scan failed: %s' % e, xbmc.LOGWARNING)
 
 
+def _inplace_update(live, staged, rb):
+    """Update `live` from `staged` FILE BY FILE, keeping a copy at `rb`.
+
+    Used only when the fast directory swap is impossible -- i.e. the addon is
+    the active skin on Windows, where renaming a directory that holds an open
+    file fails. Kodi keeps just the texture bundle open, so every xml/py/json
+    file replaces fine; a file we genuinely cannot write aborts the whole update
+    and the caller restores from `rb`, exactly like the swap path.
+
+    Returns True on success. Never leaves a half-updated addon: on any failure
+    the live tree is restored from the backup before returning False.
+    """
+    # Refuse an empty/absent staged tree. Without this the copy loop is a no-op
+    # and the prune below -- seeing an empty "keep" set -- would delete EVERY
+    # live file and report success, emptying the addon. (Caught by the failure
+    # -path test while writing this.)
+    if not os.path.isfile(os.path.join(staged, 'addon.xml')):
+        log('in-place update: staged tree for %s has no addon.xml -- refusing'
+            % os.path.basename(live), xbmc.LOGERROR)
+        return False
+    try:
+        shutil.rmtree(rb, ignore_errors=True)
+        shutil.copytree(live, rb)                  # rollback copy
+    except Exception as e:
+        log('in-place update: could not back up %s: %s' % (live, e), xbmc.LOGERROR)
+        return False
+    try:
+        # 1) write every staged file over the live tree
+        for root, _dirs, files in os.walk(staged):
+            rel = os.path.relpath(root, staged)
+            dest_dir = live if rel == '.' else os.path.join(live, rel)
+            os.makedirs(dest_dir, exist_ok=True)
+            for fn in files:
+                shutil.copy2(os.path.join(root, fn), os.path.join(dest_dir, fn))
+        # 2) drop files the new version no longer ships (best effort -- a stale
+        #    leftover is far less harmful than aborting a working update)
+        keep = set()
+        for root, _dirs, files in os.walk(staged):
+            rel = os.path.relpath(root, staged)
+            for fn in files:
+                keep.add(os.path.normcase(os.path.join(rel, fn)))
+        for root, _dirs, files in os.walk(live):
+            rel = os.path.relpath(root, live)
+            for fn in files:
+                if os.path.normcase(os.path.join(rel, fn)) not in keep:
+                    try:
+                        os.remove(os.path.join(root, fn))
+                    except Exception:
+                        pass
+        return True
+    except Exception as e:
+        log('in-place update failed for %s: %s -- restoring' % (live, e), xbmc.LOGERROR)
+        try:                                       # put the old files back
+            for root, _dirs, files in os.walk(rb):
+                rel = os.path.relpath(root, rb)
+                dest_dir = live if rel == '.' else os.path.join(live, rel)
+                os.makedirs(dest_dir, exist_ok=True)
+                for fn in files:
+                    try:
+                        shutil.copy2(os.path.join(root, fn), os.path.join(dest_dir, fn))
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+        return False
+
+
 def _apply_one(entry):
     """Download, verify sha256, extract. Raises on any mismatch/failure.
 
@@ -791,7 +858,22 @@ def _apply_one(entry):
             rb = os.path.join(ADDONS_PATH, '.rb_%s' % name)
             shutil.rmtree(rb, ignore_errors=True)
             if os.path.isdir(live):
-                os.replace(live, rb)               # move old aside (fast rename)
+                try:
+                    os.replace(live, rb)           # move old aside (fast rename)
+                except OSError as e:
+                    # Windows refuses to rename a directory that holds an OPEN
+                    # file, so the ACTIVE SKIN can never be dir-swapped in
+                    # place: "[WinError 5] Access is denied: addons\skin.X ->
+                    # addons\.rb_skin.X" (Asaf, 2026-08-02, skin.nimbus). POSIX
+                    # allows it, which is why Android/Linux never hit this.
+                    # Fall back to a file-level update, which works because Kodi
+                    # keeps only Textures.xbt open, not the xml/py files.
+                    if not _inplace_update(live, os.path.join(stage, name), rb):
+                        raise
+                    log('in-place update used for %s (dir swap blocked: %s)'
+                        % (name, e.__class__.__name__))
+                    swapped.append((live, rb))
+                    continue
                 swapped.append((live, rb))
             else:
                 swapped.append((live, None))

@@ -707,6 +707,48 @@ def test_pov_publishes_player_release():
               "get('display_name')" in src and 'URLName' not in src)
 
 
+def test_active_skin_update_on_windows():
+    """The addon swap renames the live dir to .rb_<id>. Windows refuses that
+    while a file inside is OPEN, so the ACTIVE SKIN could never update in place:
+    "[WinError 5] Access is denied: addons\skin.nimbus -> addons\.rb_skin.nimbus"
+    (Asaf, 2026-08-02). POSIX allows it, which is why Android/Linux never hit it.
+
+    _inplace_update is the fallback: file-by-file, backed up first, and it must
+    either fully apply or fully restore -- never leave a half-updated addon."""
+    print("\n=== update: active skin falls back to an in-place file update ===")
+    d = tempfile.mkdtemp()
+    live = os.path.join(d, 'skin.x')
+    staged = os.path.join(d, 'staged')
+    rb = os.path.join(d, '.rb_skin.x')
+    os.makedirs(os.path.join(live, 'xml'))
+    open(os.path.join(live, 'addon.xml'), 'w').write('OLD')
+    open(os.path.join(live, 'xml', 'a.xml'), 'w').write('OLD-A')
+    open(os.path.join(live, 'xml', 'gone.xml'), 'w').write('DROP-ME')
+    os.makedirs(os.path.join(staged, 'xml'))
+    open(os.path.join(staged, 'addon.xml'), 'w').write('NEW')
+    open(os.path.join(staged, 'xml', 'a.xml'), 'w').write('NEW-A')
+    open(os.path.join(staged, 'xml', 'b.xml'), 'w').write('NEW-B')
+
+    ok = mu._inplace_update(live, staged, rb)
+    check('in-place update reports success', ok is True)
+    check('changed file replaced', open(os.path.join(live, 'addon.xml')).read() == 'NEW')
+    check('nested file replaced', open(os.path.join(live, 'xml', 'a.xml')).read() == 'NEW-A')
+    check('new file added', os.path.isfile(os.path.join(live, 'xml', 'b.xml')))
+    check('file dropped by the new version removed',
+          not os.path.exists(os.path.join(live, 'xml', 'gone.xml')))
+
+    # failure path: a staged tree that vanishes mid-copy must restore the old
+    shutil.rmtree(live, ignore_errors=True)
+    os.makedirs(live)
+    open(os.path.join(live, 'addon.xml'), 'w').write('KEEP-ME')
+    ok2 = mu._inplace_update(live, os.path.join(d, 'does_not_exist'), rb)
+    check('missing staged tree -> reports failure', ok2 is False)
+    check('live addon left intact after a failure',
+          os.path.isfile(os.path.join(live, 'addon.xml'))
+          and open(os.path.join(live, 'addon.xml')).read() == 'KEEP-ME')
+    shutil.rmtree(d, ignore_errors=True)
+
+
 def test_seeds_survive_a_reinstall():
     """One-time seeds must be gated on the actual STATE, not on a marker file.
 
@@ -1211,6 +1253,7 @@ def main():
               test_pov_publishes_player_release,
               test_menu_bundle_never_laid_on_pov,
               test_seeds_survive_a_reinstall,
+              test_active_skin_update_on_windows,
               test_maintenance_folder_contents, test_remove_skin_purges_residue, test_detect_extras_skips_kodi_defaults,
               test_gears_settings_bool_serialization,
               test_dbmoved_install):
