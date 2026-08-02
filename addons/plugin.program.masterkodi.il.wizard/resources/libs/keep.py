@@ -121,16 +121,29 @@ _POV_TRAKT = ['trakt.token', 'trakt.refresh', 'trakt.usertoken', 'trakt.user', '
 _DEBRID_IDS = ['tb.token', 'tb.enabled', 'rd.token', 'rd.refresh',
                'pm.token', 'ad.token', 'oc.token',
                'easynews_user', 'easynews_password']
-_TRAKT_IDS = ['trakt.token', 'trakt.refresh', 'trakt.user']
+# Both spellings of the Trakt username are listed so the value is STAGED from
+# whichever engine we back up; _ID_ALIASES renames it on the way in.
+_TRAKT_IDS = ['trakt.token', 'trakt.refresh', 'trakt.user', 'trakt_user']
+
+# Nearly every id is identical across the engines -- storage differs, not names.
+# The ONE exception found on a live box (2026-08-02): Gears stores the Trakt
+# username as `trakt.user`, POV as `trakt_user` (POV's settings.xml has
+# trakt_user and no trakt.user at all). An identity copy therefore wrote an id
+# POV does not read, and the username silently vanished on a Gears->POV
+# reinstall -- caught only because the snapshot count fell 10 -> 9.
+_ID_ALIASES = {'trakt.user': 'trakt_user'}                 # gears id -> pov id
+_ID_ALIASES_REV = {v: k for k, v in _ID_ALIASES.items()}   # pov id -> gears id
 
 # Values meaning "not configured" -- carrying these across would make an empty
 # slot look like a live account.
 _PLACEHOLDERS = (None, '', 'false', 'true', '0', 'None')
 
 
-def _real_creds(values, allowed):
-    """{id: value} limited to `allowed` ids, with placeholder values dropped."""
-    return {k: v for k, v in (values or {}).items()
+def _real_creds(values, allowed, rename=None):
+    """{id: value} limited to `allowed` ids, placeholders dropped, ids renamed
+    into the TARGET engine's spelling (see _ID_ALIASES)."""
+    rename = rename or {}
+    return {rename.get(k, k): v for k, v in (values or {}).items()
             if k in allowed and v not in _PLACEHOLDERS}
 _POV_SERVICES = ['tmdb.token', 'tmdb.username', 'tmdb.account_id',
                  'tmdb.session_account_id', 'tmdb.session_id',
@@ -568,7 +581,8 @@ def restore():
         _carried = {}
         for path, values in saved.get('xml', {}).items():
             if 'plugin.video.pov' in path.replace('\\', '/'):
-                _carried.update(_real_creds(values, _DEBRID_IDS + _TRAKT_IDS))
+                _carried.update(_real_creds(values, _DEBRID_IDS + _TRAKT_IDS,
+                                            _ID_ALIASES_REV))   # -> gears ids
         if _carried:
             _carried.update(gears_creds)        # a real gears value always wins
             gears_creds = _carried
@@ -593,7 +607,8 @@ def restore():
     if cross and _tgt == 'pov' and gears_creds:
         _pov_path = next((p for p in _xml if 'plugin.video.pov' in p.replace('\\', '/')),
                          POV_SETTINGS)
-        _carried = _real_creds(gears_creds, _DEBRID_IDS + _TRAKT_IDS)
+        _carried = _real_creds(gears_creds, _DEBRID_IDS + _TRAKT_IDS,
+                               _ID_ALIASES)                      # -> pov ids
         if _carried:
             _carried.update(_xml.get(_pov_path) or {})   # staged POV value wins
             _xml[_pov_path] = _carried

@@ -501,7 +501,7 @@ def test_credentials_survive_reinstall():
     os.makedirs(os.path.dirname(pov_xml), exist_ok=True)
     _json.dump({'keys': ['debrid', 'trakt'], 'settings': {},
                 'xml': {pov_xml: {'tb.token': 'TORBOX_KEY', 'ad.token': 'false',
-                                  'rd.token': 'RD_KEY', 'trakt.user': 'asaf'}},
+                                  'rd.token': 'RD_KEY', 'trakt_user': 'asaf'}},
                 'source_content': 'pov', 'target_content': 'gears'},
                open(os.path.join(keep.STAGE, 'manifest.json'), 'w'))
     os.remove(gdb)
@@ -514,7 +514,8 @@ def test_credentials_survive_reinstall():
     con.close()
     check('POV->Gears: TorBox token carried', got.get('tb.token') == 'TORBOX_KEY')
     check('POV->Gears: rd token carried', got.get('rd.token') == 'RD_KEY')
-    check('POV->Gears: trakt user carried', got.get('trakt.user') == 'asaf')
+    check('POV->Gears: trakt username renamed to GEARS spelling',
+          got.get('trakt.user') == 'asaf')
     check("POV->Gears: placeholder 'false' NOT carried", got.get('ad.token') is None)
 
     # ---- Gears -> POV: db values carried into the POV xml -------------------
@@ -522,9 +523,11 @@ def test_credentials_survive_reinstall():
     os.makedirs(keep.STAGE, exist_ok=True)
     with open(pov_xml, 'w', encoding='utf-8') as fh:
         fh.write('<settings><setting id="tb.token"></setting>'
-                 '<setting id="ad.token"></setting></settings>')
+                 '<setting id="ad.token"></setting>'
+                 '<setting id="trakt_user"></setting></settings>')
     _json.dump({'keys': ['debrid'],
-                'settings': {'gears': {'tb.token': 'TORBOX_KEY2', 'ad.token': 'AD_KEY'}},
+                'settings': {'gears': {'tb.token': 'TORBOX_KEY2', 'ad.token': 'AD_KEY',
+                                       'trakt.user': 'TRAKT_NAME'}},
                 'xml': {}, 'source_content': 'gears', 'target_content': 'pov'},
                open(os.path.join(keep.STAGE, 'manifest.json'), 'w'))
     keep.restore()
@@ -533,6 +536,11 @@ def test_credentials_survive_reinstall():
     check('Gears->POV: TorBox token carried into the POV xml',
           'TORBOX_KEY2' in xml_after)
     check('Gears->POV: alldebrid token carried', 'AD_KEY' in xml_after)
+    # The ONE id that genuinely differs between the engines: Gears stores the
+    # Trakt username as trakt.user, POV as trakt_user. An identity copy wrote an
+    # id POV never reads and the username vanished (live, 2026-08-02).
+    check('Gears->POV: trakt username renamed to POV spelling',
+          'trakt_user' in xml_after and 'TRAKT_NAME' in xml_after)
 
     try:
         os.remove(gdb)
