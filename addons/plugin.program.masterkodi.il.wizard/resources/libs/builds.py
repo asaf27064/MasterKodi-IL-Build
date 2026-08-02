@@ -2463,14 +2463,14 @@ def builds_menu():
             # Nimbus 1.47s, Zephyr 1.66s, AF3 3.70s). The descriptions carry the
             # same verdict: the top three are one speed class; only AF3 is
             # humanly slower.
-            skin_options = [('estuary', 'Estuary', 'הרגיל | הכי מהיר | עיצוב פשוט', 'estuary.jpg')]
+            skin_options = [('estuary', 'Estuary', _SKIN_DESC['estuary'], 'estuary.jpg')]
             if selected_build.get('nimbus_skin_url'):
-                skin_options.append(('nimbus', 'Nimbus', 'מהיר כמעט כמו הרגיל | יפה ומודרני | מתאים גם למכשירים חלשים', 'nimbus.jpg'))
+                skin_options.append(('nimbus', 'Nimbus', _SKIN_DESC['nimbus'], 'nimbus.jpg'))
             # Arctic Zephyr installs from the manifest (not a build.txt url), so it's
             # always offered here.
-            skin_options.append(('zephyr', 'Arctic Zephyr', 'עשיר ומעוצב בסגנון נטפליקס | מהיר | מתאים לרוב המכשירים', 'zephyr.jpg'))
+            skin_options.append(('zephyr', 'Arctic Zephyr', _SKIN_DESC['zephyr'], 'zephyr.jpg'))
             if selected_build.get('skin_url'):
-                skin_options.append(('arctic', 'Arctic Fuse', 'הכי יפה ומעוצב | הכי איטי בטעינה | למכשירים חזקים', 'af3.jpg'))
+                skin_options.append(('arctic', 'Arctic Fuse', _SKIN_DESC['arctic'], 'af3.jpg'))
 
             # Custom picker window with a LARGE live preview of the focused skin.
             # Falls back to the old useDetails select if the window fails.
@@ -2590,6 +2590,17 @@ def builds_menu():
 # ===================================================================== #
 # (key, display name, addon id, preview image). Estuary is Kodi's built-in
 # fallback skin -- always available, never removable.
+# One-line descriptions, shared by BOTH pickers (install flow + skin switch) so
+# the wording can never drift between them. They used to live only in the
+# install flow, so the switch picker showed just the install status and a user
+# choosing a skin there got no idea what it was (Asaf, 2026-08-02).
+_SKIN_DESC = {
+    'estuary': 'הרגיל | הכי מהיר | עיצוב פשוט',
+    'nimbus':  'מהיר כמעט כמו הרגיל | יפה ומודרני | מתאים גם למכשירים חלשים',
+    'zephyr':  'עשיר ומעוצב בסגנון נטפליקס | מהיר | מתאים לרוב המכשירים',
+    'arctic':  'הכי יפה ומעוצב | הכי איטי בטעינה | למכשירים חזקים',
+}
+
 # ORDER = measured boot speed, fastest first (docs/skin-performance.md,
 # Xiaomi medians: Estuary 1.37s, Nimbus 1.47s, Zephyr 1.66s, AF3 3.70s).
 _SKIN_CATALOG = [
@@ -2682,7 +2693,18 @@ def _skin_switch_flow():
             tag = 'מותקן'
         else:
             tag = 'לא מותקן'
-        picker.append((name, tag, os.path.join(preview_dir, img),
+        # status FIRST (it is what the user is scanning for) then the same
+        # description the install picker shows. COLOUR carries the state so the
+        # three cases are distinguishable at a glance: active = green + bold,
+        # installed = plain white, not installed = dimmed grey. Colour only, no
+        # symbols -- a leading glyph in an RTL line lands unpredictably, and
+        # these captions are Hebrew (bidi rule).
+        colour = ('springgreen' if tag == 'פעיל'
+                  else 'white' if tag == 'מותקן' else 'grey')
+        bold = ('[B]', '[/B]') if tag == 'פעיל' else ('', '')
+        caption = '[COLOR %s]%s%s%s[/COLOR]  ·  [COLOR grey]%s[/COLOR]' % (
+            colour, bold[0], tag, bold[1], _SKIN_DESC.get(key, ''))
+        picker.append((name, caption, os.path.join(preview_dir, img),
                        os.path.join(preview_dir, os.path.splitext(img)[0])))
         meta.append((key, name, sid, installed))
 
@@ -2690,7 +2712,10 @@ def _skin_switch_flow():
         idx = SkinPickerDialog.pick('בחר סקין', picker)
     except Exception as e:
         log(f"SkinPickerDialog failed ({e}); fallback select", xbmc.LOGWARNING)
-        idx = dialog.select('בחר סקין', [f"{n}  ({t})" for n, t, _ in picker])
+        # picker rows are 4-tuples since the preview-slideshow change; unpacking
+        # 3 here raised ValueError and turned a recoverable dialog failure into
+        # a dead menu.
+        idx = dialog.select('בחר סקין', [f"{row[0]}  ({row[1]})" for row in picker])
     if idx is None or idx < 0:
         return
 
