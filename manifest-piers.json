@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-04T21:02:15Z",
+  "generated_utc": "2026-08-04T21:35:02Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -54,22 +54,22 @@
     },
     {
       "id": "plugin.video.gears",
-      "version": "2.3.8",
+      "version": "2.4.0",
       "channel": "core",
-      "zip": "plugin.video.gears-2.3.8.zip",
-      "sha256": "36f686ac77172b1b964b1956e5e608e96dc0bd1eaa5d5ae53d5d78e42ec1805a",
-      "size": 8659589,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.gears-2.3.8.zip",
+      "zip": "plugin.video.gears-2.4.0.zip",
+      "sha256": "2f97ac58c16d2d05293b15b05a0307c28f38e7828e2e9380710fb39ab3361397",
+      "size": 8719954,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.gears-2.4.0.zip",
       "content": "gears"
     },
     {
       "id": "plugin.video.pov",
-      "version": "6.08.01",
+      "version": "6.08.03",
       "channel": "optional",
-      "zip": "plugin.video.pov-6.08.01.zip",
-      "sha256": "f36a3a6d79b2506f2d01d7b953fa37012a97fed3facd58efa616b53b0daa86ec",
-      "size": 3618396,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.08.01.zip",
+      "zip": "plugin.video.pov-6.08.03.zip",
+      "sha256": "aa4fc4c09f1c784dced996329a0a1163e1802e653b8569dd209ba4ab6c59bba0",
+      "size": 3619268,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.08.03.zip",
       "content": "pov"
     },
     {
@@ -545,6 +545,6 @@
     "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-58.zip"
   },
   "content_variants": {
-    "version": "c845e4f4265d56c2"
+    "version": "fd30e126958edc3c"
   }
 }
