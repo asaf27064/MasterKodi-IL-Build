@@ -62,6 +62,13 @@ jobs:
       - name: Wizard unit tests (real modules via Kodi shim)
         run: python tools/tests/run_tests.py
 
+      - name: Validate TMDb Helper widgets
+        # Every info/tmdb_type pair we ship must be a route tmdbhelper actually
+        # serves. `info=upcoming&tmdb_type=tv` shipped in the Zephyr menus and
+        # failed on every load (TMDb has /movie/upcoming, no TV equivalent) --
+        # a real user-visible error on the Shield 2026-08-04.
+        run: python tools/check_tmdb_widgets.py
+
       - name: Verify content-variant invariants
         # POV mode validity, no Gears contamination/labels, trending, pov/ seeds,
         # view coverage -- fails the build on any regression of a known bug class.

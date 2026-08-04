@@ -946,25 +946,28 @@ def test_no_invalid_tmdb_widgets():
     print("\n=== config: no movies-only TMDb info type paired with tv ===")
     import glob as _glob
 
-    bad = []
-    for root in ('config', 'config-variants', 'config-variants-piers'):
-        for path in _glob.glob(os.path.join(REPO, root, '**', '*'), recursive=True):
-            if not os.path.isfile(path):
-                continue
-            try:
-                with open(path, encoding='utf-8', errors='replace') as fh:
-                    txt = fh.read()
-            except Exception:
-                continue
-            if 'info=upcoming' in txt and 'tmdb_type=tv' in txt:
-                for frag in ('info=upcoming&amp;tmdb_type=tv', 'info=upcoming&tmdb_type=tv'):
-                    if frag in txt:
-                        bad.append(os.path.relpath(path, REPO))
-                        break
-    check('no shipped menu pairs info=upcoming with tmdb_type=tv', not bad)
-    if bad:
-        for b in bad[:5]:
-            print('      still broken: %s' % b)
+    # Checks EVERY info/tmdb_type pair we ship (all 4 skins, both engines)
+    # against tmdbhelper's own route declarations -- not just the one pairing
+    # that broke, so a different bad combination cannot slip through.
+    sys.path.insert(0, os.path.join(REPO, 'tools'))
+    import check_tmdb_widgets as ctw
+
+    routes, known = ctw.declared_routes(), ctw.known_routes()
+    check('tmdbhelper route tables parsed', len(routes) >= 20 and len(known) >= 20)
+
+    bad, seen = [], 0
+    for rel, info, tmdb_type in ctw.shipped_widgets():
+        seen += 1
+        allowed = routes.get(info)
+        if allowed is None:
+            if not info.startswith('dir_') and info not in known:
+                bad.append('%s (info=%s unknown)' % (rel, info))
+        elif None not in allowed and tmdb_type and tmdb_type not in allowed:
+            bad.append('%s (info=%s + tmdb_type=%s)' % (rel, info, tmdb_type))
+    check('widgets were actually found to check', seen > 100)
+    check('every shipped widget uses a tmdb_type its route supports', not bad)
+    for b in bad[:5]:
+        print('      still broken: %s' % b)
 
     # the migration must repair an existing box, and touch nothing else
     ss = os.path.join(HOME, 'userdata', 'addon_data', 'script.skinshortcuts')
