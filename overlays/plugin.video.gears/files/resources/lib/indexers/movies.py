@@ -14,6 +14,7 @@ class Movies:
 	'watched_movies': ('modules.watched_status', 'get_watched_items'), 'recent_watched_movies': ('modules.watched_status', 'get_recently_watched')}
 	trakt_main = ('trakt_movies_trending', 'trakt_movies_trending_recent', 'trakt_movies_most_watched', 'trakt_movies_most_favorited', 'trakt_movies_top10_boxoffice')
 	trakt_personal = ('trakt_collection', 'trakt_watchlist', 'trakt_collection_lists', 'trakt_watchlist_lists', 'trakt_favorites')
+	simkl_personal = ('simkl_watching', 'simkl_plantowatch', 'simkl_completed', 'simkl_hold', 'simkl_dropped')
 
 	def __init__(self, params):
 		self.params = params
@@ -68,7 +69,7 @@ class Movies:
 				try: self.list = [i['movie']['ids'] for i in data]
 				except: self.list = [i['ids'] for i in data]
 				if self.action not in ('trakt_movies_top10_boxoffice', 'trakt_recommendations'): self.new_page = {'new_page': str(page_no + 1)}
-			elif self.action in self.trakt_personal:
+			elif self.action in self.trakt_personal or self.action in self.simkl_personal:
 				self.id_type = 'trakt_dict'
 				data = function('movies', page_no)
 				if self.action in ('trakt_collection_lists', 'trakt_watchlist_lists', 'trakt_favorites'): total_pages = 1
@@ -224,8 +225,7 @@ class Movies:
 			cast = meta_get('short_cast', []) or meta_get('cast', []) or []
 			info_tag.setCast([self.kodi_actor(name=item['name'], role=item['role'], thumbnail=item['thumbnail']) for item in cast])
 			if progress:
-				info_tag.setResumePoint(watched_status.get_resume_seconds(progress, duration))
-				set_properties({'WatchedProgress': progress})
+				watched_status.apply_resume_to_listitem(listitem, info_tag, progress, duration)
 			listitem.setLabel(title)
 			listitem.addContextMenuItems(cm)
 			listitem.setArt({'poster': poster, 'fanart': fanart, 'icon': poster, 'clearlogo': clearlogo, 'landscape': landscape, 'thumb': thumb})
@@ -276,7 +276,7 @@ class Movies:
 		########################################################################################
 		self.cm_sort_order = settings.cm_sort_order()
 		self.perform_cm_sort = self.cm_sort_order != settings.cm_default_order()
-		self.watched_title = 'Trakt' if self.watched_indicators == 1 else 'gearsLAM'
+		self.watched_title = 'Trakt' if self.watched_indicators == 1 else 'Simkl' if self.watched_indicators == 2 else 'Gears'
 		watched_db = watched_status.get_database(self.watched_indicators)
 		self.watched_info, self.bookmarks = watched_status.watched_info_movie(watched_db), watched_status.get_bookmarks_movie(watched_db)
 		self.window_command = 'ActivateWindow(Videos,%s,return)' if self.is_external else 'Container.Update(%s)'

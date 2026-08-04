@@ -32,10 +32,13 @@ os_api_key_value	827ca2f8fab0fb2e  # OS_API_KEY_VALUE
 os_api_key_value	d2009cebda8a7745  # OS_API_KEY_VALUE
 password	0b3e30f9fd9d985a  # password
 read_access_token	716f7bffe613cccf  # read_access_token
+simkl.secret	1c9185d783450a9f  # simkl.secret
 tmdb_api_key	7dff816d516c8424  # TMDB_API_KEY
 tmdb_api_key	dd56245dc027bb31  # TMDB_API_KEY
 tmdb_read_token	2b0a8aae42082bbc  # tmdb_read_token
 token	de8ca87f585e28a1  # TOKEN
 trakt.client_id	46b289fc366fc8e1  # trakt.client_id
 trakt.client_secret	bc6b3b093893bcf8  # trakt.client_secret
+trakt.secret	7da81337c83614bb  # trakt.secret
+update.username	fa260b9c971df0a8  # update.username
 use_os_user_api_key	2c36b870b9c5d74f  # USE_OS_USER_API_KEY

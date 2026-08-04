@@ -112,6 +112,26 @@ The wizard's sha-driven updater ships it fleet-wide from there — both Kodi 21
 and 22 fleets get the same overlay (POV is version-agnostic).
 
 ## Traps (each cost a debugging round once)
+- **Normalise line endings on all three sides BEFORE merging.** Gears 2.4.0
+  converted the whole addon CRLF -> LF; the naive 3-way merge reported 12
+  conflicts over ~8600 "changed" lines, every one phantom. Normalising
+  ours/base/new to LF first gave ZERO conflicts and a real surface of 8-150
+  lines per file. Always check first:
+  `python -c "b=open(P,'rb').read(); print('CRLF' if b.count(b'\r\n') else 'LF')"`
+  -- a diff whose changed-line count approaches the file length is this, not a
+  rewrite. Write the merged overlay back in the NEW upstream convention.
+- **A clean textual merge is not a correct merge.** After every re-merge, diff
+  old-vs-new for the overlaid files and read it: upstream RENAMES break code
+  that merged without conflict. Seen so far: URLName -> display_name (0.1.2),
+  build_my_calendar -> build_my_calendar_trakt + setting sort.watchlist ->
+  sort.watchlist_movies/_shows (0.1.11). Grep the whole repo -- including
+  `config/` and `config-variants/*/pov/settings.xml` -- for every renamed
+  identifier, not just the addon tree.
+- **Upstream ships junk.** Gears 2.4.0 included `_tmp_tango.py`, a maintainer's
+  personal sqlite debug script. Add such files to `PER_ADDON_EXCLUDES` in
+  tools/common.py (honoured by apply_overlay AND the zip builder); never edit
+  the committed base zip -- it is the 3-way-merge reference and must stay
+  byte-identical to clean upstream.
 - New upstream releases can bake NEW credential-shaped values (6.08.01 added
   mdblist.client_id for OAuth) — CI's credential scanner FAILS the build. Verify
   the value is byte-identical to CLEAN upstream (public app id, not a captured

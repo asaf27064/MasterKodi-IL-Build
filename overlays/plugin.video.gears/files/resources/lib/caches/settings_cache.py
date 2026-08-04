@@ -215,10 +215,20 @@ def default_settings():
 {'setting_id': 'update.username', 'setting_type': 'string', 'setting_default': 'gearsChainsRepo'},
 {'setting_id': 'update.location', 'setting_type': 'string', 'setting_default': 'gearsChainsRepo.github.io'},
 #==================== Watched Indicators
-{'setting_id': 'watched_indicators', 'setting_type': 'action', 'setting_default': '0', 'settings_options': {'0': 'gears', '1': 'Trakt'}},
+{'setting_id': 'watched_indicators', 'setting_type': 'action', 'setting_default': '0', 'settings_options': {'0': 'gears', '1': 'Trakt', '2': 'Simkl'}},
 #======+============= Trakt Cache
 {'setting_id': 'trakt.sync_interval', 'setting_type': 'action', 'setting_default': '60', 'min_value': '5', 'max_value': '600'},
 {'setting_id': 'trakt.refresh_widgets', 'setting_type': 'boolean', 'setting_default': 'true'},
+#======+============= Simkl Auth / Cache
+{'setting_id': 'simkl.client', 'setting_type': 'string', 'setting_default': '31b27f6eab89fc5e5f9f9c1fecc1c4b2c22e745740333a02075a352e206d2c40'},
+{'setting_id': 'simkl.secret', 'setting_type': 'string', 'setting_default': '888c4ab9143ffe3f13970fdbe908b0922eb1dd183d78810979eb9e2d21df8bec'},
+{'setting_id': 'simkl.token', 'setting_type': 'string', 'setting_default': ''},
+{'setting_id': 'simkl.refresh', 'setting_type': 'string', 'setting_default': ''},
+{'setting_id': 'simkl.user', 'setting_type': 'string', 'setting_default': 'empty_setting'},
+{'setting_id': 'simkl.username', 'setting_type': 'string', 'setting_default': ''},
+{'setting_id': 'simkl.sync_interval', 'setting_type': 'action', 'setting_default': '60', 'min_value': '5', 'max_value': '600'},
+{'setting_id': 'simkl.refresh_widgets', 'setting_type': 'boolean', 'setting_default': 'true'},
+
 #==================== UTC Time Offset
 {'setting_id': 'datetime.offset', 'setting_type': 'action', 'setting_default': '0', 'min_value': '-15', 'max_value': '15'},
 #==================== Downloads
@@ -318,6 +328,11 @@ def default_settings():
 {'setting_id': 'trakt.calendar_sort_order', 'setting_type': 'action', 'setting_default': '0', 'settings_options': {'0': 'Descending', '1': 'Ascending'}},
 {'setting_id': 'trakt.calendar_previous_days', 'setting_type': 'action', 'setting_default': '7', 'min_value': '0', 'max_value': '14'},
 {'setting_id': 'trakt.calendar_future_days', 'setting_type': 'action', 'setting_default': '7', 'min_value': '0', 'max_value': '14'},
+#======+============= Simkl Calendar
+{'setting_id': 'simkl.flatten_episodes', 'setting_type': 'boolean', 'setting_default': 'false'},
+{'setting_id': 'simkl.calendar_sort_order', 'setting_type': 'action', 'setting_default': '0', 'settings_options': {'0': 'Descending', '1': 'Ascending'}},
+{'setting_id': 'simkl.calendar_previous_days', 'setting_type': 'action', 'setting_default': '0', 'min_value': '0', 'max_value': '14'},
+{'setting_id': 'simkl.calendar_future_days', 'setting_type': 'action', 'setting_default': '7', 'min_value': '0', 'max_value': '14'},
 
 
 #=====================================================================================#

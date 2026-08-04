@@ -22,6 +22,13 @@ EXCLUDE_EXTS = {'.pyc', '.pyo', '.pyd'}
 # Keyed by addon id -> list of top-level relative paths to skip.
 PER_ADDON_EXCLUDES = {
     'service.subtitles.gearsai': ['cloudflare'],
+    # Gears 2.4.0 shipped a developer's personal debug script in the zip by
+    # mistake: it hardcodes %APPDATA%\Kodi paths and dumps the maintainer's
+    # own simkl.db rows for a movie he was testing. Never imported, so it is
+    # inert -- but it has no business on a user's box. Drop it from the mirror
+    # while the committed base zip stays byte-identical to clean upstream (the
+    # base zip is our 3-way-merge reference and must not be edited).
+    'plugin.video.gears': ['_tmp_tango.py'],
 }
 
 # A fixed timestamp for every zip entry (2010-01-01) -> reproducible archives.

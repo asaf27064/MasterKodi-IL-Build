@@ -1,5 +1,6 @@
 from threading import Thread
 from indexers.metadata import tvshow_meta, season_episodes_meta, art_infodict, episode_infodict, info_tagger
+from indexers.mdblist_api import mdbl_get_my_calendar
 from indexers.trakt_api import trakt_fetch_collection_watchlist, trakt_get_my_calendar, trakt_get_my_anime_calendar, trakt_anime_calendar
 from caches.watched_cache import get_resumetime, set_resumetime, get_watched_status_episode, get_watched_info_tv, get_bookmarks, get_next_episodes, get_in_progress_items
 from modules import kodi_utils, settings
@@ -250,7 +251,8 @@ class Menu(Episodes):
 
 	def _setup_my_calendar(self, params_get):
 		recently_aired = params_get('recently_aired')
-		self.list = trakt_get_my_calendar(recently_aired, self.current_date)
+		func = mdbl_get_my_calendar if 'mdbl' in params_get('mode') else trakt_get_my_calendar
+		self.list = func(recently_aired, self.current_date)
 		if recently_aired:
 			self.list_type = 'trakt_recently_aired'
 			self.list = self.list[:20]

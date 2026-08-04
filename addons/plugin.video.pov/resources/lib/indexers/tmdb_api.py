@@ -3,8 +3,7 @@ from threading import Thread
 from concurrent.futures import ThreadPoolExecutor
 from caches.main_cache import cache_object
 from caches.meta_cache import cache_function
-from modules import kodi_utils
-from modules.settings import get_language, show_unaired_watchlist, ignore_articles, lists_sort_order, paginate, page_limit
+from modules import kodi_utils, settings
 from modules.utils import paginate_list, sort_for_article, jsondate_to_datetime, get_datetime, chunks, TaskPool
 
 ls, logger = kodi_utils.local_string, kodi_utils.logger
@@ -275,7 +274,7 @@ def tmdb_popular_people(page_no):
 	return cache_object(get_tmdb, string, url)
 
 def tmdb_people_full_info(actor_id, language=None):
-	if not language: language = get_language()
+	if not language: language = settings.get_language()
 	string = 'tmdb_people_full_info_%s_%s' % (actor_id, language)
 	url = '%s/person/%s?language=%s' % (base_url, actor_id, language)
 	url += '&append_to_response=external_ids,combined_credits,images,tagged_images'
@@ -425,19 +424,19 @@ def tmdb_watchlist(mediatype, page_no):
 		return jsondate_to_datetime(item[premiered]).astimezone().date() <= current_date
 	title, premiered = ('title', 'release_date') if mediatype == 'movie' else ('name', 'first_air_date')
 	original_list = watchlist(mediatype)
-	if not show_unaired_watchlist():
+	if not settings.show_unaired_watchlist():
 		current_date = get_datetime()
 		original_list = [i for i in original_list if first_aired(i)]
-	sort_key = lists_sort_order('watchlist')
+	sort_key = settings.lists_sort_order('watchlist', mediatype)
 	if   sort_key == 2: original_list.sort(key=lambda k: k[premiered], reverse=True)
 	elif sort_key == 1: pass # api call for list specifies params created_at.desc
-	else: original_list = sort_for_article(original_list, title, ignore_articles())
-	if paginate(): return paginate_list(original_list, page_no, page_limit())
+	else: original_list = sort_for_article(original_list, title, settings.ignore_articles())
+	if settings.paginate(): return paginate_list(original_list, page_no, settings.page_limit())
 	return original_list, 1
 
 def tmdb_favorites(mediatype, page_no):
 	original_list = favorites(mediatype)
-	if paginate(): return paginate_list(original_list, page_no, page_limit())
+	if settings.paginate(): return paginate_list(original_list, page_no, settings.page_limit())
 	return original_list, 1
 
 def tmdb_recommendations(mediatype, page_no):

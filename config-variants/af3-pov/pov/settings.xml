@@ -156,7 +156,8 @@
     <setting id="sort.progress" default="true">0</setting>
     <setting id="sort.watched" default="true">0</setting>
     <setting id="sort.collection" default="true">0</setting>
-    <setting id="sort.watchlist" default="true">0</setting>
+    <setting id="sort.watchlist_movies" default="true">0</setting>
+    <setting id="sort.watchlist_shows" default="true">0</setting>
     <setting id="ignore_articles">true</setting>
     <setting id="auto_play_movie" default="true">false</setting>
     <setting id="autoplay_quality_movie" default="true">SD, 720p, 1080p, 4K</setting>

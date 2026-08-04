@@ -61,7 +61,12 @@ SETTING = re.compile(r'<setting id="([^"]+)"[^>]*>([^<]+)</setting>')
 # also catch a credential parked in a default= attribute of a self-closing setting
 # (<setting id="x.password" default="secret"/>) -- the text-content regex misses it.
 SETTING_DEFAULT = re.compile(r'<setting\s+id="([^"]+)"[^>]*\bdefault="([^"]+)"[^>]*/?>')
-_SKIP_VALS = {'true', 'false', '0', '1', 'default'}
+# 'empty_setting' is Gears'/POV's literal sentinel for "user has not set this".
+# It is the default for every personal id (rd.token, tb.token, easynews_password
+# ...), so it is a NON-value, not a credential. Skipping it keeps the report
+# signal-rich; a real token later landing in those ids still fails the check
+# because the baseline matches on value, not on setting id.
+_SKIP_VALS = {'true', 'false', '0', '1', 'default', 'empty_setting'}
 
 
 def _is_personal(sid):
@@ -115,6 +120,16 @@ PY_DICT = re.compile(r'''(?P<q1>['"])(?P<id>[A-Za-z_][A-Za-z0-9_]*)(?P=q1)\s*:\s
                      r'''(?P<q2>['"])(?P<val>[^'"\n]{6,})(?P=q2)''')
 PY_ID_CRED = re.compile(r'(password|passwd|secret|token|api_?key|apikey|access_key|auth_key|email|'
                         r'account_id|session|client_id|username|user_id)', re.I)
+# Gears/POV settings registry entry:
+#   {'setting_id': 'simkl.secret', 'setting_type': 'string', 'setting_default': '888c...'}
+# The credential NAME and the credential VALUE sit under two neutral keys, so
+# PY_DICT reads the id as `setting_default` and PY_ID_CRED never fires -- the
+# whole file was invisible to this scanner, including our own baked OMDb key
+# and every shipped default. Match the pair explicitly and report it under the
+# real setting id. Found when Gears 2.4.0 added simkl.client/simkl.secret.
+PY_SETTING_ENTRY = re.compile(
+    r'''['"]setting_id['"]\s*:\s*['"](?P<id>[^'"]+)['"].*?'''
+    r'''['"]setting_default['"]\s*:\s*(?P<q>['"])(?P<val>[^'"\n]{6,})(?P=q)''')
 B64ISH = re.compile(r'^[A-Za-z0-9+/]{16,}={0,2}$')
 EMAILISH = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
@@ -140,9 +155,11 @@ def _collect_python(root):
                 text = io.open(f, encoding='utf-8', errors='replace').read()
             except Exception:
                 continue
-            for rx in (PY_ASSIGN, PY_DICT):
+            for rx in (PY_ASSIGN, PY_DICT, PY_SETTING_ENTRY):
                 for m in rx.finditer(text):
                     pid, val = m.group('id'), m.group('val').strip()
+                    # settings-registry entries are matched by the id INSIDE the
+                    # entry (simkl.secret), which is what must be judged
                     if PY_ID_CRED.search(pid) and _py_cred(pid, val):
                         out.append((rel, pid, val))
     return out

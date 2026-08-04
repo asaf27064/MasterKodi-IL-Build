@@ -1,11 +1,11 @@
 {
   "addon_id": "plugin.video.gears",
-  "base_version": "2.3.8",
-  "base_zip_local": "base/plugin.video.gears-2.3.8.zip",
+  "base_version": "2.4.0",
+  "base_zip_local": "base/plugin.video.gears-2.4.0.zip",
   "base_zip_url": "https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/plugin.video.gears/plugin.video.gears-{version}.zip",
   "upstream_zip_url": "https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/plugin.video.gears/plugin.video.gears-{version}.zip",
   "upstream_addons_xml": "https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/addons.xml",
-  "overlay_version": "2.2.10",
+  "overlay_version": "2.2.11",
   "note": "unhingedthemes keeps ONLY the latest zip upstream, so the clean base of the version we ship is committed at base_zip_local (immune to upstream deleting older versions). upstream_zip_url is used by the watcher/adopt to fetch newer versions.",
-  "changelog": "Hebrew subtitles overlay (kodirdil) + baked build defaults (cached-only fast search, non-blocking Hebrew match, meta_language he). 2.2.10: official TMDb network logos for the streaming-networks folder (11 icons)."
+  "changelog": "2.2.11: re-merged onto clean Gears 2.4.0 (Simkl integration: auth, sync service, calendar, watched-indicator source #2; navigator menu props now cleared at service start so icon/name edits apply without a manual Restore Menu; resume-point handling moved into watched_status.apply_resume_to_listitem). TRAP: upstream converted the whole addon from CRLF to LF, so a naive 3-way merge reported 12 conflicts across ~8600 'changed' lines -- all phantom. Normalising ours/base/new to LF first dropped it to ZERO conflicts and a real surface of 8-150 lines per file; our overlay files are now LF too, so the next re-merge is clean. All 6 overlaid files verified: KODIRDIL markers intact (8/3/1/3/2/1), 10 hebrew_subtitles settings present, TorBox days-remaining banner intact, Simkl features fully adopted, 0 upstream lines lost (every apparent loss confirmed as our own baked default: max_threads 100, omdb key, cached-only external check, results.timeout 12, no auto-rescrape, autoscrape_next_episode). Also: upstream shipped _tmp_tango.py, a maintainer's personal sqlite debug script with hardcoded %APPDATA% paths -- excluded from the mirror and the shipped zip (the committed base zip keeps it, staying byte-identical to clean upstream for future merges). Hebrew subtitles overlay (kodirdil) + baked build defaults (cached-only fast search, non-blocking Hebrew match, meta_language he). 2.2.10: official TMDb network logos for the streaming-networks folder (11 icons)."
 }

@@ -1,6 +1,9 @@
 
   [COLOR dodgerblue][B]Version 6.08[/B][/COLOR]
 + Added AIOStreams to Settings/Sources, see Help in settings.
++ Added separate states for Movies/TV Shows for Watchlist Sort Type.
++ Added MDBList Calendar, shares Settings/My Lists/Calendar.
++ Added support for seasons and episodes in MDBList lists.
 + Added Trending This Week TMDB Movies/TV Shows in case Trakt revokes client_id.
 - Removed torboxnews.  TorBox to completely remove search api.
 

@@ -45,7 +45,8 @@ import sys
 import zipfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import EXCLUDE_DIRS, EXCLUDE_NAMES, EXCLUDE_EXTS, sha256_file  # noqa: E402
+from common import (EXCLUDE_DIRS, EXCLUDE_NAMES, EXCLUDE_EXTS,  # noqa: E402
+                    PER_ADDON_EXCLUDES, sha256_file)
 
 
 def _log(msg):
@@ -54,6 +55,17 @@ def _log(msg):
 
 def _skip_name(name):
     return name in EXCLUDE_NAMES or os.path.splitext(name)[1] in EXCLUDE_EXTS
+
+
+def _skip_rel(addon_id, rel):
+    """True for a path this addon must never ship (PER_ADDON_EXCLUDES).
+
+    Applied when reconstructing the mirror, not only when zipping, so the
+    committed addons/ tree matches what actually reaches a user's box.
+    Upstream junk (Gears 2.4.0's _tmp_tango.py) is dropped here while the
+    committed base zip stays byte-identical to clean upstream."""
+    top = rel.replace(os.sep, '/').split('/')[0]
+    return top in set(PER_ADDON_EXCLUDES.get(addon_id, []))
 
 
 def _fetch_base_zip(base, local_zip=None, overlay_dir=None):
@@ -120,6 +132,8 @@ def _extract_clean_base(zip_bytes, base, dest):
             continue
         if _skip_name(parts[-1]):
             continue
+        if _skip_rel(addon_id, rel):
+            continue
         dst = os.path.join(addon_dir, rel.replace('/', os.sep))
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         with open(dst, 'wb') as fh:
@@ -165,6 +179,8 @@ def _copy_committed_base(base, overlay_dir, dest):
             if _skip_name(fn):
                 continue
             p = os.path.join(root, fn)
+            if _skip_rel(addon_id, os.path.relpath(p, src)):
+                continue
             dst = os.path.join(addon_dir, os.path.relpath(p, src))
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             shutil.copy2(p, dst)

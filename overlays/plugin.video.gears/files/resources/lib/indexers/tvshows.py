@@ -21,6 +21,7 @@ class TVShows:
 	trakt_special = ('trakt_tv_certifications', 'trakt_anime_certifications')
 	trakt_personal = ('trakt_collection', 'trakt_watchlist', 'trakt_collection_lists', 'trakt_watchlist_lists', 'trakt_favorites')
 	trakt_search = ('trakt_tv_search', 'trakt_anime_search')
+	simkl_personal = ('simkl_watching', 'simkl_plantowatch', 'simkl_completed', 'simkl_hold', 'simkl_dropped')
 	
 	def __init__(self, params):
 		self.params = params
@@ -89,7 +90,7 @@ class TVShows:
 				data = function(key_id, page_no)
 				self.list = [i['show']['ids'] for i in data]
 				if not is_random: self.new_page = {'new_page': str(page_no + 1), 'key_id': key_id}
-			elif self.action in self.trakt_personal:
+			elif self.action in self.trakt_personal or self.action in self.simkl_personal:
 				self.id_type = 'trakt_dict'
 				data = function('shows', page_no)
 				if self.action in ('trakt_collection_lists', 'trakt_watchlist_lists', 'trakt_favorites'): total_pages = 1
@@ -289,7 +290,7 @@ class TVShows:
 		self.perform_cm_sort = self.cm_sort_order != settings.cm_default_order()
 		self.is_folder = False if self.open_extras else True
 		self.watched_indicators = settings.watched_indicators()
-		self.watched_title = 'Trakt' if self.watched_indicators == 1 else 'gearsLAM'
+		self.watched_title = 'Trakt' if self.watched_indicators == 1 else 'Simkl' if self.watched_indicators == 2 else 'Gears'
 		self.watched_info = watched_status.watched_info_tvshow(watched_status.get_database(self.watched_indicators))
 		self.window_command = 'ActivateWindow(Videos,%s,return)' if self.is_external else 'Container.Update(%s)'
 		if self.custom_order:

@@ -145,7 +145,7 @@ A custom url may be entered, but is not "supported" (YMMV).
 
 Any result that contains the type 'p2p' are skipped.
 
-Ensure Settings/Results/Scraper Timeout is as long as longest AIOStreams timeout.
+Ensure Settings/Sources/Scraper Timeout is as long as longest AIOStreams timeout.
 
 Create an account and copy/paste your UUID/password into the
 Username/Password settings.  Be sure to select the correct provider,

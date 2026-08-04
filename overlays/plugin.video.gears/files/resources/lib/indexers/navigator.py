@@ -33,10 +33,13 @@ class Navigator:
 					('[B]Reload Menu[/B]', self.run_plugin % self.build_url({'mode': 'menu_editor.reload', 'active_list': self.list_name, 'position': count})),
 					('[B]Browse Removed items[/B]', self.run_plugin % self.build_url({'mode': 'menu_editor.browse', 'active_list': self.list_name, 'position': count})),
 					('[B]Add to Shortcut Folder[/B]', self.run_plugin % self.build_url({'mode': 'menu_editor.shortcut_folder_add_known', 'url': url}))]
-					icon = item.get('iconImage', '')
-					if not icon.startswith('http'):
+					icon = item.get('iconImage', '') or 'folder'
+					# Resolve icon name → path without mutating the cached menu item
+					# (mutating broke later loads when a full path was fed back into get_icon).
+					if icon.startswith('http') or 'plugin.video.gears' in icon or icon.endswith(('.png', '.jpg', '.jpeg')):
+						pass  # already a usable path/url
+					else:
 						icon = self.get_icon(icon)
-						item['iconImage'] = icon
 					listitem = self.make_listitem()
 					listitem.setLabel(item.get('name', ''))
 					listitem.setArt({'icon': icon, 'poster': icon, 'thumb': icon, 'fanart': self.fanart, 'banner': icon, 'landscape': icon})
@@ -108,10 +111,11 @@ class Navigator:
 		self.add({'mode': 'build_movie_list', 'action': 'favorites_movies', 'name': 'Movies'}, 'Movies', 'movies')
 		self.add({'mode': 'build_tvshow_list', 'action': 'favorites_tvshows', 'name': 'TV Shows'}, 'TV Shows', 'tv'),
 		self.add({'mode': 'build_tvshow_list', 'action': 'favorites_anime', 'is_anime_list': 'true', 'name': 'Anime'}, 'Anime', 'anime'),
-		self.add({'mode': 'favorite_people', 'isFolder': 'false', 'name': 'People'}, 'People', 'empty_person')
+		self.add({'mode': 'favorite_people', 'isFolder': 'false', 'name': 'People'}, 'People', 'people')
 		self.end_directory()
 
 	def my_content(self):
+		if s.simkl_user_active(): self.add({'mode': 'navigator.simkl_content'}, 'Simkl', 'simkl')
 		if s.trakt_user_active(): self.add({'mode': 'navigator.trakt_lists_personal'}, 'Trakt Lists', 'trakt')
 		self.add({'mode': 'navigator.trakt_lists_public'}, 'Trakt Public Lists', 'trakt')
 		if s.tmdblist_user_active(): self.add({'mode': 'tmdblist.get_tmdb_lists'}, 'TMDb Lists', 'tmdb')
@@ -179,6 +183,31 @@ class Navigator:
 		self.add({'mode': 'build_tvshow_list', 'action': 'trakt_favorites', 'category_name': 'Favorite TV Shows'}, 'TV Shows', 'trakt')
 		self.end_directory()
 
+	def simkl_content(self):
+		self.category_name = 'Simkl'
+		self.add({'mode': 'navigator.simkl_status', 'status': 'watching', 'name': 'Watching'}, 'Watching (Continue Watching)', 'simkl')
+		self.add({'mode': 'navigator.simkl_status', 'status': 'plantowatch', 'name': 'Plan to Watch'}, 'Plan to Watch', 'simkl')
+		self.add({'mode': 'navigator.simkl_status', 'status': 'completed', 'name': 'Completed'}, 'Completed', 'simkl')
+		self.add({'mode': 'navigator.simkl_status', 'status': 'hold', 'name': 'On Hold'}, 'On Hold', 'simkl')
+		self.add({'mode': 'navigator.simkl_status', 'status': 'dropped', 'name': 'Dropped'}, 'Dropped', 'simkl')
+		# Calendar uses the active XOR tracker path in episodes.build_single_episode;
+		# offer it whenever Simkl is authorized so the menu is reachable for soak.
+		self.add({'mode': 'build_my_calendar', 'calendar_provider': 'simkl'}, 'Simkl Calendar', 'simkl')
+		self.end_directory()
+
+	def simkl_status(self):
+		status = self.params_get('status', 'completed')
+		name = self.params_get('name', 'Simkl')
+		action = 'simkl_%s' % status
+		# Watching → Movies uses local/Simkl progress rows (resume / continue watching).
+		# Other statuses use Simkl's movie status list (plantowatch/completed/hold/dropped).
+		if status == 'watching':
+			self.add({'mode': 'build_movie_list', 'action': 'in_progress_movies', 'category_name': '%s Movies' % name}, 'Movies', 'movies')
+		else:
+			self.add({'mode': 'build_movie_list', 'action': action, 'category_name': '%s Movies' % name}, 'Movies', 'movies')
+		self.add({'mode': 'build_tvshow_list', 'action': action, 'category_name': '%s TV Shows & Anime' % name}, 'TV Shows & Anime', 'tv')
+		self.end_directory()
+
 	def people(self):
 		self.add({'mode': 'build_tmdb_people', 'action': 'popular', 'isFolder': 'false', 'name': 'Popular'}, 'Popular', 'popular')
 		self.add({'mode': 'build_tmdb_people', 'action': 'day', 'isFolder': 'false', 'name': 'Trending'}, 'Trending', 'trending')
@@ -198,7 +227,8 @@ class Navigator:
 			self.add({'mode': 'navigator.search_history', 'action': 'easynews_video'}, 'Search Easynews Videos', 'easynews')
 			self.add({'mode': 'navigator.search_history', 'action': 'easynews_image'}, 'Search Easynews Images', 'easynews')
 		self.end_directory()
-
+        
+	
 	def downloads(self):
 		self.add({'mode': 'downloader.manager', 'name': 'Download Manager', 'isFolder': 'false'}, 'Download Manager', 'downloads')
 		self.add({'mode': 'downloader.viewer', 'folder_type': 'movie', 'name': 'Movies'}, 'Movies', 'movies')
@@ -234,6 +264,7 @@ class Navigator:
 		self.add({'mode': 'clear_cache', 'cache': 'list', 'isFolder': 'false'}, 'Clear Lists Cache', 'settings')
 		self.add({'mode': 'clear_cache', 'cache': 'tmdb_list', 'isFolder': 'false'}, 'Clear TMDb Personal List Cache', 'settings')
 		self.add({'mode': 'clear_cache', 'cache': 'trakt', 'isFolder': 'false'}, 'Clear Trakt Cache', 'settings')
+		self.add({'mode': 'clear_cache', 'cache': 'simkl', 'isFolder': 'false'}, 'Clear Simkl Cache', 'settings')
 		self.add({'mode': 'clear_cache', 'cache': 'imdb', 'isFolder': 'false'}, 'Clear IMDb Cache', 'settings')
 		self.add({'mode': 'clear_cache', 'cache': 'internal_scrapers', 'isFolder': 'false'}, 'Clear Internal Scrapers Cache', 'settings')
 		self.add({'mode': 'clear_cache', 'cache': 'external_scrapers', 'isFolder': 'false'}, 'Clear External Scrapers Cache', 'settings')

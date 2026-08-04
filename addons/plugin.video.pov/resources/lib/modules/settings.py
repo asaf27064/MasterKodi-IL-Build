@@ -167,8 +167,10 @@ def include_year_in_title(mediatype):
 	setting = int(get_setting('include_year_in_title', '0'))
 	return setting in settings_dict[mediatype]
 
-def lists_sort_order(setting):
-	return int(get_setting('sort.%s' % setting, '0'))
+def lists_sort_order(setting, mediatype=None):
+	if mediatype is None: return int(get_setting('sort.%s' % setting, '0'))
+	if mediatype in ('movie', 'movies'): return int(get_setting('sort.%s_movies' % setting, '0'))
+	return int(get_setting('sort.%s_shows' % setting, '0'))
 
 def metadata_user_info():
 	hide_watched = widget_hide_watched()

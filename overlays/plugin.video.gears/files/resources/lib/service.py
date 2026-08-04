@@ -28,6 +28,11 @@ class SetAddonConstants:
 						('gears.addon_fanart', kodi_utils.translate_path(kodi_utils.addon_info('fanart'))),
 						('gears.playback_key', str(random.randint(1000, 10000)))]
 		for item in addon_items: kodi_utils.set_property(*item)
+		# Drop stale navigator menu props so icon/name edits from disk/DB take effect
+		# without requiring a manual Restore Menu after updates.
+		for list_name in ('RootList', 'MovieList', 'TVShowList', 'AnimeList'):
+			for list_type in ('default', 'edited'):
+				kodi_utils.clear_property('gears_%s_%s' % (list_name, list_type))
 		return kodi_utils.logger('gears', 'SetAddonConstants Service Finished')
 
 class DatabaseMaintenance:
@@ -103,6 +108,39 @@ class TraktMonitor:
 		try: del player
 		except: pass
 		return kodi_utils.logger('gears', 'TraktMonitor Service Finished')
+
+simkl_service_string = 'SimklMonitor Service Update %s - %s'
+simkl_success_line_dict = {'success': 'Simkl Update Performed', 'no account': '(Unauthorized) Simkl Update Performed'}
+
+class SimklMonitor:
+	def run(self):
+		kodi_utils.logger('gears', 'SimklMonitor Service Starting')
+		from apis.simkl_api import simkl_sync_activities
+		from modules.settings import simkl_sync_interval, simkl_user_active
+		monitor, player = kodi_utils.kodi_monitor(), kodi_utils.kodi_player()
+		wait_for_abort, is_playing = monitor.waitForAbort, player.isPlayingVideo
+		while not monitor.abortRequested():
+			while is_playing() or kodi_utils.get_property(pause_services_prop) == 'true': wait_for_abort(10)
+			if not simkl_user_active():
+				wait_for_abort(1800)
+				continue
+			wait_time = 1800
+			try:
+				sync_interval, wait_time = simkl_sync_interval()
+				next_update_string = update_string % sync_interval
+				status = simkl_sync_activities()
+				if status == 'failed': kodi_utils.logger('gears', simkl_service_string % ('Failed. Error from Simkl', next_update_string))
+				else:
+					if status in ('success', 'no account'): kodi_utils.logger('gears', simkl_service_string % ('Success. %s' % simkl_success_line_dict[status], next_update_string))
+					else: kodi_utils.logger('gears', simkl_service_string % ('Success. No Changes Needed', next_update_string))
+					if status == 'success' and get_setting('gears.simkl.refresh_widgets', 'false') == 'true': kodi_utils.run_plugin({'mode': 'kodi_refresh'})
+			except Exception as e: kodi_utils.logger('gears', simkl_service_string % ('Failed', 'The following Error Occured: %s' % str(e)))
+			wait_for_abort(wait_time)
+		try: del monitor
+		except: pass
+		try: del player
+		except: pass
+		return kodi_utils.logger('gears', 'SimklMonitor Service Finished')
 
 class UpdateCheck:
 	def run(self):
@@ -350,6 +388,7 @@ class gearsMonitor(Monitor):
 		AddonXMLCheck().run()
 		Thread(target=CustomFonts().run).start()
 		Thread(target=TraktMonitor().run).start()
+		Thread(target=SimklMonitor().run).start()
 		Thread(target=UpdateCheck().run).start()
 		Thread(target=WidgetRefresher().run).start()
 		AutoStart().run()
