@@ -36,6 +36,28 @@ resources/settings.xml               (10 hebrew_subtitles.* settings appended)
 resources/media/**, resources/skins/** (icons -- copy-only, never conflict)
 ```
 
+## Sibling skill
+
+Gears re-merges follow the identical flow with different constants — see
+[gears-upstream-merge](../gears-upstream-merge/SKILL.md). Start either with
+`python tools/check_upstream.py`, which reports EVERY overlaid addon's status
+and names the overlaid files upstream touched.
+
+## Shared verification tooling
+
+- `python tools/verify_overlay_merge.py plugin.video.pov` — proves the mirror is
+  EXACTLY clean upstream + our overlay: no lost upstream file, no half-applied
+  patch, no stray file, every overlay file landed. The load-bearing check.
+- `python tools/check_setting_ids.py` — every setting our config writes must
+  still exist in the shipped addon. This is what catches a SILENT rename
+  (`sort.watchlist` -> `sort.watchlist_movies`/`_shows` merged with zero
+  conflicts yet left six config-variants writing a dead id).
+- `python -m pyflakes` on ours AND on the clean upstream tree, then diff with
+  line numbers stripped. POV 6.08.03 ships 3 pre-existing undefined names and
+  Gears 2.4.0 ships 17 — comparing against upstream is the only way to tell
+  upstream's bugs from damage you caused. Expect ours-only findings ONLY in
+  `kodirdil/`.
+
 ## Workflow
 
 ### 1. Recon
@@ -112,6 +134,10 @@ The wizard's sha-driven updater ships it fleet-wide from there — both Kodi 21
 and 22 fleets get the same overlay (POV is version-agnostic).
 
 ## Traps (each cost a debugging round once)
+- **Beware your own tooling flipping line endings.** Writing a file back
+  with Python's text mode on Windows turns an LF file into CRLF and buries
+  a 20-line edit in a 600-line diff. Write bytes, or check `git diff --stat`
+  before committing. Never commit `manifest.json` -- CI regenerates it.
 - **Normalise line endings on all three sides BEFORE merging.** Gears 2.4.0
   converted the whole addon CRLF -> LF; the naive 3-way merge reported 12
   conflicts over ~8600 "changed" lines, every one phantom. Normalising
