@@ -464,6 +464,9 @@ class POVHebrewService(xbmc.Monitor):
                 # ADDED to the shipped config never reaches an existing box --
                 # add the missing ones (key-absent only) here.
                 modular_update.seed_nimbus_missing_cpaths()
+                # the shipped skinshortcuts dir is `update: skip`, so a menu
+                # correction only reaches existing boxes through a migration
+                modular_update.fix_invalid_tmdb_widgets()
             except Exception as e:
                 log(f"gears networks seed error: {e}", xbmc.LOGWARNING)
             _process_pending_view_rebuild()

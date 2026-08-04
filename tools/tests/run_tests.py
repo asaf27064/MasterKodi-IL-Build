@@ -932,6 +932,63 @@ def test_menu_bundle_never_overwrites_a_healthy_menu():
         _sh.rmtree(os.path.join(mu.ADDONS_PATH, ZEPHYR), ignore_errors=True)
 
 
+def test_no_invalid_tmdb_widgets():
+    """No shipped menu may ask TMDb for an endpoint that does not exist.
+
+    `info=upcoming` is movies-only (tmdbhelper declares types=('movie',); TMDb
+    has /movie/upcoming and no /tv/upcoming). The Zephyr "בקרוב" widget paired
+    it with tmdb_type=tv, so it failed on EVERY load -- the TMDb error Asaf saw
+    on the Shield 2026-08-04, and present in Xiaomi logs from 2026-07-30.
+
+    Also checks the migration, because the skinshortcuts config dir is
+    `update: skip` + `content: gears`: a corrected shipped file reaches fresh
+    installs only, so existing boxes need fix_invalid_tmdb_widgets()."""
+    print("\n=== config: no movies-only TMDb info type paired with tv ===")
+    import glob as _glob
+
+    bad = []
+    for root in ('config', 'config-variants', 'config-variants-piers'):
+        for path in _glob.glob(os.path.join(REPO, root, '**', '*'), recursive=True):
+            if not os.path.isfile(path):
+                continue
+            try:
+                with open(path, encoding='utf-8', errors='replace') as fh:
+                    txt = fh.read()
+            except Exception:
+                continue
+            if 'info=upcoming' in txt and 'tmdb_type=tv' in txt:
+                for frag in ('info=upcoming&amp;tmdb_type=tv', 'info=upcoming&tmdb_type=tv'):
+                    if frag in txt:
+                        bad.append(os.path.relpath(path, REPO))
+                        break
+    check('no shipped menu pairs info=upcoming with tmdb_type=tv', not bad)
+    if bad:
+        for b in bad[:5]:
+            print('      still broken: %s' % b)
+
+    # the migration must repair an existing box, and touch nothing else
+    ss = os.path.join(HOME, 'userdata', 'addon_data', 'script.skinshortcuts')
+    os.makedirs(ss, exist_ok=True)
+    victim = os.path.join(ss, 'sdrvt-1.DATA.xml')
+    with open(victim, 'w', encoding='utf-8') as fh:
+        fh.write('<shortcuts><shortcut>plugin://plugin.video.themoviedb.helper/'
+                 '?info=upcoming&amp;tmdb_type=tv&amp;widget=true</shortcut></shortcuts>')
+    keep = os.path.join(ss, 'srtym-1.DATA.xml')
+    with open(keep, 'w', encoding='utf-8') as fh:            # movies: VALID, must not change
+        fh.write('<shortcuts><shortcut>plugin://plugin.video.themoviedb.helper/'
+                 '?info=upcoming&amp;tmdb_type=movie&amp;widget=true</shortcut></shortcuts>')
+
+    changed = mu.fix_invalid_tmdb_widgets()
+    with open(victim, encoding='utf-8') as fh:
+        after = fh.read()
+    with open(keep, encoding='utf-8') as fh:
+        after_keep = fh.read()
+    check('migration repairs the tv widget', 'info=on_the_air&amp;tmdb_type=tv' in after)
+    check('migration reports what it changed', 'sdrvt-1.DATA.xml' in changed)
+    check('movies upcoming (VALID) left untouched',
+          'info=upcoming&amp;tmdb_type=movie' in after_keep)
+
+
 def test_seeds_survive_a_reinstall():
     """One-time seeds must be gated on the actual STATE, not on a marker file.
 
@@ -1477,6 +1534,7 @@ def main():
               test_pov_publishes_player_release,
               test_menu_bundle_never_laid_on_pov,
               test_menu_bundle_never_overwrites_a_healthy_menu,
+              test_no_invalid_tmdb_widgets,
               test_seeds_survive_a_reinstall,
               test_active_skin_update_on_windows,
               test_maintenance_folder_contents, test_remove_skin_purges_residue, test_detect_extras_skips_kodi_defaults,

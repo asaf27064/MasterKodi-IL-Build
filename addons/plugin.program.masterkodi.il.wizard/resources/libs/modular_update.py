@@ -334,6 +334,55 @@ GEARS_TORBOX_FOLDER = ('TorBox Services', [
 GEARS_SEED_FOLDERS = [GEARS_NETWORKS_FOLDER, GEARS_TORBOX_FOLDER]
 
 
+def fix_invalid_tmdb_widgets():
+    """Repair the "בקרוב" TV widget, which asked TMDb for an endpoint that does
+    not exist.
+
+    The shipped Zephyr menus used `info=upcoming&tmdb_type=tv`, but TMDb only
+    has /movie/upcoming -- tmdbhelper declares that info type as
+    `types = ('movie',)`. Every load failed with "GetDirectory - Error getting
+    plugin://plugin.video.themoviedb.helper/?info=upcoming&tmdb_type=tv", which
+    is the TMDb error Asaf saw on the Shield (2026-08-04) and which is also
+    present in Xiaomi logs from 2026-07-30, so it long predates that reinstall.
+    Replaced with `on_the_air` (TMDb's "airing in the next 7 days"), the closest
+    valid TV equivalent of "coming soon".
+
+    This runs as a migration because the skinshortcuts config dir is
+    `update: skip` (users customise their menus) AND `content: gears`, so a
+    corrected shipped file would otherwise reach fresh installs only. Rewrites
+    ONLY that exact broken pairing, so a customised menu is left alone.
+    """
+    import glob
+    changed = []
+    try:
+        base = xbmcvfs.translatePath(
+            'special://profile/addon_data/script.skinshortcuts/')
+        if not os.path.isdir(base):
+            return changed
+        pairs = (('info=upcoming&amp;tmdb_type=tv', 'info=on_the_air&amp;tmdb_type=tv'),
+                 ('info=upcoming&tmdb_type=tv', 'info=on_the_air&tmdb_type=tv'))
+        for path in glob.glob(os.path.join(base, '*')):
+            if not os.path.isfile(path):
+                continue
+            try:
+                with open(path, encoding='utf-8', errors='replace') as fh:
+                    txt = fh.read()
+            except Exception:
+                continue
+            new = txt
+            for a, b in pairs:
+                new = new.replace(a, b)
+            if new != txt:
+                with open(path, 'w', encoding='utf-8', newline='') as fh:
+                    fh.write(new)
+                changed.append(os.path.basename(path))
+        if changed:
+            log('fixed invalid TMDb "upcoming+tv" widget in: %s' % ', '.join(changed))
+    except Exception as e:
+        log('tmdb widget fix failed: %s' % e, xbmc.LOGWARNING)
+    return changed
+
+
 def seed_nimbus_missing_cpaths():
     """Add shipped Nimbus menu rows that the live box is missing.
 
