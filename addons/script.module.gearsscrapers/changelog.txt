@@ -1,4 +1,16 @@
-[COLORcyan] VERSION 1.5.1[/COLOR]
+[COLORcyan] VERSION 1.5.2[/COLOR]
+
+ • A new batch of Starfleet-Ported Providers has now been integrated into Gears Scrapers, expanding source coverage and improving search reliability.
+
+ New Providers Added And Fixed.
+
+ Improvements
+
+• Added 12 new Starfleet-ported providers.
+• Expanded torrent index coverage.
+• Improved source availability across supported content.
+• Increased provider redundancy for more consistent results.
+• All new providers can be individually enabled or disabled from the Gears Scrapers settings.
 
  Gears Scrapers Improved.
 
