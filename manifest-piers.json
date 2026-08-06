@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-06T03:18:14Z",
+  "generated_utc": "2026-08-06T23:02:28Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -64,12 +64,12 @@
     },
     {
       "id": "plugin.video.pov",
-      "version": "6.08.03",
+      "version": "6.08.05",
       "channel": "optional",
-      "zip": "plugin.video.pov-6.08.03.zip",
-      "sha256": "aa4fc4c09f1c784dced996329a0a1163e1802e653b8569dd209ba4ab6c59bba0",
-      "size": 3619268,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.08.03.zip",
+      "zip": "plugin.video.pov-6.08.05.zip",
+      "sha256": "f8e4637ec20b9fa99e0c4965ca3909a42298fde7bec6721b64cecf9f079395de",
+      "size": 3619414,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.08.05.zip",
       "content": "pov"
     },
     {
