@@ -56,11 +56,12 @@ def autoplay_next_settings():
 def autoscrape_next_episode():
 	return get_setting('autoscrape_next_episode', 'false') == 'true'
 
-def calendar_focus_today():
-	return get_setting('trakt.calendar_focus_today') == 'true'
-
-def calendar_sort_order():
-	return int(get_setting('trakt.calendar_sort_order', '0'))
+def calendar_display_settings():
+	return {
+		'focus_today': get_setting('trakt.calendar_focus_today') == 'true',
+		'sort_order': int(get_setting('trakt.calendar_sort_order', '0')),
+		'include_airdate': get_setting('calendar.include_airdate') == 'true'
+	}
 
 def context_menu_sort():
 	return {
@@ -299,8 +300,8 @@ cloud_scrapers = ('ad_cloud', 'pm_cloud', 'rd_cloud', 'tb_cloud', 'oc_cloud')
 default_internal_scrapers = (*cloud_scrapers, 'easynews', 'aiostreams')
 
 def active_internal_scrapers():
-	if get_setting('provider.aiostreams') == 'true': return ['aiostreams']
-	settings = ['provider.external', 'provider.easynews']
+	if get_setting('provider.aiostreams') == 'true': settings = ['provider.aiostreams']
+	else: settings = ['provider.external', 'provider.easynews']
 	settings.extend(item[1] for item in (
 		('ad', 'provider.ad_cloud'),
 		('pm', 'provider.pm_cloud'),

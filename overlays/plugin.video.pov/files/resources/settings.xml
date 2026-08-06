@@ -132,6 +132,7 @@
 	<category label="My Lists">
 		<!-- Trakt Calendar -->
 		<setting label="Trakt/MDBList Calendar" type="lsep" />
+		<setting id="calendar.include_airdate" label="Include Airdate In Title" type="bool" default="true" />
 		<setting id="trakt.calendar_focus_today" label="Set Focus to Today's Date" type="bool" default="true" />
 		<setting id="trakt.calendar_sort_order" label="Sort Order" type="enum" default="0" values="Descending|Ascending" />
 		<setting id="trakt.calendar_previous_days" label="Show Previous Days" type="number" default="7" />

@@ -480,14 +480,16 @@ class ScraperProcessor:
 	def __init__(self, source_instance):
 		self.source = source_instance
 
-	def prepare_internal(self):
+	def prepare_internal(self, prescrape=False):
 		if self.source.active_external and ''.join(self.source.active_internal_scrapers) == 'external': return
+		if not prescrape and 'aiostreams' in self.source.active_internal_scrapers:
+			self.source.active_internal_scrapers = ['aiostreams']
 		active_internal_scrapers = [i for i in self.source.active_internal_scrapers if i not in self.source.remove_scrapers]
 		self.source.internal_scraper_names = active_internal_scrapers[:]
 		self.source.active_internal_scrapers = active_internal_scrapers
 
 	def activate_internal(self, prescrape=False):
-		self.prepare_internal()
+		self.prepare_internal(prescrape)
 		append = self.source.prescrape_scrapers.append if prescrape else self.source.providers.append
 		source_path = kodi_utils.translate_path(kodi_utils.scrapers_path)
 		for loader, module_name, is_pkg in __import__('pkgutil').iter_modules([source_path]):
@@ -537,12 +539,9 @@ class ResultsProcessor:
 		self.source = source_instance
 
 	def process(self, results):
-		if 'aiostreams' in self.source.active_internal_scrapers: return results
-		if self.source.prescrape:
-			self.source.all_scrapers = self.source.active_internal_scrapers
-		else:
-			all_scrapers = {*self.source.active_internal_scrapers, *self.source.remove_scrapers}
-			self.source.all_scrapers = list(all_scrapers)
+		if self.source.prescrape: self.source.all_scrapers = self.source.active_internal_scrapers
+		elif 'aiostreams' in self.source.active_internal_scrapers: return results
+		else: self.source.all_scrapers = list({*self.source.active_internal_scrapers, *self.source.remove_scrapers})
 		if self.source.ignore_scrape_filters:
 			self.source.filters_ignored = True
 			results = self.sort_results(results)
