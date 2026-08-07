@@ -1,6 +1,12 @@
-[COLORcyan] VERSION 1.5.2[/COLOR]
+[COLORcyan] VERSION 1.5.3[/COLOR]
 
- • A new batch of Starfleet-Ported Providers has now been integrated into Gears Scrapers, expanding source coverage and improving search reliability.
+• Added more scraper providers.
+• Improved scraper coverage across multiple sources.
+• General scraper optimisations and maintenance.
+• Minor fixes and performance improvements.
+• Increased source availability for better results.
+• Code cleanup and stability enhancements.
+• A new batch of Starfleet-Ported Providers has now been integrated into Gears Scrapers, expanding source coverage and improving search reliability.
 
  New Providers Added And Fixed.
 

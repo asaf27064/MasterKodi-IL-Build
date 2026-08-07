@@ -18,7 +18,19 @@ class source:
 	_queue = queue.SimpleQueue()
 	def __init__(self):
 		self.language = ['en']
-		self.base_link = "https://aiostreamsfortheweebs.midnightignite.me"
+		# Community-hosted instances of the same open-source project -- any
+		# one can go dark or get rate-limited at any time (confirmed live:
+		# aiostreamsfortheweak.cloud was already unreachable when checked),
+		# so sources()/sources_packs() try each in turn instead of hardcoding
+		# a single host.
+		self.base_links = [
+			"https://aiostreamsfortheweebs.midnightignite.me",
+			"https://aiostreamsfortheweebsstable.midnightignite.me",
+			"https://aiostreams.stremio.ru",
+			"https://aiostreams.viren070.me",
+			"https://aiostreams.12312023.xyz",
+		]
+		self.base_link = self.base_links[0]
 		self.movieSearch_link = '/api/v1/search?type=movie&id=%s'
 		self.tvSearch_link = '/api/v1/search?type=series&id=%s:%s:%s'
 		self.min_seeders = 0
@@ -38,14 +50,24 @@ class source:
 				season = data['season']
 				episode = data['episode']
 				hdlr = 'S%02dE%02d' % (int(season), int(episode))
-				url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, episode))
+				link_tmpl = self.tvSearch_link % (imdb, season, episode)
 			else:
 				hdlr = year
-				url = '%s%s' % (self.base_link, self.movieSearch_link % imdb)
-			# log_utils.log('url = %s' % url)
+				link_tmpl = self.movieSearch_link % imdb
 			try:
-				results = client.request(url, headers=self._headers(), timeout=self.timeout)
-				files = jsloads(results)['data']['results']
+				files = []
+				for base in self.base_links:
+					try:
+						results = client.request(base + link_tmpl, headers=self._headers(), timeout=self.timeout)
+						candidate = jsloads(results)['data']['results']
+						if candidate:
+							files = candidate
+							self.base_link = base
+							break
+						if not files:
+							files = candidate  # keep first reachable-but-empty response as fallback
+					except:
+						continue
 			except:
 				files = []
 				raise
