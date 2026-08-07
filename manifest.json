@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-06T23:00:59Z",
+  "generated_utc": "2026-08-07T00:08:48Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -27,12 +27,12 @@
     },
     {
       "id": "metadata.tvshows.themoviedb.org.python",
-      "version": "1.7.8",
+      "version": "1.7.9",
       "channel": "core",
-      "zip": "metadata.tvshows.themoviedb.org.python-1.7.8.zip",
-      "sha256": "c460985fe5c3fbc2bbaf4e12dac802d8ea15b4559cab032046407988832f1364",
-      "size": 183320,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/metadata.tvshows.themoviedb.org.python-1.7.8.zip"
+      "zip": "metadata.tvshows.themoviedb.org.python-1.7.9.zip",
+      "sha256": "3f68f65aae3fe790c9dd8d04af617bd509f9db6fd10d49ea3bd052fb291fdedc",
+      "size": 183331,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/metadata.tvshows.themoviedb.org.python-1.7.9.zip"
     },
     {
       "id": "plugin.program.autocompletion",
@@ -275,12 +275,12 @@
     },
     {
       "id": "script.module.gearsscrapers",
-      "version": "1.5.2",
+      "version": "1.5.3",
       "channel": "core",
-      "zip": "script.module.gearsscrapers-1.5.2.zip",
-      "sha256": "e9262d6fa50811a45df38d00d3e340316a8b2eec26b9a8cebc0849f29db54313",
-      "size": 1082037,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.gearsscrapers-1.5.2.zip",
+      "zip": "script.module.gearsscrapers-1.5.3.zip",
+      "sha256": "228b1a7fa666476097467c812a8a675f8bc2a25802608396ee0a6920e090262b",
+      "size": 1089874,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.gearsscrapers-1.5.3.zip",
       "content": "gears"
     },
     {
