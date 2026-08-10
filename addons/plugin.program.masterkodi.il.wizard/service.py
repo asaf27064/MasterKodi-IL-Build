@@ -43,6 +43,42 @@ def log(msg, level=xbmc.LOGINFO):
 log("Service loading...")
 
 
+def _strip_pov_settings_comments():
+    """Remove XML comments from POV's live settings.xml -- they CRASH Kodi.
+
+    Kodi's addon-settings reader dies natively on a comment node in
+    addon_data/<addon>/settings.xml: no traceback, the log just stops mid
+    startup. Config 59 shipped a three-line explanatory comment above
+    skip_intro.enable in all six POV variants, which crash-looped a box on a
+    FRESH INSTALL (Asaf, 2026-08-10 -- he identified the settings as the cause;
+    reproduced deterministically by injecting the comment and booting).
+
+    Config 60 ships the corrected files, but a box already holding config 59
+    would crash before anything could repair it -- so this runs FIRST, at
+    import time, before POV's own service reads the file (the wizard service
+    starts ~90ms ahead of POV's). Pure stdlib, no imports beyond what is
+    already loaded, wrapped so it can never itself break startup.
+    """
+    try:
+        path = xbmcvfs.translatePath(
+            'special://profile/addon_data/plugin.video.pov/settings.xml')
+        if not os.path.isfile(path):
+            return
+        with open(path, encoding='utf-8', errors='replace') as fh:
+            txt = fh.read()
+        if '<!--' not in txt:
+            return
+        cleaned = re.sub(r'[^\S\n]*<!--.*?-->[^\S\n]*\n?', '', txt, flags=re.S)
+        with open(path, 'w', encoding='utf-8', newline='') as fh:
+            fh.write(cleaned)
+        log('removed XML comment(s) from POV settings.xml (Kodi crashes on them)')
+    except Exception as e:
+        log('pov settings comment strip failed: %s' % e, xbmc.LOGWARNING)
+
+
+_strip_pov_settings_comments()
+
+
 def _cleanup_old_addon_dirs():
     """Remove stale '<id>_old_<timestamp>' backup folders left by past updates.
 

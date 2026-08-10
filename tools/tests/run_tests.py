@@ -932,6 +932,32 @@ def test_menu_bundle_never_overwrites_a_healthy_menu():
         _sh.rmtree(os.path.join(mu.ADDONS_PATH, ZEPHYR), ignore_errors=True)
 
 
+def test_no_comments_in_addon_settings():
+    """A shipped addon settings.xml must contain NO XML comments.
+
+    Kodi's addon-settings reader crashes NATIVELY on a comment node in
+    addon_data/<addon>/settings.xml -- no Python traceback, the log simply
+    stops. A three-line explanatory comment I added above skip_intro.enable
+    shipped in all six POV config-variants and crash-looped Asaf's box on a
+    FRESH INSTALL (2026-08-10); reproduced deterministically by injecting the
+    comment and booting. Explanations belong in the commit message or the
+    config policy, never inside a settings file a Kodi addon parses."""
+    print("\n=== config: shipped addon settings.xml carry no XML comments ===")
+    import glob as _glob
+    bad = []
+    for path in _glob.glob(os.path.join(REPO, 'config*', '**', 'settings.xml'), recursive=True):
+        try:
+            with open(path, encoding='utf-8') as fh:
+                txt = fh.read()
+        except Exception:
+            continue
+        if '<!--' in txt:
+            bad.append(os.path.relpath(path, REPO).replace(os.sep, '/'))
+    check('no XML comments in any shipped settings.xml', not bad)
+    for b in bad[:6]:
+        print('      has a comment: %s' % b)
+
+
 def test_pov_placeholder_scrub():
     """Gears' 'empty_setting' sentinel must never survive as a POV credential.
 
@@ -1587,6 +1613,7 @@ def main():
               test_pov_publishes_player_release,
               test_menu_bundle_never_laid_on_pov,
               test_menu_bundle_never_overwrites_a_healthy_menu,
+              test_no_comments_in_addon_settings,
               test_pov_placeholder_scrub,
               test_no_invalid_tmdb_widgets,
               test_seeds_survive_a_reinstall,

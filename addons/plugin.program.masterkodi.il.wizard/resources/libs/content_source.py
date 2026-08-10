@@ -244,6 +244,21 @@ def _merge_preserve_creds(shipped, live_path):
     """Return the shipped settings.xml (bytes) with the user's existing non-empty
     login values carried over from live_path. Regex-based (the files are flat
     <setting id=..> lists); on any parse issue we fall back to shipped as-is."""
+    # Kodi's addon-settings reader CRASHES NATIVELY on an XML comment node in
+    # addon_data/<addon>/settings.xml (no traceback, the log just stops). Config
+    # 59 shipped an explanatory comment above skip_intro.enable and crash-looped
+    # a box on every boot -- the wizard re-applied the poisoned file each time.
+    # Strip comments from whatever we are about to write, so even an OLD config
+    # version already published can never poison a box again.
+    try:
+        _txt = shipped.decode('utf-8', 'replace')
+        if '<!--' in _txt:
+            import re as _re
+            shipped = _re.sub(r'[^\S\n]*<!--.*?-->[^\S\n]*\n?', '', _txt,
+                              flags=_re.S).encode('utf-8')
+            _log('stripped XML comment(s) from shipped settings (Kodi crashes on them)')
+    except Exception:
+        pass
     try:
         if not os.path.isfile(live_path):
             return shipped

@@ -177,9 +177,6 @@
     <setting id="autoplay_next_check_threshold">3</setting>
     <setting id="results_quality_episode" default="true">SD, 720p, 1080p, 4K</setting>
     <setting id="auto_resume_episode" default="true">0</setting>
-    <!-- POV's native skip-intro OFF: service.masterkodi.skipintro serves the
-         skip UI for BOTH engines (Hebrew, authenticated IntroDB, POV-style bar).
-         With this true, POV episodes showed TWO overlapping prompts. -->
     <setting id="skip_intro.enable">false</setting>
     <setting id="load_action">1</setting>
     <setting id="limit_resolve">10</setting>
