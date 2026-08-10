@@ -253,8 +253,11 @@ def _merge_preserve_creds(shipped, live_path):
         for sid in _POV_CRED_IDS:
             m = re.search(r'<setting id="%s"[^>]*>([^<]+)</setting>' % re.escape(sid), live)
             val = m.group(1).strip() if m else ''
-            if not val or val.lower() in ('true', 'false'):
+            if not val or val.lower() in ('true', 'false', 'empty_setting'):
                 continue                       # user has no value -> keep shipped
+                # ('empty_setting' is Gears' unset sentinel; a contaminated live
+                #  file must not re-plant it as a "login" -- same blindspot as
+                #  keep.py's _PLACEHOLDERS, fixed 2026-08-10)
             repl = '<setting id="%s">%s</setting>' % (sid, val)
             pat = re.compile(r'<setting id="%s"[^>]*/>|<setting id="%s"[^>]*>[^<]*</setting>'
                              % (re.escape(sid), re.escape(sid)))

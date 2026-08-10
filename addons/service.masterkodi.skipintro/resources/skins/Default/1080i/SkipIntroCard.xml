@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- MasterKodi card style (2026-08-09): our own design after cloning POV's bar.
+     A compact glass card in the bottom corner instead of a full-width banner:
+     covers ~4% of the frame instead of ~25%, RTL-first layout (poster on the
+     right, text flows right-to-left toward the buttons), labeled pill buttons
+     instead of bare icons, brand teal accent, themed countdown along the card
+     bottom. Same control ids as the bar (3101/3102/3108) so overlay.py drives
+     both styles with the same class. -->
+<window type="dialog" id="14002">
+    <defaultcontrol always="true">3101</defaultcontrol>
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+    <controls>
+        <control type="group">
+            <posx>1310</posx>
+            <posy>840</posy>
+            <width>560</width>
+            <height>172</height>
+            <animation effect="slide" start="0,44" end="0,0" time="280" tween="cubic" easing="out">WindowOpen</animation>
+            <animation effect="fade" start="0" end="100" time="280">WindowOpen</animation>
+            <animation effect="slide" start="0,0" end="0,44" time="200" tween="cubic" easing="in">WindowClose</animation>
+            <animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
+
+            <!-- drop shadow -->
+            <control type="image">
+                <posx>5</posx>
+                <posy>7</posy>
+                <width>552</width>
+                <height>164</height>
+                <aspectratio>stretch</aspectratio>
+                <texture colordiffuse="7A000000" border="24">rounded_rect.png</texture>
+            </control>
+            <!-- glass card -->
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>552</width>
+                <height>164</height>
+                <aspectratio>stretch</aspectratio>
+                <texture colordiffuse="F014161A" border="24">rounded_rect.png</texture>
+            </control>
+            <!-- faint top highlight so the card reads as glass, not a hole -->
+            <control type="image">
+                <posx>1</posx>
+                <posy>1</posy>
+                <width>550</width>
+                <height>3</height>
+                <aspectratio>stretch</aspectratio>
+                <texture colordiffuse="26FFFFFF" border="2">rounded_rect.png</texture>
+            </control>
+
+            <!-- poster, right edge (RTL start) -->
+            <control type="image">
+                <posx>460</posx>
+                <posy>16</posy>
+                <width>76</width>
+                <height>114</height>
+                <aspectratio>stretch</aspectratio>
+                <texture>$INFO[Window.Property(mk.skip.poster)]</texture>
+            </control>
+
+            <!-- title (small, grey) then prompt (bold, white), right-aligned -->
+            <!-- text column: labels inherit THIS group's width, so align=right
+                 pins to its right edge (an explicit posx+width label mis-anchors
+                 and the text floats outside the card; seen on the box) -->
+            <control type="group">
+                <posx>24</posx>
+                <posy>0</posy>
+                <width>420</width>
+                <height>164</height>
+                <control type="label">
+                    <posy>18</posy>
+                    <height>26</height>
+                    <font>font10</font>
+                    <align>right</align>
+                    <label>$INFO[Window.Property(mk.skip.title)]</label>
+                    <textcolor>99FFFFFF</textcolor>
+                    <autoscroll>true</autoscroll>
+                </control>
+                <control type="label">
+                    <posy>46</posy>
+                    <height>34</height>
+                    <font>font13</font>
+                    <align>right</align>
+                    <label>[B]$INFO[Window.Property(mk.skip.prompt)][/B]</label>
+                    <textcolor>FFFFFFFF</textcolor>
+                </control>
+            </control>
+
+            <!-- buttons: skip (accent pill, rightmost = RTL-first) + close -->
+            <control type="button" id="3101">
+                <description>Skip</description>
+                <posx>298</posx>
+                <posy>92</posy>
+                <width>150</width>
+                <height>44</height>
+                <onleft>3102</onleft>
+                <onright>3102</onright>
+                <onup>3102</onup>
+                <ondown>3102</ondown>
+                <font>font12</font>
+                <align>center</align>
+                <aligny>center</aligny>
+                <textoffsetx>14</textoffsetx>
+                <textcolor>CC10D4E6</textcolor>
+                <focusedcolor>FF0B0C0E</focusedcolor>
+                <texturefocus colordiffuse="FF10D4E6" border="16">rounded_rect.png</texturefocus>
+                <texturenofocus colordiffuse="2610D4E6" border="16">rounded_rect.png</texturenofocus>
+                <animation effect="zoom" start="100" end="104" time="120" tween="sine" easing="inout" center="auto">Focus</animation>
+                <animation effect="zoom" start="104" end="100" time="120" tween="sine" easing="inout" center="auto">Unfocus</animation>
+                <label>דלג</label>
+            </control>
+            <!-- skip icon riding the pill's right side (RTL leading edge) -->
+            <control type="image">
+                <posx>412</posx>
+                <posy>103</posy>
+                <width>22</width>
+                <height>22</height>
+                <aspectratio>keep</aspectratio>
+                <texture colordiffuse="FFFFFFFF">skip_next.png</texture>
+                <visible>Control.HasFocus(3101)</visible>
+            </control>
+            <control type="image">
+                <posx>412</posx>
+                <posy>103</posy>
+                <width>22</width>
+                <height>22</height>
+                <aspectratio>keep</aspectratio>
+                <texture colordiffuse="CC10D4E6">skip_next.png</texture>
+                <visible>!Control.HasFocus(3101)</visible>
+            </control>
+            <control type="button" id="3102">
+                <description>Close</description>
+                <posx>172</posx>
+                <posy>92</posy>
+                <width>112</width>
+                <height>44</height>
+                <onleft>3101</onleft>
+                <onright>3101</onright>
+                <onup>3101</onup>
+                <ondown>3101</ondown>
+                <font>font12</font>
+                <align>center</align>
+                <aligny>center</aligny>
+                <textcolor>88FFFFFF</textcolor>
+                <focusedcolor>FFFFFFFF</focusedcolor>
+                <texturefocus colordiffuse="FF3A3D45" border="16">rounded_rect.png</texturefocus>
+                <texturenofocus colordiffuse="14FFFFFF" border="16">rounded_rect.png</texturenofocus>
+                <animation effect="zoom" start="100" end="104" time="120" tween="sine" easing="inout" center="auto">Focus</animation>
+                <animation effect="zoom" start="104" end="100" time="120" tween="sine" easing="inout" center="auto">Unfocus</animation>
+                <label>סגור</label>
+            </control>
+
+            <!-- countdown: themed progress along the card bottom -->
+            <control type="progress" id="3108">
+                <description>countdown (drains over the whole intro)</description>
+                <posx>24</posx>
+                <posy>146</posy>
+                <width>512</width>
+                <height>6</height>
+                <reveal>true</reveal>
+            </control>
+        </control>
+    </controls>
+</window>

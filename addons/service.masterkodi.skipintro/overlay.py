@@ -284,13 +284,19 @@ def show_skip_overlay(label, start, target, player, monitor):
         return False, False
     if not _wait_clock(player, mon, target):
         return False, False
-    # style: '0'/'' = POV-style top bar (default), '1' = the original pill
+    # style: '0'/'' = MasterKodi card (default), '1' = POV-style top bar,
+    # '2' = the original floating pill. Card and bar share SkipBarOverlay --
+    # the XMLs use the same control ids, only the layout differs.
     try:
         style = ADDON.getSetting('overlay_style')
     except Exception:
         style = ''
-    cls, xml = ((SkipOverlay, 'SkipIntro.xml') if style == '1'
-                else (SkipBarOverlay, 'SkipIntroBar.xml'))
+    if style == '2':
+        cls, xml = SkipOverlay, 'SkipIntro.xml'
+    elif style == '1':
+        cls, xml = SkipBarOverlay, 'SkipIntroBar.xml'
+    else:
+        cls, xml = SkipBarOverlay, 'SkipIntroCard.xml'
     try:
         w = cls(xml, ADDON_PATH, 'Default', _res(),
                         label=label, start=start, target=target, player=player, monitor=monitor)

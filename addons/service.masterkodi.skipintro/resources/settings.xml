@@ -2,7 +2,7 @@
 <settings>
   <category label="Skip Intro / דלג על הפתיח">
     <setting id="enabled" type="bool" label="Show Skip button / הצג כפתור דילוג" default="true"/>
-    <setting id="overlay_style" type="enum" label="Overlay style / סגנון התצוגה" values="בר עליון עם פוסטר (POV)|כפתור דלג צף (פיל)" default="0"/>
+    <setting id="overlay_style" type="enum" label="Overlay style / סגנון התצוגה" values="כרטיס מעוצב (MasterKodi)|בר עליון עם פוסטר (POV)|כפתור דלג צף (פיל)" default="0"/>
     <setting id="use_skipdb" type="bool" label="Use SkipDB online timestamps / השתמש במאגר זמנים מקוון (SkipDB)" default="true"/>
     <setting id="auto_skip" type="bool" label="Auto-skip without asking / דלג אוטומטית ללא כפתור" default="false"/>
   </category>
