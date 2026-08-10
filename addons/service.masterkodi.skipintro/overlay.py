@@ -223,7 +223,11 @@ class SkipBarOverlay(SkipOverlay):
         except Exception as e:
             xbmc.log('[skipintro] bar props: %s' % e, xbmc.LOGWARNING)
         try:
-            self.getControl(self.BAR_FILL_ID).setPercent(100)
+            fill = self.getControl(self.BAR_FILL_ID)
+            try:
+                fill.setPercent(100)               # bar style: progress control
+            except Exception:
+                self._fill_full = fill.getWidth()  # card style: teal image drain
         except Exception:
             pass
         try:
@@ -237,8 +241,15 @@ class SkipBarOverlay(SkipOverlay):
             self._poll_thread.start()
 
     def _update_bar(self, frac):
-        # bar: Kodi progress control -> the active skin styles the fill
-        self.getControl(self.BAR_FILL_ID).setPercent(int(frac * 100))
+        # bar style: Kodi progress control (skin-themed). card style: our teal
+        # image, drained by width -- the skin texture was exactly what made the
+        # bar diverge from the design mock, so the card owns its pixels.
+        c = self.getControl(self.BAR_FILL_ID)
+        try:
+            c.setPercent(int(frac * 100))
+        except Exception:
+            if self._fill_full:
+                c.setWidth(int(self._fill_full * frac))
 
     def onClick(self, controlId):
         if controlId == self.BTN_ID:

@@ -18,7 +18,7 @@
             <posx>1310</posx>
             <posy>840</posy>
             <width>560</width>
-            <height>172</height>
+            <height>190</height>
             <animation effect="slide" start="0,44" end="0,0" time="280" tween="cubic" easing="out">WindowOpen</animation>
             <animation effect="fade" start="0" end="100" time="280">WindowOpen</animation>
             <animation effect="slide" start="0,0" end="0,44" time="200" tween="cubic" easing="in">WindowClose</animation>
@@ -29,18 +29,18 @@
                 <posx>5</posx>
                 <posy>7</posy>
                 <width>552</width>
-                <height>164</height>
+                <height>182</height>
                 <aspectratio>stretch</aspectratio>
-                <texture colordiffuse="7A000000" border="24">rounded_rect.png</texture>
+                <texture colordiffuse="7A000000" border="14">rr14.png</texture>
             </control>
             <!-- glass card -->
             <control type="image">
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>552</width>
-                <height>164</height>
+                <height>182</height>
                 <aspectratio>stretch</aspectratio>
-                <texture colordiffuse="F014161A" border="24">rounded_rect.png</texture>
+                <texture colordiffuse="F014161A" border="14">rr14.png</texture>
             </control>
             <!-- faint top highlight so the card reads as glass, not a hole -->
             <control type="image">
@@ -49,7 +49,7 @@
                 <width>550</width>
                 <height>3</height>
                 <aspectratio>stretch</aspectratio>
-                <texture colordiffuse="26FFFFFF" border="2">rounded_rect.png</texture>
+                <texture colordiffuse="26FFFFFF" border="3">rr3.png</texture>
             </control>
 
             <!-- poster, right edge (RTL start) -->
@@ -105,10 +105,10 @@
                 <align>center</align>
                 <aligny>center</aligny>
                 <textoffsetx>14</textoffsetx>
-                <textcolor>CC10D4E6</textcolor>
+                <textcolor>DD10D4E6</textcolor>
                 <focusedcolor>FF0B0C0E</focusedcolor>
-                <texturefocus colordiffuse="FF10D4E6" border="16">rounded_rect.png</texturefocus>
-                <texturenofocus colordiffuse="2610D4E6" border="16">rounded_rect.png</texturenofocus>
+                <texturefocus colordiffuse="FF10D4E6" border="10">rr10.png</texturefocus>
+                <texturenofocus colordiffuse="2210D4E6" border="10">rr10.png</texturenofocus>
                 <animation effect="zoom" start="100" end="104" time="120" tween="sine" easing="inout" center="auto">Focus</animation>
                 <animation effect="zoom" start="104" end="100" time="120" tween="sine" easing="inout" center="auto">Unfocus</animation>
                 <label>דלג</label>
@@ -120,7 +120,7 @@
                 <width>22</width>
                 <height>22</height>
                 <aspectratio>keep</aspectratio>
-                <texture colordiffuse="FFFFFFFF">skip_next.png</texture>
+                <texture colordiffuse="FF0B0C0E">skip_next.png</texture>
                 <visible>Control.HasFocus(3101)</visible>
             </control>
             <control type="image">
@@ -129,12 +129,12 @@
                 <width>22</width>
                 <height>22</height>
                 <aspectratio>keep</aspectratio>
-                <texture colordiffuse="CC10D4E6">skip_next.png</texture>
+                <texture colordiffuse="DD10D4E6">skip_next.png</texture>
                 <visible>!Control.HasFocus(3101)</visible>
             </control>
             <control type="button" id="3102">
                 <description>Close</description>
-                <posx>172</posx>
+                <posx>164</posx>
                 <posy>92</posy>
                 <width>112</width>
                 <height>44</height>
@@ -147,8 +147,8 @@
                 <aligny>center</aligny>
                 <textcolor>88FFFFFF</textcolor>
                 <focusedcolor>FFFFFFFF</focusedcolor>
-                <texturefocus colordiffuse="FF3A3D45" border="16">rounded_rect.png</texturefocus>
-                <texturenofocus colordiffuse="14FFFFFF" border="16">rounded_rect.png</texturenofocus>
+                <texturefocus colordiffuse="33FFFFFF" border="10">rr10.png</texturefocus>
+                <texturenofocus colordiffuse="14FFFFFF" border="10">rr10.png</texturenofocus>
                 <animation effect="zoom" start="100" end="104" time="120" tween="sine" easing="inout" center="auto">Focus</animation>
                 <animation effect="zoom" start="104" end="100" time="120" tween="sine" easing="inout" center="auto">Unfocus</animation>
                 <label>סגור</label>
@@ -158,9 +158,9 @@
             <control type="progress" id="3108">
                 <description>countdown (drains over the whole intro)</description>
                 <posx>24</posx>
-                <posy>146</posy>
+                <posy>154</posy>
                 <width>512</width>
-                <height>6</height>
+                <height>12</height>
                 <reveal>true</reveal>
             </control>
         </control>
