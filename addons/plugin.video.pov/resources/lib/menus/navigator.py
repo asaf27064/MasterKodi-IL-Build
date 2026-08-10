@@ -40,13 +40,13 @@ class Navigator:
 
 	def premium(self):
 		from modules.debrid import debrid_enabled
-		easynews, debrids = ks.easynews_active(), debrid_enabled()
-		if easynews: self.easynews()
-		if 'premiumize' in debrids: self.premiumize()
-		if 'torbox' in debrids: self.torbox()
-		if 'offcloud' in debrids: self.offcloud()
-		if 'realdebrid' in debrids: self.real_debrid()
-		if 'alldebrid' in debrids: self.alldebrid()
+		debrids = debrid_enabled()
+		if ks.easynews_active(): debrids.append('easynews')
+		sort_ranks = ks.provider_sort_ranks()
+		for key, _ in sorted(sort_ranks.items(), key=lambda k: (k[1], k[0])):
+			if key not in debrids: continue
+			method = getattr(self, key, None)
+			if callable(method): method()
 		self._end_directory()
 
 	def easynews(self):
@@ -55,7 +55,7 @@ class Navigator:
 		self._add_item({'mode': 'search_history', 'action': 'easynews_video', 'name': se_str }, 'search.png'  , n_ins)
 		self._add_item({'mode': 'easynews.account_info',                      'name': acc_str}, 'easynews.png', n_ins, False)
 
-	def real_debrid(self):
+	def realdebrid(self):
 		rd_str, acc_str, his_str, cloud_str = ls(32054), ls(32494), ls(32486), ls(32496)
 		clca_str, n_ins = ls(32497) % rd_str, _in_str % (rd_str.upper(), '')
 		self._add_item({'mode': 'real_debrid.rd_torrent_cloud',     'name': cloud_str}, 'realdebrid.png', n_ins)

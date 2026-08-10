@@ -383,6 +383,44 @@ def fix_invalid_tmdb_widgets():
     return changed
 
 
+def fix_pov_placeholder_tokens():
+    """Blank Gears' 'empty_setting' sentinel out of POV's settings.xml.
+
+    A keep-everything reinstall carried Gears' unset-credential sentinel
+    ('empty_setting') into POV's settings.xml, because the KEEP placeholder
+    filter did not list it. POV treats any non-empty token as "logged in"
+    (enabled_debrids_check rejects only ''/None), so every unused debrid
+    service grew a menu -- and its banner/cloud scrapers fired real API calls
+    with the sentinel as the token. Seen on Asaf's Windows box 2026-08-09:
+    rd/pm/oc/ad all "authorized" with token=empty_setting; only tb was real.
+
+    POV NEVER produces this value itself (it is Gears' settings.db idiom), so
+    any occurrence in this XML is contamination: the blanket rewrite of every
+    `>empty_setting<` text value is safe by construction. Runs as a migration
+    because keep.py is only fixed for FUTURE reinstalls -- existing boxes keep
+    the planted values until someone blanks them.
+    """
+    changed = 0
+    try:
+        path = xbmcvfs.translatePath(
+            'special://profile/addon_data/plugin.video.pov/settings.xml')
+        if not os.path.isfile(path):
+            return 0
+        with open(path, encoding='utf-8', errors='replace') as fh:
+            txt = fh.read()
+        import re
+        new, changed = re.subn(r'(<setting id="[^"]+"[^>]*>)empty_setting(</setting>)',
+                               r'\1\2', txt)
+        if changed:
+            with open(path, 'w', encoding='utf-8', newline='') as fh:
+                fh.write(new)
+            log('blanked %d POV empty_setting placeholder(s) (fake debrid logins)'
+                % changed)
+    except Exception as e:
+        log('pov placeholder fix failed: %s' % e, xbmc.LOGWARNING)
+    return changed
+
+
 def seed_nimbus_missing_cpaths():
     """Add shipped Nimbus menu rows that the live box is missing.
 

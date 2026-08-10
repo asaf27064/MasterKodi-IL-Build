@@ -100,7 +100,7 @@ def mdbl_search_lists(query):
 
 def mdblist_droplist(mediatype, page_no):
 	results = mdbl_get_hidden_items('dropped')
-	return [{'imdb_id': '', 'id': i} for i in results], 1
+	return [{'id': i} for i in results], 1
 
 def mdbl_calendar_data(url):
 	result = []
@@ -132,12 +132,15 @@ def mdblist_collection(mediatype, page_no):
 		original_list = original_list['movies'] + original_list['shows']
 		for i in original_list: i.update({'id': i['movie' if 'movie' in i else 'show']['ids']['tmdb']})
 		return original_list
-	original_list = original_list[mediatype]
 	key = 'movie' if mediatype in ('movie', 'movies') else 'show'
-	for i in original_list: i.update({
-		'id': i[key]['ids']['tmdb'], 'imdb_id': i[key]['ids']['imdb'],
-		'title': i[key]['title'], 'year': i[key]['year']
-	})
+	original_list = [
+		{'collected_at': i['collected_at'],
+		 'id': i[key]['ids']['tmdb'],
+		 'imdb_id': i[key]['ids']['imdb'],
+		 'title': i[key]['title'],
+		 'year': i[key]['year']}
+		for i in original_list[mediatype]
+	] # only endpoint with nested media. no response to feature req to flatten.
 	sort_key = settings.lists_sort_order('collection')
 	if   sort_key == 2: original_list.sort(key=itemgetter('year'), reverse=True)
 	elif sort_key == 1: original_list.sort(key=itemgetter('collected_at'), reverse=True)

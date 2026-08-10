@@ -826,7 +826,7 @@ def test_pov_publishes_player_release():
 
 
 def test_active_skin_update_on_windows():
-    """The addon swap renames the live dir to .rb_<id>. Windows refuses that
+    r"""The addon swap renames the live dir to .rb_<id>. Windows refuses that
     while a file inside is OPEN, so the ACTIVE SKIN could never update in place:
     "[WinError 5] Access is denied: addons\skin.nimbus -> addons\.rb_skin.nimbus"
     (Asaf, 2026-08-02). POSIX allows it, which is why Android/Linux never hit it.
@@ -930,6 +930,56 @@ def test_menu_bundle_never_overwrites_a_healthy_menu():
         mu._active_skin, mu._content_source = orig_skin, orig_src
         mu.KODI_MAJOR = orig_major
         _sh.rmtree(os.path.join(mu.ADDONS_PATH, ZEPHYR), ignore_errors=True)
+
+
+def test_pov_placeholder_scrub():
+    """Gears' 'empty_setting' sentinel must never survive as a POV credential.
+
+    A keep-everything reinstall wrote it into POV's settings.xml as the "token"
+    of every unused debrid service; POV rejects only ''/None, so rd/pm/oc/ad
+    all showed up as authorized on Asaf's box (2026-08-09). Three layers:
+    the cross-engine filter, the same-engine xml staging, and the migration
+    that scrubs boxes already contaminated."""
+    print("\n=== keep/migration: empty_setting is a placeholder, not a login ===")
+    # 1. cross-engine carry filter
+    got = keep._real_creds({'tb.token': 'REAL-TOKEN', 'rd.token': 'empty_setting',
+                            'pm.token': '', 'tb.enabled': 'true'},
+                           ['tb.token', 'rd.token', 'pm.token', 'tb.enabled'])
+    check('cross-engine: sentinel dropped, real token kept',
+          got == {'tb.token': 'REAL-TOKEN'})
+
+    # 2. same-engine xml staging
+    d = tempfile.mkdtemp()
+    xml = os.path.join(d, 'settings.xml')
+    rows = ['<settings version="2">',
+            '<setting id="tb.token">REAL-TOKEN</setting>',
+            '<setting id="tb.enabled">true</setting>',
+            '<setting id="rd.token">empty_setting</setting>',
+            '</settings>']
+    with open(xml, 'w', encoding='utf-8') as fh:
+        fh.write('\n'.join(rows))
+    got = keep._xml_read(xml, ['tb.token', 'tb.enabled', 'rd.token'])
+    check('xml staging: sentinel dropped, true/real kept',
+          got == {'tb.token': 'REAL-TOKEN', 'tb.enabled': 'true'})
+
+    # 3. migration scrubs an already-contaminated box, leaves the real login
+    pov = os.path.join(HOME, 'userdata', 'addon_data', 'plugin.video.pov')
+    os.makedirs(pov, exist_ok=True)
+    live = os.path.join(pov, 'settings.xml')
+    rows = ['<settings version="2">',
+            '<setting id="tb.token">REAL-TOKEN</setting>',
+            '<setting id="rd.token">empty_setting</setting>',
+            '<setting id="pm.token">empty_setting</setting>',
+            '<setting id="easynews_password">empty_setting</setting>',
+            '</settings>']
+    with open(live, 'w', encoding='utf-8') as fh:
+        fh.write('\n'.join(rows))
+    n = mu.fix_pov_placeholder_tokens()
+    after = open(live, encoding='utf-8').read()
+    check('migration blanked all 3 sentinels', n == 3)
+    check('migration left the real token', '>REAL-TOKEN<' in after)
+    check('no sentinel remains', 'empty_setting' not in after)
+    check('migration idempotent (second run = 0)', mu.fix_pov_placeholder_tokens() == 0)
 
 
 def test_no_invalid_tmdb_widgets():
@@ -1537,6 +1587,7 @@ def main():
               test_pov_publishes_player_release,
               test_menu_bundle_never_laid_on_pov,
               test_menu_bundle_never_overwrites_a_healthy_menu,
+              test_pov_placeholder_scrub,
               test_no_invalid_tmdb_widgets,
               test_seeds_survive_a_reinstall,
               test_active_skin_update_on_windows,

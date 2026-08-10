@@ -227,9 +227,8 @@ class Menu(Movies):
 				if isinstance(page_no, int) and total_pages > page_no:
 					self.new_page = {'new_page': string(page_no + 1)}
 			elif self.action in Menu.mdblist_personal:
-				self.id_type = 'trakt_dict'
 				data, total_pages = function('movies', page_no)
-				self.list = [{'imdb': i['imdb_id'], 'tmdb': i['id']} for i in data]
+				self.list = [i['id'] for i in data]
 				if total_pages > 2: self.total_pages = total_pages
 				if total_pages > page_no: self.new_page = {'new_page': string(page_no + 1)}
 			elif self.action in Menu.personal_dict:

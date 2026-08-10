@@ -162,6 +162,7 @@ class SkipService(xbmc.Monitor):
         # SEEKING BACK to a recap/intro re-offers the skip. Dismissing via the OSD
         # never suppresses at all.
         skip_cd = {}                              # segment index -> monotonic skip time
+        declined = set()                          # segment index -> user pressed X
         while not self.abortRequested():
             try:
                 if _get_bool('enabled', True) and self.player.isPlayingVideo():
@@ -171,6 +172,7 @@ class SkipService(xbmc.Monitor):
                         segs = None
                         attempts = 0
                         skip_cd = {}
+                        declined = set()          # new episode -> ask again
                     if segs is None:
                         result = self._detect()
                         attempts += 1
@@ -194,6 +196,8 @@ class SkipService(xbmc.Monitor):
                             show_at = max(start, 4.0)
                             if not (show_at <= t < (end - 1)):
                                 continue
+                            if i in declined:
+                                continue          # user pressed X: asked & answered
                             cd = skip_cd.get(i)
                             if cd is not None and (now - cd) < 4.0:
                                 break             # just skipped this one -> brief hold
@@ -206,7 +210,7 @@ class SkipService(xbmc.Monitor):
                                 except Exception:
                                     pass
                             else:
-                                pressed = overlay.show_skip_overlay(
+                                pressed, was_declined = overlay.show_skip_overlay(
                                     LABELS.get(kind, 'דלג'), float(start), float(end), self.player, self)
                                 if pressed:
                                     skip_cd[i] = time.time()
@@ -214,6 +218,10 @@ class SkipService(xbmc.Monitor):
                                         self.player.seekTime(float(end))
                                     except Exception:
                                         pass
+                                elif was_declined:
+                                    # X = "no": never re-offer THIS segment; the
+                                    # next segment (recap/credits) still shows.
+                                    declined.add(i)
                                 # dismissed (OSD/other input) -> no cooldown, so it
                                 # re-appears next tick if still in the window.
                             break
@@ -221,6 +229,7 @@ class SkipService(xbmc.Monitor):
                     last_file = None
                     segs = None
                     skip_cd = {}
+                    declined = set()
             except Exception as e:
                 xbmc.log('[skipintro] loop error: %s' % e, xbmc.LOGDEBUG)
             if self.waitForAbort(1):

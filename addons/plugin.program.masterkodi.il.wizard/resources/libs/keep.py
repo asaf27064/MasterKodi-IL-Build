@@ -138,7 +138,13 @@ _ID_ALIASES_REV = {v: k for k, v in _ID_ALIASES.items()}   # pov id -> gears id
 
 # Values meaning "not configured" -- carrying these across would make an empty
 # slot look like a live account.
-_PLACEHOLDERS = (None, '', 'false', 'true', '0', 'None')
+# 'empty_setting' is Gears' literal "user never set this" sentinel (its
+# settings.db stores it instead of an empty string). Carrying it into POV made
+# every unused debrid service look AUTHORIZED: POV's enabled_debrids_check only
+# rejects ''/None, so rd/pm/oc/ad all grew menus (and API calls) with the
+# sentinel as their "token" -- seen on Asaf's box 2026-08-09 after a
+# keep-everything reinstall. It is a non-value, exactly like ''.
+_PLACEHOLDERS = (None, '', 'false', 'true', '0', 'None', 'empty_setting')
 
 
 def _real_creds(values, allowed, rename=None):
@@ -277,7 +283,12 @@ def _xml_read(path, ids):
         txt = open(path, encoding='utf-8', errors='replace').read()
         for sid in ids:
             m = re.search(r'<setting id="%s"[^>]*>([^<]*)</setting>' % re.escape(sid), txt)
-            if m and m.group(1):
+            # 'empty_setting' is Gears' unset sentinel; in an XML (POV) settings
+            # file it is always contamination from an earlier cross-engine KEEP,
+            # never a real value -- staging it would faithfully re-plant it on
+            # every reinstall. Only this one value is dropped here: 'true'/'false'
+            # etc. stay, because ids like tb.enabled legitimately carry them.
+            if m and m.group(1) and m.group(1) != 'empty_setting':
                 out[sid] = m.group(1)
     except Exception as e:
         log('xml read FAILED %s: %s' % (path, e), xbmc.LOGERROR)

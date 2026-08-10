@@ -4,7 +4,6 @@ from modules import kodi_utils
 # logger = kodi_utils.logger
 
 ls, get_setting = kodi_utils.local_string, kodi_utils.get_setting
-user_agent = 'POV/%s' % kodi_utils.get_addoninfo('version')
 ip_url = 'https://api.ipify.org'
 base_url = 'https://api.torbox.app/v1/api/'
 session = requests.Session()
@@ -39,7 +38,7 @@ class TorBoxAPI:
 		return any(i in path for i in ('/control', '/edit'))
 
 	def headers(self):
-		return {'User-Agent': user_agent, 'Authorization': 'Bearer %s' % self.token}
+		return {'Authorization': 'Bearer %s' % self.token}
 
 	def days_remaining(self):
 		from datetime import datetime
@@ -112,7 +111,7 @@ class TorBoxAPI:
 	def parse_magnet_pack(self, magnet_url, info_hash):
 		from modules.source_utils import supported_video_extensions
 		try:
-			extensions = supported_video_extensions()
+			extensions = tuple(supported_video_extensions())
 			path = 'torrents' if magnet_url.startswith('magnet') else 'usenet'
 			torrent_id = self.create_transfer(magnet_url)
 			torrent_files = self.torrent_info(torrent_id, path)
@@ -122,7 +121,7 @@ class TorBoxAPI:
 				 'torrent_id': '%s,%s' % (torrent_id, path),
 				 'filename': item['short_name']}
 				for item in torrent_files['files']
-				if item['short_name'].lower().endswith(tuple(extensions))
+				if item['short_name'].lower().endswith(extensions)
 			]
 		except Exception as e:
 			if torrent_id: self.delete_torrent('%s,%s' % (torrent_id, path))

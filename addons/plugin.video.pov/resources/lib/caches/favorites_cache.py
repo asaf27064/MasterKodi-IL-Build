@@ -1,5 +1,5 @@
 from caches import BaseCache, favorites_db
-from modules import settings
+from modules.settings import ignore_articles, page_limit, paginate
 from modules.utils import sort_for_article, paginate_list
 # from modules.kodi_utils import logger
 
@@ -18,7 +18,7 @@ class Favorites(BaseCache):
 	def get(self, mediatype):
 		self.dbcur.execute(SELECT_FAV, (mediatype,))
 		result = self.dbcur.fetchall()
-		result = [{'tmdb_id': str(i[0]), 'title': str(i[1])} for i in result]
+		result = [{'media_id': str(i[0]), 'title': str(i[1])} for i in result]
 		return result
 
 	def add(self, mediatype, tmdb_id, title):
@@ -46,7 +46,7 @@ class Dropped(BaseCache):
 	def get(self, mediatype):
 		self.dbcur.execute(SELECT_DROP, ('tvshow',))
 		result = self.dbcur.fetchall()
-		result = [{'tmdb_id': str(i[0]), 'title': str(i[1])} for i in result]
+		result = [{'media_id': str(i[0]), 'title': str(i[1])} for i in result]
 		return result
 
 	def add(self, mediatype, tmdb_id, title):
@@ -69,24 +69,18 @@ class Dropped(BaseCache):
 		except: return False
 
 def get_favorites(watched_info, mediatype, page_no):
-	paginate = settings.paginate()
-	limit = settings.page_limit()
 	data = Favorites().get(mediatype)
-	data = sort_for_article(data, 'title', settings.ignore_articles())
-	original_list = [{'media_id': i['tmdb_id'], 'title': i['title']} for i in data]
-	if paginate: return paginate_list(original_list, page_no, limit)
+	original_list = sort_for_article(data, 'title', ignore_articles())
+	if paginate(): return paginate_list(original_list, page_no, page_limit())
 	return original_list, 1
 
 def get_dropped(watched_info, mediatype, page_no):
-	paginate = settings.paginate()
-	limit = settings.page_limit()
 	data = Dropped().get(mediatype)
-	data = sort_for_article(data, 'title', settings.ignore_articles())
-	original_list = [{'media_id': i['tmdb_id'], 'title': i['title']} for i in data]
-	if paginate: return paginate_list(original_list, page_no, limit)
+	original_list = sort_for_article(data, 'title', ignore_articles())
+	if paginate(): return paginate_list(original_list, page_no, page_limit())
 	return original_list, 1
 
 def get_hidden_items(list_type):
 	data = Dropped().get(list_type)
-	return [int(i['tmdb_id']) for i in data]
+	return [int(i['media_id']) for i in data]
 

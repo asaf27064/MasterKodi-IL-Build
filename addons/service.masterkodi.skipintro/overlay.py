@@ -48,6 +48,10 @@ def _tex():
 
 
 class SkipOverlay(xbmcgui.WindowXMLDialog):
+    # Overridden by SkipBarOverlay; the poll/close machinery only touches these.
+    BTN_ID = BUTTON_ID
+    BAR_FILL_ID = BAR_FILL
+
     def __new__(cls, xml, path, skin, res, **kw):
         return super(SkipOverlay, cls).__new__(cls, xml, path, skin, res)
 
@@ -59,6 +63,7 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
         self._player = player
         self._monitor = monitor
         self.skip_pressed = False
+        self.declined = False        # X pressed: don't re-show for this segment
         self._closed = False
         self._lock = threading.Lock()
         self._deadline = None
@@ -98,14 +103,14 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
             self._poll_thread.start()
 
     def onClick(self, controlId):
-        if controlId == BUTTON_ID:
+        if controlId == self.BTN_ID:
             self._do_skip()
 
     def onAction(self, action):
         aid = action.getId()
         if aid == ACTION_SELECT:
             try:
-                if self.getFocusId() == BUTTON_ID:
+                if self.getFocusId() == self.BTN_ID:
                     self._do_skip()
             except Exception:
                 pass
@@ -144,20 +149,24 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
                     # Countdown bar tracks PLAYBACK progress toward the intro end,
                     # so it reads as "time left to skip" and the pill stays up for
                     # the whole intro instead of a fixed 10s flash.
-                    if self._fill_full:
-                        if self._start is not None and self._target > self._start:
-                            frac = (self._target - t) / (self._target - self._start)
-                        else:
-                            frac = (self._deadline - time.time()) / DISPLAY_DURATION
-                        frac = max(0.0, min(1.0, frac))
-                        try:
-                            self.getControl(BAR_FILL).setWidth(int(self._fill_full * frac))
-                        except Exception:
-                            pass
+                    if self._start is not None and self._target > self._start:
+                        frac = (self._target - t) / (self._target - self._start)
+                    else:
+                        frac = (self._deadline - time.time()) / DISPLAY_DURATION
+                    frac = max(0.0, min(1.0, frac))
+                    try:
+                        self._update_bar(frac)
+                    except Exception:
+                        pass
                 elif p and not p.isPlaying():
                     return self._close_bg()
             except Exception:
                 pass
+
+    def _update_bar(self, frac):
+        # pill: an image whose width drains (texture set programmatically)
+        if self._fill_full:
+            self.getControl(self.BAR_FILL_ID).setWidth(int(self._fill_full * frac))
 
     def _close_bg(self):
         with self._lock:
@@ -178,24 +187,120 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
             pass
 
 
+# POV-style top bar (Asaf 2026-08-09: "copy his design, keep ours as another
+# style"). Layout cloned from plugin.video.pov's episodes.xml; the poll/close/
+# dismiss machinery is inherited unchanged from SkipOverlay, so both styles
+# behave identically (stay up the whole intro, yield to the OSD, safety cap).
+BAR_BTN_SKIP = 3101
+BAR_BTN_CLOSE = 3102
+BAR_FILL_BAR = 3108
+
+
+class SkipBarOverlay(SkipOverlay):
+    BTN_ID = BAR_BTN_SKIP
+    BAR_FILL_ID = BAR_FILL_BAR
+
+    def onInit(self):
+        try:
+            self.setProperty('mk.skip.icon',
+                             os.path.join(ADDON_PATH, 'icon.png'))
+            # POV feeds these from its own player meta; we serve ANY player, so
+            # the InfoLabels of whatever is playing are the equivalent source.
+            title = xbmc.getInfoLabel('VideoPlayer.TVShowTitle') or xbmc.getInfoLabel('VideoPlayer.Title') or ''
+            season = xbmc.getInfoLabel('VideoPlayer.Season')
+            episode = xbmc.getInfoLabel('VideoPlayer.Episode')
+            ep_name = xbmc.getInfoLabel('VideoPlayer.EpisodeName')
+            parts = [title]
+            if season and episode:
+                parts.append('S%sE%s' % (season, episode))
+            if ep_name:
+                parts.append(ep_name)
+            self.setProperty('mk.skip.title', ' [B]|[/B] '.join(p for p in parts if p))
+            poster = (xbmc.getInfoLabel('Player.Art(tvshow.poster)')
+                      or xbmc.getInfoLabel('Player.Art(poster)') or '')
+            self.setProperty('mk.skip.poster', poster)
+            self.setProperty('mk.skip.prompt', self._label or 'לדלג על הפתיח?')
+        except Exception as e:
+            xbmc.log('[skipintro] bar props: %s' % e, xbmc.LOGWARNING)
+        try:
+            self.getControl(self.BAR_FILL_ID).setPercent(100)
+        except Exception:
+            pass
+        try:
+            self.setFocusId(self.BTN_ID)
+        except Exception:
+            pass
+        if self._target is not None and self._player is not None:
+            self._deadline = time.time() + SAFETY_MAX
+            self._poll_thread = threading.Thread(target=self._poll)
+            self._poll_thread.daemon = True
+            self._poll_thread.start()
+
+    def _update_bar(self, frac):
+        # bar: Kodi progress control -> the active skin styles the fill
+        self.getControl(self.BAR_FILL_ID).setPercent(int(frac * 100))
+
+    def onClick(self, controlId):
+        if controlId == self.BTN_ID:
+            self._do_skip()
+        elif controlId == BAR_BTN_CLOSE:
+            self._decline()
+
+    def onAction(self, action):
+        # The pill dismisses on ANY input because it has one button and must
+        # never block the OSD. The bar has TWO buttons, so arrow keys are
+        # navigation between them, not "get out of my way" -- swallowing them
+        # made the bar vanish the moment you pressed down (Asaf, 2026-08-09).
+        aid = action.getId()
+        if aid in (1, 2, 3, 4):          # left/right/up/down: let Kodi move focus
+            return
+        if aid == ACTION_SELECT:
+            try:
+                fid = self.getFocusId()
+            except Exception:
+                fid = self.BTN_ID
+            if fid == BAR_BTN_CLOSE:
+                self._decline()
+            else:
+                self._do_skip()
+            return
+        self._dismiss()                  # back / OSD / anything else: yield
+
+    def _decline(self):
+        # X is an ANSWER ("no, don't skip"), not a mere yield: the service must
+        # not re-show this segment. Anything else (back/OSD) stays a yield and
+        # the bar may return while still inside the intro (Asaf, 2026-08-09).
+        self.declined = True
+        self._dismiss()
+
+
 def show_skip_overlay(label, start, target, player, monitor):
-    """Blocks until the pill closes (skip / intro end / safety cap). Stays up for
-    the whole intro. Returns True if the user pressed skip."""
+    """Blocks until the overlay closes (skip / intro end / safety cap). Stays up
+    for the whole intro. Returns (pressed, declined): pressed=True means seek
+    past the segment; declined=True means the user answered NO (bar-style X) and
+    the segment must not be offered again."""
     mon = monitor or xbmc.Monitor()
     if mon.abortRequested():
-        return False
+        return False, False
     if not _wait_clock(player, mon, target):
-        return False
+        return False, False
+    # style: '0'/'' = POV-style top bar (default), '1' = the original pill
     try:
-        w = SkipOverlay('SkipIntro.xml', ADDON_PATH, 'Default', _res(),
+        style = ADDON.getSetting('overlay_style')
+    except Exception:
+        style = ''
+    cls, xml = ((SkipOverlay, 'SkipIntro.xml') if style == '1'
+                else (SkipBarOverlay, 'SkipIntroBar.xml'))
+    try:
+        w = cls(xml, ADDON_PATH, 'Default', _res(),
                         label=label, start=start, target=target, player=player, monitor=monitor)
         w.doModal()
-        pressed = w.skip_pressed
+        pressed, declined = w.skip_pressed, w.declined
         del w
-        return pressed
+        return pressed, declined
     except Exception as e:
         xbmc.log('[skipintro] overlay error: %s' % e, xbmc.LOGERROR)
-        return False
+        return False, False
 
 
 def _wait_clock(player, monitor, target):

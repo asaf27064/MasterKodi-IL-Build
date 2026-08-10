@@ -1,7 +1,7 @@
 import json
 import concurrent.futures
 from datetime import datetime, timedelta
-from windows import BaseDialog, location, videoplayer
+from windows import BaseDialog, location, open_window, videoplayer
 from caches import watched_cache as ws
 from indexers import metadata, tmdb_api, imdb_api
 from menus import images, people, trakt, mdblist, tmdb
@@ -31,6 +31,12 @@ parentsguide_dict = {
 	'violence': (ls(32991), 'war.png'),
 	'nudity': (ls(32990), 'porn.png')
 }
+
+def extras_menu(params):
+	function = metadata.movie_meta if params['mediatype'] == 'movie' else metadata.tvshow_meta
+	meta = function('tmdb_id', params['tmdb_id'], settings.metadata_user_info(), get_datetime())
+	kwargs = {'meta': meta, 'is_widget': params.get('is_widget', 'false'), 'is_home': params.get('is_home', 'false')}
+	open_window(('windows.extras', 'Extras'), 'extras.xml', **kwargs)
 
 class Extras(BaseDialog):
 	def __init__(self, *args, **kwargs):
@@ -143,8 +149,8 @@ class Extras(BaseDialog):
 				function = metadata.movie_meta if self.is_movie else metadata.tvshow_meta
 				meta = function('tmdb_id', chosen_var, settings.metadata_user_info(), get_datetime())
 				if not meta: return
-				params = {'mode': 'extras_menu_choice', 'tmdb_id': chosen_var, 'mediatype': self.mediatype, 'is_widget': self.is_widget, 'is_home': self.is_home}
-				return dialogs.extras_menu(params)
+				kwargs = {'meta': meta, 'is_widget': self.is_widget, 'is_home': self.is_home}
+				return self.open_window(('windows.extras', 'Extras'), 'extras.xml', **kwargs)
 			elif self.control_id in imdb_list_ids:
 				if self.control_id == parentsguide_id:
 					listings = json.loads(chosen_var)

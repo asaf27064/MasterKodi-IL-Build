@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- POV-style top bar (copied from plugin.video.pov episodes.xml at Asaf's
+     request 2026-08-09): slide-down panel, poster right, right-aligned Hebrew
+     text, icon-only round buttons with zoom-on-focus, countdown bar.
+     Differences from POV's original: our addon icon instead of the POV logo,
+     Hebrew labels, and the countdown drains over the WHOLE intro segment
+     (window property fed from overlay.py) instead of a fixed 20s. -->
+<window type="dialog" id="14001">
+    <defaultcontrol always="true">3101</defaultcontrol>
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+    <controls>
+        <control type="image">
+            <animation effect="fade" start="0" end="100" delay="400" time="500">WindowOpen</animation>
+            <animation effect="fade" start="100" end="0" time="180">WindowClose</animation>
+            <left>23</left>
+            <top>13</top>
+            <width>40</width>
+            <height>40</height>
+            <aspectratio aligny="top">keep</aspectratio>
+            <texture>$INFO[Window.Property(mk.skip.icon)]</texture>
+        </control>
+        <control type="group">
+            <animation type="WindowOpen" reversible="false">
+                <effect type="slide" start="0,-179" end="0,0" time="350" />
+            </animation>
+            <animation type="WindowClose" reversible="false">
+                <effect type="slide" start="0,0" end="0,-179" time="250" />
+            </animation>
+            <left>23</left>
+            <top>0</top>
+            <width>1233</width>
+            <height>173</height>
+            <control type="image">
+                <right>0</right>
+                <top>57</top>
+                <width max="113">auto</width>
+                <height>133</height>
+                <aspectratio>stretch</aspectratio>
+                <texture>$INFO[Window.Property(mk.skip.poster)]</texture>
+            </control>
+            <control type="label">
+                <top>3</top>
+                <height>20</height>
+                <font>font12</font>
+                <align>right</align>
+                <aligny>top</aligny>
+                <label>$INFO[Window.Property(mk.skip.title)]</label>
+                <textcolor>FFB7B4BB</textcolor>
+                <autoscroll>true</autoscroll>
+            </control>
+            <control type="label">
+                <top>27</top>
+                <height>20</height>
+                <font>font12</font>
+                <align>right</align>
+                <aligny>top</aligny>
+                <label>[B]$INFO[Window.Property(mk.skip.prompt)][/B]</label>
+                <textcolor>FFB7B4BB</textcolor>
+            </control>
+            <control type="grouplist">
+                <orientation>vertical</orientation>
+                <align>center</align>
+                <itemgap>13</itemgap>
+                <right>120</right>
+                <top>57</top>
+                <width>53</width>
+                <height>133</height>
+                <control type="button" id="3101">
+                    <description>Skip</description>
+                    <animation effect="zoom" start="100" end="102" time="50" tween="sine" easing="inout" center="auto">Focus</animation>
+                    <animation effect="zoom" start="102" end="100" time="50" tween="sine" easing="inout" center="auto">Unfocus</animation>
+                    <left>0</left>
+                    <width>47</width>
+                    <height>30</height>
+                    <onleft>3102</onleft>
+                    <onright>3102</onright>
+                    <label />
+                    <font>font10</font>
+                    <textcolor>FFB7B4BB</textcolor>
+                    <focusedcolor>FF302F2F</focusedcolor>
+                    <texturefocus colordiffuse="FFB7B4BB">skip_yes.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347">skip_yes.png</texturenofocus>
+                    <align>center</align>
+                </control>
+                <control type="button" id="3102">
+                    <description>Close</description>
+                    <animation effect="zoom" start="100" end="102" time="50" tween="sine" easing="inout" center="auto">Focus</animation>
+                    <animation effect="zoom" start="102" end="100" time="50" tween="sine" easing="inout" center="auto">Unfocus</animation>
+                    <left>0</left>
+                    <width>47</width>
+                    <height>30</height>
+                    <onleft>3101</onleft>
+                    <onright>3101</onright>
+                    <label />
+                    <font>font10</font>
+                    <textcolor>FFB7B4BB</textcolor>
+                    <focusedcolor>FF302F2F</focusedcolor>
+                    <texturefocus colordiffuse="FFB7B4BB">skip_no.png</texturefocus>
+                    <texturenofocus colordiffuse="FF4a4347">skip_no.png</texturenofocus>
+                    <align>center</align>
+                </control>
+            </control>
+            <control type="progress" id="3108">
+                <description>countdown (drains over the whole intro)</description>
+                <top>193</top>
+                <right>0</right>
+                <width>173</width>
+                <height>11</height>
+                <reveal>true</reveal>
+            </control>
+        </control>
+    </controls>
+</window>

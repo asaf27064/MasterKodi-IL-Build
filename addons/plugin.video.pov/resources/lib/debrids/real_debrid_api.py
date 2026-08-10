@@ -120,7 +120,7 @@ class RealDebridAPI:
 	def parse_magnet_pack(self, magnet_url, info_hash, errors=False):
 		from modules.source_utils import supported_video_extensions
 		try:
-			extensions = supported_video_extensions()
+			extensions = tuple(supported_video_extensions())
 			torrent_id = self.create_transfer(magnet_url)
 			if not torrent_id: raise Exception('real debrid null magnet')
 			for key in ['ended'] * 3:
@@ -135,7 +135,7 @@ class RealDebridAPI:
 				 'torrent_id': torrent_id,
 				 'filename': item['path'].replace('/', '')}
 				for item, link in zip(selected, torrent_info['links'])
-				if item['path'].lower().endswith(tuple(extensions))
+				if item['path'].lower().endswith(extensions)
 			]
 		except Exception as e:
 			if torrent_id: self.delete_torrent(torrent_id)

@@ -467,6 +467,10 @@ class POVHebrewService(xbmc.Monitor):
                 # the shipped skinshortcuts dir is `update: skip`, so a menu
                 # correction only reaches existing boxes through a migration
                 modular_update.fix_invalid_tmdb_widgets()
+                # a KEEP reinstall planted Gears' 'empty_setting' sentinel as
+                # POV debrid tokens -> fake "authorized" services; keep.py is
+                # fixed for future reinstalls, existing boxes need the scrub
+                modular_update.fix_pov_placeholder_tokens()
             except Exception as e:
                 log(f"gears networks seed error: {e}", xbmc.LOGWARNING)
             _process_pending_view_rebuild()

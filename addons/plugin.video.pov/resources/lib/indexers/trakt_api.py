@@ -30,7 +30,7 @@ def call_trakt(path, params=None, data=None, with_auth=True, method=None, pagina
 			'post' if data is not None else method or 'get',
 			base_url % path,
 			params=None if data is not None else params,
-			json=data if data else None,
+			json=data,
 			headers=headers,
 			timeout=timeout
 		)
