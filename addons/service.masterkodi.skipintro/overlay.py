@@ -285,6 +285,33 @@ class SkipBarOverlay(SkipOverlay):
         self._dismiss()
 
 
+class SkipNetflixOverlay(SkipOverlay):
+    """Netflix-exact: one white rectangle, label only. Inherits the pill's
+    single-button behavior (any input dismisses); overrides onInit because the
+    pill's programmatic texture wiring targets controls this XML doesn't have,
+    and there is no countdown to drive."""
+
+    def onInit(self):
+        try:
+            b = self.getControl(BUTTON_ID)
+            if isinstance(b, xbmcgui.ControlButton):
+                b.setLabel('[B]%s[/B]' % (self._label or 'דלג על הפתיח'))
+        except Exception:
+            pass
+        try:
+            self.setFocusId(BUTTON_ID)
+        except Exception:
+            pass
+        if self._target is not None and self._player is not None:
+            self._deadline = time.time() + SAFETY_MAX
+            self._poll_thread = threading.Thread(target=self._poll)
+            self._poll_thread.daemon = True
+            self._poll_thread.start()
+
+    def _update_bar(self, frac):
+        pass
+
+
 def show_skip_overlay(label, start, target, player, monitor):
     """Blocks until the overlay closes (skip / intro end / safety cap). Stays up
     for the whole intro. Returns (pressed, declined): pressed=True means seek
@@ -295,19 +322,21 @@ def show_skip_overlay(label, start, target, player, monitor):
         return False, False
     if not _wait_clock(player, mon, target):
         return False, False
-    # style: '0'/'' = MasterKodi card (default), '1' = POV-style top bar,
-    # '2' = the original floating pill. Card and bar share SkipBarOverlay --
-    # the XMLs use the same control ids, only the layout differs.
+    # style order fixed by Asaf 2026-08-10: '0'/'' = Netflix button (default),
+    # '1' = MasterKodi card, '2' = POV-style top bar, '3' = the floating pill.
+    # Card and bar share SkipBarOverlay -- same control ids, different layout.
     try:
         style = ADDON.getSetting('overlay_style')
     except Exception:
         style = ''
-    if style == '2':
-        cls, xml = SkipOverlay, 'SkipIntro.xml'
-    elif style == '1':
-        cls, xml = SkipBarOverlay, 'SkipIntroBar.xml'
-    else:
+    if style == '1':
         cls, xml = SkipBarOverlay, 'SkipIntroCard.xml'
+    elif style == '2':
+        cls, xml = SkipBarOverlay, 'SkipIntroBar.xml'
+    elif style == '3':
+        cls, xml = SkipOverlay, 'SkipIntro.xml'
+    else:
+        cls, xml = SkipNetflixOverlay, 'SkipIntroNetflix.xml'
     try:
         w = cls(xml, ADDON_PATH, 'Default', _res(),
                         label=label, start=start, target=target, player=player, monitor=monitor)

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Netflix-exact style (Asaf, 2026-08-10): ONE near-square white rectangle,
+     bottom-right, bold dark text, nothing else. No poster, no countdown, no
+     close button. On Netflix TV the button is effectively always focused, so
+     it renders solid white; any other input dismisses. Same single-button
+     behavior as the pill (SkipOverlay), different skin. -->
+<window type="dialog" id="14003">
+    <defaultcontrol always="true">3001</defaultcontrol>
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+    <controls>
+        <control type="group">
+            <posx>1040</posx>
+            <posy>587</posy>
+            <width>193</width>
+            <height>40</height>
+            <animation effect="fade" start="0" end="100" time="200">WindowOpen</animation>
+            <animation effect="fade" start="100" end="0" time="150">WindowClose</animation>
+            <control type="image">
+                <posx>2</posx>
+                <posy>3</posy>
+                <width>189</width>
+                <height>37</height>
+                <aspectratio>stretch</aspectratio>
+                <texture colordiffuse="66000000" border="4">rr4.png</texture>
+            </control>
+            <control type="button" id="3001">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>189</width>
+                <height>37</height>
+                <font>font13</font>
+                <align>center</align>
+                <aligny>center</aligny>
+                <textcolor>FF141414</textcolor>
+                <focusedcolor>FF141414</focusedcolor>
+                <texturefocus colordiffuse="FFFFFFFF" border="4">rr4.png</texturefocus>
+                <texturenofocus colordiffuse="E6FFFFFF" border="4">rr4.png</texturenofocus>
+                <label>[B]דלג על הפתיח[/B]</label>
+            </control>
+        </control>
+    </controls>
+</window>
