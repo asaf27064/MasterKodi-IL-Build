@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-07T00:10:10Z",
+  "generated_utc": "2026-08-10T16:39:02Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -45,12 +45,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.170",
+      "version": "2.4.171",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.170.zip",
-      "sha256": "ede82d9fd8803abba6e7a13ff88678b2e6d90d2ed0cf14fb38862732d39a81c0",
-      "size": 5364462,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.170.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.171.zip",
+      "sha256": "9b8de0a333c18b73da107044c389f6f8a309503a84ec6a2db95ba0993a4b0980",
+      "size": 5365632,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.171.zip"
     },
     {
       "id": "plugin.video.gears",
@@ -64,12 +64,12 @@
     },
     {
       "id": "plugin.video.pov",
-      "version": "6.08.05",
+      "version": "6.08.06",
       "channel": "optional",
-      "zip": "plugin.video.pov-6.08.05.zip",
-      "sha256": "f8e4637ec20b9fa99e0c4965ca3909a42298fde7bec6721b64cecf9f079395de",
-      "size": 3619414,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.08.05.zip",
+      "zip": "plugin.video.pov-6.08.06.zip",
+      "sha256": "e1c1b36117fbcfb36a54ef14cea1af57554a9ab3252bb1df8be12e360f423e15",
+      "size": 3619496,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.08.06.zip",
       "content": "pov"
     },
     {
@@ -457,12 +457,12 @@
     },
     {
       "id": "service.masterkodi.skipintro",
-      "version": "1.3.2",
+      "version": "1.5.0",
       "channel": "core",
-      "zip": "service.masterkodi.skipintro-1.3.2.zip",
-      "sha256": "e0bcd5b2bcffa8c13a9146cc34cb88a4d309ee052a8eacfb208a00aa721ebe3b",
-      "size": 18472,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/service.masterkodi.skipintro-1.3.2.zip"
+      "zip": "service.masterkodi.skipintro-1.5.0.zip",
+      "sha256": "2ce2c6e3a65773020b85cb9e763fa4b39ba8e7c0fd70a21a3232732802e77788",
+      "size": 35303,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/service.masterkodi.skipintro-1.5.0.zip"
     },
     {
       "id": "service.subtitles.all_subs_plus",
@@ -538,13 +538,13 @@
     }
   ],
   "config": {
-    "version": "58",
-    "zip": "config-58.zip",
-    "sha256": "4b32c33921db601448a6ae8efd994bff53b86bf4708d0d742453fcda4b124e05",
-    "size": 2698365,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-58.zip"
+    "version": "59",
+    "zip": "config-59.zip",
+    "sha256": "3df0939fa5805a45c2c851a191b905ae16f07e61d5aa71d394495cd9e51f389e",
+    "size": 2698353,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-59.zip"
   },
   "content_variants": {
-    "version": "fd30e126958edc3c"
+    "version": "a86e2ce09ace5fd2"
   }
 }
