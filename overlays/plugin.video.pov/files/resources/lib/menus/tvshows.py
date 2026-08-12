@@ -241,7 +241,7 @@ class Menu(TVShows):
 				self.list = [i['id'] for i in data['results']]
 				if data['page'] < data['total_pages']:
 					self.new_page = {'new_page': string(data['page'] + 1), key: function_var}
-			elif self.action == 'tmdb_tv_discover':
+			elif self.action in ('tmdb_media_discover', 'tmdb_tv_discover'):
 				from menus.discover import set_history
 				name, query = self.params['name'], self.params['query']
 				if page_no == 1: set_history('tvshow', name, query)

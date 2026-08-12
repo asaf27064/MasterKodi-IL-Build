@@ -481,7 +481,7 @@ def scrapers_status(folder='all'):
 
 def enable_disable(folder):
 	try:
-		icon = 'special://home/addons/plugin.video.pov/resources/lib/fenom/fenom_icon.png'
+		icon = 'special://home/addons/plugin.video.pov/fenom_icon.png'
 		enabled, disabled = scrapers_status(folder)
 		all_sources = sorted(enabled + disabled)
 		preselect = [all_sources.index(i) for i in enabled]

@@ -1,6 +1,5 @@
 import requests
 from threading import Thread
-from operator import itemgetter
 from concurrent.futures import ThreadPoolExecutor
 from caches import mdbl_cache
 from caches.main_cache import cache_object
@@ -138,12 +137,12 @@ def mdblist_collection(mediatype, page_no):
 		 'id': i[key]['ids']['tmdb'],
 		 'imdb_id': i[key]['ids']['imdb'],
 		 'title': i[key]['title'],
-		 'year': i[key]['year']}
+		 'year': str(i[key]['year'] or '')}
 		for i in original_list[mediatype]
 	] # only endpoint with nested media. no response to feature req to flatten.
 	sort_key = settings.lists_sort_order('collection')
-	if   sort_key == 2: original_list.sort(key=itemgetter('year'), reverse=True)
-	elif sort_key == 1: original_list.sort(key=itemgetter('collected_at'), reverse=True)
+	if   sort_key == 2: original_list.sort(key=lambda k: k.get('year') or '', reverse=True)
+	elif sort_key == 1: original_list.sort(key=lambda k: k['collected_at'], reverse=True)
 	else: original_list = sort_for_article(original_list, 'title', settings.ignore_articles())
 	if settings.paginate(): return paginate_list(original_list, page_no, settings.page_limit())
 	return original_list, 1
@@ -163,8 +162,8 @@ def mdblist_watchlist(mediatype, page_no):
 		current_date = get_datetime()
 		original_list = [i for i in original_list if first_aired(i)]
 	sort_key = settings.lists_sort_order('watchlist', mediatype)
-	if   sort_key == 2: original_list.sort(key=itemgetter('release_date') or '', reverse=True)
-	elif sort_key == 1: original_list.sort(key=itemgetter('watchlist_at'), reverse=True)
+	if   sort_key == 2: original_list.sort(key=lambda k: k.get('release_date') or '', reverse=True)
+	elif sort_key == 1: original_list.sort(key=lambda k: k['watchlist_at'], reverse=True)
 	else: original_list = sort_for_article(original_list, 'title', settings.ignore_articles())
 	if settings.paginate(): return paginate_list(original_list, page_no, settings.page_limit())
 	return original_list, 1

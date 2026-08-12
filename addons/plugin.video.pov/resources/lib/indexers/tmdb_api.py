@@ -51,9 +51,10 @@ def tmdb_media_videos(mediatype, tmdb_id):
 	url = '%s/3/%s/%s/videos' % (base_url, mediatype, tmdb_id)
 	return cache_object(get_tmdb, string, url, expiration=EXPIRES_1_WEEK)
 
-def tmdb_movies_discover(query, page_no):
+def tmdb_media_discover(query, page_no):
 	string = query % page_no
-	url = query % page_no
+	if base_url in query: url = query % page_no # for menu exports <= 6.08.06
+	else: url = '%s/3/%s' % (base_url, query % page_no)
 	return cache_object(get_tmdb, string, url)
 
 def tmdb_movies_collection(collection_id):
@@ -148,10 +149,6 @@ def tmdb_movies_search_collections(query, page_no):
 	string = 'tmdb_movies_search_collections_%s_%s' % (query, page_no)
 	url = '%s/3/search/collection?language=en-US&query=%s&page=%s' % (base_url, query, page_no)
 	return cache_object(get_tmdb, string, url, expiration=EXPIRES_1_WEEK)
-
-def tmdb_tv_discover(query, page_no):
-	string = url = query % page_no
-	return cache_object(get_tmdb, string, url)
 
 def tmdb_tv_title_year(title, year=None):
 	if year:
