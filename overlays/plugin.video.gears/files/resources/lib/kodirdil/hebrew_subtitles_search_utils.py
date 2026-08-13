@@ -136,7 +136,8 @@ def generate_subtitles_match_top_panel_text_for_sync_percent_match(
     total_external_subtitles_found_count, 
     total_hebrew_embedded_subtitles_matches_count, 
     total_subtitles_matches_count, 
-    total_quality_counts
+    total_quality_counts,
+    quality_colours=None
 ):
     """
     Generate formatted strings for the top panel showing subtitle match statistics.
@@ -156,21 +157,25 @@ def generate_subtitles_match_top_panel_text_for_sync_percent_match(
     total_subtitles_found_count = total_external_subtitles_found_count + total_hebrew_embedded_subtitles_matches_count
     
     # Calculate total (external + embedded)
-    total_all_subtitles = total_subtitles_found_count + total_hebrew_embedded_subtitles_matches_count
+    # total_subtitles_found_count ALREADY includes the embedded ones (it is
+    # external + embedded, two lines up). Adding the embedded count again
+    # inflated the headline: 1 external + 1 embedded was reported as
+    # "נמצאו 3 כתוביות (1 מוטמעות)" instead of 2 (Asaf, 2026-08-13).
+    total_all_subtitles = total_subtitles_found_count
     
     hebrew_embedded_text_string = ""
     if total_hebrew_embedded_subtitles_matches_count > 0:
         hebrew_embedded_text_string = f" [COLOR cyan]({total_hebrew_embedded_subtitles_matches_count} מוטמעות)[/COLOR]"
 
     if total_all_subtitles == 1:
-        total_subtitles_found_text = f"[COLOR FFFE9900]נמצאה כתובית{hebrew_embedded_text_string}[/COLOR]"
+        total_subtitles_found_text = f"[B][COLOR deepskyblue]נמצאה כתובית[/COLOR]{hebrew_embedded_text_string}[/B]"
     elif total_all_subtitles > 0:
-        total_subtitles_found_text = f"[COLOR FFFE9900]נמצאו {total_all_subtitles} כתוביות{hebrew_embedded_text_string}[/COLOR]"
+        total_subtitles_found_text = f"[B][COLOR deepskyblue]נמצאו {total_all_subtitles} כתוביות[/COLOR]{hebrew_embedded_text_string}[/B]"
     else:
-        total_subtitles_found_text = "[COLOR red]אין כתוביות[/COLOR]"
+        total_subtitles_found_text = "[B][COLOR red]אין כתוביות[/COLOR][/B]"
     
     if total_subtitles_found_count > 0 and total_subtitles_matches_count == 0:
-        subtitles_matched_count_text = f"[COLOR yellow]0 מעל {minimum_sync_percent}%[/COLOR]"
+        subtitles_matched_count_text = f"[B][COLOR yellow]0 מעל {minimum_sync_percent}%[/COLOR][/B]"
     else:
         subtitles_matched_count_text = ""
                                    
@@ -180,18 +185,33 @@ def generate_subtitles_match_top_panel_text_for_sync_percent_match(
         count_720p = total_quality_counts.get("720p", 0)
         count_sd = total_quality_counts.get("SD", 0)
 
+        # Colours come from the SAME map the list badges use, so the panel is a
+        # legend for the rows and follows the user's own POV colour settings
+        # (this box: magenta / cyan / mediumorchid / dodgerblue) instead of a
+        # hardcoded set that would drift. Falls back to the previous fixed
+        # colours if the caller passes nothing.
+        cols = quality_colours or {}
+        col_4k = cols.get('4k', 'FFFF00FE')
+        col_1080 = cols.get('1080p', 'FF3CFA38')
+        col_720 = cols.get('720p', 'FF3C9900')
+        col_sd = cols.get('sd', 'FF0166FF')
+
         quality_texts = []
         if count_4k > 0:
-            quality_texts.append(f"[COLOR FFFF00FE]4K: {count_4k}[/COLOR]")
+            quality_texts.append(f"[COLOR {col_4k}][B]‎4K:{count_4k}[/B][/COLOR]")
         if count_1080p > 0:
-            quality_texts.append(f"[COLOR FF3CFA38]1080p: {count_1080p}[/COLOR]")
+            quality_texts.append(f"[COLOR {col_1080}][B]‎1080p:{count_1080p}[/B][/COLOR]")
         if count_720p > 0:
-            quality_texts.append(f"[COLOR FF3C9900]720p: {count_720p}[/COLOR]")
+            quality_texts.append(f"[COLOR {col_720}][B]‎720p:{count_720p}[/B][/COLOR]")
         if count_sd > 0:
-            quality_texts.append(f"[COLOR FF0166FF]SD: {count_sd}[/COLOR]")
+            quality_texts.append(f"[COLOR {col_sd}][B]‎SD:{count_sd}[/B][/COLOR]")
             
         if quality_texts:
-            subtitles_matched_count_text = " | ".join(quality_texts)
+            # "התאמות" = these count SOURCES that matched a subtitle, not
+            # subtitles. Without the word the panel reads as if 8 subtitles were
+            # found when one subtitle matched 8 releases (Asaf, 2026-08-13).
+            # Hebrew-leading with the Latin runs after it, per the bidi rule.
+            subtitles_matched_count_text = "[B][COLOR FFFF8800]התאמות[/COLOR][/B] " + " ".join(quality_texts)
         
     kodi_utils.logger("Gears-HEBSUBS", f"Sources with matched subtitles: {total_subtitles_matches_count}")
     

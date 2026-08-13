@@ -397,19 +397,25 @@ class SourcesResults(BaseDialog):
 						getattr(self, 'total_external_subtitles_found_count', 0),
 						getattr(self, 'total_hebrew_embedded_subtitles_matches_count', 0),
 						getattr(self, 'total_subtitles_matches_count', 0),
-						getattr(self, 'total_quality_counts', {"4K": 0, "1080p": 0, "720p": 0, "SD": 0})
+						getattr(self, 'total_quality_counts', {"4K": 0, "1080p": 0, "720p": 0, "SD": 0}),
+						getattr(self, 'info_highlights_dict', None)
 					)
 
 				if subtitles_matched_count_text:
-					hebrew_subtitles_panel_text = f" | {total_subtitles_found_text} | {subtitles_matched_count_text}\n"
+					hebrew_subtitles_panel_text = f"{total_subtitles_found_text} | {subtitles_matched_count_text}\n"
 				else:
-					hebrew_subtitles_panel_text = f" | {total_subtitles_found_text}\n"
+					hebrew_subtitles_panel_text = f"{total_subtitles_found_text}\n"
 			except Exception as e:
 				from modules.kodi_utils import logger
 				logger("Gears-HEBSUBS", f"Error setting panel text: {str(e)}")
 				hebrew_subtitles_panel_text = ''
 
-		self.setProperty('total_results', self.total_results + hebrew_subtitles_panel_text)
+		# Hebrew FIRST: the skin label renders "<total_results> Results", so
+		# appending dropped Hebrew into the MIDDLE of an English sentence --
+		# the panel came out scrambled and overflowed into "..." (seen on POV
+		# 2026-08-13, same shape here). Leading with Hebrew leaves one
+		# direction switch and one Latin run at the end.
+		self.setProperty('total_results', hebrew_subtitles_panel_text + self.total_results)
 		##################################################################
 
 		self.setProperty('filters_ignored', '| Filters Ignored' if self.filters_ignored else '')

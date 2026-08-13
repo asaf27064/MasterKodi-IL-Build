@@ -370,41 +370,19 @@ def show_build_info():
 # OLED SETTINGS
 # ============================================
 def apply_oled_to_guisettings():
-    """Apply OLED settings to guisettings.xml"""
+    """Apply the OLED screen-protection settings.
+
+    Kept under the old name so existing callers keep working, but it no longer
+    edits guisettings.xml: Kodi holds its settings in memory and rewrites that
+    file on exit, so a mid-session edit is discarded (measured 2026-08-13 --
+    screensaver.mode came back EMPTY, which is the setting that actually turns
+    the black screensaver on). resources/libs/oled.py goes through Kodi's
+    settings API instead, so the change is persisted like a GUI change.
+    """
     try:
-        guisettings_path = os.path.join(
-            xbmcvfs.translatePath('special://home/'),
-            'userdata',
-            'guisettings.xml'
-        )
-        
-        if not os.path.exists(guisettings_path):
-            return False
-        
-        with open(guisettings_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-        
-        import re
-        oled_settings = {
-            'screensaver.mode': 'screensaver.xbmc.builtin.black',
-            'screensaver.time': '1',
-            'screensaver.disableforaudio': 'false',
-            'screensaver.usedimonpause': 'true'
-        }
-        
-        for setting_id, setting_value in oled_settings.items():
-            pattern = rf'<setting id="{setting_id}"[^>]*>[^<]*</setting>'
-            replacement = f'<setting id="{setting_id}">{setting_value}</setting>'
-            
-            if re.search(pattern, content):
-                content = re.sub(pattern, replacement, content)
-            else:
-                content = content.replace('</settings>', f'    {replacement}\n</settings>')
-        
-        with open(guisettings_path, 'w', encoding='utf-8') as f:
-            f.write(content)
-        
-        return True
+        from resources.libs import oled as oled_mod
+        applied, failed = oled_mod.apply_oled_settings()
+        return not failed
     except Exception as e:
         log(f"Error applying OLED: {e}")
         return False
@@ -420,7 +398,8 @@ def oled_menu():
         f'אם כן, נגדיר הגדרות להגנה על המסך:\n'
         f'- Screensaver שחור (לא אנימציה)\n'
         f'- הפעלה אחרי דקה\n'
-        f'- עמעום בזמן השהיה',
+        f'- עמעום בזמן השהיה\n'
+        f'- כיבוי המסך אחרי 5 דקות',
         yeslabel='כן, יש לי OLED',
         nolabel='לא'
     )

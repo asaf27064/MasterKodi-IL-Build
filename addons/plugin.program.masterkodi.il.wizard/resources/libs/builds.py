@@ -2274,7 +2274,8 @@ class BuildManager:
             'אם כן, נגדיר הגדרות להגנה על המסך:\n'
             '- Screensaver שחור\n'
             '- הפעלה אחרי דקה\n'
-            '- עמעום בזמן השהיה',
+            '- עמעום בזמן השהיה\n'
+            '- כיבוי המסך אחרי 5 דקות',
             yeslabel='כן, יש לי OLED',
             nolabel='לא'
         )
@@ -2282,48 +2283,25 @@ class BuildManager:
         if not result:
             return
         
-        log("User has OLED - modifying guisettings.xml")
-        
+        log("User has OLED - applying screen-protection settings")
+
+        # Through Kodi's settings API, NOT by editing guisettings.xml. Kodi keeps
+        # its settings in memory and rewrites that file when it exits -- and this
+        # runs moments before the installer RESTARTS Kodi, so a file edit was
+        # guaranteed to be thrown away. Measured 2026-08-13: screensaver.mode
+        # (the one that actually enables the black screensaver) came back EMPTY
+        # after a normal Kodi close, so the feature never did anything.
         try:
-            guisettings_path = os.path.join(
-                xbmcvfs.translatePath('special://home/'),
-                'userdata',
-                'guisettings.xml'
-            )
-            
-            if not os.path.exists(guisettings_path):
-                log(f"guisettings.xml not found at {guisettings_path}")
-                return
-            
-            with open(guisettings_path, 'r', encoding='utf-8') as f:
-                file_content = f.read()
-            
-            oled_settings = {
-                'screensaver.mode': 'screensaver.xbmc.builtin.black',
-                'screensaver.time': '1',
-                'screensaver.disableforaudio': 'false',
-                'screensaver.usedimonpause': 'true'
-            }
-            
-            import re
-            for setting_id, setting_value in oled_settings.items():
-                pattern = rf'<setting id="{setting_id}"[^>]*>[^<]*</setting>'
-                replacement = f'<setting id="{setting_id}">{setting_value}</setting>'
-                
-                if re.search(pattern, file_content):
-                    file_content = re.sub(pattern, replacement, file_content)
-                    log(f"Updated {setting_id} to {setting_value}")
-                else:
-                    file_content = file_content.replace('</settings>', f'    {replacement}\n</settings>')
-                    log(f"Added {setting_id} = {setting_value}")
-            
-            with open(guisettings_path, 'w', encoding='utf-8') as f:
-                f.write(file_content)
-            
-            log("OLED settings applied to guisettings.xml")
-            
+            from resources.libs import oled as oled_mod
+            _applied, failed = oled_mod.apply_oled_settings()
         except Exception as e:
-            log(f"Error applying OLED settings: {e}", xbmc.LOGERROR)
+            log('OLED apply failed: %s' % e, xbmc.LOGERROR)
+            _applied, failed = [], [s for s, _v in getattr(oled_mod, 'OLED_SETTINGS', ())]
+
+        if failed:
+            self.dialog.ok(ADDON_NAME,
+                           '[COLOR %s]חלק מהגדרות ה-OLED לא הוחלו[/COLOR]\n\n%s'
+                           % (COLOR_WARNING, ', '.join(failed)))
 
     def _countdown_restart(self, build_name, skin_name):
         """Countdown and restart Kodi"""

@@ -374,14 +374,22 @@ class SourceResults(BaseDialog):
 		hebrew_subtitles_panel_text = ''
 		if is_hebrew_subtitles_enabled():
 			try:
-				total_subtitles_found_text, subtitles_matched_count_text = hebrew_subtitles_search_utils.generate_subtitles_match_top_panel_text_for_sync_percent_match(getattr(self, 'total_external_subtitles_found_count', 0), getattr(self, 'total_hebrew_embedded_subtitles_matches_count', 0), getattr(self, 'total_subtitles_matches_count', 0), getattr(self, 'total_quality_counts', {"4K": 0, "1080p": 0, "720p": 0, "SD": 0}))
+				total_subtitles_found_text, subtitles_matched_count_text = hebrew_subtitles_search_utils.generate_subtitles_match_top_panel_text_for_sync_percent_match(getattr(self, 'total_external_subtitles_found_count', 0), getattr(self, 'total_hebrew_embedded_subtitles_matches_count', 0), getattr(self, 'total_subtitles_matches_count', 0), getattr(self, 'total_quality_counts', {"4K": 0, "1080p": 0, "720p": 0, "SD": 0}), getattr(self, 'info_highlights_dict', None))
 				if subtitles_matched_count_text:
-					hebrew_subtitles_panel_text = ' | %s | %s' % (total_subtitles_found_text, subtitles_matched_count_text)
+					hebrew_subtitles_panel_text = '%s | %s' % (total_subtitles_found_text, subtitles_matched_count_text)
 				else:
-					hebrew_subtitles_panel_text = ' | %s' % total_subtitles_found_text
+					hebrew_subtitles_panel_text = '%s' % total_subtitles_found_text
 			except Exception:
 				hebrew_subtitles_panel_text = ''
-		self.setProperty('tikiskins.total_results', self.total_results + hebrew_subtitles_panel_text)
+		# Our Hebrew must NOT live inside tikiskins.total_results: the skin
+		# renders that as "<total_results> Results", so anything we put there is
+		# sandwiched inside an English sentence -- first it rendered scrambled,
+		# then POV's own "30 RESULTS" merged into our number run and looked like
+		# part of it (Asaf, 2026-08-13). It now has its own property, drawn by
+		# our skin overlay AFTER "Results", so POV's count stays intact and our
+		# block is a single self-contained run.
+		self.setProperty('tikiskins.total_results', self.total_results)
+		self.setProperty('tikiskins.kodirdil_subs', hebrew_subtitles_panel_text)
 		##############################################################
 		self.setProperty('tikiskins.filters_ignored', self.filters_ignored)
 		self.setProperty('tikiskins.scrape_time', '%.2f' % self.meta['scrape_time'])

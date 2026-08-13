@@ -932,6 +932,110 @@ def test_menu_bundle_never_overwrites_a_healthy_menu():
         _sh.rmtree(os.path.join(mu.ADDONS_PATH, ZEPHYR), ignore_errors=True)
 
 
+def test_hebrew_title_quality_classification():
+    """A Hebrew meta title must not destroy POV's resolution detection.
+
+    We ship meta_language=he, so POV hands info_from_name a Hebrew title. Its
+    `re.sub(r'[^a-z0-9]+', '.', title)` reduces that to nothing but DOTS, and
+    `release_title.replace(title, '')` then strips EVERY dot from the release
+    name. POV's resolution patterns are word-boundary anchored, so with no
+    separators nothing matched and every single-episode result was classified
+    SD -- 4K rows displayed as SD with N/A extra info (Asaf, 2026-08-13).
+    Season packs escaped it, which is why it looked provider-specific.
+
+    Runs POV's REAL functions out of the shipped overlay file."""
+    print("\n=== POV: hebrew meta title must not break quality detection ===")
+    import re as _re
+    src = open(os.path.join(
+        REPO, 'overlays', 'plugin.video.pov', 'files', 'resources', 'lib',
+        'magneto', 'modules', 'source_utils.py'), encoding='utf-8').read()
+    parts = []
+    for fn in ('COMPILED_RESOLUTIONS', 'def get_qual', 'def get_release_quality',
+               'def info_from_name'):
+        i = src.index(fn)
+        j = src.index('\ndef ', i + 5)
+        parts.append(src[i:j])
+    ns = {'re': _re, 'log_utils_error': lambda *a: None}
+    exec('\n'.join(parts), ns)
+    info_from_name, get_release_quality = ns['info_from_name'], ns['get_release_quality']
+
+    HEB = "ריצ'ר"
+    cases = [
+        ('2160p single episode', 'Reacher S04E01 2160p AMZN WEB DL DD 5 1 ATMOS DV HDR10 H 265', '4K'),
+        ('1080p single episode', 'Reacher S04E01 MULTI VF2 1080p WEB EAC3 5 1 H264 FRQC MKV', '1080p'),
+        ('720p single episode',  'Reacher S04E01 MULTI 720p AMZN WEB DL H264 DDP5 1 ATMOS', '720p'),
+        ('genuine SD stays SD',  'Reacher S04E01 DVDRip XviD AC3', 'SD'),
+    ]
+    for label, name, want in cases:
+        ni = info_from_name(name, HEB, '2026', 'S04E01', 'City of Brotherly Love')
+        got = get_release_quality(ni, 'magnet:?xt=urn:btih:d')[0]
+        check('hebrew title: %s -> %s' % (label, want), got == want)
+
+    # english titles must be untouched by the guard
+    for label, name, want in cases:
+        ni = info_from_name(name, 'Reacher', '2026', 'S04E01', 'City of Brotherly Love')
+        got = get_release_quality(ni, 'magnet:?xt=urn:btih:d')[0]
+        check('english title: %s -> %s' % (label, want), got == want)
+
+    # the separators themselves must survive, since extra-info parsing needs them
+    ni = info_from_name('Reacher S04E01 2160p AMZN WEB DL ATMOS', HEB, '2026',
+                        'S04E01', 'City of Brotherly Love')
+    check('dots preserved for a hebrew title', '.2160p.' in ni)
+
+
+def test_oled_uses_settings_api():
+    """The OLED option must go through Kodi's settings API, never a file edit.
+
+    Both OLED entry points used to rewrite guisettings.xml while Kodi was
+    running. Kodi keeps its settings in MEMORY and re-saves that file on exit,
+    so the edit was discarded -- and the installer does it moments before
+    restarting Kodi. Measured on the box 2026-08-13: after a normal close,
+    screensaver.time and disableforaudio survived but
+
+        <setting id="screensaver.mode" />
+
+    came back EMPTY -- the one setting that actually enables the black
+    screensaver. The feature silently did nothing on every install.
+    builds.py already carried a comment warning about this exact behaviour."""
+    print("\n=== wizard: OLED settings go through Kodi's API, not guisettings.xml ===")
+    base = os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard')
+    oled = open(os.path.join(base, 'resources', 'libs', 'oled.py'), encoding='utf-8').read()
+    builds = open(os.path.join(base, 'resources', 'libs', 'builds.py'), encoding='utf-8').read()
+    default_py = open(os.path.join(base, 'default.py'), encoding='utf-8').read()
+
+    check('oled helper uses Settings.SetSettingValue',
+          'Settings.SetSettingValue' in oled)
+    check('oled helper never opens guisettings for writing',
+          "open(" not in oled and "'w'" not in oled)
+    check('installer path delegates to the helper',
+          'oled_mod.apply_oled_settings()' in builds)
+    check('maintenance menu delegates to the helper',
+          'oled_mod.apply_oled_settings()' in default_py)
+
+    # neither OLED path may open guisettings for writing again
+    for name, src in (('builds.py', builds), ('default.py', default_py)):
+        seg = src[src.find('OLED'):] if 'OLED' in src else ''
+        check('%s: no guisettings write in the OLED path' % name,
+              "open(guisettings_path, 'w'" not in src)
+
+    # types must match what Kodi expects, or SetSettingValue rejects the call.
+    # Slice the table by LINES: a regex up to the first ")\n" stopped early on
+    # the trailing comment "(int)" and silently checked only half the table.
+    _lines = oled.split(chr(10))
+    _a = next(i for i, l in enumerate(_lines) if l.startswith('OLED_SETTINGS'))
+    _b = next(i for i in range(_a, len(_lines)) if _lines[i].rstrip() == ')')
+    body = chr(10).join(_lines[_a:_b + 1])
+    check('OLED_SETTINGS table found', bool(body))
+    if body:
+        check('screensaver.time sent as an int (not "1")',
+              "'screensaver.time', 1" in body)
+        check('booleans sent as real booleans',
+              "'screensaver.disableforaudio', False" in body
+              and "'screensaver.usedimonpause', True" in body)
+        check('black screensaver, not dim',
+              'screensaver.xbmc.builtin.black' in body)
+
+
 def test_no_comments_in_addon_settings():
     """A shipped addon settings.xml must contain NO XML comments.
 
@@ -1613,6 +1717,8 @@ def main():
               test_pov_publishes_player_release,
               test_menu_bundle_never_laid_on_pov,
               test_menu_bundle_never_overwrites_a_healthy_menu,
+              test_hebrew_title_quality_classification,
+              test_oled_uses_settings_api,
               test_no_comments_in_addon_settings,
               test_pov_placeholder_scrub,
               test_no_invalid_tmdb_widgets,
