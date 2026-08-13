@@ -69,6 +69,13 @@ jobs:
         # a real user-visible error on the Shield 2026-08-04.
         run: python tools/check_tmdb_widgets.py
 
+      - name: Check for known-dangerous patterns
+        # Each check maps to an incident: writing a Kodi settings file while
+        # Kodi runs (broke OLED on every install), XML comments in a shipped
+        # settings file (crash-looped the fleet), and setting matchers that
+        # ignore attributes (silently lost the skip_intro flip).
+        run: python tools/check_forbidden_patterns.py --strict
+
       - name: Verify content-variant invariants
         # POV mode validity, no Gears contamination/labels, trending, pov/ seeds,
         # view coverage -- fails the build on any regression of a known bug class.
