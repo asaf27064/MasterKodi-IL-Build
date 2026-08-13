@@ -10,7 +10,7 @@ update-before-removal ordering (removals must be skipped when an update fails).
 
 Run:  python tools/tests/run_tests.py
 """
-import os, sys, tempfile, shutil, sqlite3, struct, zipfile
+import io, os, sys, tempfile, shutil, sqlite3, struct, zipfile
 
 # Test names carry Hebrew (the UI strings they assert on). The GitHub Windows
 # runner's console is cp1252, so printing one raised
@@ -932,55 +932,165 @@ def test_menu_bundle_never_overwrites_a_healthy_menu():
         _sh.rmtree(os.path.join(mu.ADDONS_PATH, ZEPHYR), ignore_errors=True)
 
 
+class _KodiStub(object):
+    """Stands in for anything Kodi-side a scraper module touches on import."""
+    def __call__(self, *a, **k): return self
+    def __getattr__(self, _): return self
+    def __iter__(self): return iter(())
+    def __bool__(self): return False
+    def __mro_entries__(self, bases): return (object,)   # they subclass Thread
+
+
+class _StubGlobals(dict):
+    def __missing__(self, key):
+        import builtins
+        if hasattr(builtins, key): raise KeyError(key)
+        return _KodiStub()
+
+
+def _load_classifier(*parts):
+    """Execute a shipped source_utils WHOLE, with its Kodi imports neutralised.
+
+    The previous version sliced named functions out of the file, which stops
+    covering anything that later moves into a helper -- exactly what happened
+    when the strip logic became strip_meta_token."""
+    import re as _re, builtins
+    path = os.path.join(REPO, *parts)
+    body = []
+    for line in io.open(path, encoding='utf-8').read().split(chr(10)):
+        s = line.strip()
+        if s.startswith(('import ', 'from ')) and s != 'import re':
+            body.append(line[:len(line) - len(line.lstrip())] + 'pass')
+        else:
+            body.append(line)
+    g = _StubGlobals({'re': _re, '__file__': path, '__name__': 'cls_probe',
+                      '__builtins__': builtins})
+    exec(compile(chr(10).join(body), path, 'exec'), g)
+    return g
+
+
 def test_hebrew_title_quality_classification():
-    """A Hebrew meta title must not destroy POV's resolution detection.
+    """Every source must be labelled with the resolution its NAME states.
 
-    We ship meta_language=he, so POV hands info_from_name a Hebrew title. Its
-    `re.sub(r'[^a-z0-9]+', '.', title)` reduces that to nothing but DOTS, and
-    `release_title.replace(title, '')` then strips EVERY dot from the release
-    name. POV's resolution patterns are word-boundary anchored, so with no
-    separators nothing matched and every single-episode result was classified
-    SD -- 4K rows displayed as SD with N/A extra info (Asaf, 2026-08-13).
-    Season packs escaped it, which is why it looked provider-specific.
+    Three separate defects put 4K/1080p rows in the SD column, all measured on
+    the box:
 
-    Runs POV's REAL functions out of the shipped overlay file."""
-    print("\n=== POV: hebrew meta title must not break quality detection ===")
-    import re as _re
-    src = open(os.path.join(
-        REPO, 'overlays', 'plugin.video.pov', 'files', 'resources', 'lib',
-        'magneto', 'modules', 'source_utils.py'), encoding='utf-8').read()
-    parts = []
-    for fn in ('COMPILED_RESOLUTIONS', 'def get_qual', 'def get_release_quality',
-               'def info_from_name'):
-        i = src.index(fn)
-        j = src.index('\ndef ', i + 5)
-        parts.append(src[i:j])
-    ns = {'re': _re, 'log_utils_error': lambda *a: None}
-    exec('\n'.join(parts), ns)
-    info_from_name, get_release_quality = ns['info_from_name'], ns['get_release_quality']
+      1. a Hebrew meta title normalises to nothing but DOTS, and
+         release_title.replace(title, '') then stripped EVERY dot from the
+         release name. The resolution patterns are word-boundary anchored, so
+         with no separators nothing matched -- 4K rows shown as SD with N/A
+         extra info (Reacher, 2026-08-13). Season packs escaped it, which is
+         why it first looked provider-specific.
+      2. an episode with no Hebrew name arrives as its NUMBER, so stripping
+         episode 1 ('.1.') turned '.1080p.' into '.080p.'. That is The Ark
+         S03E01: its 1080p rows were SD while its 720p rows were correct --
+         '.720p.' happens not to contain '.1.' -- and S03E02 was fine
+         throughout (2026-08-14).
+      3. the tables never knew 1080i, hd1080, m1080p, fullhd, 1920x1080, 720i,
+         hd720, 1280x720, 8K/4320p or 1440p/2K, so all of those were SD.
 
-    HEB = "ריצ'ר"
+    Runs the REAL shipped modules, all three of them: magneto builds name_info,
+    POV's lib/modules table turns it into the on-screen label (get_file_info,
+    called from modules/sources.py for every source), and Gears does the same
+    job in the other engine."""
+    print("\n=== quality: release name -> resolution label (3 classifiers) ===")
+    MAG = _load_classifier('addons', 'plugin.video.pov', 'resources', 'lib',
+                           'magneto', 'modules', 'source_utils.py')
+    POVSU = _load_classifier('addons', 'plugin.video.pov', 'resources', 'lib',
+                             'modules', 'source_utils.py')
+    GEARSSU = _load_classifier('addons', 'plugin.video.gears', 'resources',
+                               'lib', 'modules', 'source_utils.py')
+    info_from_name = MAG['info_from_name']
+
+    def label(release, title, ep_title, hdlr, year):
+        """The real path: magneto normalises, POV's display table classifies."""
+        ni = info_from_name(release, title, year, hdlr, ep_title)
+        return POVSU['get_release_quality'](ni), ni
+
+    HEB = "\u05e8\u05d9\u05e6'\u05e8"          # Reacher, as meta_language=he delivers it
     cases = [
         ('2160p single episode', 'Reacher S04E01 2160p AMZN WEB DL DD 5 1 ATMOS DV HDR10 H 265', '4K'),
         ('1080p single episode', 'Reacher S04E01 MULTI VF2 1080p WEB EAC3 5 1 H264 FRQC MKV', '1080p'),
         ('720p single episode',  'Reacher S04E01 MULTI 720p AMZN WEB DL H264 DDP5 1 ATMOS', '720p'),
         ('genuine SD stays SD',  'Reacher S04E01 DVDRip XviD AC3', 'SD'),
     ]
-    for label, name, want in cases:
-        ni = info_from_name(name, HEB, '2026', 'S04E01', 'City of Brotherly Love')
-        got = get_release_quality(ni, 'magnet:?xt=urn:btih:d')[0]
-        check('hebrew title: %s -> %s' % (label, want), got == want)
+    for lbl, name, want in cases:
+        got, _ = label(name, HEB, 'City of Brotherly Love', 'S04E01', '2026')
+        check('hebrew title: %s -> %s' % (lbl, want), got == want)
+    for lbl, name, want in cases:
+        got, _ = label(name, 'Reacher', 'City of Brotherly Love', 'S04E01', '2026')
+        check('english title: %s -> %s' % (lbl, want), got == want)
 
-    # english titles must be untouched by the guard
-    for label, name, want in cases:
-        ni = info_from_name(name, 'Reacher', '2026', 'S04E01', 'City of Brotherly Love')
-        got = get_release_quality(ni, 'magnet:?xt=urn:btih:d')[0]
-        check('english title: %s -> %s' % (label, want), got == want)
-
-    # the separators themselves must survive, since extra-info parsing needs them
-    ni = info_from_name('Reacher S04E01 2160p AMZN WEB DL ATMOS', HEB, '2026',
-                        'S04E01', 'City of Brotherly Love')
+    _, ni = label('Reacher S04E01 2160p AMZN WEB DL ATMOS', HEB,
+                  'City of Brotherly Love', 'S04E01', '2026')
     check('dots preserved for a hebrew title', '.2160p.' in ni)
+
+    # --- The Ark S03E01: the REAL names from kodi.log, every one shown as SD --
+    ARK = [
+        ('The.Ark.S03E01.1080p.WEB.h264-BAE.mkv', '1080p'),
+        ('The.Ark.S03E01.1080p.x265-ELiTE.mkv', '1080p'),
+        ('The.Ark.S03E01.I.Told.You.Not.To.Come.1080p.WEBRip.10Bit.DDP5.1.x265-NeoNoir.mkv', '1080p'),
+        ('The.Ark.2023.S03E01.1080p.10bit.WEBRip.6CH.x265.HEVC-PSA.mkv', '1080p'),
+        ('The.Ark.S03E01.1080p.HEVC.x265-MeGusta[EZTVx.to].mkv', '1080p'),
+        ('The.Ark.S03E01.720p.x264-FENiX.mkv', '720p'),
+        ('The.Ark.2023.S03E01.720p.10bit.WEBRip.2CH.x265.HEVC-PSA.mkv', '720p'),
+    ]
+    ARK_HEB = '\u05d4\u05ea\u05d9\u05d1\u05d4'
+    ok = True
+    for name, want in ARK:
+        got, ni = label(name, ARK_HEB, '1', 'S03E01', '2023')
+        if got != want:
+            ok = False
+            print('       %s -> %s (name_info=%s)' % (name, got, ni))
+    check('the ark s03e01: numeric episode title does not eat the resolution', ok)
+
+    ok = True
+    for ep in range(1, 31):
+        got, ni = label('The.Ark.S03E%02d.1080p.WEB.h264-BAE.mkv' % ep,
+                        ARK_HEB, str(ep), 'S03E%02d' % ep, '2023')
+        if got != '1080p':
+            ok = False
+            print('       episode %d -> %s (name_info=%s)' % (ep, got, ni))
+    check('every episode number 1-30 keeps its 1080p label', ok)
+
+    # --- the vocabulary itself, on all three classifiers ---------------------
+    # 1440p/2K map down to 1080p and 8K/4320p up to 4K on purpose: the source
+    # panel and the quality filters switch on '4K'/'1080p'/'720p'/'SD', so a new
+    # tier would drop out of the panel instead of showing as its own row.
+    VOCAB = [
+        ('.the.show.2160p.web.dl.', '4K'), ('.the.show.4k.uhd.bluray.', '4K'),
+        ('.the.show.hd2160.x265.', '4K'), ('.the.show.3840x2160.hdr.', '4K'),
+        ('.the.show.4320p.remux.', '4K'),
+        ('.the.show.1080p.web.', '1080p'), ('.the.show.1080i.hdtv.', '1080p'),
+        ('.the.show.hd1080.x264.', '1080p'), ('.the.show.fullhd.web.dl.', '1080p'),
+        ('.the.show.full.hd.web.dl.', '1080p'), ('.the.show.1920x1080.x264.', '1080p'),
+        ('.the.show.m1080p.bluray.', '1080p'), ('.the.show.1440p.web.', '1080p'),
+        ('.the.show.720p.web.', '720p'), ('.the.show.720i.hdtv.', '720p'),
+        ('.the.show.hd720.x264.', '720p'), ('.the.show.1280x720.x264.', '720p'),
+        ('.the.show.480p.dvdrip.', 'SD'), ('.the.show.xvid.dvdrip.', 'SD'),
+    ]
+    engines = (
+        ('pov display', lambda n: POVSU['get_release_quality'](n)),
+        ('pov magneto', lambda n: MAG['get_release_quality'](n)[0]),
+        ('gears', lambda n: GEARSSU['get_release_quality'](n) or 'SD'),
+    )
+    for eng_name, fn in engines:
+        bad = [(n, want, fn(n)) for n, want in VOCAB if fn(n) != want]
+        for n, want, got in bad:
+            print('       %-30s want %-6s got %s' % (n, want, got))
+        check('%s: every real resolution label recognised' % eng_name, not bad)
+
+    drift = [n for n, _ in VOCAB
+             if len({POVSU['get_release_quality'](n),
+                     MAG['get_release_quality'](n)[0],
+                     GEARSSU['get_release_quality'](n) or 'SD'}) > 1]
+    check('all three tables agree (they are maintained as one list)', not drift)
+
+    # get_qual used to return a hard 'SD', so `get_qual(info) or get_qual(link)`
+    # could never reach the link -- name_info is always non-empty.
+    check('url is consulted when the name carries no resolution',
+          MAG['get_release_quality']('.some.release.x265.',
+                                     'http://h/movie.2160p.web.dl.mkv')[0] == '4K')
 
 
 def test_oled_uses_settings_api():

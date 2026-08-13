@@ -153,6 +153,29 @@ def check_attribute_blind_setting_edits(findings):
 # xml staging, and the migration).
 
 
+def check_control_bytes(findings):
+    """A stray control byte in shipped source is always a corrupted escape.
+
+    Writing a regex through a shell heredoc collapses every '\\b' into a literal
+    0x08 BACKSPACE, so '(?:\\b|_)' silently becomes "match an actual backspace"
+    and the pattern stops matching anything. It has happened twice in POV's
+    source_utils.py -- once in a comment (harmless, but it made an exact-string
+    edit impossible) and once in the resolution table itself, which turned every
+    row SD (2026-08-14). Python compiles both perfectly, so nothing else catches
+    it. Build regex text with chr(92) and never let a shell touch it.
+    """
+    BAD = dict.fromkeys([0, 8, 11, 12, 27], True)      # NUL, BS, VT, FF, ESC
+    for p in _our_files():
+        raw = io.open(p, 'rb').read()
+        hits = sorted(b for b in BAD if bytes([b]) in raw)
+        if hits:
+            line = raw[:raw.index(bytes([hits[0]]))].count(b'\n') + 1
+            findings.append((
+                'control-byte', '%s:%d' % (_rel(p), line),
+                'stray control byte(s) %s -- a collapsed escape, not valid source'
+                % ', '.join('0x%02x' % b for b in hits), True))
+
+
 def check_bare_except_pass(findings):
     """Bare except: pass in OUR overlay code hides exactly these failures."""
     for p in _our_files():
@@ -173,6 +196,7 @@ def main():
     check_settings_file_writes(findings)
     check_xml_comments_in_shipped_settings(findings)
     check_attribute_blind_setting_edits(findings)
+    check_control_bytes(findings)
     check_bare_except_pass(findings)
 
     hard = [f for f in findings if f[3]]

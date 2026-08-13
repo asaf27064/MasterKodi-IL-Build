@@ -95,21 +95,48 @@ def remove_lang(release_info, check_foreign_audio):
 		log_utils_error()
 		return False
 
+########### KODIRDIL - canonical resolution table ###########
+# magneto shipped a much thinner list than POV's own lib/modules/source_utils.py,
+# so perfectly ordinary labels fell through to SD: 1080i, hd1080, m1080p,
+# fullhd, 1920x1080, 720i, hd720 -- plus the 8K/1440p forms that NEITHER table
+# knew. This list is kept identical to the one in lib/modules.
+#
+# 4320p IS 8K (7680x4320), not 4K, and 1440p/2K is not 1080p. POV has no
+# tier for either: quality_ranks, the quality filter and the source-count
+# panel only know 4K / 1080p / 720p / SD. So each is folded into the nearest
+# bucket -- 8K up into 4K, 1440p/2K down into 1080p -- exactly as POV's own
+# quality_map already folds 1440p into 1080p and HD into 720p. Inventing an
+# '8K' label instead would sort it LAST (quality_ranks would miss it), drop
+# it from the panel count, and exclude it from the 4K filter.
 COMPILED_RESOLUTIONS = {k: re.compile(v, re.I) for k, v in {
-	'4K': r'\b(2160p?|216o|4k|ultrahd|ultra\.hd|uhd)\b',
-	'1080p': r'\b(1080p?|1o8o|108o|1o80|fhd)\b',
-	'720p': r'\b(720p?|72o)\b(?!mb)',
+	'4K': r'(?:\b|_)(4320p|8k|2160p?|216op?|4k|hd4k|4khd|uhd|ultrahd|ultra\.hd|hd2160|2160hd|3840x2160|4096x2160)(?:\b|_)',
+	'1080p': r'(?:\b|_)(1080[pi]?|1o8o|1o8op|108o|108op|1o80|1o80p|hd1080p?|1080hd|m1080p|fullhd|full\.hd|fhd|1440p|2k|qhd|1920x1080)(?:\b|_)',
+	'720p': r'(?:\b|_)(720[pi]?|72o|72op|hd720p?|720hd|1280x720)(?:\b|_)(?!mb)',
 	'SCR': r'\b(dvdscr|screener|\.scr\.|r5|r6)\b',
 	'CAM': r'\b(cam|camrip|dvdcam|dvdts|hdcam|hctc|hdtc|hdts|hqcam|ts|tc|tsrip|telecine|telesync)\b'
 }.items()}
+
+################################################################
+
+########### KODIRDIL - '.hd.' must not match an AUDIO tag ###########
+# '.dts.hd.ma.' contains '.hd.', so a 480p DVDRip with DTS-HD audio and no
+# resolution in its name was labelled 720p -- and POV's display table, which
+# has no such fallback, called the same release SD. A bare '.HD.' still means
+# 720p; DTS-HD / TrueHD / DD-HD / HD-MA do not.
+AUDIO_HD = re.compile(r'(dts|true|dolby|dd)\.hd\.|\.hd\.(ma|audio)\b')
 
 def get_qual(term):
 	if not term: return None
 	term_lower = term.lower()
 	for quality, pattern in COMPILED_RESOLUTIONS.items():
 		if pattern.search(term_lower): return quality
-	if '.hd.' in term_lower: return '720p'
-	return 'SD'
+	if '.hd.' in term_lower and not AUDIO_HD.search(term_lower): return '720p'
+	########### KODIRDIL - return None, not 'SD' ###########
+	# get_release_quality reads `get_qual(info) or get_qual(link) or 'SD'`, so
+	# a hard 'SD' here meant the URL fallback could NEVER run -- name_info is
+	# always non-empty. A release whose name carries no resolution but whose
+	# link does was labelled SD for that reason alone.
+	return None
 
 def get_release_quality(release_info, release_link=None):
 	try:
@@ -368,36 +395,47 @@ def filter_show_pack(show_title, aliases, imdb, year, season, release_title, tot
 	except:
 		log_utils_error()
 
+########### KODIRDIL - safe metadata strip ###########
+def strip_meta_token(name_info, value):
+	"""Remove a title / episode title from a normalised release name -- but only
+	when removing it cannot corrupt the technical tags around it.
+
+	Upstream does a bare str.replace, which is only safe for English metadata.
+	We ship meta_language=he, so two values reach here that upstream never sees:
+
+	  * a Hebrew title normalises to nothing but DOTS, and replacing that strips
+	    EVERY separator ('.2160p.amzn.web.dl.' -> '2160pamznwebdl'), leaving the
+	    word-anchored resolution patterns nothing to match
+	  * an episode with no Hebrew name arrives as its NUMBER, so episode 1
+	    normalises to '.1.' and replacing it turns '.1080p.' into '.080p.'
+
+	Both showed 4K/1080p rows as SD -- the first on Reacher (2026-08-13), the
+	second on The Ark S03E01, where the 720p rows stayed correct only because
+	'.720p.' happens not to contain '.1.' (2026-08-14).
+
+	So the rule is: strip only a value with at least 3 alphanumerics, and only as
+	a WHOLE dot-delimited run, never mid-token. Latin metadata behaves exactly as
+	before; a Hebrew title or a bare episode number is skipped, which costs
+	nothing since neither ever appears in a scene release name.
+	"""
+	token = value.strip('.')
+	if len(re.sub(r'[^a-z0-9]+', '', token)) < 3: return name_info
+	return ('.%s.' % name_info.strip('.')).replace('.%s.' % token, '.').strip('.')
+################################################################
+
 def info_from_name(release_title, title, year, hdlr=None, episode_title=None, season=None, pack=None):
 	try:
 		release_title = release_title.lower().replace('&', 'and').replace("'", "")
 		release_title = re.sub(r'[^a-z0-9]+', '.', release_title)
 		title = title.lower().replace('&', 'and').replace("'", "")
 		title = re.sub(r'[^a-z0-9]+', '.', title)
-		########### KODIRDIL - do not strip a NON-LATIN title ###########
-		# We ship meta_language=he, so `title` arrives in Hebrew. The [^a-z0-9]
-		# normalisation above turns a Hebrew title into nothing but DOTS, and
-		# replacing that removes EVERY dot from the release name:
-		#   '.2160p.amzn.web.dl...'  ->  'reacher2160pamznwebdl...'
-		# The resolution patterns are -anchored, so with no dots nothing
-		# matched and every single-episode result was classified SD (4K/1080p
-		# rows shown as SD, extra info as N/A -- Asaf 2026-08-13). A Hebrew
-		# title never appears in a scene release name anyway, so skipping the
-		# strip is a no-op for correctness and restores the separators.
-		# Same guard for episode_title below.
-		if title.strip('.'):
-			name_info = release_title.replace(title, '')
-		else:
-			name_info = release_title
+		name_info = strip_meta_token(release_title, title)
 		name_info = name_info.replace(year, '')
-		##################################################################
 		if hdlr: name_info = name_info.replace(hdlr.lower(), '')
 		if episode_title:
 			episode_title = episode_title.lower().replace('&', 'and').replace("'", "")
 			episode_title = re.sub(r'[^a-z0-9]+', '.', episode_title)
-			########### KODIRDIL - same non-Latin guard as the title above ###########
-			if episode_title.strip('.'):
-				name_info = name_info.replace(episode_title, '')
+			name_info = strip_meta_token(name_info, episode_title)
 		if pack:
 			if pack == 'season':
 				season_fill = season.zfill(2)
