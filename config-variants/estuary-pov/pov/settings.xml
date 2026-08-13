@@ -6,14 +6,14 @@
     <setting id="debug.location" default="true">0</setting>
     <setting id="provider.bitsearch" default="true">false</setting>
     <setting id="provider.nyaa" default="true">false</setting>
-    <setting id="provider.piratebay">true</setting>
+    <setting id="provider.piratebay">false</setting>
     <setting id="provider.torrentdownload" default="true">false</setting>
     <setting id="provider.torrentio">true</setting>
     <setting id="provider.torrentsdb" default="true">false</setting>
     <setting id="provider.bitmagnet" default="true">false</setting>
-    <setting id="provider.comet" default="true">false</setting>
+    <setting id="provider.comet" default="true">true</setting>
     <setting id="comet.url" default="true">0</setting>
-    <setting id="provider.mediafusion" default="true">false</setting>
+    <setting id="provider.mediafusion" default="true">true</setting>
     <setting id="provider.torz">true</setting>
     <setting id="torz.url" default="true">0</setting>
     <setting id="provider.zilean" default="true">false</setting>
