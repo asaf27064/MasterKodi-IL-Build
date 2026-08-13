@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-13T14:25:05Z",
+  "generated_utc": "2026-08-13T16:19:29Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -45,20 +45,20 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.172",
+      "version": "2.4.174",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.172.zip",
-      "sha256": "9922c87a055ce6450f2600e4f0d65f0e8c20d5560f3428af2bfdcc1080f02aa2",
-      "size": 5366559,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.172.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.174.zip",
+      "sha256": "b02696077b6a643516ac2947a3bcbc8034e1e8909d3e502f14e44feab4d79317",
+      "size": 5368555,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.174.zip"
     },
     {
       "id": "plugin.video.gears",
       "version": "2.4.0",
       "channel": "core",
       "zip": "plugin.video.gears-2.4.0.zip",
-      "sha256": "2f97ac58c16d2d05293b15b05a0307c28f38e7828e2e9380710fb39ab3361397",
-      "size": 8719954,
+      "sha256": "a8f608f2ee821435f77202b5cdafe59c011996403f3b9757b5d39e253155e948",
+      "size": 8720708,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.gears-2.4.0.zip",
       "content": "gears"
     },
@@ -67,8 +67,8 @@
       "version": "6.08.10",
       "channel": "optional",
       "zip": "plugin.video.pov-6.08.10.zip",
-      "sha256": "24d88dcfec03b18f7d884c8747502671da7633d3f56334f0a11f971cb281446a",
-      "size": 3619561,
+      "sha256": "3b938635db53c3d1bcecafcbaa16b2ffc78585c295b6a373b8045c3e1d49df6c",
+      "size": 3620831,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.pov-6.08.10.zip",
       "content": "pov"
     },
