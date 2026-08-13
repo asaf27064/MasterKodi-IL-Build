@@ -38,11 +38,10 @@
 	<setting id="provider.zilean" type="bool" label="Zilean" default="false" />
 </category>
 
-<category label="Prowlarr">
-    <setting label="Prowlarr" type="lsep" />
-    <setting id="provider.prowlarr" type="bool" label="PROWLARR" default="false" />
-        <setting id="prowlarr.token" type="text" label="PROWLARR apikey" subsetting="true" default="" visible="eq(-1,true)" />
-        <setting id="prowlarr.url" type="text" label="PROWLARR url" subsetting="true" default="" visible="eq(-2,true)" />
+<category label="Anime Providers">
+    <setting id="provider.nyaa" type="bool" label="Nyaa" default="false" />
+	<setting id="provider.animetosho" type="bool" label="AnimeTosho" default="true" />
+	<setting id="provider.nnmclub" type="bool" label="Nnmclub" default="true" />
 </category>
 
 <category label="Starfleet-Ported Providers">
@@ -61,7 +60,13 @@
     <setting id="provider.kontrast" type="bool" label="KONTRAST" default="true" />
     <setting id="provider.torrentscsv" type="bool" label="TorrentsCSV" default="true" />
     <setting id="provider.btdig" type="bool" label="BitDig" default="true" />
-    <setting id="provider.animetosho" type="bool" label="AnimeTosho" default="true" />
+</category>
+
+<category label="Prowlarr">
+    <setting label="Prowlarr" type="lsep" />
+    <setting id="provider.prowlarr" type="bool" label="PROWLARR" default="false" />
+        <setting id="prowlarr.token" type="text" label="PROWLARR apikey" subsetting="true" default="" visible="eq(-1,true)" />
+        <setting id="prowlarr.url" type="text" label="PROWLARR url" subsetting="true" default="" visible="eq(-2,true)" />
 </category>
 
 <category label="Filters">
