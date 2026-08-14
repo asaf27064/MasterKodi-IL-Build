@@ -956,6 +956,19 @@ def _load_classifier(*parts):
     when the strip logic became strip_meta_token."""
     import re as _re, builtins
     path = os.path.join(REPO, *parts)
+    # addons/plugin.video.gears/ is GITIGNORED -- the mirror is assembled at
+    # build time from the clean base zip + our overlay. It exists on a dev box
+    # but not on a fresh CI checkout, and the APK/EXE workflows run the tests
+    # BEFORE applying overlays, so this test passed locally and failed there
+    # (2026-08-14). Fall back to the overlay copy, which IS committed;
+    # verify_overlay_merge.py already proves the two are identical.
+    if not os.path.exists(path) and parts[0] == 'addons':
+        alt = os.path.join(REPO, 'overlays', parts[1], 'files', *parts[2:])
+        if os.path.exists(alt):
+            path = alt
+    if not os.path.exists(path):
+        raise AssertionError('classifier not found in the mirror or the overlay: %s'
+                             % os.path.join(*parts))
     body = []
     for line in io.open(path, encoding='utf-8').read().split(chr(10)):
         s = line.strip()
