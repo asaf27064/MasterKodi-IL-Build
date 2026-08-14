@@ -1,7 +1,7 @@
 
 import zipfile
 import xbmcvfs
-import os,gzip,shutil
+import os,gzip,shutil,re
 from resources.modules import log
 # Priority order: prefer TEXT subs (.srt/.ass/.str/.sub) so Kodi renders them
 # crisp with the user's configured font. Image-based VobSub/PGS (.idx/.sup) are
@@ -90,6 +90,55 @@ def _pick_best(MySubFolder):
     return None
 
 
+def _looks_like_text_subtitle(raw):
+    """Does this payload actually contain subtitle timing?
+
+    SubRip/WebVTT use '-->', SSA/ASS carry a [Script Info] header or Dialogue:
+    lines, MicroDVD uses {start}{end}. Anything else -- an HTML error page, a
+    JSON error, a truncated download -- is not a subtitle, however it is named.
+    """
+    head = raw[:200000]
+    if b'-->' in head or b'[Script Info]' in head or b'Dialogue:' in head:
+        return True
+    return bool(re.search(br'\{\d+\}\{\d+\}', head))
+
+
+def _passthrough(archive_file):
+    """Hand back a download that is NOT an archive -- carefully.
+
+    Ktuvit serves plain .srt, so this is its NORMAL path, not an edge case. It
+    used to return the file untouched, which skipped the convert_to_utf() the
+    zip path performs. Ktuvit's files are cp1255 (windows-1255), so Kodi
+    received a non-UTF-8 subtitle: the track loads and is selectable, and
+    NOTHING renders (Asaf 2026-08-14, reproduced against the live site -- 5/5
+    downloads were cp1255). It only appeared to work because the unrelated
+    'auto_fix_sub_punctuation' feature happens to run chardet and rewrite the
+    file as UTF-8; with that setting off, or chardet unsure, the subtitle is
+    silently blank.
+
+    So: convert the encoding here too, and refuse a payload that is not a
+    subtitle at all instead of reporting a successful download. Binary
+    image-based subs are passed through untouched -- text-converting those
+    corrupts them, which is the same rule _pick_best already follows.
+    """
+    ext = os.path.splitext(archive_file)[1].lower()
+    if ext in ('.idx', '.sup') or (ext == '.sub' and _has_idx_sibling(
+            os.listdir(os.path.dirname(archive_file) or '.'), os.path.basename(archive_file))):
+        return archive_file                     # VobSub/PGS bitmaps: never touch
+    try:
+        with open(archive_file, 'rb') as fh:
+            raw = fh.read()
+    except Exception as e:
+        log.warning('Passthrough read failed: %s' % e)
+        return archive_file                     # unreadable here -> old behaviour
+    if not raw or not _looks_like_text_subtitle(raw):
+        log.warning('Passthrough: not a subtitle (%d bytes, starts %r) -> failing'
+                    % (len(raw), raw[:24]))
+        return '0'                              # honest failure, not a blank sub
+    convert_to_utf(archive_file)                # the zip path does this too
+    return archive_file
+
+
 def extract(archive_file, MySubFolder):
     try:
         with zipfile.ZipFile(archive_file, 'r') as zip_ref:
@@ -99,7 +148,7 @@ def extract(archive_file, MySubFolder):
         return picked if picked else '0'
     except Exception as e:
         log.warning('Error Extract:' + str(e))
-        return archive_file
+        return _passthrough(archive_file)
 
 
 def g_extract(archive_file, dest, MySubFolder):

@@ -1671,6 +1671,117 @@ def test_log_upload_loses_nothing():
           logs.CF_MAX_BYTES < 2 * 1024 * 1024)
 
 
+def test_subtitle_passthrough_is_utf8_and_real():
+    """A download that is not an archive must still be normalised and checked.
+
+    Ktuvit serves plain .srt, so extract()'s non-zip branch is its NORMAL path.
+    It used to return the file untouched, skipping the convert_to_utf() the zip
+    path performs -- and Ktuvit's files are cp1255. Kodi then held a subtitle
+    track that was selectable and blank. Reproduced against the live site on
+    2026-08-14: 5 of 5 Ktuvit downloads were non-UTF-8, while 5 of 5
+    OpenSubtitles downloads (gzip -> extracted -> converted) were clean.
+
+    It only ever appeared to work because 'auto_fix_sub_punctuation' runs
+    chardet and rewrites the file; correctness must not depend on an unrelated
+    cosmetic setting.
+
+    The cases below include everything that ALREADY worked, so the fix cannot
+    quietly narrow it."""
+    print("\n=== subtitles: a non-archive download is converted and validated ===")
+    sys.path.insert(0, os.path.join(REPO, 'addons', 'service.subtitles.gearsai'))
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        'mk_extract_sub', os.path.join(REPO, 'addons', 'service.subtitles.gearsai',
+                                       'resources', 'modules', 'extract_sub.py'))
+    es = importlib.util.module_from_spec(spec)
+    import types as _t
+    fake_log = _t.ModuleType('log')
+    fake_log.warning = lambda *a, **k: None
+    fake_log.info = fake_log.error = fake_log.warning
+    pkg = sys.modules.setdefault('resources', _t.ModuleType('resources'))
+    mods = sys.modules.setdefault('resources.modules', _t.ModuleType('resources.modules'))
+    mods.log = fake_log
+    sys.modules['resources.modules.log'] = fake_log
+    spec.loader.exec_module(es)
+
+    work = os.path.join(HOME, 'subx')
+    shutil.rmtree(work, ignore_errors=True)
+    os.makedirs(work, exist_ok=True)
+
+    SRT = ('1\n00:00:01,000 --> 00:00:03,000\n%s\n\n'
+           '2\n00:00:04,000 --> 00:00:06,000\n%s\n')
+    HEB = 'שלום עולם'
+
+    def put(name, data):
+        p = os.path.join(work, name)
+        with open(p, 'wb') as fh:
+            fh.write(data)
+        return p
+
+    def utf8_ok(p):
+        with open(p, 'rb') as fh:
+            raw = fh.read()
+        try:
+            raw.decode('utf-8')
+            return True
+        except UnicodeDecodeError:
+            return False
+
+    # 1. THE BUG: a cp1255 Hebrew srt, exactly what Ktuvit serves
+    p = put('ktuvit.srt', (SRT % (HEB, HEB)).encode('cp1255'))
+    got = es.extract(p, work)
+    check('cp1255 srt is accepted', got == p)
+    check('...and converted to UTF-8 (was the blank-subtitle bug)', utf8_ok(p))
+    with open(p, encoding='utf-8') as fh:
+        check('...with the Hebrew text intact', HEB in fh.read())
+
+    # 2. MUST NOT REGRESS: an already-UTF-8 srt stays byte-identical
+    data = (SRT % (HEB, HEB)).encode('utf-8')
+    p = put('already.srt', data)
+    got = es.extract(p, work)
+    with open(p, 'rb') as fh:
+        after = fh.read()
+    check('an already-UTF-8 srt is returned', got == p)
+    check('...and left byte-identical', after == data)
+
+    # 3. MUST NOT REGRESS: a real zip still goes through the zip path
+    import zipfile as _zip
+    zp = os.path.join(work, 'bundle.zip')
+    with _zip.ZipFile(zp, 'w') as z:
+        z.writestr('movie.srt', SRT % (HEB, HEB))
+    got = es.extract(zp, work)
+    check('a zip still extracts via the zip path',
+          bool(got) and got != '0' and got.lower().endswith('.srt'))
+
+    # 4. THE OTHER HALF: payloads that are NOT subtitles must fail honestly
+    for name, blob, why in (
+            ('error.srt', b'<!DOCTYPE html><html><body>Error 500</body></html>',
+             'an HTML error page'),
+            ('error2.srt', b'{"error":"quota exceeded"}', 'a JSON error'),
+            ('empty.srt', b'', 'an empty file'),
+            ('junk.rar', b'Rar!\x1a\x07\x00' + b'\x00' * 200, 'a rar we cannot open')):
+        p = put(name, blob)
+        check('%-22s -> honest failure, not a blank subtitle' % why,
+              es.extract(p, work) == '0')
+
+    # 5. MUST NOT REGRESS: other real subtitle formats still pass
+    p = put('micro.sub', b'{0}{75}Hello world|Second line\n')
+    check('MicroDVD .sub still accepted', es.extract(p, work) == p)
+    p = put('styled.ass', ('[Script Info]\nTitle: x\n\n[Events]\n'
+                           'Dialogue: 0,0:00:01.00,0:00:03.00,Default,,0,0,0,,%s\n'
+                           % HEB).encode('utf-8'))
+    check('ASS/SSA still accepted', es.extract(p, work) == p)
+
+    # 6. MUST NOT REGRESS: image-based subs are passed through untouched
+    put('vob.idx', b'# VobSub index\ntimestamp: 00:00:01:000\n')
+    binary = b'\x00\x01\x02\x03' * 64
+    p = put('vob.sub', binary)
+    got = es.extract(p, work)
+    with open(p, 'rb') as fh:
+        check('VobSub .sub passed through and NOT text-converted',
+              got == p and fh.read() == binary)
+
+
 def test_no_comments_in_addon_settings():
     """A shipped addon settings.xml must contain NO XML comments.
 
@@ -2358,6 +2469,7 @@ def main():
               test_font_picker_matches_the_shipped_pack,
               test_skip_pill_only_over_fullscreen_video,
               test_log_upload_loses_nothing,
+              test_subtitle_passthrough_is_utf8_and_real,
               test_no_comments_in_addon_settings,
               test_pov_placeholder_scrub,
               test_no_invalid_tmdb_widgets,
