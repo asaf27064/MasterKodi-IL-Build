@@ -1146,6 +1146,236 @@ def test_oled_uses_settings_api():
               'screensaver.xbmc.builtin.black' in body)
 
 
+def test_subtitle_font_choice_is_the_users():
+    """A config update must not overwrite the subtitle font the user picked.
+
+    'subtitles.fontname' sat in the guisettings force_ids from 2026-07-14, when
+    forcing was the only way to push the new font defaults out. force_ids means
+    `push = sid in force_ids or ...` -- an UNCONDITIONAL overwrite on EVERY
+    update. Once the GearsAI style panel shipped (1.0.40, Aug) that turned into
+    the build silently undoing the user's own choice, which is exactly what Asaf
+    hit ("the font/design changes by itself", 2026-08-14).
+
+    The policy's own _comment describes this lifecycle: "remove it once
+    propagated if you want user changes to stick again". This test holds it
+    removed, and holds the mechanism itself intact -- lookandfeel.font is still
+    forced (a wrong skin fontset means tofu on Android), our own default changes
+    still propagate via the baseline, and exclude_ids still win."""
+    print("\n=== config: the user's subtitle font survives an update ===")
+    import json, re
+    pol = json.load(open(os.path.join(REPO, 'config', 'config_policy.json'),
+                         encoding='utf-8'))
+    gui = next(e for e in pol['files'] if e['src'].endswith('userdata/guisettings.xml'))
+    forced = list(gui.get('force_ids', []))
+    excluded = list(gui.get('exclude_ids', []))
+
+    check('subtitles.fontname is NOT force-pushed', 'subtitles.fontname' not in forced)
+    check('lookandfeel.font is still forced (Android tofu guard)',
+          'lookandfeel.font' in forced)
+
+    def _xml(pairs):
+        rows = ''.join('    <setting id="%s">%s</setting>\n' % kv for kv in pairs)
+        return ('<settings version="2">\n' + rows + '</settings>\n')
+
+    def _read(path, sid):
+        txt = open(path, encoding='utf-8').read()
+        m = re.search(r'<setting id="%s"[^>]*>([^<]*)</setting>' % re.escape(sid), txt)
+        return m.group(1) if m else None
+
+    ship = [('subtitles.fontname', 'Rubik'), ('lookandfeel.font', 'Default'),
+            ('subtitles.fontsize', '52'), ('lookandfeel.skin', 'skin.estuary')]
+    tmp = os.path.join(HOME, 'fonttest')
+    os.makedirs(tmp, exist_ok=True)
+
+    def _run(tag, user_pairs, shipped=None):
+        """Deliver `shipped` onto a device holding `user_pairs`, twice: the first
+        call only records the baseline, the second is the update that matters."""
+        dest = os.path.join(tmp, tag + '.xml')
+        with open(dest, 'w', encoding='utf-8') as fh:
+            fh.write(_xml(user_pairs))
+        mu._seed_settings_xml(_xml(ship).encode('utf-8'), dest, excluded,
+                              forced, 'gui-' + tag)
+        mu._seed_settings_xml(_xml(shipped or ship).encode('utf-8'), dest,
+                              excluded, forced, 'gui-' + tag)
+        return dest
+
+    # 1. the user picked a different font -> ours must not come back
+    d = _run('userpick', [('subtitles.fontname', 'Google Sans'),
+                          ('lookandfeel.font', 'Default'),
+                          ('subtitles.fontsize', '64')])
+    check("user's subtitle font kept", _read(d, 'subtitles.fontname') == 'Google Sans')
+    check("user's subtitle size kept (never forced)",
+          _read(d, 'subtitles.fontsize') == '64')
+
+    # 2. the forced id still forces
+    d = _run('forced', [('subtitles.fontname', 'Rubik'),
+                        ('lookandfeel.font', 'SomeOtherFont')])
+    check('lookandfeel.font still overwritten by the build',
+          _read(d, 'lookandfeel.font') == 'Default')
+
+    # 3. when WE change the shipped default it must still reach the device,
+    #    otherwise removing the force would strand everyone on the old value
+    newship = [('subtitles.fontname', 'Assistant'), ('lookandfeel.font', 'Default'),
+               ('subtitles.fontsize', '52'), ('lookandfeel.skin', 'skin.estuary')]
+    d = _run('newdefault', [('subtitles.fontname', 'Rubik'),
+                            ('lookandfeel.font', 'Default')], shipped=newship)
+    check('a CHANGED shipped default still propagates',
+          _read(d, 'subtitles.fontname') == 'Assistant')
+
+    # 4. a device that has never heard of the setting still gets it
+    d = _run('absent', [('lookandfeel.font', 'Default')])
+    check('missing setting is still seeded', _read(d, 'subtitles.fontname') == 'Rubik')
+
+    # 5. exclude_ids keep winning -- the skin must never be swapped underneath
+    d = _run('excluded', [('lookandfeel.skin', 'skin.arctic.fuse.3'),
+                          ('lookandfeel.font', 'Default')])
+    check('excluded id untouched', _read(d, 'lookandfeel.skin') == 'skin.arctic.fuse.3')
+
+    # 6. and the addon-side rescue must stay narrow: every family it migrates
+    #    away from is one whose FILE the pack deletes, so it only ever fires for
+    #    a font that genuinely no longer exists.
+    sw = open(os.path.join(REPO, 'addons', 'service.subtitles.gearsai',
+                           'resources', 'modules', 'sub_window.py'),
+              encoding='utf-8').read()
+    # An internal family name does NOT match its filename ('NarkisTamKODI
+    # Light' ships in NarkisTamLightKodi.ttf; 'Assistant ExtraLight' was the
+    # broken internal name stamped on all three Assistant-*.ttf), so the link
+    # has to be stated rather than guessed. Adding a family to _FONT_MIGRATE
+    # without naming the file it came from fails this test -- which is the
+    # point: a migration whose file still exists would overwrite a valid choice.
+    PROVIDED_BY = {
+        'NarkisDVD': ('NarkisDVD.ttf',),
+        'NarkisTam Light': ('NarkisTamLight.ttf',),
+        'NarkisTamKODI Light': ('NarkisTamLightKodi.ttf', 'NTAMLI.ttf'),
+        'Assistant ExtraLight': ('Assistant-Regular.ttf', 'Assistant-Bold.ttf',
+                                 'Assistant-Light.ttf'),
+        'Alef': ('Alef.ttf',),
+        'Alef Bold': ('AlefBold.ttf',),
+        'IBM Plex Hebrew': ('IBMPlexHebrew.ttf',),
+        'IBM Plex Hebrew Bold': ('IBMPlexHebrewBold.ttf',),
+        'Secular One': ('SecularOne.ttf',),
+        'David Libre': ('DavidLibre.ttf',),
+    }
+    mig = re.search(r'_FONT_MIGRATE = \(([^)]*)\)', sw).group(1)
+    rem = re.search(r'_FONT_REMOVE = \(([^)]*)\)', sw).group(1)
+    fams = re.findall(r"'([^']+)'", mig)
+    files = set(re.findall(r"'([^']+)'", rem))
+
+    undocumented = [f for f in fams if f not in PROVIDED_BY]
+    check('every migrated family names the file it came from', not undocumented)
+    if undocumented:
+        print('       add these to PROVIDED_BY: %s' % undocumented)
+
+    still_there = [f for f in fams
+                   if f in PROVIDED_BY
+                   and not any(x in files for x in PROVIDED_BY[f])]
+    check('every migrated family is one the pack actually deletes '
+          '(so it never overrides a font that still exists)', not still_there)
+    if still_there:
+        print('       families whose file is NOT removed: %s' % still_there)
+
+    check('the migration target itself is never removed',
+          not any(v.startswith('Rubik') for v in files))
+
+
+def _ttf_family(path):
+    """nameID 1 (family) out of a TTF 'name' table.
+
+    This is the string Kodi stores in subtitles.fontname -- the FILENAME is
+    irrelevant to it, which is why 'NarkisTamKODI Light' lived in
+    NarkisTamLightKodi.ttf and why three different Assistant-*.ttf files all
+    announced themselves as 'Assistant ExtraLight'."""
+    with open(path, 'rb') as fh:
+        data = fh.read()
+    num = struct.unpack('>H', data[4:6])[0]
+    off = None
+    for i in range(num):
+        rec = 12 + i * 16
+        if data[rec:rec + 4] == b'name':
+            off = struct.unpack('>I', data[rec + 8:rec + 12])[0]
+            break
+    if off is None:
+        return None
+    count, str_off = struct.unpack('>HH', data[off + 2:off + 6])
+    for i in range(count):
+        r = off + 6 + i * 12
+        pid, eid, lid, nid, ln, o = struct.unpack('>HHHHHH', data[r:r + 12])
+        if nid != 1:
+            continue
+        raw = data[off + str_off + o: off + str_off + o + ln]
+        try:
+            return raw.decode('utf-16-be' if pid == 3 else 'latin-1')
+        except Exception:
+            return None
+    return None
+
+
+def test_font_picker_matches_the_shipped_pack():
+    """Every row the style panel offers must be a font we actually install.
+
+    The panel's list is a hand-written registry (_FONT_FAMILIES) while the fonts
+    are files in resources/fonts -- nothing tied the two together, so a row could
+    name a font that was never shipped (user picks it, Kodi silently falls back)
+    or a shipped weight could stay invisible. Both are only discoverable on a
+    device, because Kodi reads the family name out of the file, not the filename.
+
+    Also holds the invariant the whole migration rests on: a family we SHIP must
+    never appear in _FONT_MIGRATE, or the sync would reset a perfectly valid
+    choice."""
+    print("\n=== subtitle fonts: picker rows == shipped files ===")
+    base = os.path.join(REPO, 'addons', 'service.subtitles.gearsai')
+    fdir = os.path.join(base, 'resources', 'fonts')
+    sw = open(os.path.join(base, 'resources', 'modules', 'sub_window.py'),
+              encoding='utf-8').read()
+
+    files = [f for f in sorted(os.listdir(fdir))
+             if f.lower().endswith(('.ttf', '.otf'))]
+    check('the pack ships fonts', bool(files))
+
+    shipped, unreadable = {}, []
+    for f in files:
+        fam = _ttf_family(os.path.join(fdir, f))
+        if fam:
+            shipped[fam] = f
+        else:
+            unreadable.append(f)
+    check('every shipped font has a readable family name', not unreadable)
+    if unreadable:
+        print('       unreadable: %s' % unreadable)
+
+    import re as _re
+    reg = _re.search(r'_FONT_FAMILIES = \[(.*?)\n\]', sw, _re.S).group(1)
+    offered = [v for _lbl, v in _re.findall(r"\('([^']+)', '([^']+)'\)", reg)]
+
+    # Kodi/Windows supply these; we deliberately list them without shipping them
+    SYSTEM = {'DEFAULT', 'David', 'Tahoma', 'Arial'}
+
+    ghosts = [v for v in offered if v not in shipped and v not in SYSTEM]
+    check('no picker row names a font we do not ship', not ghosts)
+    if ghosts:
+        print('       offered but not shipped: %s' % ghosts)
+
+    hidden = [fam for fam in sorted(shipped) if fam not in offered]
+    check('no shipped font is missing from the picker', not hidden)
+    if hidden:
+        print('       shipped but not offered: %s' % hidden)
+
+    check('duplicate family names would collide in Kodi -- none present',
+          len(shipped) == len(files) - len(unreadable))
+
+    # the fallback target must itself be shipped, or the rescue lands nowhere
+    tgt = _re.search(r"_FONT_MIGRATE_TO = '([^']+)'", sw).group(1)
+    check('the migration target (%s) is a font we ship' % tgt, tgt in shipped)
+
+    # and we must never migrate away from a font we still provide
+    mig = _re.findall(r"'([^']+)'",
+                      _re.search(r'_FONT_MIGRATE = \(([^)]*)\)', sw).group(1))
+    conflict = [m for m in mig if m in shipped]
+    check('no shipped family is on the migrate-away list', not conflict)
+    if conflict:
+        print('       would reset a valid font: %s' % conflict)
+
+
 def test_no_comments_in_addon_settings():
     """A shipped addon settings.xml must contain NO XML comments.
 
@@ -1829,6 +2059,8 @@ def main():
               test_menu_bundle_never_overwrites_a_healthy_menu,
               test_hebrew_title_quality_classification,
               test_oled_uses_settings_api,
+              test_subtitle_font_choice_is_the_users,
+              test_font_picker_matches_the_shipped_pack,
               test_no_comments_in_addon_settings,
               test_pov_placeholder_scrub,
               test_no_invalid_tmdb_widgets,
