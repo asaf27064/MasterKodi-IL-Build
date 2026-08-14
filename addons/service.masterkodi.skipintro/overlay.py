@@ -25,10 +25,29 @@ ACTION_PREVIOUS_MENU = 10
 ACTION_BACK = 92
 
 DISPLAY_DURATION = 10.0    # legacy fallback when segment bounds are unknown
+PILL_SECONDS_DEFAULT = 8   # visible-seconds cap; 0 = stay for the whole segment
+
+
 SAFETY_MAX = 180.0         # hard cap so a frozen player never leaves the pill up
 POLL = 0.1                 # fine-grained so the countdown bar drains smoothly
 START_POLL = 0.25
 CLOCK_EPS = 0.05
+
+
+def _pill_seconds():
+    """How long the button may stay on screen. 0 = the whole segment.
+
+    Netflix binds the button's life to the segment, which is safe because their
+    markers are authored per encode. Ours come from TheIntroDB/SkipDB matched by
+    id + duration, so a marker can belong to a DIFFERENT release of the same
+    episode -- then "stay for the whole segment" parks the button over the
+    episode body (HotD S02E03, Asaf 2026-08-14). Jellyfin's intro-skipper caps
+    it for the same reason. Default 8s: enough to decide, short enough that a
+    wrong marker is a blip."""
+    try:
+        return max(0, int(ADDON.getSetting('pill_seconds') or PILL_SECONDS_DEFAULT))
+    except Exception:
+        return PILL_SECONDS_DEFAULT
 
 
 def _res():
@@ -64,9 +83,11 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
         self._monitor = monitor
         self.skip_pressed = False
         self.declined = False        # X pressed: don't re-show for this segment
+        self.timed_out = False       # the visible-seconds cap ran out
         self._closed = False
         self._lock = threading.Lock()
         self._deadline = None
+        self._hide_at = None         # visible-seconds cap (None = whole segment)
         self._poll_thread = None
         self._fill_full = 0
 
@@ -98,6 +119,8 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
             # Safety cap only; the pill normally closes when playback reaches the
             # segment end (self._target), so it stays up for the WHOLE intro.
             self._deadline = time.time() + SAFETY_MAX
+            cap = _pill_seconds()
+            self._hide_at = (time.time() + cap) if cap else None
             self._poll_thread = threading.Thread(target=self._poll)
             self._poll_thread.daemon = True
             self._poll_thread.start()
@@ -138,8 +161,19 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
             try:
                 if self._deadline and time.time() >= self._deadline:
                     return self._close_bg()        # safety cap (frozen player)
+                if self._hide_at and time.time() >= self._hide_at:
+                    self.timed_out = True          # shown its time -> step aside
+                    return self._close_bg()
                 # If the video OSD opens (by any route), get out of its way.
                 if xbmc.getCondVisibility('Window.IsVisible(videoosd)'):
+                    return self._close_bg()
+                # Leaving fullscreen video (back to a menu, POV's sources list)
+                # must take the pill with it. It is a MODAL dialog, so if it
+                # survives it sits on top of that screen and swallows the keys
+                # meant for it -- Asaf hit exactly that on 2026-08-14. The
+                # service no longer opens it off-screen; this closes one that
+                # was already up when the user backed out.
+                if not xbmc.getCondVisibility('Window.IsVisible(fullscreenvideo)'):
                     return self._close_bg()
                 p = self._player
                 if p and p.isPlaying() and self._target is not None:
@@ -149,7 +183,12 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
                     # Countdown bar tracks PLAYBACK progress toward the intro end,
                     # so it reads as "time left to skip" and the pill stays up for
                     # the whole intro instead of a fixed 10s flash.
-                    if self._start is not None and self._target > self._start:
+                    if self._hide_at:
+                        # the bar is "time left to decide", so with a cap it
+                        # drains over the cap, not over the whole intro
+                        cap = _pill_seconds() or 1
+                        frac = (self._hide_at - time.time()) / float(cap)
+                    elif self._start is not None and self._target > self._start:
                         frac = (self._target - t) / (self._target - self._start)
                     else:
                         frac = (self._deadline - time.time()) / DISPLAY_DURATION
@@ -236,6 +275,8 @@ class SkipBarOverlay(SkipOverlay):
             pass
         if self._target is not None and self._player is not None:
             self._deadline = time.time() + SAFETY_MAX
+            cap = _pill_seconds()
+            self._hide_at = (time.time() + cap) if cap else None
             self._poll_thread = threading.Thread(target=self._poll)
             self._poll_thread.daemon = True
             self._poll_thread.start()
@@ -304,6 +345,8 @@ class SkipNetflixOverlay(SkipOverlay):
             pass
         if self._target is not None and self._player is not None:
             self._deadline = time.time() + SAFETY_MAX
+            cap = _pill_seconds()
+            self._hide_at = (time.time() + cap) if cap else None
             self._poll_thread = threading.Thread(target=self._poll)
             self._poll_thread.daemon = True
             self._poll_thread.start()
@@ -313,15 +356,20 @@ class SkipNetflixOverlay(SkipOverlay):
 
 
 def show_skip_overlay(label, start, target, player, monitor):
-    """Blocks until the overlay closes (skip / intro end / safety cap). Stays up
-    for the whole intro. Returns (pressed, declined): pressed=True means seek
-    past the segment; declined=True means the user answered NO (bar-style X) and
-    the segment must not be offered again."""
+    """Blocks until the overlay closes (skip / intro end / visible cap).
+
+    Returns (pressed, declined, timed_out):
+      pressed   -> seek past the segment
+      declined  -> the user answered NO (bar-style X); never offer it again
+      timed_out -> the visible-seconds cap ran out. That is NOT a user answer,
+                   but re-offering the same segment every few seconds for a
+                   90-second intro would be worse than what the cap fixes, so
+                   the service treats it as "asked once" for this segment."""
     mon = monitor or xbmc.Monitor()
     if mon.abortRequested():
-        return False, False
+        return False, False, False
     if not _wait_clock(player, mon, target):
-        return False, False
+        return False, False, False
     # style order fixed by Asaf 2026-08-10: '0'/'' = Netflix button (default),
     # '1' = MasterKodi card, '2' = POV-style top bar, '3' = the floating pill.
     # Card and bar share SkipBarOverlay -- same control ids, different layout.
@@ -341,12 +389,12 @@ def show_skip_overlay(label, start, target, player, monitor):
         w = cls(xml, ADDON_PATH, 'Default', _res(),
                         label=label, start=start, target=target, player=player, monitor=monitor)
         w.doModal()
-        pressed, declined = w.skip_pressed, w.declined
+        pressed, declined, timed_out = w.skip_pressed, w.declined, w.timed_out
         del w
-        return pressed, declined
+        return pressed, declined, timed_out
     except Exception as e:
         xbmc.log('[skipintro] overlay error: %s' % e, xbmc.LOGERROR)
-        return False, False
+        return False, False, False
 
 
 def _wait_clock(player, monitor, target):

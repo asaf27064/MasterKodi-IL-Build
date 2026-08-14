@@ -26,6 +26,10 @@ except Exception:
 LABELS = {'intro': 'דלג על הפתיח', 'recap': 'דלג על התקציר', 'outro': 'דלג על הקרדיטים'}
 
 MIN_INTRO, MAX_INTRO = 20, 150
+# How long a dismissed pill stays away. Long enough to navigate with the
+# remote without it reappearing between presses, short enough that it is
+# still offered if you are genuinely still in the intro.
+DISMISS_HOLD = 12.0
 LATEST_START, LATEST_END = 300, 360
 
 
@@ -162,6 +166,7 @@ class SkipService(xbmc.Monitor):
         # SEEKING BACK to a recap/intro re-offers the skip. Dismissing via the OSD
         # never suppresses at all.
         skip_cd = {}                              # segment index -> monotonic skip time
+        dismiss_cd = {}                           # segment index -> monotonic dismiss time
         declined = set()                          # segment index -> user pressed X
         while not self.abortRequested():
             try:
@@ -172,6 +177,7 @@ class SkipService(xbmc.Monitor):
                         segs = None
                         attempts = 0
                         skip_cd = {}
+                        dismiss_cd = {}
                         declined = set()          # new episode -> ask again
                     if segs is None:
                         result = self._detect()
@@ -182,7 +188,16 @@ class SkipService(xbmc.Monitor):
                                 log('resolved %s' % segs)
                         elif attempts >= 12:
                             segs = []
-                    if segs:
+                    # isPlayingVideo() alone is NOT enough to SHOW: backing out
+                    # of playback into a menu leaves the video running, so the
+                    # pill -- a MODAL dialog -- opened on top of the home screen
+                    # and POV's sources list and ate the keys meant for that
+                    # list (Asaf 2026-08-14). Gate the DISPLAY on fullscreen
+                    # video, not the whole loop: the per-episode state (which
+                    # segments, what was declined) has to survive a trip to a
+                    # menu and back, or a declined intro would be re-offered.
+                    on_screen = xbmc.getCondVisibility('Window.IsVisible(fullscreenvideo)')
+                    if segs and on_screen:
                         t = self._time()
                         now = time.time()
                         # Don't fight the OSD: while it's open, hold off and retry
@@ -201,6 +216,14 @@ class SkipService(xbmc.Monitor):
                             cd = skip_cd.get(i)
                             if cd is not None and (now - cd) < 4.0:
                                 break             # just skipped this one -> brief hold
+                            # A dismiss is "not now", not "never". It used to
+                            # carry NO cooldown, so every keypress closed the
+                            # pill and the next tick put it straight back -- the
+                            # flicker Asaf hit on 2026-08-14. Hold it off long
+                            # enough to actually use the remote.
+                            dcd = dismiss_cd.get(i)
+                            if dcd is not None and (now - dcd) < DISMISS_HOLD:
+                                break
                             if osd_open:
                                 break
                             if _get_bool('auto_skip', False):
@@ -210,8 +233,15 @@ class SkipService(xbmc.Monitor):
                                 except Exception:
                                     pass
                             else:
-                                pressed, was_declined = overlay.show_skip_overlay(
+                                pressed, was_declined, timed_out = overlay.show_skip_overlay(
                                     LABELS.get(kind, 'דלג'), float(start), float(end), self.player, self)
+                                if timed_out:
+                                    # The button had its seconds and stepped
+                                    # aside. Re-offering the same segment every
+                                    # few seconds through a 90s intro would be
+                                    # worse than the parked button the cap was
+                                    # added to fix, so it counts as asked.
+                                    declined.add(i)
                                 if pressed:
                                     skip_cd[i] = time.time()
                                     try:
@@ -222,8 +252,10 @@ class SkipService(xbmc.Monitor):
                                     # X = "no": never re-offer THIS segment; the
                                     # next segment (recap/credits) still shows.
                                     declined.add(i)
-                                # dismissed (OSD/other input) -> no cooldown, so it
-                                # re-appears next tick if still in the window.
+                                else:
+                                    # dismissed by a keypress/OSD -> hold it off
+                                    # for a while instead of re-popping instantly
+                                    dismiss_cd[i] = time.time()
                             break
                 else:
                     last_file = None

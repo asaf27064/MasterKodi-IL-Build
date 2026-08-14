@@ -1376,6 +1376,288 @@ def test_font_picker_matches_the_shipped_pack():
         print('       would reset a valid font: %s' % conflict)
 
 
+def test_skip_pill_only_over_fullscreen_video():
+    """The skip pill must exist ONLY while fullscreen video is on screen.
+
+    It is a MODAL WindowXMLDialog, so wherever it opens it owns the keyboard.
+    The service used to gate on isPlayingVideo() alone -- but backing out of
+    playback into a menu leaves the video RUNNING, so the pill appeared over the
+    home screen and over POV's sources list and swallowed the keys meant for
+    them (Asaf, 2026-08-14).
+
+    Second half: a dismiss carried no cooldown, deliberately, so that closing it
+    via the OSD would re-offer the skip. In practice every keypress dismissed it
+    and the next tick (1s) put it straight back -- it flickered against the
+    remote. A dismiss now holds it off for DISMISS_HOLD seconds; pressing X
+    ('no') still suppresses the segment for good, and a real skip still uses its
+    own short cooldown.
+
+    Drives the real service loop under the Kodi shim rather than grepping the
+    source, so the interaction between the two rules is what is actually
+    checked."""
+    print("\n=== skip pill: fullscreen-only, and a dismiss actually holds ===")
+    import importlib.util
+    import types as _types
+    import xbmc as _xbmc
+
+    sk = os.path.join(REPO, 'addons', 'service.masterkodi.skipintro')
+    spec = importlib.util.spec_from_file_location('mk_skipservice',
+                                                  os.path.join(sk, 'service.py'))
+    svc_mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(svc_mod)
+
+    state = {'fullscreen': True, 'osd': False}
+    shown = []
+
+    # the shim returns False for every unset setting, which would switch the
+    # service off entirely; feed it the addon's real defaults instead
+    DEFAULTS = {'enabled': True, 'use_skipdb': True, 'auto_skip': False}
+    svc_mod._get_bool = lambda key, default=True: DEFAULTS.get(key, default)
+
+    # The service's cooldowns are measured with time.time(), but the whole
+    # simulated playthrough runs in milliseconds of REAL time -- so a wall-clock
+    # hold would never expire and every "is it re-offered?" assertion would pass
+    # no matter what the code did. Give it a clock that advances with the ticks.
+    class _FakeTime(object):
+        def time(self):
+            return state['wall']
+    svc_mod.time = _FakeTime()
+
+    real_cond = _xbmc.getCondVisibility
+
+    def fake_cond(cond):
+        if 'fullscreenvideo' in cond:
+            return state['fullscreen']
+        if 'videoosd' in cond:
+            return state['osd']
+        return False
+
+    fake_overlay = _types.ModuleType('overlay')
+
+    def show(label, start, end, player, monitor):
+        shown.append((label, start, end, state['clock']))
+        return state['result']                     # (pressed, declined, timed_out)
+
+    fake_overlay.show_skip_overlay = show
+    sys.modules['overlay'] = fake_overlay
+
+    class FakePlayer(object):
+        def isPlayingVideo(self): return True
+        def isPlaying(self): return True
+        def getPlayingFile(self): return 'stack://ep1.mkv'
+        def getTotalTime(self): return 3000.0
+        def getTime(self): return state['clock']
+        def seekTime(self, t): state['clock'] = t
+
+    def run_ticks(svc, n, on_tick=None):
+        """Advance the loop n times, 1 simulated second apart.
+
+        run() keeps its per-episode state in LOCALS, so a scenario that needs
+        state to persist has to happen inside ONE run() -- hence on_tick, which
+        fires between ticks and can change the environment mid-flight."""
+        svc._ticks = n
+        svc._tick_no = 0
+
+        def wait(t=0):
+            svc._ticks -= 1
+            svc._tick_no += 1
+            if svc._ticks <= 0:
+                return True
+            state['clock'] += 1.0
+            state['wall'] += 1.0
+            if on_tick:
+                on_tick(svc._tick_no)
+            return False
+        svc.waitForAbort = wait
+        svc.abortRequested = lambda: False
+        svc.run()
+
+    def fresh(clock, result=(False, False, False)):
+        state.update({'clock': clock, 'wall': 10000.0, 'result': result,
+                      'fullscreen': True, 'osd': False})
+        del shown[:]
+        s = svc_mod.SkipService()
+        s.player = FakePlayer()
+        s._detect = lambda: [('intro', 30.0, 120.0)]
+        return s
+
+    _xbmc.getCondVisibility = fake_cond
+    try:
+        # 1. inside the intro, fullscreen -> offered
+        s = fresh(40.0)
+        run_ticks(s, 3)
+        check('offered while fullscreen video is on screen', len(shown) >= 1)
+
+        # 2. same moment, but the user backed out to a menu -> never offered
+        s = fresh(40.0)
+        state['fullscreen'] = False
+        run_ticks(s, 6)
+        check('NOT offered over a menu / POV sources list', not shown)
+
+        # 3. dismissed (no press, no X) -> must not re-pop on the next tick
+        s = fresh(40.0, result=(False, False, False))
+        run_ticks(s, 6)
+        check('a dismiss is not re-offered every second', len(shown) == 1)
+        check('DISMISS_HOLD is long enough to use the remote',
+              svc_mod.DISMISS_HOLD >= 8)
+
+        # 4. X ("no") -> never again for that segment
+        s = fresh(40.0, result=(False, True, False))
+        run_ticks(s, 40)
+        check('X suppresses the segment for good', len(shown) == 1)
+
+        # 5. pressed -> seeks past the segment and stops offering
+        s = fresh(40.0, result=(True, False, False))
+        run_ticks(s, 5)
+        check('a press seeks to the segment end', state['clock'] >= 120.0)
+
+        # 6. leaving fullscreen mid-intro and coming back must NOT wipe the
+        #    "declined" answer -- that was the trap in gating the whole loop
+        s = fresh(40.0, result=(False, True, False))
+
+        def trip(tick):
+            if tick == 2:
+                state['fullscreen'] = False        # user backs out to a menu
+            elif tick == 5:
+                state['fullscreen'] = True         # ...and returns to the video
+        run_ticks(s, 20, on_tick=trip)
+        check('declined answer survives a trip to a menu', len(shown) == 1)
+        # 7. the visible-seconds cap: once the button has had its 8s it steps
+        #    aside, and must NOT come back every DISMISS_HOLD for the rest of a
+        #    90-second intro -- that would be worse than the parked button the
+        #    cap exists to fix.
+        s = fresh(40.0, result=(False, False, True))
+        run_ticks(s, 60)
+        check('a timed-out button is not re-offered for the same segment',
+              len(shown) == 1)
+    finally:
+        _xbmc.getCondVisibility = real_cond
+        sys.modules.pop('overlay', None)
+
+    # the cap itself, read from the overlay module
+    ov_src = open(os.path.join(sk, 'overlay.py'), encoding='utf-8').read()
+    import re as _re2
+    default = int(_re2.search(r'PILL_SECONDS_DEFAULT = (\d+)', ov_src).group(1))
+    check('default visible seconds is 8 (Asaf 2026-08-14)', default == 8)
+    check('the cap is user-configurable', "getSetting('pill_seconds')" in ov_src)
+    check('0 means the whole segment (opt out of the cap)',
+          'if cap else None' in ov_src)
+
+    st = open(os.path.join(sk, 'resources', 'settings.xml'), encoding='utf-8').read()
+    check('pill_seconds is declared in the settings UI', 'pill_seconds' in st)
+    check('its declared default matches the code', 'default="8"' in st)
+    check('shipped settings carry no XML comment (crashes Kodi)', '<!--' not in st)
+
+    # the already-open pill must close itself if the user leaves fullscreen
+    ov = open(os.path.join(sk, 'overlay.py'), encoding='utf-8').read()
+    poll = ov[ov.index('def _poll'):ov.index('def _update_bar')]
+    check('an open pill closes when fullscreen video goes away',
+          'fullscreenvideo' in poll)
+
+
+def test_log_upload_loses_nothing():
+    """A log upload must never carry LESS than it did before the change.
+
+    The old _collect() glued kodi.log + kodi.old.log and kept a blind tail of the
+    result. kodi.log comes first, so a big kodi.old.log could push the CURRENT
+    session out of the upload entirely -- with no trace, since the banner went
+    with it. Asaf's Shield report on 2026-08-14 was exactly that: the upload held
+    only the tail of the previous session and the reported moment had scrolled
+    away.
+
+    Two things changed, and the point of this test is that neither one costs
+    anything:
+      * the Cloudflare upload now uses the Worker's real 2 MB capacity instead of
+        the 380 KB PASTE limit, so it carries strictly more
+      * within that budget the two files share fairly, so the current session can
+        no longer vanish
+
+    A fair split and a blind tail genuinely trade against each other at the SAME
+    budget, so the 380 KB paste fallback deliberately keeps the legacy behaviour.
+    This asserts, per file, that what the old code preserved is still preserved."""
+    print("\n=== log upload: strictly more than before, never less ===")
+    import xbmcvfs as _vfs
+    logpath = _vfs.translatePath('special://logpath/')   # not HOME/temp -- ask the shim
+    os.makedirs(logpath, exist_ok=True)
+
+    def legacy(files, budget):
+        """The pre-change algorithm, kept here as the thing we must not regress."""
+        parts = ['=================== %s ===================\n%s' % (fn, txt)
+                 for fn, txt in files]
+        combined = ('\n\n'.join(parts)).strip()
+        if len(combined) > budget:
+            combined = '...(older lines truncated)...\n' + combined[-budget:]
+        return combined
+
+    def kept_from(out, txt, fn):
+        """How many bytes of THIS file's tail survived into `out`."""
+        if not txt:
+            return 0
+        lo, hi = 0, len(txt)
+        while lo < hi:                       # longest suffix of txt present
+            mid = (lo + hi + 1) // 2
+            if txt[-mid:] in out:
+                lo = mid
+            else:
+                hi = mid - 1
+        return lo
+
+    K = 1024
+    CASES = (
+        ('both small', 40 * K, 60 * K),
+        ('current huge, old small', 900 * K, 30 * K),
+        ('current small, old huge', 30 * K, 900 * K),      # the Shield case
+        ('both huge', 1500 * K, 1500 * K),
+        ('no old log', 200 * K, 0),
+    )
+    for name, n_cur, n_old in CASES:
+        cur = ''.join('cur %07d line\n' % i for i in range(n_cur // 16))
+        old = ''.join('old %07d line\n' % i for i in range(n_old // 16))
+        with open(os.path.join(logpath, 'kodi.log'), 'w', encoding='utf-8') as fh:
+            fh.write(cur)
+        oldp = os.path.join(logpath, 'kodi.old.log')
+        if n_old:
+            with open(oldp, 'w', encoding='utf-8') as fh:
+                fh.write(old)
+        elif os.path.exists(oldp):
+            os.remove(oldp)
+
+        files = [('kodi.log', cur)] + ([('kodi.old.log', old)] if n_old else [])
+        before = legacy(files, logs.MAX_BYTES)
+        after = logs._collect(logs.CF_MAX_BYTES)         # what actually gets uploaded
+
+        ok = True
+        for fn, txt in files:
+            if kept_from(after, txt, fn) < kept_from(before, txt, fn):
+                ok = False
+        check('%-24s no file loses bytes it used to keep' % name, ok)
+
+    # the Shield case specifically: the current session must now be present
+    cur = ''.join('cur %07d line\n' % i for i in range(30 * K // 16))
+    old = ''.join('old %07d line\n' % i for i in range(900 * K // 16))
+    with open(os.path.join(logpath, 'kodi.log'), 'w', encoding='utf-8') as fh:
+        fh.write(cur)
+    with open(os.path.join(logpath, 'kodi.old.log'), 'w', encoding='utf-8') as fh:
+        fh.write(old)
+    before = legacy([('kodi.log', cur), ('kodi.old.log', old)], logs.MAX_BYTES)
+    after = logs._collect(logs.CF_MAX_BYTES)
+    check('the CURRENT session used to be dropped entirely',
+          'kodi.log ===' not in before)
+    check('...and is now included', 'kodi.log ===' in after)
+    check('the previous session is still there too', 'kodi.old.log ===' in after)
+
+    # the small paste fallback must be byte-identical to the legacy trim
+    check('paste fallback is unchanged (fair=False)',
+          logs._collect(logs.MAX_BYTES, fair=False)
+          == legacy([('kodi.log', cur), ('kodi.old.log', old)], logs.MAX_BYTES))
+
+    # and when something IS dropped, the upload has to say so
+    tiny = logs._collect(50 * K)
+    check('a trimmed file states how much was dropped', 'dropped from' in tiny)
+    check('the Worker budget is under its 2 MB hard cap',
+          logs.CF_MAX_BYTES < 2 * 1024 * 1024)
+
+
 def test_no_comments_in_addon_settings():
     """A shipped addon settings.xml must contain NO XML comments.
 
@@ -2061,6 +2343,8 @@ def main():
               test_oled_uses_settings_api,
               test_subtitle_font_choice_is_the_users,
               test_font_picker_matches_the_shipped_pack,
+              test_skip_pill_only_over_fullscreen_video,
+              test_log_upload_loses_nothing,
               test_no_comments_in_addon_settings,
               test_pov_placeholder_scrub,
               test_no_invalid_tmdb_widgets,

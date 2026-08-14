@@ -21,7 +21,11 @@ import xbmcvfs
 
 from urllib.request import Request, urlopen
 
-MAX_BYTES = 380 * 1024                       # keep under paste-host limits; tail wins
+MAX_BYTES = 380 * 1024                       # public paste hosts (fallback only)
+# Our own Worker accepts 2 MB (MAX_BODY in cloudflare/logs-worker). Trimming the
+# Cloudflare upload to the PASTE host's limit threw away ~1.5 MB of diagnostics
+# for no reason -- the paste is only a fallback for when CF is unreachable.
+CF_MAX_BYTES = 1900 * 1024                   # leave headroom under the 2 MB cap
 
 # Cloudflare pool Worker (same host the subtitle pool uses). A /v1/logs endpoint
 # stores the upload to R2 under the device id and returns a readable URL.
@@ -124,18 +128,75 @@ def _read(path):
         return ''
 
 
-def _collect():
+def _collect(budget=MAX_BYTES, fair=True):
+    """Both log files, trimmed to `budget` WITHOUT ever losing a whole file.
+
+    `fair=False` reproduces the legacy blind tail exactly. It matters because a
+    fair split and a blind tail trade against each other at the SAME budget: with
+    a small kodi.log and a huge kodi.old.log, the blind tail spends everything on
+    the old file while the split reserves room for the current session. Neither
+    dominates. So the split is used only where the budget actually grew (our own
+    Worker, 1.9 MB, where both files fit whole and the question is moot), and the
+    380 KB paste fallback keeps the legacy behaviour -- that way no upload path
+    ends up carrying LESS than it did before (Asaf's condition, 2026-08-14).
+
+    The old version glued kodi.log + kodi.old.log together and then kept a blind
+    tail of the result. Because kodi.log comes first, a large kodi.old.log could
+    push the CURRENT session out of the upload entirely -- and nothing in the
+    output said so, because the '=== kodi.log ===' banner was cut away too. That
+    is what happened to Asaf's Shield report on 2026-08-14: the upload contained
+    only the tail of the previous session, and the moment being reported had
+    already scrolled past.
+
+    Now each file gets its own share of the budget and keeps its OWN tail (the
+    end of a log is the interesting part), with a line saying how much was
+    dropped. A file that fits leaves its unused share to the other one, so the
+    common case -- everything fits -- is byte-identical to before.
+    """
     base = xbmcvfs.translatePath('special://logpath/')
-    parts = []
+    files = []
     for fn in ('kodi.log', 'kodi.old.log'):
         p = os.path.join(base, fn)
         if os.path.isfile(p):
-            parts.append('=================== %s ===================\n%s'
-                         % (fn, _scrub(_read(p))))
-    combined = ('\n\n'.join(parts)).strip()
-    if len(combined) > MAX_BYTES:
-        combined = '...(older lines truncated)...\n' + combined[-MAX_BYTES:]
-    return combined
+            files.append((fn, _scrub(_read(p))))
+    if not files:
+        return ''
+
+    def banner(fn):
+        return '=================== %s ===================\n' % fn
+
+    if not fair:                       # legacy: glue, then keep a blind tail
+        combined = ('\n\n'.join(banner(fn) + txt for fn, txt in files)).strip()
+        if len(combined) > budget:
+            combined = '...(older lines truncated)...\n' + combined[-budget:]
+        return combined
+
+    overhead = sum(len(banner(fn)) for fn, _ in files) + 2 * (len(files) - 1)
+    room = max(0, budget - overhead)
+
+    # hand out the budget: a file that fits keeps everything and returns the
+    # rest of its share to the files that do not fit
+    shares = {fn: room // len(files) for fn, _ in files}
+    spare = room - sum(shares.values())
+    for fn, txt in files:
+        if len(txt) < shares[fn]:
+            spare += shares[fn] - len(txt)
+            shares[fn] = len(txt)
+    for fn, txt in files:
+        if len(txt) > shares[fn] and spare:
+            take = min(spare, len(txt) - shares[fn])
+            shares[fn] += take
+            spare -= take
+
+    parts = []
+    for fn, txt in files:
+        keep = shares[fn]
+        if len(txt) > keep:
+            dropped = len(txt) - keep
+            txt = ('...(%d KB of older lines dropped from %s)...\n'
+                   % (dropped // 1024, fn)) + txt[-keep:]
+        parts.append(banner(fn) + txt)
+    return ('\n\n'.join(parts)).strip()
 
 
 def _post(url, data, headers, timeout=30):
@@ -288,7 +349,8 @@ def send_logs():
         prog.create('MasterKodi IL', '[COLOR cyan]אוסף ומעלה לוגים...[/COLOR]')
         prog.update(20)
         info = _device()
-        text = _header(info) + _collect()
+        head = _header(info)
+        text = head + _collect(CF_MAX_BYTES - len(head))
         if not text.strip():
             prog.close()
             dialog.ok('MasterKodi IL', 'לא נמצאו קבצי לוג')
@@ -304,7 +366,12 @@ def send_logs():
         # Public paste (paste.kodi.tv/dpaste) is a PRIVACY fallback ONLY when our
         # private Cloudflare store is unreachable -- it used to run on every
         # upload, sending every log to a public paste even when CF succeeded.
-        paste = _upload_paste(text) if not cf else None
+        # the paste hosts are much smaller than our Worker, so re-trim for them
+        # paste hosts are far smaller than our Worker, and at that budget a fair
+        # split would keep LESS of kodi.old.log than the legacy tail did, so the
+        # fallback stays on the legacy trim -- no upload path regresses
+        paste = (_upload_paste(head + _collect(MAX_BYTES - len(head), fair=False))
+                 if not cf else None)
         prog.close()
         url = cf or paste
         if url:
