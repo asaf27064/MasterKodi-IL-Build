@@ -1441,6 +1441,13 @@ class BuildManager:
         try:
             # Set skip flag for service (don't show update dialog during install)
             ADDON.setSetting('skip_update_check', 'true')
+            # Re-arm the "connect a service?" offer for the boot after this
+            # install. The wipe deliberately PRESERVES the wizard's addon_data,
+            # so a flag written on the old build would survive into the new one
+            # and swallow the question exactly when the box has no credentials
+            # (the same trap that made the seeds marker-gated bug). Clearing it
+            # here keeps the offer to ONE ask per install.
+            ADDON.setSetting('services_prompt_done', 'false')
 
             # Record the content source NOW, before any config apply, so the
             # whole install is content-aware (the config engine skips Gears-

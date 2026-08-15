@@ -1926,6 +1926,125 @@ def test_keep_cancel_aborts_the_install():
           'continue' in src[none_check:falsy_check])
 
 
+def test_services_connect_offer():
+    """A freshly installed build has no debrid login, so offer to connect once.
+
+    Asked of the DATA, not of the user's keep choice -- that also covers "kept
+    debrid, but there was never a token". The offer must appear after a first
+    install and after a reinstall where debrid was NOT kept, and must stay quiet
+    when a credential exists.
+
+    The trap: the 'already asked' flag lives in the wizard's addon_data, which
+    the wipe deliberately PRESERVES. A flag written on the old build would
+    survive into the new one and swallow the question exactly when the box has
+    no credentials -- the same shape as the marker-gated seed bug. install_build
+    must therefore clear it, which is what keeps this to ONE ask per install."""
+    print("\n=== install: offer to connect a service when there is no login ===")
+    import importlib.util
+    import xbmcgui as _gui
+    import xbmc as _xbmc
+
+    # service.py raises SystemExit at IMPORT when the build marker is missing
+    # ("firstrun will handle launch"). SystemExit is not an Exception, so the
+    # runner cannot catch it -- without the marker this test silently ends the
+    # whole suite instead of failing.
+    import xbmcvfs as _vfs
+    marker = os.path.join(_vfs.translatePath('special://home/'), '.masterkodi_il_done')
+    if not os.path.exists(marker):
+        with open(marker, 'w', encoding='utf-8') as fh:
+            fh.write('1')
+
+    sp = importlib.util.spec_from_file_location(
+        'mk_wizard_service',
+        os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard', 'service.py'))
+    svc = importlib.util.module_from_spec(sp)
+    try:
+        sp.loader.exec_module(svc)
+    except SystemExit:
+        check('wizard service importable (build marker present)', False)
+        return
+
+    import resources.libs.keep as keep_mod
+    povdir = os.path.dirname(keep_mod.POV_SETTINGS)
+    os.makedirs(povdir, exist_ok=True)
+
+    # the offer only fires when an ENGINE is installed -- there is nothing to
+    # connect otherwise. Give the temp home a POV addon.xml so get_addon_version
+    # finds one (this also pins that the POV branch is reachable).
+    eng = os.path.join(svc.ADDONS_PATH, 'plugin.video.pov')
+    os.makedirs(eng, exist_ok=True)
+    with open(os.path.join(eng, 'addon.xml'), 'w', encoding='utf-8') as fh:
+        fh.write('<addon id="plugin.video.pov" version="6.08.10"/>')
+
+    def write_pov(tb_token):
+        with open(keep_mod.POV_SETTINGS, 'w', encoding='utf-8') as fh:
+            fh.write('<settings version="2">\n'
+                     '    <setting id="tb.token">%s</setting>\n'
+                     '</settings>\n' % tb_token)
+
+    # 1. the detector
+    write_pov('')
+    check('no token -> not connected', svc._has_debrid() is False)
+    write_pov('empty_setting')
+    check("Gears' 'empty_setting' placeholder is NOT a login",
+          svc._has_debrid() is False)
+    write_pov('a-real-looking-token')
+    check('a real token -> connected', svc._has_debrid() is True)
+
+    # 2. the offer itself
+    ran, asked = [], []
+    real_yesno, real_exec, real_cond = _gui.Dialog.yesno, _xbmc.executebuiltin, _xbmc.getCondVisibility
+    _xbmc.getCondVisibility = lambda c: True          # home screen is up
+    _xbmc.executebuiltin = lambda c, *a: ran.append(c)
+
+    def fake_yesno(self, *a, **k):
+        asked.append(a[1] if len(a) > 1 else '')
+        return True
+    _gui.Dialog.yesno = fake_yesno
+
+    class Mon(object):
+        def abortRequested(self): return False
+        def waitForAbort(self, t=0): return False
+
+    try:
+        write_pov('')                                   # no credential
+        svc.ADDON.setSetting('services_prompt_done', 'false')
+        svc._offer_services_connect(Mon())
+        check('offered when there is no login', len(asked) == 1)
+        check('...and it opens a services entry point',
+              bool(ran) and 'RunPlugin(' in ran[0]
+              and ('myservices' in ran[0] or 'torbox.authenticate' in ran[0]))
+
+        # 3. asked ONCE -- a second boot stays quiet
+        del asked[:], ran[:]
+        svc._offer_services_connect(Mon())
+        check('never asked twice on a later boot', not asked)
+
+        # 4. a reinstall must RE-ARM it: install_build clears the flag
+        src = open(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                                'resources', 'libs', 'builds.py'), encoding='utf-8').read()
+        i = src.index("ADDON.setSetting('skip_update_check', 'true')")
+        j = src.index('def ', i) if 'def ' in src[i:] else len(src)
+        check('install_build re-arms the offer (survives the addon_data wipe)',
+              "setSetting('services_prompt_done', 'false')" in src[i:j])
+
+        # 5. with a credential present it stays quiet even when re-armed
+        del asked[:], ran[:]
+        write_pov('a-real-looking-token')
+        svc.ADDON.setSetting('services_prompt_done', 'false')
+        svc._offer_services_connect(Mon())
+        check('stays quiet when a login already exists', not asked)
+    finally:
+        _gui.Dialog.yesno, _xbmc.executebuiltin, _xbmc.getCondVisibility = \
+            real_yesno, real_exec, real_cond
+
+    # 6. the flag has to be declared, or Kodi has nothing to persist
+    st = open(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                           'resources', 'settings.xml'), encoding='utf-8').read()
+    check('services_prompt_done is declared', 'services_prompt_done' in st)
+    check('shipped settings still carry no XML comment', '<!--' not in st)
+
+
 def test_no_comments_in_addon_settings():
     """A shipped addon settings.xml must contain NO XML comments.
 
@@ -2616,6 +2735,7 @@ def main():
               test_subtitle_passthrough_is_utf8_and_real,
               test_wand_press_shows_feedback,
               test_keep_cancel_aborts_the_install,
+              test_services_connect_offer,
               test_no_comments_in_addon_settings,
               test_pov_placeholder_scrub,
               test_no_invalid_tmdb_widgets,

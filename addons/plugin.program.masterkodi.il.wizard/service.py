@@ -12,6 +12,7 @@ per-addon raw-URL checks, wizard self-update) has been removed.
 """
 import xbmc
 import xbmcaddon
+import xbmcgui
 import xbmcvfs
 import os
 import re
@@ -470,6 +471,101 @@ def _prewarm_gears(mon):
         log("prewarm error: %s" % e, xbmc.LOGDEBUG)
 
 
+def _has_debrid():
+    """True when a debrid credential actually exists for the installed engine.
+
+    Asked of the DATA, not of the user's keep choice: that also covers the case
+    where debrid WAS kept but there was never a token to keep. 'empty_setting'
+    is Gears' "never configured" placeholder and must not count as a login --
+    carrying it across once made every unused service look authorised.
+    Unknown/unreadable -> True, so a failure here never nags the user.
+    """
+    import re as _re
+    import sqlite3 as _sq
+    try:
+        from resources.libs import keep as keep_mod
+    except Exception:
+        return True
+    TOKENS = ('tb.token', 'rd.token', 'rd.refresh', 'pm.token', 'ad.token',
+              'oc.token', 'premiumize.token', 'easynews_user')
+    try:
+        if os.path.exists(keep_mod.POV_SETTINGS):
+            with open(keep_mod.POV_SETTINGS, encoding='utf-8', errors='replace') as fh:
+                txt = fh.read()
+            for sid in TOKENS:
+                m = _re.search(r'<setting id="%s"[^>]*>([^<]*)</setting>' % _re.escape(sid), txt)
+                if m and m.group(1).strip() not in ('', 'empty_setting'):
+                    return True
+    except Exception as e:
+        log('services: POV token check failed: %s' % e, xbmc.LOGWARNING)
+        return True
+    try:
+        if os.path.exists(keep_mod.GEARS_SETTINGS_DB):
+            con = _sq.connect(keep_mod.GEARS_SETTINGS_DB)
+            try:
+                rows = con.execute(
+                    'SELECT setting_id, setting_value FROM settings').fetchall()
+            finally:
+                con.close()
+            for sid, val in rows:
+                if sid in TOKENS and str(val or '').strip() not in ('', 'empty_setting'):
+                    return True
+    except Exception as e:
+        log('services: Gears token check failed: %s' % e, xbmc.LOGWARNING)
+        return True
+    return False
+
+
+def _offer_services_connect(mon):
+    """Once per install, offer to connect a debrid service on the home screen.
+
+    A freshly installed build has no debrid credentials, so it cannot play
+    anything until the user finds the 'חיבור שירותים' shortcut themselves. Ask
+    once, right after the build comes up (Asaf, 2026-08-15).
+
+    The 'asked' flag lives in the WIZARD's addon_data, which the wipe
+    deliberately preserves -- so a flag written on the old build would survive a
+    reinstall and silence the question exactly when it matters most (the same
+    trap that made the seeds marker-gated bug). install_build() therefore clears
+    it, which re-arms this for each install and keeps it to ONE ask.
+
+    POV has no per-service deep link -- its only entry is `myservices`, a select
+    list of all nine services -- so POV lands on that list and the user picks
+    TorBox. Gears has a direct torbox.authenticate mode.
+    """
+    try:
+        if ADDON.getSetting('services_prompt_done') == 'true':
+            return
+        if _has_debrid():
+            return
+        if get_addon_version('plugin.video.gears'):
+            url, engine = 'plugin://plugin.video.gears/?mode=torbox.authenticate', 'gears'
+        elif get_addon_version('plugin.video.pov'):
+            url, engine = 'plugin://plugin.video.pov/?mode=myservices', 'pov'
+        else:
+            return                              # no engine -> nothing to connect
+        # wait for the home screen: the dialog must not open behind the skin's
+        # own startup work, and a build install reloads the skin on this boot
+        for _ in range(40):
+            if mon.abortRequested():
+                return
+            if xbmc.getCondVisibility('Window.IsVisible(home)'):
+                break
+            if mon.waitForAbort(1):
+                return
+        # mark BEFORE asking: a force-close mid-dialog must not re-ask forever
+        ADDON.setSetting('services_prompt_done', 'true')
+        log('services: no debrid credential found, offering %s connect' % engine)
+        if xbmcgui.Dialog().yesno(
+                ADDON_NAME,
+                'הבילד מוכן.\n\nכדי לצפות צריך חשבון [COLOR cyan]TorBox[/COLOR].\n'
+                'להתחבר עכשיו?',
+                yeslabel='התחבר', nolabel='אחר כך'):
+            xbmc.executebuiltin('RunPlugin(%s)' % url)
+    except Exception as e:
+        log('services connect offer failed: %s' % e, xbmc.LOGWARNING)
+
+
 class POVHebrewService(xbmc.Monitor):
     def __init__(self):
         super().__init__()
@@ -523,6 +619,9 @@ class POVHebrewService(xbmc.Monitor):
             _process_pending_skin_removal()
             if not self.waitForAbort(12):
                 _prewarm_gears(self)
+            # this IS the boot right after an install -- the moment the build
+            # comes up with no credentials, which is what the offer is for
+            _offer_services_connect(self)
             while not self.abortRequested():
                 if self.waitForAbort(300):
                     break
@@ -544,6 +643,12 @@ class POVHebrewService(xbmc.Monitor):
         log("Service started, settling for %ss..." % delay)
         if self.waitForAbort(delay):
             return
+
+        # Also offered on a normal boot, not just the post-install one: an
+        # EXE/APK first run reaches the home screen WITHOUT going through
+        # install_build, so it would otherwise never be asked. The flag makes
+        # this a no-op on every later boot.
+        _offer_services_connect(self)
 
         # Sweep stale '<addon>_old_<timestamp>' backup dirs from past updates.
         _cleanup_old_addon_dirs()
