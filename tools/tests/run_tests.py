@@ -1782,6 +1782,81 @@ def test_subtitle_passthrough_is_utf8_and_real():
               got == p and fh.read() == binary)
 
 
+def test_wand_press_shows_feedback():
+    """Pressing the wand must say something immediately.
+
+    show_results already raises an overlay for the sub_window action, but
+    nothing ever seeded general.show_msg, so it drew its progress underscores
+    with an EMPTY message -- the press looked like it did nothing. Measured from
+    Asaf's own logs, the gap between the press and the list appearing is 11.2s
+    on Windows and 3.5-3.7s on the Shield when the prefetch misses (0.1-0.2s
+    when it hits), so the silence is very visible.
+
+    Two properties matter and both are order-sensitive: the message has to be
+    seeded BEFORE the overlay thread starts, and the window has to publish
+    'END' so the overlay closes instead of lingering behind it."""
+    print("\n=== wand: the press gives immediate feedback ===")
+    base = os.path.join(REPO, 'addons', 'service.subtitles.gearsai')
+    src = open(os.path.join(base, 'autosub.py'), encoding='utf-8').read()
+    win = open(os.path.join(base, 'resources', 'modules', 'sub_window.py'),
+               encoding='utf-8').read()
+
+    seed = src.find('show_msg = "מחפש')
+    start = src.find('thread[0].start()')
+    branch = src.find("elif action=='sub_window':")
+    check('the wand action seeds a search message', seed != -1)
+    check('...before the overlay thread starts', -1 < seed < start)
+    check('...and before the slow search runs', -1 < seed < branch)
+    check('it covers the unpause variant too',
+          'sub_window", "sub_window_unpause"' in src
+          or "'sub_window', 'sub_window_unpause'" in src)
+    # it must NOT be gated on the automatic-notification setting: that governs
+    # unattended toasts, not feedback for a button the user just pressed.
+    # Judge the guarding `if` ITSELF -- scanning the preceding text picked up
+    # the neighbouring condition and the comment explaining this very rule.
+    guard = src.rfind('if ', 0, seed)
+    guard_line = src[guard:src.index(chr(10), guard)]
+    check('not gated on enable_autosub_notifications',
+          'enable_autosub_notifications' not in guard_line)
+    check('...and the guard is the action check itself',
+          'sub_window' in guard_line)
+    check('the window publishes END so the overlay closes',
+          "general.show_msg = 'END'" in win)
+
+    # --- the wand must also consult the prefetch ---------------------------
+    # The playback flow already did; the wand did not, so pressing it mid-episode
+    # re-ran the whole live search. And because a prefetch HIT skips
+    # temporary_pop_and_get_subtitles, the sqlite cache is never populated for
+    # that episode -- the better the prefetch worked, the more certain the wand
+    # was to search again.
+    def branch(name):
+        i = src.find("elif action=='%s':" % name)
+        if i < 0:
+            return ''
+        j = src.find("elif action==", i + 10)
+        return src[i:j if j > 0 else len(src)]
+
+    for name in ('sub_window', 'sub_window_unpause'):
+        b = branch(name)
+        check('%-18s asks the prefetch first' % name,
+              'prefetch_lookup(video_data)' in b)
+        check('%-18s still falls back to the live search'
+              % name, 'temporary_pop_and_get_subtitles(video_data)' in b)
+        check('%-18s fallback is guarded by "is None"' % name,
+              'if f_result is None:' in b)
+        # the match-% sort must STILL run on the live video_data afterwards,
+        # or a prefetched list would be ordered by the wrong release name
+        check('%-18s still sorts on the live playback data' % name,
+              'sort_subtitles' in b
+              and b.index('sort_subtitles') > b.index('prefetch_lookup'))
+
+    # branches we deliberately did NOT change: a manual 'search', a download,
+    # and the next/previous steppers keep their existing behaviour
+    for name in ('next', 'previous'):
+        check('%-18s left alone (not silently switched to the prefetch)' % name,
+              'prefetch_lookup' not in branch(name))
+
+
 def test_no_comments_in_addon_settings():
     """A shipped addon settings.xml must contain NO XML comments.
 
@@ -2470,6 +2545,7 @@ def main():
               test_skip_pill_only_over_fullscreen_video,
               test_log_upload_loses_nothing,
               test_subtitle_passthrough_is_utf8_and_real,
+              test_wand_press_shows_feedback,
               test_no_comments_in_addon_settings,
               test_pov_placeholder_scrub,
               test_no_invalid_tmdb_widgets,

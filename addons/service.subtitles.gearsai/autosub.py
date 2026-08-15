@@ -753,7 +753,21 @@ def sub_from_main(arg):
     
     if action!="sub_window_unpause" and action!="sub_window" and Addon.getSetting("enable_autosub_notifications")=='true':
         general.show_msg="מוריד כתוביות"
-        
+
+    # MASTERKODI: the wand is a DIRECT user press, and the search behind it can
+    # take a while -- measured 11.2s on Windows and 3.5-3.7s on the Shield when
+    # the prefetch misses (0.1-0.2s when it hits). show_results already puts an
+    # overlay up for this action, but nothing ever seeded show_msg, so it drew
+    # its progress underscores with NO text: the press looked like it did
+    # nothing at all (Asaf 2026-08-15). Seeding it is all that was missing --
+    # the window publishes show_msg='END' the moment the list is on screen, so
+    # this clears itself. Not gated on enable_autosub_notifications: that
+    # setting is about AUTOMATIC subtitle toasts, and this is feedback for a
+    # button the user just pressed.
+    if action in ("sub_window", "sub_window_unpause"):
+        general.show_msg = "מחפש כתוביות..."
+
+
     if action=='search' or action=='download':
         general.with_dp=True
     else:
@@ -864,9 +878,22 @@ def sub_from_main(arg):
         return_result=json.dumps(action)
         notify("כתוביות בוטלו")
     elif action=='sub_window':
-        # Search for subs in cache, pop unneeded values.
-        f_result = temporary_pop_and_get_subtitles(video_data)
-        
+        # MASTERKODI: the playback flow consults the prefetch but the wand never
+        # did, so pressing it mid-episode re-ran the whole live search -- 11.2s
+        # on Windows, 3.5-3.7s on the Shield (Asaf 2026-08-15). Worse, a prefetch
+        # HIT skips temporary_pop_and_get_subtitles entirely, so the sqlite cache
+        # is never populated for that episode: the better the prefetch worked,
+        # the more certain the wand was to search again. Nothing is lost by using
+        # it -- the prefetch runs the SAME provider search, and the release-name
+        # fields it lacks are read only by the match-% sort, which still runs
+        # below on the live video_data. Its TTL is 6h against the sqlite cache's
+        # 24h, so this reads the FRESHER of the two. Falls through untouched when
+        # prefetch is off or holds no entry.
+        f_result = prefetch_lookup(video_data)
+        if f_result is None:
+            # Search for subs in cache, pop unneeded values.
+            f_result = temporary_pop_and_get_subtitles(video_data)
+
         f_result=cache.get(sort_subtitles,24,f_result,video_data,table='subs')
         # Avoid f_result=None error if no subs found.
         f_result = [] if not f_result else f_result
@@ -893,9 +920,13 @@ def sub_from_main(arg):
             except Exception: pass
         return_result=json.dumps(action)
     elif action=='sub_window_unpause':
-        # Search for subs in cache, pop unneeded values.
-        f_result = temporary_pop_and_get_subtitles(video_data)
-        
+        # same as the sub_window branch above: prefer the prefetch, fall through
+        # to the sqlite cache / live search when it holds nothing
+        f_result = prefetch_lookup(video_data)
+        if f_result is None:
+            # Search for subs in cache, pop unneeded values.
+            f_result = temporary_pop_and_get_subtitles(video_data)
+
         f_result=cache.get(sort_subtitles,24,f_result,video_data,table='subs')
         # Avoid f_result=None error if no subs found.
         f_result = [] if not f_result else f_result
