@@ -536,7 +536,13 @@ def test_clean_install_option():
           run(1, pick=lambda labels: []) == [])
     check('declining the clean confirm does NOT lose data',
           run(2, confirm=False) == keys_all)
-    check('cancelling the mode question keeps everything', run(-1) == keys_all)
+    # Cancel USED to mean "keep everything, install anyway". It was data-safe but
+    # guessed wrong where it costs: someone who meant "stop" got a full wipe and
+    # reinstall regardless (Asaf, 2026-08-15). It now aborts -- see
+    # test_keep_cancel_aborts_the_install for the caller-side ordering that makes
+    # None distinguishable from the [] clean-install choice.
+    check('cancelling the mode question ABORTS (None), it does not install',
+          run(-1) is None)
 
 
 def test_credentials_survive_reinstall():
@@ -1857,6 +1863,69 @@ def test_wand_press_shows_feedback():
               'prefetch_lookup' not in branch(name))
 
 
+def test_keep_cancel_aborts_the_install():
+    """Cancelling 'מה לשמור בהתקנה?' must abort, not install anyway.
+
+    Cancel used to be read as "keep everything" and the install went ahead. It
+    is data-safe, but it guessed wrong in the expensive direction: someone who
+    meant "keep everything" loses nothing either way, while someone who meant
+    "stop" got a full wipe and reinstall (Asaf, 2026-08-15).
+
+    The subtle part is that an EMPTY list already means something -- it is the
+    deliberate clean install. So cancel cannot be expressed as []; it returns
+    None, and the caller must check `is None` BEFORE its `if not keep_keys`
+    branch, or an abort would be executed as "wipe everything". That ordering
+    is what this test really pins."""
+    print("\n=== install: cancelling the keep question aborts ===")
+    import xbmcgui as _gui
+
+    real_select, real_multi, real_yesno = _gui.Dialog.select, _gui.Dialog.multiselect, _gui.Dialog.yesno
+    try:
+        # 1. cancel on the mode dialog -> None (abort)
+        _gui.Dialog.select = lambda self, *a, **k: -1
+        check('cancel returns None (abort), not a key list',
+              keep.prompt(extras=[], default_all=True) is None)
+
+        # 2. "keep everything" still returns every key
+        _gui.Dialog.select = lambda self, *a, **k: 0
+        allk = keep.prompt(extras=[], default_all=True)
+        check('"שמור הכל" still returns the full key list',
+              isinstance(allk, list) and len(allk) > 0)
+
+        # 3. the deliberate clean install still returns [] -- NOT None
+        _gui.Dialog.select = lambda self, *a, **k: 2
+        _gui.Dialog.yesno = lambda self, *a, **k: True
+        clean_choice = keep.prompt(extras=[], default_all=True)
+        check('"התקנה נקייה" still returns [] (a real, distinct choice)',
+              clean_choice == [])
+        check('and [] is NOT confused with the cancel signal',
+              clean_choice is not None)
+
+        # 4. cancelling the CHECKLIST goes back to the mode question, and if the
+        #    user then cancels that, the whole thing aborts
+        seq = [1, -1]
+        _gui.Dialog.select = lambda self, *a, **k: seq.pop(0) if seq else -1
+        _gui.Dialog.multiselect = lambda self, *a, **k: None
+        check('checklist cancel steps back, then cancel aborts',
+              keep.prompt(extras=[], default_all=True) is None)
+    finally:
+        _gui.Dialog.select, _gui.Dialog.multiselect, _gui.Dialog.yesno = \
+            real_select, real_multi, real_yesno
+
+    # 5. the caller must test `is None` BEFORE the falsy check, or an abort
+    #    would fall into the clean-install branch and wipe the box
+    src = open(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                            'resources', 'libs', 'builds.py'), encoding='utf-8').read()
+    call = src.index('keep_mod.prompt(')
+    none_check = src.find('if keep_keys is None:', call)
+    falsy_check = src.find('if not keep_keys:', call)
+    check('caller handles the abort', none_check != -1)
+    check('...and does so BEFORE the clean-install branch',
+          -1 < none_check < falsy_check)
+    check('...by leaving the install loop, not proceeding',
+          'continue' in src[none_check:falsy_check])
+
+
 def test_no_comments_in_addon_settings():
     """A shipped addon settings.xml must contain NO XML comments.
 
@@ -2546,6 +2615,7 @@ def main():
               test_log_upload_loses_nothing,
               test_subtitle_passthrough_is_utf8_and_real,
               test_wand_press_shows_feedback,
+              test_keep_cancel_aborts_the_install,
               test_no_comments_in_addon_settings,
               test_pov_placeholder_scrub,
               test_no_invalid_tmdb_widgets,

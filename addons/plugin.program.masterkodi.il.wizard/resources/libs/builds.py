@@ -2549,6 +2549,14 @@ def builds_menu():
                 log("keep prompt skipped (nothing on this box to keep)")
             else:
                 keep_keys = keep_mod.prompt(extras=extras, default_all=True, exclude=_excl)
+            # None = the user cancelled the keep question. That is NOT the same
+            # as an empty list (which IS the clean-install choice), so it has to
+            # be checked before the `if not keep_keys` below or an abort would
+            # be read as "wipe everything". Back to the build list, exactly like
+            # declining the install confirm.
+            if keep_keys is None:
+                log('install aborted at the keep step (user cancelled)')
+                continue
             # Cross-source: stage favourites purely so the OLD set can be parked
             # next to the new one. Skipped when the user asked to keep NOTHING --
             # writing a favourites side-save would contradict an explicit clean

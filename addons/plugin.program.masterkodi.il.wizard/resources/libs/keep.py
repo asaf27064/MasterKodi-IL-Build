@@ -374,9 +374,18 @@ def _group_has_data(g):
 
 
 def prompt(extras=None, default_all=True, exclude=None):
-    """Show the 'what to keep' checklist (all ticked by default). Returns a list
-    of selected group keys (may include 'extras'). Cancel -> keep the defaults
-    (all) so nothing is lost by accident.
+    """Show the 'what to keep' checklist (all ticked by default).
+
+    Returns a list of selected group keys (may include 'extras'), an EMPTY list
+    for a deliberate clean install, or None when the user cancelled -- the
+    caller must then abort the install.
+
+    Cancel used to mean "keep everything" and let the install proceed. It is
+    data-safe, but it guessed wrong in the direction that costs something:
+    someone who meant "keep everything" loses nothing either way, while someone
+    who meant "stop, I don't want this" got a full wipe and reinstall anyway
+    (Asaf, 2026-08-15). Cancel now aborts, which is also what cancelling the
+    checklist already did -- it steps BACK rather than forward.
 
     Only groups that actually have data on this box are listed: this hides the
     other content source's groups (POV groups on a Gears box, and vice versa) and
@@ -409,8 +418,9 @@ def prompt(extras=None, default_all=True, exclude=None):
                 '[COLOR %s]התקנה נקייה - לא לשמור כלום[/COLOR]' % COLOR_WARNING])
         except Exception:
             mode = OPT_ALL
-        if mode < 0:                     # cancel -> keep everything, lose nothing
-            mode = OPT_ALL
+        if mode < 0:                     # cancel -> abort the install entirely
+            log('keep: cancelled at the keep step -- aborting the install')
+            return None
         if mode == OPT_ALL:
             return all_keys
         if mode == OPT_PICK:
