@@ -76,6 +76,14 @@ jobs:
         # ignore attributes (silently lost the skip_intro flip).
         run: python tools/check_forbidden_patterns.py --strict
 
+      - name: Every setting our config writes still exists upstream
+        # Catches a SILENT upstream rename: a 3-way merge can be textually clean
+        # while our config keeps writing an id the addon no longer defines, so
+        # the value quietly does nothing (that is how sort.watchlist ->
+        # sort.watchlist_movies/_shows slipped through once). Gated only now
+        # that the four long-dead POV ids are cleaned out.
+        run: python tools/check_setting_ids.py
+
       - name: Verify content-variant invariants
         # POV mode validity, no Gears contamination/labels, trending, pov/ seeds,
         # view coverage -- fails the build on any regression of a known bug class.

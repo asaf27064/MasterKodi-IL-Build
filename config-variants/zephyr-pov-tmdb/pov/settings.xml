@@ -31,15 +31,12 @@
     <setting id="results.sort_pmcloud_first">true</setting>
     <setting id="pm.priority">8</setting>
     <setting id="pm.expires" default="true">0</setting>
-    <setting id="tb_refer_link" default="true">https://tinyurl.com/2d2ra6jq</setting>
     <setting id="tb.token" default="true" />
     <setting id="tb.enabled">true</setting>
     <setting id="tb.account_id" default="true" />
     <setting id="tb.torrent.enabled">true</setting>
     <setting id="store_torrent.torbox" default="true">false</setting>
-    <setting id="provider.torboxnews" default="true">false</setting>
     <setting id="store_usenet.torbox" default="true">false</setting>
-    <setting id="tb.user_engines_only" default="true">false</setting>
     <setting id="provider.tb_cloud" default="true">false</setting>
     <setting id="tb_cloud.title_filter" default="true">false</setting>
     <setting id="check.tb_cloud" default="true">false</setting>
@@ -56,7 +53,6 @@
     <setting id="check.oc_cloud" default="true">false</setting>
     <setting id="results.sort_occloud_first">true</setting>
     <setting id="oc.priority">9</setting>
-    <setting id="rd_refer_link" default="true">https://tinyurl.com/2db65q28</setting>
     <setting id="rd.client_id" default="true" />
     <setting id="rd.secret" default="true" />
     <setting id="rd.refresh" default="true" />
