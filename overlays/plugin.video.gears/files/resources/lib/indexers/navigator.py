@@ -119,6 +119,7 @@ class Navigator:
 		if s.trakt_user_active(): self.add({'mode': 'navigator.trakt_lists_personal'}, 'Trakt Lists', 'trakt')
 		self.add({'mode': 'navigator.trakt_lists_public'}, 'Trakt Public Lists', 'trakt')
 		if s.tmdblist_user_active(): self.add({'mode': 'tmdblist.get_tmdb_lists'}, 'TMDb Lists', 'tmdb')
+		if s.mdblist_user_active(): self.add({'mode': 'mdblist.list.get_mdblist_lists'}, 'MDBList Lists', 'mdb')
 		self.add({'mode': 'personal_lists.get_personal_lists'}, 'Personal Lists', 'lists')
 		self.add({'mode': 'navigator.discover_contents', 'media_type': 'movie', 'show_new': 'false'}, 'Discover Lists (Movies)', 'movies')
 		self.add({'mode': 'navigator.discover_contents', 'media_type': 'tvshow', 'show_new': 'false'}, 'Discover Lists (TV Shows)', 'tv')

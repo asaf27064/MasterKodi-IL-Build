@@ -211,37 +211,31 @@ def meta_language_choice():
 	clear_cache('meta', silent=True)
 
 def favorites_choice(params):
-	from caches.favorites_cache import Favorites
-	favorites = Favorites()
-	icon = media_path('favorites.png')
-	if params.get('cache'):
-		list = [('%s %s' % (ls(32028), ls(32453)), 'movie'), ('%s %s' % (ls(32029), ls(32453)), 'tvshow')]
-		list_items = [{'line1': item[0], 'icon': icon} for item in list]
-		kwargs = {'items': json.dumps(list_items), 'heading': ls(32453)}
-		mediatype = select_dialog([item[1] for item in list], **kwargs)
-		if mediatype is None: return
-		notification(32576) if favorites.clear(mediatype) else notification(32574)
+	from indexers.local_api import local_favorites, add_to_sync, remove_from_sync
+	mediatype, tmdb_id, title = params['mediatype'], params['tmdb_id'], params['title']
+	current_favorites = local_favorites(None, mediatype, 'all')
+	if str(tmdb_id) in {i['tmdb_id'] for i in current_favorites}:
+		action, refresh = remove_from_sync, True
+		text = '%s[CR][CR]%s POV %s?' % (title, ls(32603), ls(32453))
 	else:
-		mediatype, tmdb_id, title = params['mediatype'], params['tmdb_id'], params['title']
-		current_favorites, refresh = favorites.get(mediatype), False
-		if tmdb_id in {i['media_id'] for i in current_favorites}:
-			action, refresh = favorites.remove, True
-			text = '%s POV %s?' % (ls(32603), ls(32453))
-		else: action, text = favorites.add, '%s POV %s?' % (ls(32602), ls(32453))
-		if not confirm_dialog(text='%s[CR][CR]%s' % (title, text)): return
-		notification(32576) if action(mediatype, tmdb_id, title) else notification(32574)
-		if refresh: container_refresh()
+		action, refresh = add_to_sync, False
+		text = '%s[CR][CR]%s POV %s?' % (title, ls(32602), ls(32453))
+	if not confirm_dialog(text=text): return
+	notification(32576) if action('favorites', mediatype, tmdb_id, title) else notification(32574)
+	if refresh: container_refresh()
 
 def dropped_choice(params):
-	from caches.favorites_cache import Dropped
-	dropped = Dropped()
+	from indexers.local_api import local_droplist, add_to_sync, remove_from_sync
 	mediatype, tmdb_id, title = params['mediatype'], params['tmdb_id'], params['title']
-	current_dropped = dropped.get(mediatype)
-	if str(tmdb_id) in {i['media_id'] for i in current_dropped}:
-		action, text = dropped.remove, '%s POV %s?' % (ls(32603), 'Dropped')
-	else: action, text = dropped.add, '%s POV %s?' % (ls(32602), 'Dropped')
-	if not confirm_dialog(text='%s[CR][CR]%s' % (title, text)): return
-	notification(32576) if action(mediatype, tmdb_id, title) else notification(32574)
+	current_dropped = local_droplist(None, mediatype, 'all')
+	if str(tmdb_id) in {i['tmdb_id'] for i in current_dropped}:
+		action = remove_from_sync
+		text = '%s[CR][CR]%s POV %s?' % (title, ls(32603), 'Dropped')
+	else:
+		action = add_to_sync
+		text = '%s[CR][CR]%s POV %s?' % (title, ls(32602), 'Dropped')
+	if not confirm_dialog(text=text): return
+	notification(32576) if action('dropped', mediatype, tmdb_id, title) else notification(32574)
 	container_refresh()
 
 def options_menu(params, meta=None):

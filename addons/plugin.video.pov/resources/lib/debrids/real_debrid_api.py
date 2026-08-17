@@ -4,7 +4,6 @@ from modules import kodi_utils
 # logger = kodi_utils.logger
 
 ls, get_setting, set_setting = kodi_utils.local_string, kodi_utils.get_setting, kodi_utils.set_setting
-auth_url = 'https://app.real-debrid.com/oauth/v2/'
 base_url = 'https://app.real-debrid.com/rest/1.0/'
 timeout = 10.0
 session = requests.Session()
@@ -40,10 +39,11 @@ class RealDebridAPI:
 
 	def refresh_token(self):
 		try:
-			client_id, secret, refresh = get_setting('rd.client_id'), get_setting('rd.secret'), get_setting('rd.refresh')
-			data = {'client_id': client_id, 'client_secret': secret, 'code': refresh, 'grant_type': 'http://oauth.net/grant_type/device/1.0'}
-			url = auth_url + 'token'
-			response = requests.post(url, data=data).json()
+			data = {'grant_type': 'http://oauth.net/grant_type/device/1.0'}
+			data['code'] = get_setting('rd.refresh')
+			data['client_secret'] = get_setting('rd.secret')
+			data['client_id'] = get_setting('rd.client_id')
+			response = requests.post('https://app.real-debrid.com/oauth/v2/token', data=data).json()
 			self.token, refresh = response['access_token'], response['refresh_token']
 			session.headers.update(self.headers())
 			set_setting('rd.token', self.token)

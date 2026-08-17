@@ -79,11 +79,11 @@ class TorBoxAPI:
 		if 'usenet' in file_id: path, key = 'usenet/requestdl', 'usenet_id'
 		elif 'webdl' in file_id: path, key = 'webdl/requestdl', 'web_id'
 		else: path, key = 'torrents/requestdl', 'torrent_id'
-		try: user_ip = requests.get(ip_url, timeout=2.0).text
-		except: user_ip = ''
-		params = {'user_ip': user_ip} if user_ip else {}
 		ids = file_id.split(',')
-		params.update({'token': self.token, key: ids[0], 'file_id': ids[1]})
+		params = {key: ids[0], 'file_id': ids[1], 'token': self.token}
+		try: user_ip = requests.get(ip_url, timeout=2.0).text.strip()
+		except: user_ip = ''
+		if user_ip: params['user_ip'] = user_ip
 		return self._get(path, params=params)
 
 	def check_cache(self, hashes):

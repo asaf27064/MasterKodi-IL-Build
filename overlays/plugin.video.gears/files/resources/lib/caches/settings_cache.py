@@ -215,7 +215,7 @@ def default_settings():
 {'setting_id': 'update.username', 'setting_type': 'string', 'setting_default': 'gearsChainsRepo'},
 {'setting_id': 'update.location', 'setting_type': 'string', 'setting_default': 'gearsChainsRepo.github.io'},
 #==================== Watched Indicators
-{'setting_id': 'watched_indicators', 'setting_type': 'action', 'setting_default': '0', 'settings_options': {'0': 'gears', '1': 'Trakt', '2': 'Simkl'}},
+{'setting_id': 'watched_indicators', 'setting_type': 'action', 'setting_default': '0', 'settings_options': {'0': 'gears', '1': 'Trakt', '2': 'Simkl', '3': 'MDBList'}},
 #======+============= Trakt Cache
 {'setting_id': 'trakt.sync_interval', 'setting_type': 'action', 'setting_default': '60', 'min_value': '5', 'max_value': '600'},
 {'setting_id': 'trakt.refresh_widgets', 'setting_type': 'boolean', 'setting_default': 'true'},
@@ -228,6 +228,9 @@ def default_settings():
 {'setting_id': 'simkl.username', 'setting_type': 'string', 'setting_default': ''},
 {'setting_id': 'simkl.sync_interval', 'setting_type': 'action', 'setting_default': '60', 'min_value': '5', 'max_value': '600'},
 {'setting_id': 'simkl.refresh_widgets', 'setting_type': 'boolean', 'setting_default': 'true'},
+#======+============= MDBList Auth
+{'setting_id': 'mdblist.api_key', 'setting_type': 'string', 'setting_default': ''},
+{'setting_id': 'mdblist.user', 'setting_type': 'string', 'setting_default': 'empty_setting'},
 
 #==================== UTC Time Offset
 {'setting_id': 'datetime.offset', 'setting_type': 'action', 'setting_default': '0', 'min_value': '-15', 'max_value': '15'},
