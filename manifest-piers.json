@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-16T12:52:45Z",
+  "generated_utc": "2026-08-17T16:45:05Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -54,22 +54,22 @@
     },
     {
       "id": "plugin.video.gears",
-      "version": "2.4.0",
+      "version": "2.4.2",
       "channel": "core",
-      "zip": "plugin.video.gears-2.4.0.zip",
-      "sha256": "63d4fcf7d412e696b2542312829c6b85831d96e1506a761d5ed2660b8e15d0fd",
-      "size": 8721095,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.gears-2.4.0.zip",
+      "zip": "plugin.video.gears-2.4.2.zip",
+      "sha256": "ed68825961219e1756e9984e66528551f0748bc5bb304ba5269d6038cac838d4",
+      "size": 8780132,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.gears-2.4.2.zip",
       "content": "gears"
     },
     {
       "id": "plugin.video.pov",
-      "version": "6.08.10",
+      "version": "6.08.13",
       "channel": "optional",
-      "zip": "plugin.video.pov-6.08.10.zip",
-      "sha256": "d49f987d6d34b0b374feaec7292bfeb75ea5759e5a7f309fe7837df526e4eb24",
-      "size": 3622465,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.08.10.zip",
+      "zip": "plugin.video.pov-6.08.13.zip",
+      "sha256": "fe5d877b7648d0b29d6a7c4b74ce029583238b1ce52eb94ecbbf81497b496dcc",
+      "size": 3622806,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.08.13.zip",
       "content": "pov"
     },
     {
@@ -545,6 +545,6 @@
     "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-62.zip"
   },
   "content_variants": {
-    "version": "10059eac91ec7763"
+    "version": "e1ffd72c6b68ca35"
   }
 }
