@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-17T16:45:05Z",
+  "generated_utc": "2026-08-20T01:40:04Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -18,12 +18,12 @@
     },
     {
       "id": "metadata.themoviedb.org.python",
-      "version": "3.2.1",
+      "version": "3.2.2",
       "channel": "core",
-      "zip": "metadata.themoviedb.org.python-3.2.1.zip",
-      "sha256": "74d26729ea260f29da5eb2e1222f6b0794c47ef90404626a1b8e9d441aec881c",
-      "size": 177513,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/metadata.themoviedb.org.python-3.2.1.zip"
+      "zip": "metadata.themoviedb.org.python-3.2.2.zip",
+      "sha256": "f975e0b7db46cbcc46cc93dced73b3fe38a21df38d3f03324afab3f9631e9c24",
+      "size": 177529,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/metadata.themoviedb.org.python-3.2.2.zip"
     },
     {
       "id": "metadata.tvshows.themoviedb.org.python",
