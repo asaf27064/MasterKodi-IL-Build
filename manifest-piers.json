@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-20T01:40:04Z",
+  "generated_utc": "2026-08-21T18:47:05Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -74,12 +74,12 @@
     },
     {
       "id": "plugin.video.themoviedb.helper",
-      "version": "6.16.2",
+      "version": "6.16.4",
       "channel": "optional",
-      "zip": "plugin.video.themoviedb.helper-6.16.2.zip",
-      "sha256": "7c7d195ca6747561794e53d5137211fd5cdb2e85419b78a2e5cf4751204719cd",
-      "size": 5051250,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.themoviedb.helper-6.16.2.zip"
+      "zip": "plugin.video.themoviedb.helper-6.16.4.zip",
+      "sha256": "8172e5cdfec9f0756a5d5c6abf5538a7396a7f4243e8441835c76e210cca99c4",
+      "size": 4297947,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.themoviedb.helper-6.16.4.zip"
     },
     {
       "id": "repository.chainsrepo",
