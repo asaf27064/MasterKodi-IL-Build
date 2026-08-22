@@ -2045,6 +2045,78 @@ def test_services_connect_offer():
     check('shipped settings still carry no XML comment', '<!--' not in st)
 
 
+def test_pack_never_picks_a_sample():
+    """A torrent pack must never resolve to the SAMPLE file.
+
+    Silo S03E08, 2026-08-22: the pack held both
+
+        silo.s03e08.2160p.web.h265-cakes-sample.mkv     181,788,270 B
+        silo.s03e08.2160p.web.h265-cakes.mkv          9,054,753,823 B
+
+    and POV played the sample -- confirmed by HEAD on the URL Kodi opened
+    (Content-Length byte-identical to the sample) and by its container declaring
+    Duration 65.0s, exactly the 1:05 on screen.
+
+    Two upstream asymmetries, both episode-only, and EITHER alone would have
+    prevented it:
+      * the extras filter is an `elif` under `if season:` -> movies only, so an
+        episode was filtered by the season/episode pattern alone, which the
+        sample filename matches just as well
+      * the size sort is `if not season` -> an episode took the FIRST entry in
+        the pack's arbitrary order instead of the biggest
+
+    This replays the real file list through the shipped picker logic."""
+    print(chr(10) + '=== debrid pack: the sample must never win ===')
+    import re as _re
+    src = open(os.path.join(REPO, 'addons', 'plugin.video.pov', 'resources', 'lib',
+                            'modules', 'debrid.py'), encoding='utf-8').read()
+
+    # the real pack from the incident, in the order the API returned it
+    FILES = [{'filename': 'silo.s03e08.2160p.web.h265-cakes-sample.mkv',
+              'size': 181788270, 'link': 'L-sample'},
+             {'filename': 'silo.s03e08.2160p.web.h265-cakes.mkv',
+              'size': 9054753823, 'link': 'L-full'}]
+    EXTRAS = ('trailer', 'sample', 'extra', 'extras', 'blooper', 'bloopers',
+              'deleted', 'inside', 'unused', 'footage', 'feature', 'featurette',
+              'making.of', 'behind.the.scenes')
+
+    def pick(files, season, episode, extras_on_episodes, sort_always):
+        chosen = []
+        for i in files:
+            fn = i['filename'].lower()
+            if season:
+                if 's%02de%02d' % (int(season), int(episode)) not in fn:
+                    continue
+                if extras_on_episodes and any(x in fn for x in EXTRAS):
+                    continue
+            elif any(x in fn for x in EXTRAS):
+                continue
+            chosen.append(i)
+        if sort_always or not season:
+            chosen.sort(key=lambda k: k['size'], reverse=True)
+        return next((i['link'] for i in chosen), None)
+
+    # the bug, reproduced: neither guard -> the sample wins
+    check('the old logic really did pick the sample (bug reproduced)',
+          pick(FILES, 3, 8, False, False) == 'L-sample')
+    # each guard ALONE is enough
+    check('extras filter alone saves it', pick(FILES, 3, 8, True, False) == 'L-full')
+    check('size sort alone saves it', pick(FILES, 3, 8, False, True) == 'L-full')
+    check('both together', pick(FILES, 3, 8, True, True) == 'L-full')
+    # movies were never affected, and must stay that way
+    check('movie path still filters extras', pick(FILES, None, None, True, True) == 'L-full')
+
+    # and the shipped file carries both guards
+    body = src[src.index('def resolve_external_sources'):]
+    body = body[:body.index('file_url = api.unrestrict_link')]
+    season_branch = body[body.index('if season:'):body.index('elif any(')]
+    check('shipped: extras filter runs on the EPISODE branch',
+          'extras_filtering_list' in season_branch)
+    check('shipped: the size sort is no longer gated on `not season`',
+          "if not season: selected_files.sort" not in body
+          and 'selected_files.sort(key=lambda k:' in body)
+
+
 def test_no_comments_in_addon_settings():
     """A shipped addon settings.xml must contain NO XML comments.
 
@@ -2736,6 +2808,7 @@ def main():
               test_wand_press_shows_feedback,
               test_keep_cancel_aborts_the_install,
               test_services_connect_offer,
+              test_pack_never_picks_a_sample,
               test_no_comments_in_addon_settings,
               test_pov_placeholder_scrub,
               test_no_invalid_tmdb_widgets,
