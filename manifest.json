@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-17T16:36:46Z",
+  "generated_utc": "2026-08-22T18:38:59Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -18,12 +18,12 @@
     },
     {
       "id": "metadata.themoviedb.org.python",
-      "version": "3.2.1",
+      "version": "3.2.2",
       "channel": "core",
-      "zip": "metadata.themoviedb.org.python-3.2.1.zip",
-      "sha256": "74d26729ea260f29da5eb2e1222f6b0794c47ef90404626a1b8e9d441aec881c",
-      "size": 177513,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/metadata.themoviedb.org.python-3.2.1.zip"
+      "zip": "metadata.themoviedb.org.python-3.2.2.zip",
+      "sha256": "f975e0b7db46cbcc46cc93dced73b3fe38a21df38d3f03324afab3f9631e9c24",
+      "size": 177529,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/metadata.themoviedb.org.python-3.2.2.zip"
     },
     {
       "id": "metadata.tvshows.themoviedb.org.python",
@@ -74,12 +74,12 @@
     },
     {
       "id": "plugin.video.themoviedb.helper",
-      "version": "6.16.2",
+      "version": "6.16.5",
       "channel": "optional",
-      "zip": "plugin.video.themoviedb.helper-6.16.2.zip",
-      "sha256": "7c7d195ca6747561794e53d5137211fd5cdb2e85419b78a2e5cf4751204719cd",
-      "size": 5051250,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.16.2.zip"
+      "zip": "plugin.video.themoviedb.helper-6.16.5.zip",
+      "sha256": "97bc0606a7bc12ea2ff98e27b8bd9de6d8ce06d07b430a96b86c5bd253dace5c",
+      "size": 4298098,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.16.5.zip"
     },
     {
       "id": "repository.chainsrepo",
@@ -545,6 +545,6 @@
     "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-62.zip"
   },
   "content_variants": {
-    "version": "10059eac91ec7763"
+    "version": "e1ffd72c6b68ca35"
   }
 }
