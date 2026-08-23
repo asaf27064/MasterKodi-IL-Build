@@ -2045,6 +2045,151 @@ def test_services_connect_offer():
     check('shipped settings still carry no XML comment', '<!--' not in st)
 
 
+def test_sdr_filter_against_real_sources():
+    """The SDR-only filter, measured against 3,240 REAL release names.
+
+    The filter is entirely our own code -- clean upstream POV 6.08.13 and Gears
+    2.4.2 have no _hdr_tags and no _is_hdr_item -- so this only depends on
+    upstream through the badge builder, which is exercised live on purpose.
+
+    Both directions matter:
+      * it must hide everything HDR/DV, or a non-HDR display shows washed-out
+        (HDR10) or green/purple (DV profile 5) pictures
+      * it must NOT hide plain SDR, or real watchable sources disappear
+
+    Corpus frozen in fixtures/hdr_corpus.txt (public torrentio index, 14
+    shows/films + 45 TMDb-resolved movies, 2026-08-22). Measured when written:
+    599 filtered, 0 missed against a deliberately broad reference, POV and Gears
+    identical on all 3,240.
+    """
+    print(chr(10) + '=== SDR filter vs 3,240 real release names ===')
+    import ast as _ast
+    import builtins
+    import re as _re
+
+    def predicate(engine):
+        """Lift the SHIPPED _is_hdr_item out of the overlay and run it as-is."""
+        p = os.path.join(REPO, 'overlays', 'plugin.video.%s' % engine, 'files',
+                         'resources', 'lib', 'windows', 'sources.py')
+        src = open(p, encoding='utf-8').read()
+        fn = tags = words = None
+        for n in _ast.walk(_ast.parse(src)):
+            if isinstance(n, _ast.FunctionDef) and n.name == '_is_hdr_item':
+                fn = _ast.get_source_segment(src, n)
+            if isinstance(n, _ast.Assign):
+                for t in n.targets:
+                    if isinstance(t, _ast.Name) and t.id == '_hdr_tags':
+                        tags = _ast.literal_eval(n.value)
+                    if isinstance(t, _ast.Name) and t.id == '_hdr_words':
+                        words = _ast.literal_eval(n.value)
+        ns = {}
+        exec(compile(_ast.parse(fn.replace(chr(9), '    ')), 'pred', 'exec'), ns)
+
+        class S(object):
+            _hdr_tags, _hdr_words = tags, words
+        S._is_hdr_item = ns['_is_hdr_item']
+        return S(), tags, words
+
+    class _Stub(object):
+        def __call__(self, *a, **k): return self
+        def __getattr__(self, _): return self
+        def __iter__(self): return iter(())
+        def __bool__(self): return False
+        def __mro_entries__(self, b): return (object,)
+
+    class _G(dict):
+        def __missing__(self, k):
+            if hasattr(builtins, k):
+                raise KeyError(k)
+            return _Stub()
+
+    def badge_builder():
+        """POV's own get_file_info -- where the [B]HDR[/B] badges come from."""
+        p = os.path.join(REPO, 'addons', 'plugin.video.pov', 'resources', 'lib',
+                         'modules', 'source_utils.py')
+        body = []
+        for line in open(p, encoding='utf-8').read().split(chr(10)):
+            s = line.strip()
+            body.append(line[:len(line) - len(line.lstrip())] + 'pass'
+                        if s.startswith(('import ', 'from ')) and s != 'import re'
+                        else line)
+        g = _G({'re': _re, '__name__': 'su', '__builtins__': builtins})
+        exec(compile(chr(10).join(body), 'su', 'exec'), g)
+        return g['get_file_info']
+
+    class Item(object):
+        """Both engines uppercase the release name before storing it."""
+        def __init__(self, name, extra):
+            self._n, self._e = name.upper(), extra
+
+        def getProperty(self, key):
+            return self._n if 'name' in key else self._e
+
+    pov, tags, words = predicate('pov')
+    gears, gtags, gwords = predicate('gears')
+    check('POV and Gears ship the SAME tag/word lists',
+          tags == gtags and words == gwords)
+    check("the engine's HDR10+ badge is covered", '[B]HDR10+[/B]' in tags)
+
+    gfi = badge_builder()
+
+    def norm(n):
+        return '.' + _re.sub(r'[^a-z0-9+]+', '.',
+                             n.lower().replace('&', 'and')).strip('.') + '.'
+
+    fixture = os.path.join(REPO, 'tools', 'tests', 'fixtures', 'hdr_corpus.txt')
+    names = [l for l in open(fixture, encoding='utf-8').read().split(chr(10))
+             if l and not l.startswith('#')]
+    check('corpus present (3,000+ real names)', len(names) > 3000)
+
+    REF = _re.compile(r'(?:\b|_|\.)(hdr|hdr10|hdr10\+|hdr10plus|hdrplus|dv|dovi|'
+                      r'dvhe|dvh1|dolby\.?vision|hlg|pq|dvp[5-9])(?:\b|_|\.)', _re.I)
+    SDR = _re.compile(r'(?:\b|\.|_|\[)sdr(?:\b|\.|_|\])', _re.I)
+
+    missed, split, filtered, pure_sdr_hidden = [], 0, 0, []
+    for n in names:
+        try:
+            info = gfi(norm(n), None)
+        except Exception:
+            info = ('', '')
+        extra = info[1] if isinstance(info, (tuple, list)) and len(info) > 1 else ''
+        o = bool(pov._is_hdr_item(Item(n, extra)))
+        g2 = bool(gears._is_hdr_item(Item(n, extra)))
+        filtered += o
+        if o != g2:
+            split += 1
+        if REF.search(n) and not o:
+            missed.append(n)
+        if o and SDR.search(n) and not REF.search(n):
+            pure_sdr_hidden.append(n)
+
+    check('POV and Gears agree on all %d names' % len(names), split == 0)
+    check('nothing HDR/DV slips through', not missed)
+    check('no PURE-SDR release is ever hidden', not pure_sdr_hidden)
+    check('still filters a substantial share (sanity: >300)', filtered > 300)
+
+    # Self-contradictory names ("SDR DV", "[HLG HDR SDR]") cannot be resolved
+    # from metadata. They stay FILTERED deliberately: wrongly showing DV on a
+    # non-HDR display gives green/purple garbage, wrongly hiding one costs a
+    # single row out of dozens.
+    mixed = [n for n in names if SDR.search(n) and REF.search(n)]
+    check('ambiguous SDR+HDR names are a handful, not a class',
+          0 < len(mixed) <= 10)
+
+    EDGE = [('Movie.2024.2160p.WEB-DL.DV.HDR.H265-GRP', True),
+            ('Show.S01E01.2160p.DoVi.HDR10.HEVC-GRP', True),
+            ('Movie.2024.2160p.WEB-DL.HDR10+.HEVC-GRP', True),
+            ('Movie.2024.DVDRip.XviD-GROUP', False),
+            ('Movie.2024.HDRip.x264-GROUP', False),
+            ('Movie.2024.1080p.WEB.H264-DVSUX', False),
+            ('Movie.2024.1080p.BluRay.DTS-HD.MA.5.1.x264-GRP', False)]
+    bad = [n for n, want in EDGE
+           if bool(pov._is_hdr_item(Item(n, ''))) != want]
+    check('edge cases (DVDRip / HDRip / DTS-HD stay visible)', not bad)
+    if bad:
+        print('       wrong verdict for: %s' % bad)
+
+
 def test_no_comments_in_addon_settings():
     """A shipped addon settings.xml must contain NO XML comments.
 
@@ -2736,6 +2881,7 @@ def main():
               test_wand_press_shows_feedback,
               test_keep_cancel_aborts_the_install,
               test_services_connect_offer,
+              test_sdr_filter_against_real_sources,
               test_no_comments_in_addon_settings,
               test_pov_placeholder_scrub,
               test_no_invalid_tmdb_widgets,

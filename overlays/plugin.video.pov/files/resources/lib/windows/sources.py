@@ -139,7 +139,9 @@ class SourceResults(BaseDialog):
 			return identifier in self._get_tried_sources()
 		except: return False
 
-	_hdr_tags = ('[B]HDR[/B]', '[B]D/VISION[/B]')
+	_hdr_tags = ('[B]HDR[/B]', '[B]D/VISION[/B]', '[B]HDR10+[/B]')   # HDR10+ is a THIRD badge the engine emits; '[B]HDR[/B]' is not a
+	# substring of '[B]HDR10+[/B]', so without it the badge path had a hole
+	# (masked only because such releases usually also match by name).
 	_hdr_words = ('.HDR.', '.HDR10.', '.HDR10PLUS.', '.HDR10P.', '.DV.', '.DOVI.', '.DVHE.', '.DOLBY.VISION.', '.DOLBYVISION.', '.HLG.')
 
 	def _is_hdr_item(self, item):
