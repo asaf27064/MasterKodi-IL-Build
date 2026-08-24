@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-24T13:08:54Z",
+  "generated_utc": "2026-08-24T13:36:26Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -502,21 +502,21 @@
     },
     {
       "id": "skin.arctic.fuse.3",
-      "version": "3.2.13.102",
+      "version": "3.2.13.103",
       "channel": "optional",
-      "zip": "skin.arctic.fuse.3-3.2.13.102.zip",
-      "sha256": "d39b31ba69f5f4dd4ea9f2d1fc919725ec1974a4f8808e1a83fbfeb254cb4ee0",
+      "zip": "skin.arctic.fuse.3-3.2.13.103.zip",
+      "sha256": "c34e582375fd238863c6817796db4e86feb6855ed38eca8cb20a0a6c95c0d13a",
       "size": 54640046,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.fuse.3-3.2.13.102.zip"
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.fuse.3-3.2.13.103.zip"
     },
     {
       "id": "skin.arctic.zephyr.2.resurrection.mod",
-      "version": "1.1.9.109",
+      "version": "1.1.9.110",
       "channel": "optional",
-      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.1.9.109.zip",
-      "sha256": "f48cd43460af53877288d53c331cb6d9b137a37641c18299a6c24c6b16d7cf24",
+      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.1.9.110.zip",
+      "sha256": "94b27e8d2710f15e3263741090bf83a5b32297097dac32f508de6c8a9302c48f",
       "size": 18525659,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.2.resurrection.mod-1.1.9.109.zip"
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.2.resurrection.mod-1.1.9.110.zip"
     },
     {
       "id": "skin.estuary",
