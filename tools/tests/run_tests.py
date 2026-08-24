@@ -117,6 +117,41 @@ def test_keep():
     check('POV watched.db restored with its row', _sentinel(pov_w) == 'POV_WATCHED')
     check('POV maincache.db restored with its row', _sentinel(pov_m) == 'POV_CACHE')
 
+    # --- the continue-watching row across a reinstall -------------------
+    # The merged row stores NOTHING of its own: it is computed from POV's
+    # `progress` table (resume points) and `watched_status` (last watched per
+    # show). So the question "will my continue watching survive a reinstall?"
+    # is exactly "does keep carry those two tables?" -- asserted here with the
+    # real tables rather than a sentinel row, for both halves at once.
+    import sqlite3 as _sq3
+    con = _sq3.connect(pov_w)
+    con.execute('CREATE TABLE IF NOT EXISTS watched_status (db_type TEXT, media_id TEXT, '
+                'season INTEGER, episode INTEGER, last_played TEXT, title TEXT)')
+    con.execute('CREATE TABLE IF NOT EXISTS progress (db_type TEXT, media_id TEXT, '
+                'season INTEGER, episode INTEGER, resume_point TEXT, curr_time TEXT, '
+                'last_played TEXT, resume_id INTEGER, title TEXT)')
+    con.execute("INSERT INTO watched_status VALUES ('episode','94997',1,1,'2026-08-23 21:10:00','')")
+    con.execute("INSERT INTO progress VALUES ('episode','108978',1,2,'38.5','1120',"
+                "'2026-08-24 14:00:00',0,'')")
+    con.commit(); con.close()
+
+    ok_b, _n = keep.backup(['pov_content'], target_content='pov')
+    os.remove(pov_w)                                   # the wipe
+    _, rf = keep.restore()
+    con = _sq3.connect(pov_w)
+    nxt = con.execute("SELECT media_id, season, episode FROM watched_status").fetchall()
+    res = con.execute("SELECT media_id, season, episode, resume_point FROM progress").fetchall()
+    con.close()
+    check('reinstall keeps the NEXT-EPISODE half (watched history)',
+          ok_b and rf == 0 and nxt == [('94997', 1, 1)])
+    check('reinstall keeps the RESUME half (bookmarks/progress)',
+          res == [('108978', 1, 2, '38.5')])
+
+    cw = open(os.path.join(REPO, 'overlays', 'plugin.video.pov', 'files', 'resources',
+                           'lib', 'kodirdil', 'continue_watching.py'), encoding='utf-8').read()
+    check('...and the row itself stores nothing that could be lost',
+          'INSERT' not in cw.upper() and 'set_bookmark' not in cw)
+
     ok_b, n = keep.backup(['gears_content'], target_content='gears')
     check('gears db staged', ok_b and os.path.isfile(os.path.join(keep.STAGE, 'gearsdb__watched.db')))
     os.remove(gears_w)
