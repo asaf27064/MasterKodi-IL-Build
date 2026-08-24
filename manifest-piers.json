@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-24T14:27:15Z",
+  "generated_utc": "2026-08-24T14:44:11Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -48,8 +48,8 @@
       "version": "2.4.179",
       "channel": "core",
       "zip": "plugin.program.masterkodi.il.wizard-2.4.179.zip",
-      "sha256": "bc4067dc6d362b58b2f632ab0f18ab062de9d0996b85cce04d24bd14788139b4",
-      "size": 5378870,
+      "sha256": "f5219e2f940e9a1af2fee9ecec4122d8497c285b0e48e8b25c4e49ef7808b680",
+      "size": 5379106,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.179.zip"
     },
     {
