@@ -2579,14 +2579,26 @@ def test_upstream_watch_urls():
     if crashed:
         print('       raised: %r' % (crashed,))
 
-    # the two skins whose tag != addon version stay in human hands
-    for root in ('overlays', 'overlays-piers'):
-        p = os.path.join(REPO, root, 'skin.arctic.zephyr.2.resurrection.mod', 'base.json')
-        if not os.path.isfile(p):
-            continue
-        b = _json.loads(open(p, encoding='utf-8').read())
-        check('%s: zephyr is not adopted unattended (one tag, two fleet assets)' % root,
-              b.get('auto_adopt') is False)
+    # The opt-out lever exists and works -- tested on a synthetic overlay rather
+    # than pinned to a real one, because no overlay should need it now: adopt
+    # handles one-tag-two-assets by formatting the url from the TAG and reading
+    # the version out of the downloaded zip (Zephyr v1.1.10 -> Omega 1.0.52,
+    # Piers 1.1.10, verified against the real release).
+    od2 = os.path.join(tmp, 'skin.optout')
+    os.makedirs(od2)
+    open(os.path.join(od2, 'base.json'), 'w', encoding='utf-8').write(
+        _json.dumps({'addon_id': 'skin.optout', 'base_version': '1.0.0',
+                     'auto_adopt': False,
+                     'base_zip_url': 'https://example.invalid/{version}.zip',
+                     'upstream_addons_xml': 'https://example.invalid/addons.xml'}))
+    try:
+        st2, crashed2 = _au.adopt(od2, target='9.9.9', force=False, do_build=False), None
+    except Exception as e:
+        st2, crashed2 = None, e
+    check('auto_adopt:false holds an overlay back without erroring',
+          crashed2 is None and st2 in ('manual', 'up-to-date'))
+    check('...and an unreachable upstream cannot turn that into a failure',
+          st2 != 'error')
 
 
 def test_continue_watching_row():

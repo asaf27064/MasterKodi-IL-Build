@@ -47,12 +47,19 @@ def adopt(overlay_dir, target=None, force=False, do_build=False, out='addons'):
     # upstream release needs a judgement call our diff cannot make -- e.g. a tag
     # that ships a different asset (and a different addon version) per fleet.
     if base.get('auto_adopt') is False and not force:
-        res = cu.check_one(overlay_dir, target=target)
+        # Report what is waiting if we can, but never let that lookup decide the
+        # outcome: an overlay held back must stay held back even if upstream is
+        # unreachable, and a network hiccup must not read as an adopt failure.
+        try:
+            res = cu.check_one(overlay_dir, target=target)
+        except Exception as e:
+            print('%s: auto_adopt off (upstream check failed: %s)' % (aid, e))
+            return 'up-to-date'
         if res.get('has_update'):
             print('%s: %s -> %s available, but auto_adopt is off (adopt by hand)'
                   % (aid, res['current'], res['latest']))
             return 'manual'
-        print('%s: already at %s (auto_adopt off)' % (aid, base['base_version']))
+        print('%s: nothing waiting (auto_adopt off)' % aid)
         return 'up-to-date'
 
     res = cu.check_one(overlay_dir, target=target)
