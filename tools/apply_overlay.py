@@ -85,7 +85,10 @@ def _fetch_base_zip(base, local_zip=None, overlay_dir=None):
         if os.path.isfile(p):
             with open(p, 'rb') as fh:
                 return fh.read()
-    url = base['base_zip_url'].format(version=base['base_version'])
+    # the RELEASE TAG, not the addon version -- they differ for Zephyr, whose
+    # v1.1.10 tag ships an Omega asset versioned 1.0.52 (see check_upstream.url_version)
+    import check_upstream as _cu
+    url = base['base_zip_url'].format(version=_cu.url_version(base))
     _log('downloading base: %s' % url)
     try:
         import requests

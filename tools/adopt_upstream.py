@@ -42,6 +42,19 @@ def adopt(overlay_dir, target=None, force=False, do_build=False, out='addons'):
     base = json.load(open(bpath, encoding='utf-8'))
     aid = base['addon_id']
 
+    # Some overlays are watched but never adopted unattended: `auto_adopt: false`
+    # keeps the nightly alert while leaving the bump to a human. Used where the
+    # upstream release needs a judgement call our diff cannot make -- e.g. a tag
+    # that ships a different asset (and a different addon version) per fleet.
+    if base.get('auto_adopt') is False and not force:
+        res = cu.check_one(overlay_dir, target=target)
+        if res.get('has_update'):
+            print('%s: %s -> %s available, but auto_adopt is off (adopt by hand)'
+                  % (aid, res['current'], res['latest']))
+            return 'manual'
+        print('%s: already at %s (auto_adopt off)' % (aid, base['base_version']))
+        return 'up-to-date'
+
     res = cu.check_one(overlay_dir, target=target)
     if res.get('error'):
         print('%s: ERROR %s' % (aid, res['error']))
@@ -82,11 +95,32 @@ def adopt(overlay_dir, target=None, force=False, do_build=False, out='addons'):
                 print('  removed old base: %s' % old_rel)
         base['base_zip_local'] = new_rel
 
-    base['base_version'] = tgt
+    # The tag is not the addon version. Zephyr's v1.1.10 tag ships an Omega
+    # asset versioned 1.0.52 and a Piers asset versioned 1.1.10, so writing the
+    # TAG into base_version would have recorded a version this overlay is not on
+    # -- and, because upstream_tag was left behind, the watcher would have
+    # re-reported the same update every night forever (2026-08-24).
+    #
+    # Where the overlay tracks a tag, move the tag AND take the version from the
+    # zip we actually downloaded.
+    if base.get('upstream_tag'):
+        url = (base.get('upstream_zip_url') or base['base_zip_url']).format(
+            version=cu.url_version(base, tgt))
+        print('  reading the real addon version from: %s' % url)
+        real = cu.addon_version_in_zip(cu._get(url), aid)
+        if not real:
+            print('  ERROR could not read addon.xml from the new base -- not adopting')
+            return 'error'
+        base['upstream_tag'] = cu.url_version(base, tgt)
+        base['base_version'] = real
+        print('  base.json -> upstream_tag=%s, base_version=%s (from the zip)'
+              % (base['upstream_tag'], real))
+    else:
+        base['base_version'] = tgt
+        print('  base.json -> base_version=%s' % tgt)
     with open(bpath, 'w', encoding='utf-8') as fh:
         json.dump(base, fh, indent=2, ensure_ascii=False)
         fh.write('\n')
-    print('  base.json -> base_version=%s' % tgt)
 
     if do_build:
         print('  reconstructing merged addon into %s/ ...' % out)
@@ -108,22 +142,42 @@ def main():
     args = ap.parse_args()
 
     if args.all_safe:
-        adopted = []
+        adopted, failed = [], []
         for name in sorted(os.listdir(args.overlays_root)):
             odir = os.path.join(args.overlays_root, name)
             if not os.path.isfile(os.path.join(odir, 'base.json')):
                 continue
-            status = adopt(odir, target=None, force=False,
-                           do_build=not args.no_build, out=args.out)
+            # One overlay must never take the run down with it. A 404 on the
+            # Piers AF3 entry aborted this loop mid-way and the workflow's commit
+            # step never ran -- so a Zephyr adoption that had ALREADY succeeded
+            # for the other fleet was discarded with it (2026-08-24). Keep going,
+            # report at the end, and fail the run only after everything ran.
+            try:
+                status = adopt(odir, target=None, force=False,
+                               do_build=not args.no_build, out=args.out)
+            except Exception as e:
+                print('%s: ERROR %s' % (name, e))
+                failed.append(name)
+                continue
             if status == 'adopted':
                 adopted.append(name)
+            elif status == 'error':
+                failed.append(name)
         print('\nadopted: %s' % (', '.join(adopted) if adopted else '(none)'))
-        # machine flag for CI
+        if failed:
+            print('failed:  %s' % ', '.join(failed))
+        # machine flags for CI. Deliberately exit 0 even when something failed:
+        # the commit step downstream is what preserves the adoptions that DID
+        # work, and failing here would skip it -- which is exactly how a good
+        # Zephyr adoption was thrown away. The failure is reported through
+        # `failed`, and the workflow fails the run at the END, after committing.
         gh = os.environ.get('GITHUB_OUTPUT')
         if gh:
             with open(gh, 'a', encoding='utf-8') as fh:
                 fh.write('adopted=%s\n' % ('true' if adopted else 'false'))
                 fh.write('adopted_list=%s\n' % (', '.join(adopted)))
+                fh.write('failed=%s\n' % ('true' if failed else 'false'))
+                fh.write('failed_list=%s\n' % (', '.join(failed)))
         return 0
 
     if not args.overlay_dir:

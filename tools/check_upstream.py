@@ -54,6 +54,46 @@ def _semver(v):
     return tuple(int(x) for x in re.findall(r'\d+', v)[:4] or [0])
 
 
+def url_version(base, version=None):
+    """What goes into a base_zip_url's {version}: the RELEASE TAG, bare.
+
+    Two things this settles, both of which have bitten us:
+
+    * TAG vs ADDON VERSION. For Zephyr they differ -- release tag v1.1.10 ships
+      an Omega asset whose addon version is 1.0.52 -- so `base_version` (the
+      addon) is the wrong thing to put in a download URL. `upstream_tag` wins
+      where it exists.
+    * A LEADING 'v'. Every template we have spells the v itself
+      (".../tags/v{version}.zip"), so a tag stored as "v3.2.13" produced
+      ".../tags/vv3.2.13" -> 404, which broke the Piers watcher on every
+      scheduled run (2026-08-24) and, because one raise aborts the whole
+      --all-safe loop, silently discarded the OTHER fleet's adoption.
+    """
+    v = version if version is not None else (base.get('upstream_tag') or base['base_version'])
+    return str(v).lstrip('vV')
+
+
+def addon_version_in_zip(zip_bytes, addon_id):
+    """Read the REAL addon version out of a downloaded base zip.
+
+    The tag is not the version (see url_version), so adopting must take the
+    version from the thing it downloaded rather than from the tag it asked for.
+    Returns None if the zip has no readable addon.xml."""
+    try:
+        zf = zipfile.ZipFile(io.BytesIO(zip_bytes))
+        cands = [n for n in zf.namelist() if n.endswith('addon.xml')]
+        cands.sort(key=lambda n: n.count('/'))
+        for n in cands:
+            head = zf.read(n)[:4000].decode('utf-8', 'replace')
+            m = re.search(r'<addon\s+[^>]*\bid="%s"[^>]*\bversion="([^"]+)"'
+                          % re.escape(addon_id), head)
+            if m:
+                return m.group(1)
+    except Exception:
+        pass
+    return None
+
+
 def _latest_gears(base):
     xml = _get(base['upstream_addons_xml']).decode('utf-8', 'replace')
     m = re.search(r'id="%s"\s+[^>]*version="([^"]+)"' % re.escape(base['addon_id']), xml)
@@ -153,11 +193,12 @@ def check_one(overlay_dir, target=None):
     local = base.get('base_zip_local')
     if local:
         lp = os.path.join(overlay_dir, local)
-        old_bytes = open(lp, 'rb').read() if os.path.isfile(lp) else _get(base['base_zip_url'].format(version=cur))
+        old_bytes = (open(lp, 'rb').read() if os.path.isfile(lp)
+                     else _get(base['base_zip_url'].format(version=url_version(base, cur))))
     else:
-        old_bytes = _get(base['base_zip_url'].format(version=cur))
+        old_bytes = _get(base['base_zip_url'].format(version=url_version(base, cur)))
     old_map = _clean_base_map(old_bytes, base, cur)
-    new_map = _clean_base_map(_get(up_fmt.format(version=latest)), base, latest)
+    new_map = _clean_base_map(_get(up_fmt.format(version=url_version(base, latest))), base, latest)
 
     replaced = _overlay_replaced_files(overlay_dir)
     for rel in sorted(replaced):

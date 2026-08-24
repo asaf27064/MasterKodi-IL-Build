@@ -175,3 +175,13 @@ jobs:
             gh workflow run build-and-release.yml
             gh workflow run build-and-release-piers.yml
           fi
+
+      # Surface adopt failures AFTER the commit above, never before: failing the
+      # adopt step itself would skip the commit and throw away the adoptions that
+      # DID succeed -- which is precisely how the Piers AF3 404 discarded a good
+      # Zephyr adoption (2026-08-24).
+      - name: Report adopt failures
+        if: vars.AUTO_ADOPT == 'true' && (steps.adopt.outputs.failed == 'true' || steps.adoptpiers.outputs.failed == 'true')
+        run: |
+          echo "::error::upstream adopt failed for: ${{ steps.adopt.outputs.failed_list }} ${{ steps.adoptpiers.outputs.failed_list }}"
+          exit 1

@@ -2469,6 +2469,104 @@ def test_sdr_switch_writes_both_engines():
     check('POV still applied even though Gears had to wait', res['pov'] is True)
 
 
+def test_upstream_watch_urls():
+    """The watcher has to ask upstream for the RIGHT file, or its verdict is a lie.
+
+    Two defects, both live until 2026-08-24:
+
+      * a tag stored as "v3.2.13" went into a template that already spells the v
+        -> ".../tags/vv3.2.13" -> 404 every scheduled run, which aborted the
+        whole --all-safe loop and discarded the OTHER fleet's adoption with it.
+      * Zephyr's URLs were pinned to a literal v1.1.9, with no placeholder. The
+        classifier downloads "old" and "new" and diffs them -- both resolved to
+        the SAME url, so it compared the file with itself and reported SAFE. The
+        real answer, once the urls were templated, is MANUAL on both fleets (four
+        overlaid files changed on Piers).
+
+    So this checks the url a base.json actually produces, for every overlay in
+    both fleets -- no network needed.
+    """
+    print(chr(10) + '=== upstream watch: the urls it asks for ===')
+    import glob as _glob
+    import io as _io
+    import json as _json
+    import zipfile as _zip
+    sys.path.insert(0, os.path.join(REPO, 'tools'))
+    import check_upstream as _cu
+
+    check('a leading v is stripped, so a template that spells v cannot double it',
+          _cu.url_version({'base_version': '1.0'}, 'v3.2.13') == '3.2.13')
+    check('the TAG wins over the addon version, where they differ',
+          _cu.url_version({'base_version': '1.0.51', 'upstream_tag': '1.1.9'}) == '1.1.9')
+    check('with no tag it falls back to the addon version',
+          _cu.url_version({'base_version': '6.08.13'}) == '6.08.13')
+
+    # the real base.json files, in both fleets
+    bad, checked = [], 0
+    for p in sorted(_glob.glob(os.path.join(REPO, 'overlays*', '*', 'base.json'))):
+        b = _json.loads(open(p, encoding='utf-8').read())
+        if b.get('base_type') in ('local_committed', 'kodi_bundled'):
+            continue
+        url = b['base_zip_url'].format(version=_cu.url_version(b))
+        checked += 1
+        where = os.sep.join(p.split(os.sep)[-3:-1])
+        if '/vv' in url or 'vv%s' % _cu.url_version(b) in url:
+            bad.append('%s -> %s' % (where, url))
+        # a url pinned to a literal version can never follow an adoption
+        tag = _cu.url_version(b)
+        if '{version}' not in b['base_zip_url'] and tag not in b['base_zip_url']:
+            bad.append('%s: url is pinned and does not match the tracked tag %s' % (where, tag))
+    check('every overlay resolves a sane base url (%d checked)' % checked, not bad)
+    for x in bad:
+        print('       %s' % x)
+
+    # the url has to MOVE when the tag moves, or adopting is a no-op
+    stuck = []
+    for p in sorted(_glob.glob(os.path.join(REPO, 'overlays*', '*', 'base.json'))):
+        b = _json.loads(open(p, encoding='utf-8').read())
+        if b.get('base_type') in ('local_committed', 'kodi_bundled'):
+            continue
+        if '{version}' not in b['base_zip_url']:
+            stuck.append(os.sep.join(p.split(os.sep)[-3:-1]))
+    check('no overlay is pinned to a hardcoded release url', not stuck)
+    for x in stuck:
+        print('       pinned: %s' % x)
+
+    # the version must come from the zip, never from the tag
+    buf = _io.BytesIO()
+    with _zip.ZipFile(buf, 'w') as z:
+        z.writestr('skin.x-1.1.10/addon.xml',
+                   '<?xml version="1.0"?><addon id="skin.x" version="1.0.52" name="X"/>')
+    check('the addon version is read out of the zip, not assumed from the tag',
+          _cu.addon_version_in_zip(buf.getvalue(), 'skin.x') == '1.0.52')
+    check('an unreadable zip returns None rather than a wrong version',
+          _cu.addon_version_in_zip(b'not a zip', 'skin.x') is None)
+
+    adopt = open(os.path.join(REPO, 'tools', 'adopt_upstream.py'), encoding='utf-8').read()
+    check('adopting moves the tag AND takes the version from the zip',
+          "base['upstream_tag'] = cu.url_version(base, tgt)" in adopt
+          and 'cu.addon_version_in_zip' in adopt)
+    check('an overlay can opt out of unattended adoption',
+          "base.get('auto_adopt') is False" in adopt)
+    check('one overlay failing cannot abort the whole run',
+          'except Exception as e:' in adopt and 'failed.append(name)' in adopt)
+
+    wf = open(os.path.join(REPO, '.github', 'workflows', 'upstream-watch.yml'),
+              encoding='utf-8').read()
+    check('the run still fails on an adopt error -- but AFTER the commit step',
+          'Report adopt failures' in wf
+          and wf.index('Commit & push adopted bases') < wf.index('Report adopt failures'))
+
+    # the two skins whose tag != addon version stay in human hands
+    for root in ('overlays', 'overlays-piers'):
+        p = os.path.join(REPO, root, 'skin.arctic.zephyr.2.resurrection.mod', 'base.json')
+        if not os.path.isfile(p):
+            continue
+        b = _json.loads(open(p, encoding='utf-8').read())
+        check('%s: zephyr is not adopted unattended (one tag, two fleet assets)' % root,
+              b.get('auto_adopt') is False)
+
+
 def test_continue_watching_row():
     """One row that both resumes and advances -- executed, not eyeballed.
 
@@ -3951,6 +4049,7 @@ def main():
               test_sdr_filter_against_real_sources,
               test_persistent_sdr_filter,
               test_sdr_switch_writes_both_engines,
+              test_upstream_watch_urls,
               test_continue_watching_row,
               test_sdr_switch_in_the_filter_menu,
               test_sdr_indicator_on_the_panel,
