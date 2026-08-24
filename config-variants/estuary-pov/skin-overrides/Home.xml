@@ -84,7 +84,7 @@
 						</control></focusedlayout>
 						<content>
 							<item><label>סדרות</label><onclick>ActivateWindow(10025,"plugin://plugin.video.pov/?action=trakt_tv_trending&amp;iconImage=trending&amp;mode=build_tvshow_list&amp;name=Trending&amp;random_support=true",return)</onclick><thumb>special://home/media/build_icons/TV_Shows.png</thumb></item>
-							<item><label>סדרות בתהליך צפייה</label><onclick>ActivateWindow(10025,"plugin://plugin.video.pov/?iconImage=player&amp;mode=build_in_progress_episode&amp;name=In%20Progress%20Episodes",return)</onclick><thumb>special://home/media/build_icons/Series_In_Progress.png</thumb></item>
+							<item><label>המשך צפייה</label><onclick>ActivateWindow(10025,"plugin://plugin.video.pov/?iconImage=player&amp;mode=build_continue_watching&amp;name=In%20Progress%20Episodes",return)</onclick><thumb>special://home/media/build_icons/Series_In_Progress.png</thumb></item>
 							<item><label>הפרקים הבאים</label><onclick>ActivateWindow(10025,"plugin://plugin.video.pov/?iconImage=next_episodes&amp;mode=build_next_episode&amp;name=Next%20Episodes",return)</onclick><thumb>special://home/media/build_icons/Next_Episodes.png</thumb></item>
 							<item><label>סדרות לפי ז'אנר</label><onclick>ActivateWindow(10025,"plugin://plugin.video.pov/?iconImage=genres&amp;menu_type=tvshow&amp;mode=navigator.genres&amp;name=Genres&amp;random_support=true",return)</onclick><thumb>special://home/media/build_icons/TV_Shows_Cat.png</thumb></item>
 						</content>

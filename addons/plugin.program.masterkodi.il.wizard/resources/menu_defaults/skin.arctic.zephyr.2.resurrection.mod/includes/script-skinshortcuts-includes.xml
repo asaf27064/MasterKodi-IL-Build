@@ -531,11 +531,11 @@
 			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/player.png</thumb>
 			<property name="labelID">hmshkhtspyyh</property>
 			<property name="defaultID" />
-			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player",return)</property>
 			<property name="widgetTarget">videos</property>
-			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</onclick>
-			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</property>
-			<property name="list">plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player</property>
 			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Container(301).ListItem.Property(submenuVisibility),sdrvt)</visible>
 			<property name="group">sdrvt.1</property>
 			<property name="isSubmenu">True</property>
@@ -915,11 +915,11 @@
 			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/player.png</thumb>
 			<property name="labelID">hmshkhtspyyh</property>
 			<property name="defaultID" />
-			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player",return)</property>
 			<property name="widgetTarget">videos</property>
-			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</onclick>
-			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</property>
-			<property name="list">plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player</property>
 			<visible>String.IsEqual(System.ProfileName,Master user)</visible>
 			<property name="group">sdrvt.1</property>
 			<property name="isSubmenu">True</property>
@@ -1027,11 +1027,11 @@
 			<thumb>special://home/addons/plugin.video.gears/resources/media/icons/player.png</thumb>
 			<property name="labelID">hmshkhtspyyh</property>
 			<property name="defaultID" />
-			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="translatedPath">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player",return)</property>
 			<property name="widgetTarget">videos</property>
-			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</onclick>
-			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</property>
-			<property name="list">plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player</property>
+			<onclick>ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player",return)</onclick>
+			<property name="path">ActivateWindow(Videos,"plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player",return)</property>
+			<property name="list">plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player</property>
 			<visible>[String.IsEqual(System.ProfileName,Master user)] + String.IsEqual(Window(10000).Property(submenuVisibility),sdrvt)</visible>
 			<property name="group">sdrvt.1</property>
 			<property name="isSubmenu">True</property>
@@ -2367,7 +2367,7 @@
 			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
 			<param name="label2" value="ListItem.TvShowTitle" />
 			<param name="target" value="videos" />
-			<param name="content" value="plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player" />
 			<param name="limit" value="" />
 			<param name="sortby" value="" />
 			<param name="sortorder" value="" />
@@ -2401,7 +2401,7 @@
 			<param name="landscapelabelinclude" value="View_Widget_LandscapeLabel" />
 			<param name="label2" value="ListItem.TvShowTitle" />
 			<param name="target" value="videos" />
-			<param name="content" value="plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player" />
+			<param name="content" value="plugin://plugin.video.gears/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player" />
 			<param name="limit" value="" />
 			<param name="sortby" value="" />
 			<param name="sortorder" value="" />

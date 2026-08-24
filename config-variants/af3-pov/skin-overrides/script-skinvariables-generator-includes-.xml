@@ -455,7 +455,7 @@
     <include name="skinvariables-1101widgets-wall">
         <include content="Hub_Wall_Widget">
             <param name="id">501</param>
-            <param name="content">plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=inprogress</param>
+            <param name="content">plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=inprogress</param>
             <param name="include">List_Landscape_Row</param>
             <param name="target">videos</param>
             <param name="sortby"/>
@@ -524,7 +524,7 @@
             <property name="widget_id">$NUMBER[501]</property>
             <property name="show_overlay">true</property>
             <property name="hide_overlay"/>
-            <onclick>ActivateWindow(videos,plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=inprogress,return)</onclick>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=inprogress,return)</onclick>
             <visible>!Integer.IsEqual(Container(501).NumItems,0) | Container(501).IsUpdating</visible>
         </item>
         <item>
@@ -598,7 +598,7 @@
     <include name="skinvariables-1101widgets-combined">
         <include content="Hub_Combined_Widget">
             <param name="id">501</param>
-            <param name="content">plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=inprogress</param>
+            <param name="content">plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=inprogress</param>
             <param name="include">List_Card_Row</param>
             <param name="target">videos</param>
             <param name="sortby"/>
@@ -671,7 +671,7 @@
             <property name="widget_id">$NUMBER[501]</property>
             <property name="show_overlay"/>
             <property name="hide_overlay">true</property>
-            <onclick>ActivateWindow(videos,plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=inprogress,return)</onclick>
+            <onclick>ActivateWindow(videos,plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=inprogress,return)</onclick>
             <visible>!Integer.IsEqual(Container(501).NumItems,0) | Container(501).IsUpdating</visible>
         </item>
         <item>
@@ -765,7 +765,7 @@
                 <include content="Widget_NoResults">
                     <param name="id">501</param>
                 </include>
-                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=inprogress</content>
+                <content sortby="" sortorder="ascending" target="videos" limit="" browse="$VAR[Defs_BrowseLimitedLists]">plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=inprogress</content>
                 <include content="Defs_AutoScroll" condition="False">
                     <param name="condition">[!Control.HasFocus(501) | System.IdleTime(3)]</param>
                 </include>

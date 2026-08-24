@@ -5,7 +5,7 @@
 		<label2>פריטים מותאמים אישית</label2>
 		<icon>DefaultShortcut.png</icon>
 		<thumb>special://home/addons/plugin.video.pov/resources/skins/Default/media/player.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=In+Progress&amp;mode=build_tvshow_list&amp;action=in_progress_tvshows&amp;iconImage=in_progress_tvshow",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Continue+Watching&amp;mode=build_continue_watching&amp;iconImage=player",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />

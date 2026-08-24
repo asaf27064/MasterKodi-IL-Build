@@ -3,7 +3,7 @@
   <include name="TVShowWidgets">
 
     <include content="WidgetListLandscape">
-      <param name="content_path" value="plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=inprogress"/>
+      <param name="content_path" value="plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=inprogress"/>
       <param name="widget_header" value="המשך צפייה"/>
       <param name="widget_target" value="videos"/>
       <param name="list_id" value="22011"/>

@@ -5,7 +5,7 @@
 		<label2>הרחבת וידאו</label2>
 		<icon>DefaultShortcut.png</icon>
 		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/player.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_in_progress_episode&amp;random_support=true&amp;iconImage=player",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_continue_watching&amp;random_support=true&amp;iconImage=player",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />

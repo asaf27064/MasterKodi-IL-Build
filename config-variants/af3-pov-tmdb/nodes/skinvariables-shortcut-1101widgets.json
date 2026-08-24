@@ -1,7 +1,7 @@
 [
     {
         "label": "המשך צפייה",
-        "path": "plugin://plugin.video.pov/?name=Continue Watching&mode=build_in_progress_episode&random_support=true&iconImage=inprogress",
+        "path": "plugin://plugin.video.pov/?name=Continue Watching&mode=build_continue_watching&random_support=true&iconImage=inprogress",
         "icon": "inprogress",
         "target": "videos",
         "guid": "guid-cw000002",

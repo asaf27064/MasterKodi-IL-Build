@@ -2469,6 +2469,298 @@ def test_sdr_switch_writes_both_engines():
     check('POV still applied even though Gears had to wait', res['pov'] is True)
 
 
+def test_continue_watching_row():
+    """One row that both resumes and advances -- executed, not eyeballed.
+
+    POV keeps two lists fed by two tables: `progress` (resume points, which are
+    DELETED when you finish an episode) and `watched_status` (last watched per
+    show, +1). Every widget in this build pointed at the first one, so finishing
+    an episode made the series vanish instead of moving to the next episode
+    (Asaf, 2026-08-24).
+
+    Our route drives POV's own builder twice and merges. What is pinned here is
+    the merge itself: one entry per show, resume beating next, recency ordering,
+    unaired never first, and no crash when a half fails.
+    """
+    print(chr(10) + '=== continue watching: resume + next, in one row ===')
+    import ast as _ast
+
+    SRC = os.path.join(REPO, 'overlays', 'plugin.video.pov', 'files', 'resources',
+                       'lib', 'kodirdil', 'continue_watching.py')
+    check('the module ships', os.path.isfile(SRC))
+    if not os.path.isfile(SRC):
+        return
+
+    class _LI(object):
+        """Just enough xbmcgui.ListItem for the sort keys."""
+        def __init__(self, label=''):
+            self.label, self._p = label, {}
+
+        def getProperty(self, k): return self._p.get(k, '')
+        def setProperty(self, k, v): self._p[k] = v
+        def __repr__(self): return '<%s>' % self.label
+
+    added = {}
+
+    class _KU(object):
+        """POV's kodi_utils, reduced to what the route touches."""
+        @staticmethod
+        def argv1(): return '1'
+        @staticmethod
+        def add_items(handle, items): added['items'] = list(items)
+        @staticmethod
+        def set_category(*a): added.setdefault('calls', []).append('category')
+        @staticmethod
+        def set_sort_method(*a): added.setdefault('calls', []).append('sort')
+        @staticmethod
+        def set_content(*a): added.setdefault('calls', []).append('content')
+        @staticmethod
+        def end_directory(*a): added.setdefault('calls', []).append('end')
+        @staticmethod
+        def set_view_mode(*a): added.setdefault('calls', []).append('view')
+
+    class _FakeMenu(object):
+        """Stands in for POV's episodes Menu: same seams, fake rendering.
+
+        worker() reproduces the two behaviours our code depends on -- the
+        in-progress half sorted by the `sort` index we hand it, the next half
+        carrying last_played/unaired and POV's own ordering.
+        """
+        raise_on = None
+
+        def __init__(self, params):
+            self.params = params
+            self.items, self.list, self.list_type = [], [], ''
+            self.append = self.items.append
+            self.bookmarks = params.get('_bookmarks', {})
+            self.is_widget = False
+
+        def _setup_next_episode(self, params_get):
+            self.list_type = 'next_episode_pov'
+            self.list = list(self.params.get('_next', []))
+
+        def worker(self):
+            if self.list_type == _FakeMenu.raise_on:
+                raise RuntimeError('builder blew up')
+            for pos, entry in enumerate(self.list):
+                li = _LI('%s S%sE%s%s' % (entry.get('title') or entry['media_ids']['tmdb'],
+                                          entry.get('season'), entry.get('episode'),
+                                          '' if self.list_type == 'in_progress' else '+1'))
+                if self.list_type.startswith('next_episode'):
+                    li.setProperty('pov_last_played', entry.get('last_played', ''))
+                    li.setProperty('pov_unaired', 'true' if entry.get('unaired') else 'false')
+                else:
+                    li.setProperty('pov_sort_order', str(entry.get('sort', pos)))
+                    li.setProperty('pov_unaired', 'false')
+                self.append(('url', li, False))
+            if self.list_type.startswith('next_episode'):
+                self.items.sort(key=lambda k: k[1].getProperty('pov_last_played'), reverse=True)
+                self.items.sort(key=lambda k: k[1].getProperty('pov_unaired') == 'true')
+            else:
+                self.items.sort(key=lambda k: int(k[1].getProperty('pov_sort_order')))
+            return self.items
+
+    def load():
+        """Exec the shipped module with its Kodi imports replaced."""
+        body = []
+        for line in open(SRC, encoding='utf-8').read().split(chr(10)):
+            s = line.strip()
+            body.append('pass' if s.startswith('from menus') or s.startswith('from modules')
+                        else line)
+        ns = {'Menu': _FakeMenu, 'kodi_utils': _KU, 'ls': lambda x: x,
+              '__name__': 'continue_watching'}
+        exec(compile(chr(10).join(body), 'continue_watching', 'exec'), ns)
+        return ns['ContinueWatching']
+
+    CW = load()
+
+    def bm(tmdb, season, episode, last_played, title=None):
+        """A `progress` row, in the real column order."""
+        return ('episode', tmdb, season, episode, '42.0', '1200', last_played, 0,
+                title or ('show%s' % tmdb))
+
+    def nxt(tmdb, season, episode, last_played, unaired=False):
+        # 'title' is only for a readable label in this harness -- the real
+        # next-episode source carries media_ids/season/episode/last_played
+        return {'media_ids': {'tmdb': tmdb}, 'season': season, 'episode': episode,
+                'last_played': last_played, 'unaired': unaired,
+                'title': 'show%s' % tmdb}
+
+    def run(bookmarks, nexts):
+        added.clear()
+        _FakeMenu.raise_on = None
+        cw = CW({'name': 'Continue Watching', '_bookmarks': bookmarks, '_next': nexts})
+        cw.run()
+        return [i[1].label for i in added.get('items', [])]
+
+    # A: mid-episode AND the previous one watched -> ONE entry, the resume
+    out = run({'a': bm('101', 1, 4, '2026-08-24 10:00:00')},
+              [nxt('101', 1, 3, '2026-08-24 09:00:00')])
+    check('a show being resumed appears exactly once', len(out) == 1)
+    check('...and it is the resume entry, not the computed next one',
+          out and not out[0].endswith('+1'))
+
+    # B: finished an episode, no bookmark -> the NEXT episode shows up
+    out = run({}, [nxt('202', 2, 5, '2026-08-23 20:00:00')])
+    check('a finished show advances to the next episode',
+          out == ['show202 S2E5+1'])
+
+    # C: bookmark only, never finished anything -> still there
+    out = run({'c': bm('303', 1, 1, '2026-08-22 18:00:00')}, [])
+    check('a show you never finished an episode of is not lost',
+          out == ['show303 S1E1'])
+
+    # D: recency across BOTH halves
+    out = run({'a': bm('101', 1, 4, '2026-08-20 10:00:00')},
+              [nxt('202', 2, 5, '2026-08-24 22:00:00'),
+               nxt('404', 1, 1, '2026-08-10 08:00:00')])
+    check('ordered by recency across both halves, newest first',
+          out == ['show202 S2E5+1', 'show101 S1E4', 'show404 S1E1+1'])
+
+    # E: unaired sinks, however recent
+    out = run({}, [nxt('505', 9, 9, '2026-08-24 23:59:00', unaired=True),
+                   nxt('606', 1, 2, '2026-08-01 07:00:00')])
+    check('an unaired next episode never ranks first',
+          out == ['show606 S1E2+1', 'show505 S9E9+1'])
+
+    # F: nothing at all -> no crash, and the directory is still closed
+    out = run({}, [])
+    check('empty everything is not a crash', out == [])
+    check('the directory is ended even when empty',
+          added.get('calls', []).count('end') == 1)
+
+    # G: a movie bookmark is not an episode
+    out = run({'m': ('movie', '777', '', '', '10', '60', '2026-08-24 12:00:00', 0, 'film')},
+              [])
+    check('a movie resume point never lands in the TV row', out == [])
+
+    # H: no timestamp -> last, but not dropped
+    out = run({'a': bm('101', 1, 4, '')},
+              [nxt('202', 2, 5, '2026-08-01 10:00:00')])
+    check('an entry with no timestamp sorts last but survives',
+          out == ['show202 S2E5+1', 'show101 S1E4'])
+
+    # I: one half failing must not take the row down with it
+    added.clear()
+    _FakeMenu.raise_on = 'in_progress'
+    CW({'name': 'x', '_bookmarks': {'a': bm('101', 1, 4, '2026-08-24 10:00:00')},
+        '_next': [nxt('202', 2, 5, '2026-08-23 10:00:00')]}).run()
+    check('a failure in one half still shows the other',
+          [i[1].label for i in added.get('items', [])] == ['show202 S2E5+1'])
+    _FakeMenu.raise_on = None
+
+    # J: dedupe is per SHOW, not per episode
+    out = run({'a': bm('101', 3, 7, '2026-08-24 10:00:00')},
+              [nxt('101', 1, 1, '2026-08-01 10:00:00')])
+    check('dedupe is per show, whatever episode each half points at',
+          out == ['show101 S3E7'])
+
+    # the contract we depend on, checked against the SHIPPED upstream builder:
+    # our two list_type strings must still hit the branches we expect
+    ep = open(os.path.join(REPO, 'addons', 'plugin.video.pov', 'resources', 'lib',
+                           'menus', 'episodes.py'), encoding='utf-8').read()
+    check("upstream still branches on list_type.startswith('next_episode')",
+          "self.list_type.startswith('next_episode')" in ep)
+    check("upstream's in-progress list_type is still 'in_progress'",
+          "self.list_type = 'in_progress'" in ep)
+    check("upstream's next-episode list_type is still 'next_episode_pov'",
+          "self.list_type = 'next_episode_pov'" in ep)
+    check('upstream still sorts the in-progress half by pov_sort_order',
+          "getProperty('pov_sort_order')" in ep)
+    check('upstream still stamps pov_last_played on the next half',
+          "'pov_last_played'" in ep)
+    check('upstream still marks unaired episodes', "props['pov_unaired']" in ep)
+
+    entry = open(os.path.join(REPO, 'overlays', 'plugin.video.pov', 'files',
+                              'resources', 'lib', 'entry.py'), encoding='utf-8').read()
+    check('the route is registered', "'build_continue_watching'" in entry)
+    check('...and points at our module',
+          "kodirdil.continue_watching" in entry and 'ContinueWatching' in entry)
+
+    # ---- the wiring: every POV row must point at the merged route ----------
+    import glob as _glob
+    import re as _re
+
+    pov_files, gears_files = [], []
+    for p in _glob.glob(os.path.join(REPO, 'config-variants', '**', '*'), recursive=True):
+        if not os.path.isfile(p):
+            continue
+        try:
+            txt = open(p, encoding='utf-8', errors='replace').read()
+        except Exception:
+            continue
+        if 'plugin.video.pov' in txt or 'plugin.video.gears' in txt:
+            (gears_files if 'gears' in os.path.basename(os.path.dirname(os.path.dirname(p)))
+             or 'gears' in p.replace(os.sep, '/').split('config-variants/')[1].split('/')[0]
+             else pov_files).append((p, txt))
+
+    stale = [p for p, t in pov_files if 'build_in_progress_episode' in t
+             or 'action=in_progress_tvshows&amp;iconImage=in_progress_tvshow' in t]
+    check('no POV variant still points a row at the old episodes-only list',
+          not stale)
+    for p in stale:
+        print('       still stale: %s' % p.replace(REPO + os.sep, ''))
+
+    wired = [p for p, t in pov_files if 'build_continue_watching' in t]
+    check('the merged route is wired into every POV skin (%d file(s))' % len(wired),
+          len(wired) >= 8)
+    skins = {p.replace(REPO + os.sep, '').split(os.sep)[1] for p in wired}
+    check('...covering af3, estuary, nimbus and zephyr',
+          {'af3-pov', 'af3-pov-tmdb', 'estuary-pov', 'nimbus-pov',
+           'zephyr-pov', 'zephyr-pov-tmdb'} <= skins)
+
+    # a Gears variant pointing at a route Gears does not have would be a dead row
+    bad_gears = [p for p, t in gears_files if 'build_continue_watching' in t]
+    check('no Gears variant points at a route only POV has', not bad_gears)
+
+    # the wizard ships its OWN seed copies of these rows -- a fresh install and
+    # the "restore menu" flow read those, not the variants, so a row left behind
+    # there quietly reinstates the old list on the next reinstall
+    seeds = []
+    for p2 in _glob.glob(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                                      'resources', '**', '*'), recursive=True):
+        if not os.path.isfile(p2):
+            continue
+        try:
+            t2 = open(p2, encoding='utf-8', errors='replace').read()
+        except Exception:
+            continue
+        if 'build_in_progress_episode' in t2:
+            seeds.append(p2)
+    check('the wizard ships no seed still pointing at the old list', not seeds)
+    for p2 in seeds:
+        print('       stale seed: %s' % p2.replace(REPO + os.sep, ''))
+
+    # and the route must exist in the MIRROR that actually ships
+    mirror_entry = os.path.join(REPO, 'addons', 'plugin.video.pov', 'resources', 'lib', 'entry.py')
+    mirror_mod = os.path.join(REPO, 'addons', 'plugin.video.pov', 'resources', 'lib',
+                              'kodirdil', 'continue_watching.py')
+    check('the shipped mirror carries the route',
+          os.path.isfile(mirror_entry)
+          and "'build_continue_watching'" in open(mirror_entry, encoding='utf-8').read())
+    check('the shipped mirror carries the module', os.path.isfile(mirror_mod))
+
+    # Every mode inside a plugin.video.pov URL must be a route POV registers --
+    # a typo there is a row that silently does nothing. Scoped to POV URLs on
+    # purpose: the same files carry wizard and TMDb Helper modes too.
+    modes = set()
+    for _p, t in pov_files:
+        for url in _re.findall(r'plugin://plugin\.video\.pov/\?[^"\',<)\]]*', t):
+            modes.update(_re.findall(r'mode=([\w.]+)', url.replace('&amp;', '&')))
+    # POV dispatches a mode either by exact match in its route table or by
+    # PREFIX (navigator., torbox., build_trakt_, ...). Read the prefixes out of
+    # entry.py rather than hardcoding them, so this stays true if upstream
+    # reshuffles them.
+    prefixes = tuple(_re.findall(r"mode\.startswith\('([^']+)'\)", entry))
+    check('found POV\'s prefix routes to check against', len(prefixes) > 5)
+    unknown = sorted(m for m in modes
+                     if "'%s'" % m not in entry and not m.startswith(prefixes))
+    check('every POV mode our variants reference is a registered route (%d checked)'
+          % len(modes), not unknown)
+    if unknown:
+        print('       unknown modes: %s' % unknown)
+
+
 def test_sdr_switch_in_the_filter_menu():
     """The switch has to be reachable -- and readable -- from the sources window.
 
@@ -3630,6 +3922,7 @@ def main():
               test_sdr_filter_against_real_sources,
               test_persistent_sdr_filter,
               test_sdr_switch_writes_both_engines,
+              test_continue_watching_row,
               test_sdr_switch_in_the_filter_menu,
               test_sdr_indicator_on_the_panel,
               test_install_question_applies_the_answer,

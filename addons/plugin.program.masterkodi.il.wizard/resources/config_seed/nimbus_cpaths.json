@@ -71,7 +71,7 @@
  ],
  [
   "tvshow.widget.1",
-  "plugin://plugin.video.gears/?name=Continue Watching&mode=build_in_progress_episode&random_support=true&iconImage=inprogress",
+  "plugin://plugin.video.gears/?name=Continue Watching&mode=build_continue_watching&random_support=true&iconImage=inprogress",
   "המשך צפייה",
   "WidgetListLandscape",
   "המשך צפייה | Landscape"
