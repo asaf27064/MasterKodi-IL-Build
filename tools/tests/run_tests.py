@@ -2314,9 +2314,17 @@ def test_persistent_sdr_filter():
                                      'settings.xml'), encoding='utf-8').read()
     check('POV declares filter_hdr/filter_dv',
           all('id="%s"' % s in pov_settings for s in ('filter_hdr', 'filter_dv')))
-    gears_defaults = open(os.path.join(REPO, 'addons', 'plugin.video.gears', 'resources',
-                                       'lib', 'caches', 'settings_cache.py'),
-                          encoding='utf-8').read()
+    # Read the OVERLAY, not the mirror: addons/plugin.video.gears is gitignored
+    # (CI builds it from the overlay), so on a fresh checkout the mirror does not
+    # exist yet and a mirror-only path fails the run before it starts. Falls back
+    # to the mirror for the case where only that is present.
+    gears_cache = os.path.join(REPO, 'overlays', 'plugin.video.gears', 'files',
+                               'resources', 'lib', 'caches', 'settings_cache.py')
+    if not os.path.isfile(gears_cache):
+        gears_cache = os.path.join(REPO, 'addons', 'plugin.video.gears', 'resources',
+                                   'lib', 'caches', 'settings_cache.py')
+    check('Gears settings declaration found', os.path.isfile(gears_cache))
+    gears_defaults = open(gears_cache, encoding='utf-8').read() if os.path.isfile(gears_cache) else ''
     check('Gears declares filter.hdr/filter.dv',
           all("'setting_id': '%s'" % s in gears_defaults
               for s in ('filter.hdr', 'filter.dv')))
