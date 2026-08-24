@@ -1,11 +1,12 @@
 {
   "addon_id": "skin.arctic.zephyr.2.resurrection.mod",
-  "base_version": "1.1.9",
+  "base_version": "1.1.10",
   "base_zip_url": "https://github.com/DenDyGH/skin.arctic.zephyr.2.resurrection.mod/releases/download/v{version}/skin.arctic.zephyr.2.resurrection.mod-Piers.zip",
   "upstream_releases_api": "https://api.github.com/repos/DenDyGH/skin.arctic.zephyr.2.resurrection.mod/releases/latest",
   "raw_top_folder": "skin.arctic.zephyr.2.resurrection.mod",
-  "overlay_version": "1.1.9.1",
-  "upstream_tag": "1.1.9",
+  "overlay_version": "1.1.10.1",
+  "upstream_tag": "1.1.10",
   "notes": "KODI 22 (PIERS) overlay - NOT wired to CI yet (Asaf-only track). Requires script.skinshortcuts >= 3.0.0 (kodi piers repo). Differences vs the Omega overlay: menu/widget defaults now DECLARED in shortcuts/menus.xml (skinshortcuts v3 model) - replaces the old DATA.xml files AND the wizard menu_defaults bundle (not needed on Piers); custom viewtypes + view-name strings absorbed upstream by DenDyGH; templates.xml redirects DefaultSearch Movies/TvShows to gears. Carried from Omega: Hebrew fonts + Font.xml fontsets + Defaults.xml font swap, he_il (updated for Piers msgids + #31600), GearsAI OSD button (Includes_OSD), hero Title->Label fix (Includes_Home), ratings-label fix (Includes_Object), Flix visible-restriction removal (Includes_View), Startup.xml factory defaults (Flix + colorful), DialogPlayerProcessInfo escape fix, powermenu fast_exit + build items + hebrew gears search (menus.xml). Deliberately NOT ported: Home.xml/My*.xml crash gates (kept on branch kodi-21-crash-fixes; decision pending for Piers).",
-  "auto_build_suffix": true
+  "auto_build_suffix": true,
+  "changelog": "1.1.10.1 - Re-merged onto Zephyr Piers 1.1.10. Upstream rewired the home SUBMENU: Container(9989).ListItemAbsolute(0).Property(list) -> Container(301).ListItem.Property(submenuPath), across Includes_Home.xml (58 references) and templates.xml, and dropped the widgets-submenu template. Our overlay was written against the old mechanism, so all three files were re-merged 3-way: upstream's rewire adopted in full (0 legacy 9989 references left), our own changes kept -- the 3 ListItem.Title -> ListItem.Label label params, the 17 Hebrew mkil-* menu items with their gears links, and the 2 gears TMDb search paths. Upstream's Video-Addons widgetType/widgetTarget fix (programs -> videos) taken; Programs-Addons correctly left on programs. addon.xml also bumped script.skinshortcuts to 3.0.1, which the Piers manifest already ships. Zero conflicts, verified per-token and per-item rather than by conflict count."
 }

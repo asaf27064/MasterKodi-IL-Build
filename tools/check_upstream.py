@@ -178,7 +178,8 @@ def check_one(overlay_dir, target=None):
     cur = base.get('upstream_tag') or base['base_version']
     latest = target or _latest_version(base)
     res = {'addon_id': aid, 'current': cur, 'latest': latest,
-           'has_update': False, 'manual': [], 'safe': None}
+           'has_update': False, 'manual': [], 'safe': None,
+           'current_addon': base.get('base_version')}
     if not latest:
         res['error'] = 'could not determine upstream latest'
         return res
@@ -198,7 +199,13 @@ def check_one(overlay_dir, target=None):
     else:
         old_bytes = _get(base['base_zip_url'].format(version=url_version(base, cur)))
     old_map = _clean_base_map(old_bytes, base, cur)
-    new_map = _clean_base_map(_get(up_fmt.format(version=url_version(base, latest))), base, latest)
+    new_bytes = _get(up_fmt.format(version=url_version(base, latest)))
+    new_map = _clean_base_map(new_bytes, base, latest)
+    # The tag is not always the addon version -- Zephyr's v1.1.10 ships an
+    # Omega asset versioned 1.0.52 -- so report BOTH, or the issue tells the
+    # reader a version number that will never appear in Kodi (Asaf, 2026-08-24).
+    res['current_addon'] = base.get('base_version')
+    res['latest_addon'] = addon_version_in_zip(new_bytes, aid)
 
     replaced = _overlay_replaced_files(overlay_dir)
     for rel in sorted(replaced):
@@ -355,15 +362,27 @@ def main():
             lines.append('- **%s**: error - %s' % (r['addon_id'], r['error']))
             continue
         if not r['has_update']:
-            lines.append('- **%s**: up to date (%s)' % (r['addon_id'], r['current']))
+            # name both when the release tag is not the addon version: "up to
+            # date (1.1.10)" is the TAG, and no Kodi on this fleet will ever
+            # show that number -- it runs the 1.0.52 asset.
+            ca = r.get('current_addon')
+            where = ('tag %s, addon %s' % (r['current'], ca)) if ca and ca != r['current']                 else '%s' % r['current']
+            lines.append('- **%s**: up to date (%s)' % (r['addon_id'], where))
             continue
         has_update = True
+        # Where the release tag differs from the addon version, spell both out:
+        # "1.1.9 -> 1.1.10 (tag)" alone reads as an addon version that no Kodi
+        # will ever show, because this fleet installs the 1.0.52 asset.
+        ca, la = r.get('current_addon'), r.get('latest_addon')
+        move = '%s -> %s' % (r['current'], r['latest'])
+        if la and (la != r['latest'] or (ca and ca != r['current'])):
+            move = 'release tag %s, addon %s -> %s' % (move, ca or '?', la)
         if r['safe']:
-            lines.append('- **%s**: %s -> %s **SAFE** (bump `base_version`, no overlaid file changed)'
-                         % (r['addon_id'], r['current'], r['latest']))
+            lines.append('- **%s**: %s **SAFE** (bump `base_version`, no overlaid file changed)'
+                         % (r['addon_id'], move))
         else:
             has_manual = True
-            lines.append('- **%s**: %s -> %s **MANUAL re-merge**:' % (r['addon_id'], r['current'], r['latest']))
+            lines.append('- **%s**: %s **MANUAL re-merge**:' % (r['addon_id'], move))
             for rel, why in r['manual']:
                 lines.append('    - `%s` - %s' % (rel, why))
     summary = '\n'.join(lines)

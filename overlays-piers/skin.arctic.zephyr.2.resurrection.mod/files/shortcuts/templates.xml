@@ -19,7 +19,7 @@
                 <param name="label" value="$LOCALIZE[31105]" />
                 <param name="spinner-visible" value="String.IsEmpty(Container(993100).ListItem.Label)" />
                 <skinshortcuts>visibility</skinshortcuts>
-                <visible>Integer.IsEqual(Container(9989).NumItems,0)</visible>
+                <visible>String.IsEmpty(Container(301).ListItem.Property(submenuPath))</visible>
             </include>
             <include content="Object_Widget_Spotlight" condition="!Skin.HasSetting(FixedWidgets)">
                 <param name="controltype" value="list" />
@@ -46,7 +46,7 @@
                 <onback>301</onback>
                 <visible>Integer.IsGreater(Container(993100).NumItems,0) | Container(993100).IsUpdating</visible>
                 <skinshortcuts>visibility</skinshortcuts>
-                <visible>Integer.IsEqual(Container(9989).NumItems,0)</visible>
+                <visible>String.IsEmpty(Container(301).ListItem.Property(submenuPath))</visible>
             </include>
             <include content="Object_Widget_Spotlight" condition="Skin.HasSetting(FixedWidgets)">
                 <param name="controltype" value="fixedlist" />
@@ -74,7 +74,7 @@
                 <onback>301</onback>
                 <visible>Integer.IsGreater(Container(993100).NumItems,0) | Container(993100).IsUpdating</visible>
                 <skinshortcuts>visibility</skinshortcuts>
-                <visible>Integer.IsEqual(Container(9989).NumItems,0)</visible>
+                <visible>String.IsEmpty(Container(301).ListItem.Property(submenuPath))</visible>
             </include>
         </controls>
     </template>
@@ -171,23 +171,6 @@
                 </include>
             </include>
             <content limit="$PROPERTY[limit]" target="$PROPERTY[widgetTarget]" sortby="$PROPERTY[widgetSortby]" sortorder="$PROPERTY[widgetSortorder]" browse="never">$PROPERTY[widgetPath]</content>
-        </controls>
-    </template>
-
-    <template include="widgets-submenu" menu="mainmenu">
-        <controls>
-            <skinshortcuts insert="menuitems" />
-        </controls>
-    </template>
-
-    <template items="menuitems" source="widgets" filter="widgetPath">
-        <property name="id" from="index" />
-        <property name="widgetPath" from="widgetPath" />
-        <controls>
-            <item id="$PARENT[index]$PROPERTY[id]">
-                <visible>String.IsEqual(Container(301).ListItem.Property(submenuVisibility),$PARENT[submenuVisibility])</visible>
-                <property name="list">$PROPERTY[widgetPath]</property>
-            </item>
         </controls>
     </template>
 

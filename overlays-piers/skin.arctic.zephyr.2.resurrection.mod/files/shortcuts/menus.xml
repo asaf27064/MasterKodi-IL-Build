@@ -260,8 +260,8 @@
             <label>$LOCALIZE[1037]</label>
             <icon>DefaultFolder.png</icon>
             <property name="widgetPath">addons://sources/video/</property>
-            <property name="widgetType">programs</property>
-            <property name="widgetTarget">programs</property>
+            <property name="widgetType">videos</property>
+            <property name="widgetTarget">videos</property>
             <property name="widgetAspect">SmallSquare</property>
             <property name="widgetSource">addon</property>
         </item>
@@ -668,6 +668,13 @@
                 <shortcut name="picture-files" label="$LOCALIZE[744]" icon="DefaultFile.png">
                     <action>ActivateWindow(Pictures,return)</action>
                 </shortcut>
+                <content source="sources" target="pictures"/>
+            </group>
+            <group name="file-sources" label="$LOCALIZE[744]" icon="DefaultFile.png">
+                <content source="sources" target="files"/>
+            </group>
+            <group name="program-sources" label="$LOCALIZE[0]" icon="DefaultAddonProgram.png">
+                <content source="sources" target="programs"/>
             </group>
         </group>
         <!-- Add-ons -->

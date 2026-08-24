@@ -2592,6 +2592,19 @@ def test_upstream_watch_urls():
           'Report adopt failures' in wf
           and wf.index('Commit & push adopted bases') < wf.index('Report adopt failures'))
 
+    # The issue text must name the ADDON version, not just the release tag.
+    # "1.1.9 -> 1.1.10" is the tag; the Omega fleet installs 1.0.52 and would
+    # never show that number anywhere (Asaf, 2026-08-24).
+    cu_src = open(os.path.join(REPO, 'tools', 'check_upstream.py'), encoding='utf-8').read()
+    check('the checker carries the addon version alongside the tag',
+          "res['latest_addon']" in cu_src and "'current_addon'" in cu_src)
+    check('the update line spells out both when they differ',
+          "'release tag %s, addon %s -> %s'" in cu_src)
+    check('the up-to-date line does too',
+          "'tag %s, addon %s'" in cu_src)
+    check('...and stays terse when tag == addon version',
+          "if la and (la != r['latest'] or (ca and ca != r['current']))" in cu_src)
+
     # A file we overlay for NO reason is not free: addon.xml changes in every
     # upstream release, so overlaying it purely to set a version -- which
     # _stamp_build_suffix rewrites at build time anyway -- made every Zephyr

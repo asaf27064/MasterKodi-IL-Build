@@ -391,14 +391,14 @@
                     <itemgap>0</itemgap>
 
                     <control type="group" id="99301">
-                        <animation effect="slide" start="0,0" end="0,250" time="0" tween="sine" condition="String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="0,250" time="0" tween="sine" condition="String.IsEqual(Container(301).ListItem.Property(submenuPath),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]">Conditional</animation>
                         <height>99999</height>
                         <width>1800</width>
                         <include>Animation_Right</include>
                         <include>Defs_InfoDialog_Visible</include>
                         <control type="group">
                             <control type="grouplist" id="3000">
-                                <visible>!String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
+                                <visible>!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
                                 <top>20</top>
                                 <onup>301</onup>
                                 <ondown>301</ondown>
@@ -428,11 +428,11 @@
             <visible>ControlGroup(3000).HasFocus()</visible>
             <visible>!$EXP[Exp_ShowPlotOverlay]</visible>
             <include>Defs_InfoDialog_Visible</include>
-            <visible>!String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
+            <visible>!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
         </control>
         <control type="group">
-            <visible>!String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
-            <visible>![String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]]</visible>
+            <visible>!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
+            <visible>![String.IsEqual(Container(301).ListItem.Property(submenuPath),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]]</visible>
             <height>680</height>
             <top>2.5</top>
             <left>102.5</left>
@@ -473,12 +473,12 @@
                 <control type="group">
                     <left>380</left>
                     <right>-380</right>
-                    <visible>String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
+                    <visible>String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
                     <include>Weather</include>
                 </control>
                 <control type="group">
                     <animation effect="slide" start="0" end="514" time="0" condition="true">Conditional</animation>
-                    <visible>String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings)</visible>
+                    <visible>String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings)</visible>
                     <include content="View_Settings">
                         <param name="hideonwindowopen" value="false" />
                     </include>
@@ -487,7 +487,7 @@
 
             <control type="group">
                 <left>240</left>
-                <visible>String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]</visible>
+                <visible>String.IsEqual(Container(301).ListItem.Property(submenuPath),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]</visible>
                 <include>PVRTVRecordingWidget</include>
             </control>
 
@@ -559,9 +559,9 @@
                 <onleft condition="!Skin.HasSetting(SubmenuOnly) + Integer.IsGreater(Container(302).NumItems,0)">ActivateWindow(1135)</onleft>
                 <onleft condition="Skin.HasSetting(SubmenuOnly) + Integer.IsGreater(Container(302).NumItems,0)">SetFocus(302,0)</onleft>
                 <!-- <animation effect="fade" start="100" end="0" time="200" condition="ControlGroup(3000).HasFocus() | Control.HasFocus(5000) | Control.HasFocus(5100) | Control.HasFocus(6000)">Conditional</animation> -->
-                <onright condition="!String.IsEqual(Container(9989).ListItem.Property(list),Settings) + !String.IsEqual(Container(9989).ListItem.Property(list),Weather)">3000</onright>
-                <onright condition="String.IsEqual(Container(9989).ListItem.Property(list),Settings)">5000</onright>
-                <onright condition="String.IsEqual(Container(9989).ListItem.Property(list),Weather)">6000</onright>
+                <onright condition="!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)">3000</onright>
+                <onright condition="String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings)">5000</onright>
+                <onright condition="String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)">6000</onright>
                 <width>714</width>
                 <height>787</height>
                 <include content="Defs_Margins" condition="!Skin.HasSetting(DisabledProfileInfo) + Skin.HasSetting(HomeTextAutoWidth)">
@@ -778,11 +778,11 @@
             <visible>ControlGroup(3000).HasFocus()</visible>
             <visible>!$EXP[Exp_ShowPlotOverlay]</visible>
             <include>Defs_InfoDialog_Visible</include>
-            <visible>!String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
+            <visible>!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
         </control>
         <control type="group">
-            <visible>!String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
-            <visible>![String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]]</visible>
+            <visible>!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
+            <visible>![String.IsEqual(Container(301).ListItem.Property(submenuPath),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]]</visible>
             <top>162.5</top>
             <left>132.5</left>
             <right>15</right>
@@ -826,12 +826,12 @@
                 <control type="group">
                     <left>380</left>
                     <right>-380</right>
-                    <visible>String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
+                    <visible>String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
                     <include>Weather</include>
                 </control>
                 <control type="group">
                     <animation effect="slide" start="0" end="257.14" time="0" condition="true">Conditional</animation>
-                    <visible>String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings)</visible>
+                    <visible>String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings)</visible>
                     <include content="View_Settings">
                         <param name="hideonwindowopen" value="false" />
                     </include>
@@ -840,7 +840,7 @@
 
             <control type="group">
                 <left>240</left>
-                <visible>String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]</visible>
+                <visible>String.IsEqual(Container(301).ListItem.Property(submenuPath),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]</visible>
                 <include>PVRTVRecordingWidget</include>
             </control>
 
@@ -939,9 +939,9 @@
                             <onleft condition="Skin.HasSetting(SubmenuOnly) + Integer.IsGreater(Container(302).NumItems,0)">SetFocus(302,0)</onleft>
                             <animation effect="fade" start="100" end="0" time="200" condition="ControlGroup(3000).HasFocus() | Control.HasFocus(5000) | Control.HasFocus(5100) | Control.HasFocus(6000)">Conditional</animation>
                             <top>0</top>
-                            <onright condition="!String.IsEqual(Container(9989).ListItem.Property(list),Settings) + !String.IsEqual(Container(9989).ListItem.Property(list),Weather)">3000</onright>
-                            <onright condition="String.IsEqual(Container(9989).ListItem.Property(list),Settings)">5000</onright>
-                            <onright condition="String.IsEqual(Container(9989).ListItem.Property(list),Weather)">6000</onright>
+                            <onright condition="!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)">3000</onright>
+                            <onright condition="String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings)">5000</onright>
+                            <onright condition="String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)">6000</onright>
                             <width>257.14</width>
                             <height>393.5</height>
                             <orientation>vertical</orientation>
@@ -1030,13 +1030,13 @@
                     </control>
 
                     <control type="group" id="99301">
-                        <animation effect="slide" start="0,0" end="0,250" time="0" tween="sine" condition="String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="0,250" time="0" tween="sine" condition="String.IsEqual(Container(301).ListItem.Property(submenuPath),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]">Conditional</animation>
                         <height>420</height>
                         <width>1800</width>
                         <include>Animation_Right</include>
                         <include>Defs_InfoDialog_Visible</include>
                         <control type="grouplist" id="3000">
-                            <visible>!String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
+                            <visible>!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
                             <top>-5</top>
                             <onup>301</onup>
                             <ondown>301</ondown>
@@ -1070,7 +1070,7 @@
             <visible>ControlGroup(3000).HasFocus()</visible>
             <visible>!$EXP[Exp_ShowPlotOverlay]</visible>
             <include>Defs_InfoDialog_Visible</include>
-            <visible>!String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
+            <visible>!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
             <include content="Object_Info_Arrows">
                 <param name="id" value="3000" />
             </include>
@@ -1083,12 +1083,12 @@
                 <control type="group">
                     <left>380</left>
                     <right>-380</right>
-                    <visible>String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
+                    <visible>String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
                     <include>Weather</include>
                 </control>
                 <control type="group">
                     <animation effect="slide" start="0" end="257.14" time="0" condition="true">Conditional</animation>
-                    <visible>String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings)</visible>
+                    <visible>String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings)</visible>
                     <include content="View_Settings">
                         <param name="hideonwindowopen" value="false" />
                     </include>
@@ -1097,7 +1097,7 @@
 
             <control type="group">
                 <left>240</left>
-                <visible>String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]</visible>
+                <visible>String.IsEqual(Container(301).ListItem.Property(submenuPath),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]</visible>
                 <include>PVRTVRecordingWidget</include>
             </control>
 
@@ -1196,9 +1196,9 @@
                             <onleft condition="Skin.HasSetting(SubmenuOnly) + Integer.IsGreater(Container(302).NumItems,0)">SetFocus(302,0)</onleft>
                             <animation effect="fade" start="100" end="0" time="200" condition="ControlGroup(3000).HasFocus() | Control.HasFocus(5000) | Control.HasFocus(5100) | Control.HasFocus(6000)">Conditional</animation>
                             <top>0</top>
-                            <onright condition="!String.IsEqual(Container(9989).ListItem.Property(list),Settings) + !String.IsEqual(Container(9989).ListItem.Property(list),Weather)">3000</onright>
-                            <onright condition="String.IsEqual(Container(9989).ListItem.Property(list),Settings)">5000</onright>
-                            <onright condition="String.IsEqual(Container(9989).ListItem.Property(list),Weather)">6000</onright>
+                            <onright condition="!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)">3000</onright>
+                            <onright condition="String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings)">5000</onright>
+                            <onright condition="String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)">6000</onright>
                             <width>257.14</width>
                             <orientation>vertical</orientation>
                             <itemlayout width="257.14" height="item_list_height" condition="!Skin.HasSetting(HomeIcons) + !Skin.HasSetting(VerticalIconsOnly)">
@@ -1286,13 +1286,13 @@
                     </control>
 
                     <control type="group" id="99300">
-                        <animation effect="slide" start="0,0" end="0,250" time="0" tween="sine" condition="String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]">Conditional</animation>
+                        <animation effect="slide" start="0,0" end="0,250" time="0" tween="sine" condition="String.IsEqual(Container(301).ListItem.Property(submenuPath),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]">Conditional</animation>
                         <height>view_height</height>
                         <width>1800</width>
                         <include>Animation_Right</include>
                         <include>Defs_InfoDialog_Visible</include>
                         <control type="grouplist" id="3000">
-                            <visible>!String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
+                            <visible>!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
                             <top>-5</top>
                             <onup>301</onup>
                             <ondown>301</ondown>
@@ -1311,8 +1311,8 @@
                         </control>
                         <control type="group">
                             <visible>Integer.IsEqual(Container(3000).NumItems,1)</visible>
-                            <visible>!String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
-                            <visible>![String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]]</visible>
+                            <visible>!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
+                            <visible>![String.IsEqual(Container(301).ListItem.Property(submenuPath),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]]</visible>
                             <top>402.5</top>
                             <left>15</left>
                             <right>15</right>
@@ -1634,9 +1634,9 @@
 
         <onup condition="Skin.HasSetting(SubmenuOnly) + Integer.IsGreater(Container(302).NumItems,0)">302</onup>
 
-        <ondown condition="!String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)">3000</ondown>
-        <ondown condition="String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings)">5000</ondown>
-        <ondown condition="String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)">6000</ondown>
+        <ondown condition="!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)">3000</ondown>
+        <ondown condition="String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings)">5000</ondown>
+        <ondown condition="String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)">6000</ondown>
         <onfocus>ClearProperty(WidgetFocus,Home)</onfocus>
 
         <onleft condition="!Skin.HasSetting(HomeIcons) + !Skin.HasSetting(HomeTextAutoWidth) + Control.IsVisible(9999)">9999</onleft>
@@ -1663,7 +1663,7 @@
         <include condition="!Skin.HasSetting(HomeIcons) + Skin.HasSetting(HomeTextAutoWidth)">Home_Horizontal_Text</include>
         <include condition="!Skin.HasSetting(HomeIcons) + !Skin.HasSetting(HomeTextAutoWidth)">Home_Horizontal_Fixed</include>
         <control type="group">
-            <visible>String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather) | Control.HasFocus(9999)</visible>
+            <visible>String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather) | Control.HasFocus(9999)</visible>
             <visible>Weather.IsFetched</visible>
             <include>Weather</include>
         </control>
@@ -1671,7 +1671,7 @@
         <control type="group">
             <include>Animation_Common</include>
             <control type="group">
-                <visible>String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !Control.HasFocus(9999)</visible>
+                <visible>String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !Control.HasFocus(9999)</visible>
                 <include content="View_Settings">
                     <param name="hideonwindowopen" value="false" />
                 </include>
@@ -1680,14 +1680,14 @@
 
         <control type="group">
             <left>-24</left>
-            <visible>String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]</visible>
+            <visible>String.IsEqual(Container(301).ListItem.Property(submenuPath),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]</visible>
             <include>PVRTVRecordingWidget</include>
         </control>
 
         <control type="group">
             <top>view_top</top>
             <visible>!$EXP[Exp_ShowPlotOverlay]</visible>
-            <visible>!String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather)</visible>
+            <visible>!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather)</visible>
             <include>Defs_InfoDialog_Visible</include>
             <include content="Object_Info_Arrows">
                 <param name="id" value="3000" />
@@ -1696,12 +1696,12 @@
         <control type="group">
             <include>View_Group</include>
             <control type="group">
-                <animation effect="slide" start="0,0" end="0,250" time="0" tween="sine" condition="String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]">Conditional</animation>
+                <animation effect="slide" start="0,0" end="0,250" time="0" tween="sine" condition="String.IsEqual(Container(301).ListItem.Property(submenuPath),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]">Conditional</animation>
                 <top>-15</top>
                 <right>-15</right>
                 <left>-15</left>
                 <bottom>-15</bottom>
-                <visible>!String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Settings) + !String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),Weather) + !Control.HasFocus(9999)</visible>
+                <visible>!String.IsEqual(Container(301).ListItem.Property(submenuPath),Settings) + !String.IsEqual(Container(301).ListItem.Property(submenuPath),Weather) + !Control.HasFocus(9999)</visible>
                 <control type="grouplist" id="3000">
                     <top>-20</top>
                     <onup>301</onup>
@@ -1720,7 +1720,7 @@
                 </control>
                 <control type="group">
                     <visible>Integer.IsEqual(Container(3000).NumItems,1)</visible>
-                    <visible>![String.IsEqual(Container(9989).ListItemAbsolute(0).Property(list),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]]</visible>
+                    <visible>![String.IsEqual(Container(301).ListItem.Property(submenuPath),TV PVR Recording Widget) + [PVR.IsRecordingTV | PVR.HasNonRecordingTVTimer]]</visible>
                     <top>382.5</top>
                     <left>15</left>
                     <right>15</right>
