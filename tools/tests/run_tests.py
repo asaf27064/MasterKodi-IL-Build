@@ -2366,6 +2366,11 @@ def test_persistent_sdr_filter():
 
     # ...and the ids the WIZARD writes must be those same ids (one switch, not two)
     import resources.libs.sdr as _sdr
+    sdr_src = open(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                                'resources', 'libs', 'sdr.py'), encoding='utf-8').read()
+    check('the installed-probe asks the filesystem, not xbmcaddon.Addon (which makes '
+          'Kodi log an ERROR line for an addon that is simply not installed)',
+          "'addons', addon_id, 'addon.xml'" in sdr_src)
     check('wizard writes POV\'s own ids', tuple(_sdr.POV_IDS) == ('filter_hdr', 'filter_dv'))
     check('wizard writes Gears\' own ids', tuple(_sdr.GEARS_IDS) == ('filter.hdr', 'filter.dv'))
     check('wizard uses Exclude=1 / Include=0, like both engines',
@@ -2431,6 +2436,17 @@ def test_sdr_switch_writes_both_engines():
     import xbmcgui as _gui
 
     import resources.libs.sdr as _sdr
+
+    # the probe looks on DISK, so present the engines the way a real box does
+    for _aid in ('plugin.video.pov', 'plugin.video.gears'):
+        _d = os.path.join(HOME, 'addons', _aid)
+        os.makedirs(_d, exist_ok=True)
+        open(os.path.join(_d, 'addon.xml'), 'w', encoding='utf-8').write(
+            '<addon id="%s" version="1.0.0" name="x"/>' % _aid)
+    check('the probe sees an engine that is on disk',
+          _sdr._installed('plugin.video.pov') and _sdr._installed('plugin.video.gears'))
+    check('...and never claims one that is absent',
+          not _sdr._installed('plugin.video.nosuch'))
 
     dbdir = os.path.join(HOME, 'userdata', 'addon_data', 'plugin.video.gears', 'databases')
     os.makedirs(dbdir, exist_ok=True)
@@ -3207,6 +3223,14 @@ def test_install_question_applies_the_answer():
 
     import resources.libs.builds as _builds
     import resources.libs.sdr as _sdr
+
+    # the probe looks on DISK (constructing an Addon() for a missing addon makes
+    # Kodi log an ERROR), so the sandbox has to look like a real install
+    for _aid in ('plugin.video.pov', 'plugin.video.gears'):
+        _d = os.path.join(HOME, 'addons', _aid)
+        os.makedirs(_d, exist_ok=True)
+        open(os.path.join(_d, 'addon.xml'), 'w', encoding='utf-8').write(
+            '<addon id="%s" version="1.0.0" name="x"/>' % _aid)
 
     db = _sdr.GEARS_SETTINGS_DB
     os.makedirs(os.path.dirname(db), exist_ok=True)

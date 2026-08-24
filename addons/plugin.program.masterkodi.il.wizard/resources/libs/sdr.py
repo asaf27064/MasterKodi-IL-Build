@@ -73,9 +73,17 @@ def log(msg, level=xbmc.LOGINFO):
 
 
 def _installed(addon_id):
+    """Is this engine installed? Asked by looking on DISK, not by constructing
+    an Addon().
+
+    xbmcaddon.Addon('plugin.video.gears') on a POV-only box raises, and Kodi
+    logs that at ERROR level before our except ever sees it -- two scary
+    "EXCEPTION: Unknown addon id" lines in the install log of every POV build,
+    for a question we only asked in passing (seen on Asaf's reinstall,
+    2026-08-24). A directory probe answers the same question silently."""
     try:
-        xbmcaddon.Addon(addon_id)
-        return True
+        home = xbmcvfs.translatePath('special://home/')
+        return os.path.isfile(os.path.join(home, 'addons', addon_id, 'addon.xml'))
     except Exception:
         return False
 
