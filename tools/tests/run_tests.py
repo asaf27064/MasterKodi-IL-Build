@@ -2961,6 +2961,18 @@ def test_continue_watching_row():
                              open(sp, encoding='utf-8').read()).group(1) != '0']
     check('the resume prompt is left alone (auto_resume_episode stays 0)', not novel)
 
+    # AF3 on Piers exists for ONE line: jurialmunkey has no Piers branch, and AF3
+    # only loads on Kodi 22 with xbmc.gui 5.18.0 (0c737d4). Every upstream release
+    # rewrites addon.xml, so that line has to be re-applied by hand each time --
+    # this fails if a re-merge ever drops it.
+    af3p = os.path.join(REPO, 'overlays-piers', 'skin.arctic.fuse.3', 'files', 'addon.xml')
+    if os.path.isfile(af3p):
+        af3t = open(af3p, encoding='utf-8').read()
+        check('AF3 Piers still requires xbmc.gui 5.18.0 (it will not load on Kodi 22 '
+              'without it)', 'xbmc.gui" version="5.18.0"' in af3t)
+        check('...and no 5.17.0 requirement survived the re-merge',
+              '5.17.0' not in af3t)
+
     # the wizard ships its OWN seed copies of these rows -- a fresh install and
     # the "restore menu" flow read those, not the variants, so a row left behind
     # there quietly reinstates the old list on the next reinstall
