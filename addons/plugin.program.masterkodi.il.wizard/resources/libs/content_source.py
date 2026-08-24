@@ -240,6 +240,16 @@ _POV_CRED_IDS = {
 }
 
 
+# POV settings that are the USER'S ANSWER ABOUT HIS HARDWARE, not a build
+# default. Same preservation as a login, different reason: the shipped variant
+# carries filter_hdr/filter_dv as 0 (show everything), so a variant re-apply --
+# which happens on a skin switch and on every content-variant bump -- silently
+# turned the "my TV is not HDR" answer back off, and the user had to find it
+# again. Unlike a credential, '0' is a legitimate value here, so these are
+# preserved whenever the live file has ANY value at all.
+_POV_USER_PREF_IDS = {'filter_hdr', 'filter_dv'}
+
+
 def _merge_preserve_creds(shipped, live_path):
     """Return the shipped settings.xml (bytes) with the user's existing non-empty
     login values carried over from live_path. Regex-based (the files are flat
@@ -265,20 +275,22 @@ def _merge_preserve_creds(shipped, live_path):
         import re
         live = open(live_path, encoding='utf-8', errors='replace').read()
         text = shipped.decode('utf-8', 'replace')
-        for sid in _POV_CRED_IDS:
+        for sid in list(_POV_CRED_IDS) + list(_POV_USER_PREF_IDS):
+            is_pref = sid in _POV_USER_PREF_IDS
             m = re.search(r'<setting id="%s"[^>]*>([^<]+)</setting>' % re.escape(sid), live)
             val = m.group(1).strip() if m else ''
-            if not val or val.lower() in ('true', 'false', 'empty_setting'):
+            if not val or (not is_pref and val.lower() in ('true', 'false', 'empty_setting')):
                 continue                       # user has no value -> keep shipped
                 # ('empty_setting' is Gears' unset sentinel; a contaminated live
                 #  file must not re-plant it as a "login" -- same blindspot as
-                #  keep.py's _PLACEHOLDERS, fixed 2026-08-10)
+                #  keep.py's _PLACEHOLDERS, fixed 2026-08-10. A user PREFERENCE
+                #  is exempt: 'false'/'0' is a real answer there, not an unset.)
             repl = '<setting id="%s">%s</setting>' % (sid, val)
             pat = re.compile(r'<setting id="%s"[^>]*/>|<setting id="%s"[^>]*>[^<]*</setting>'
                              % (re.escape(sid), re.escape(sid)))
             text, n = pat.subn(repl, text, count=1)
             if n:
-                _log('preserved user login: %s' % sid)
+                _log('preserved user %s: %s' % ('preference' if is_pref else 'login', sid))
         return text.encode('utf-8')
     except Exception as e:
         _log('cred-preserve merge failed (%s), shipping as-is' % e, xbmc.LOGWARNING)

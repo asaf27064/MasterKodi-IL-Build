@@ -2188,6 +2188,615 @@ def test_sdr_filter_against_real_sources():
     check('edge cases (DVDRip / HDRip / DTS-HD stay visible)', not bad)
     if bad:
         print('       wrong verdict for: %s' % bad)
+
+
+def test_persistent_sdr_filter():
+    """The SDR answer has to STICK -- and never leave a user with no sources.
+
+    A display that cannot show HDR is a property of the living room, so the
+    engines' one-off "הצג SDR בלבד" filter meant re-applying it on every single
+    search. The persistent form keys on the ENGINES' OWN pair of settings
+    (POV filter_hdr/filter_dv, Gears filter.hdr/filter.dv, both = Exclude),
+    which is also what the wizard writes, so there is exactly one switch.
+
+    Everything below is executed, not read: the gate, the empty-list guard and
+    the filterless-search escape hatch all run against fake listitems.
+    """
+    print(chr(10) + '=== persistent SDR filter (both engines + the wizard) ===')
+    import ast as _ast
+    import glob as _glob
+    import re as _re
+
+    ENGINE_IDS = {'pov': ('filter_hdr', 'filter_dv'),
+                  'gears': ('gears.filter.hdr', 'gears.filter.dv')}
+
+    def lift(engine):
+        """Run the SHIPPED methods, with get_setting/home-property stubbed."""
+        p = os.path.join(REPO, 'overlays', 'plugin.video.%s' % engine, 'files',
+                         'resources', 'lib', 'windows', 'sources.py')
+        src = open(p, encoding='utf-8').read()
+        want = ('_is_hdr_item', '_sdr_persistent_on', '_sdr_only_enabled', '_apply_sdr_only')
+        got = {}
+        for n in _ast.walk(_ast.parse(src)):
+            if isinstance(n, _ast.FunctionDef) and n.name in want:
+                got[n.name] = _ast.get_source_segment(src, n)
+            if isinstance(n, _ast.Assign):
+                for t in n.targets:
+                    if isinstance(t, _ast.Name) and t.id in ('_hdr_tags', '_hdr_words'):
+                        got[t.id] = _ast.literal_eval(n.value)
+        check('%s: ships _sdr_only_enabled + _apply_sdr_only' % engine,
+              all(k in got for k in want))
+        if not all(k in got for k in want):
+            return None, src
+
+        settings, home = {}, {}
+        ns = {'get_setting': lambda sid, d=None: settings.get(sid, d)}
+        for name in want:
+            exec(compile(_ast.parse(got[name].replace(chr(9), '    ')), name, 'exec'), ns)
+
+        class S(object):
+            _hdr_tags, _hdr_words = got['_hdr_tags'], got['_hdr_words']
+            item_list = []
+
+            def _home_prop(self, key):
+                return home.get(key, '')
+
+            def get_home_property(self, key):       # Gears' name for the same thing
+                return home.get(key, '')
+
+        for name in want:
+            setattr(S, name, ns[name])
+        return (S(), settings, home), src
+
+    class Item(object):
+        def __init__(self, name, extra=''):
+            self._n, self._e = name.upper(), extra
+
+        def getProperty(self, key):
+            return self._n if 'name' in key else self._e
+
+    HDR = Item('Movie.2024.2160p.WEB-DL.DV.HDR.HEVC-GRP')
+    HDR10P = Item('Movie.2024.2160p.WEB-DL.HDR10+.HEVC-GRP')   # upstream's blind spot
+    HLG = Item('Movie.2024.2160p.WEB-DL.HLG.HEVC-GRP')         # and its other one
+    SDR1 = Item('Movie.2024.1080p.BluRay.x264-GRP')
+    SDR2 = Item('Movie.2024.720p.WEB.H264-GRP')
+
+    for engine, (hdr_id, dv_id) in ENGINE_IDS.items():
+        lifted, src = lift(engine)
+        if not lifted:
+            continue
+        win, settings, home = lifted
+
+        # the gate: BOTH excluded, nothing less
+        win.item_list = [HDR, SDR1]
+        win._apply_sdr_only()
+        check('%s: default (both Include) changes nothing' % engine,
+              win.item_list == [HDR, SDR1])
+
+        settings[hdr_id] = '1'
+        win.item_list = [HDR, SDR1]
+        win._apply_sdr_only()
+        check('%s: HDR-only Exclude does NOT trigger it (hybrids are upstream\'s '
+              'call)' % engine, win.item_list == [HDR, SDR1])
+
+        settings[dv_id] = '1'
+        win.item_list = [HDR, SDR1, HDR10P, SDR2, HLG]
+        win._apply_sdr_only()
+        check('%s: both Exclude -> HDR/DV gone, SDR kept' % engine,
+              win.item_list == [SDR1, SDR2])
+        check('%s: catches HDR10+ and HLG, which upstream\'s badge pass misses'
+              % engine, HDR10P not in win.item_list and HLG not in win.item_list)
+
+        # the guard that matters most: never hand back an empty window
+        win.item_list = [HDR, HDR10P]
+        win._apply_sdr_only()
+        check('%s: all-HDR list is shown IN FULL, never emptied' % engine,
+              win.item_list == [HDR, HDR10P])
+
+        # the user explicitly asked for a filterless search -> stay out of it
+        home['fs_filterless_search'] = 'true'
+        win.item_list = [HDR, SDR1]
+        win._apply_sdr_only()
+        check('%s: a filterless search is left alone' % engine,
+              win.item_list == [HDR, SDR1])
+        home.clear()
+
+        # applied where the list is BUILT, so a cleared manual filter re-applies
+        build = {'pov': 'self.item_list = list(builder())',
+                 'gears': 'self.item_list = list(builder(self.results))'}[engine]
+        after = src.split(build, 1)[1][:200] if build in src else ''
+        check('%s: applied straight after the item_list build' % engine,
+              '_apply_sdr_only()' in after)
+        check('%s: applied exactly once' % engine, src.count('self._apply_sdr_only()') == 1)
+
+    # the ids the windows read must be the ids the engines DECLARE
+    pov_settings = open(os.path.join(REPO, 'addons', 'plugin.video.pov', 'resources',
+                                     'settings.xml'), encoding='utf-8').read()
+    check('POV declares filter_hdr/filter_dv',
+          all('id="%s"' % s in pov_settings for s in ('filter_hdr', 'filter_dv')))
+    gears_defaults = open(os.path.join(REPO, 'addons', 'plugin.video.gears', 'resources',
+                                       'lib', 'caches', 'settings_cache.py'),
+                          encoding='utf-8').read()
+    check('Gears declares filter.hdr/filter.dv',
+          all("'setting_id': '%s'" % s in gears_defaults
+              for s in ('filter.hdr', 'filter.dv')))
+
+    # ...and the ids the WIZARD writes must be those same ids (one switch, not two)
+    import resources.libs.sdr as _sdr
+    check('wizard writes POV\'s own ids', tuple(_sdr.POV_IDS) == ('filter_hdr', 'filter_dv'))
+    check('wizard writes Gears\' own ids', tuple(_sdr.GEARS_IDS) == ('filter.hdr', 'filter.dv'))
+    check('wizard uses Exclude=1 / Include=0, like both engines',
+          (_sdr.EXCLUDE, _sdr.INCLUDE) == ('1', '0'))
+    rows = _sdr._gears_rows(_sdr.EXCLUDE)
+    check('wizard also writes the _name rows Gears shows in its settings screen',
+          sorted(r[0] for r in rows) == ['filter.dv', 'filter.dv_name',
+                                         'filter.hdr', 'filter.hdr_name'])
+    check('and the display name matches the value', all(
+        r[3] == 'Exclude' for r in rows if r[0].endswith('_name')))
+
+    # A variant re-apply (skin switch, content-variant bump) rewrites POV's
+    # settings.xml from the shipped copy, which carries the filter as 0. Run the
+    # real merge and prove the user's own answer survives it -- otherwise the
+    # question quietly un-answers itself and he has to find it again.
+    import resources.libs.content_source as _cs
+    live = os.path.join(HOME, '_sdr_live_settings.xml')
+    open(live, 'w', encoding='utf-8').write(
+        '<settings>'
+        '<setting id="filter_hdr">1</setting>'
+        '<setting id="filter_dv">1</setting>'
+        '<setting id="tb.token">USERTOKEN</setting>'
+        '<setting id="results.sort_size">1</setting>'
+        '</settings>')
+    shipped = ('<settings>'
+               '<setting id="filter_hdr" default="true">0</setting>'
+               '<setting id="filter_dv" default="true">0</setting>'
+               '<setting id="tb.token"></setting>'
+               '<setting id="results.sort_size">0</setting>'
+               '</settings>').encode('utf-8')
+    merged = _cs._merge_preserve_creds(shipped, live).decode('utf-8')
+    check('variant re-apply keeps the user\'s SDR answer',
+          '<setting id="filter_hdr">1</setting>' in merged
+          and '<setting id="filter_dv">1</setting>' in merged)
+    check('...and still keeps his debrid token',
+          '<setting id="tb.token">USERTOKEN</setting>' in merged)
+    check('...while a normal build default still wins',
+          '<setting id="results.sort_size">0</setting>' in merged)
+    variants = _glob.glob(os.path.join(REPO, 'config-variants', '*', 'pov', 'settings.xml'))
+    shipped_on = [v for v in variants
+                  if _re.search('id="filter_(hdr|dv)"[^>]*>1<', open(v, encoding='utf-8').read())]
+    check('no variant ships the filter ON (a fresh box shows everything)',
+          not shipped_on)
+
+
+def test_sdr_switch_writes_both_engines():
+    """The switch has to land in BOTH engines and take effect WITHOUT a restart.
+
+    Each engine reads through a cache mirrored into HOME window properties (POV
+    one JSON blob, Gears one property per id, read BEFORE the db). A write that
+    only touches disk leaves the user flipping the switch, opening a source list
+    and seeing nothing change -- the same trap that made Gears' external-scraper
+    enforcement silently do nothing (2026-08-02).
+
+    Gears' settings.db does not exist until Gears has run once, which on a fresh
+    install is after the question is asked, so the no-db path must DEFER rather
+    than report success.
+    """
+    print(chr(10) + '=== the SDR switch: both engines, live, and deferrable ===')
+    import json as _json
+    import sqlite3 as _sq
+    import xbmcaddon as _addon
+    import xbmcgui as _gui
+
+    import resources.libs.sdr as _sdr
+
+    dbdir = os.path.join(HOME, 'userdata', 'addon_data', 'plugin.video.gears', 'databases')
+    os.makedirs(dbdir, exist_ok=True)
+    db = _sdr.GEARS_SETTINGS_DB
+    if os.path.exists(db):
+        os.remove(db)
+    con = _sq.connect(db)
+    con.execute('CREATE TABLE settings (setting_id text not null unique, setting_type text, '
+                'setting_default text, setting_value text)')       # the real schema
+    con.execute("INSERT INTO settings VALUES ('filter.hdr','action','0','0')")
+    con.execute("INSERT INTO settings VALUES ('filter.hdr_name','name','','Include')")
+    con.commit(); con.close()
+
+    win = _gui.Window(10000)
+    win.setProperty('pov_settings', _json.dumps({'filter_hdr': '0', 'filter_dv': '0',
+                                                'meta_language': 'he'}))
+    win.setProperty('gears.filter.hdr', '0')
+
+    res = _sdr.apply_sdr_only(True)
+    check('POV written', res['pov'] is True)
+    check('Gears written', res['gears'] is True)
+    check('nothing reported as failed', not _sdr.failures(res))
+
+    check('POV settings hold Exclude',
+          all(_addon.Addon('plugin.video.pov').getSetting(s) == '1' for s in _sdr.POV_IDS))
+    blob = _json.loads(win.getProperty('pov_settings'))
+    check('POV live cache patched -> no restart needed',
+          blob['filter_hdr'] == '1' and blob['filter_dv'] == '1')
+    check('and the rest of the POV cache is untouched', blob['meta_language'] == 'he')
+
+    con = _sq.connect(db)
+    rows = dict(con.execute('SELECT setting_id, setting_value FROM settings').fetchall())
+    types = dict(con.execute('SELECT setting_id, setting_type FROM settings').fetchall())
+    con.close()
+    check('Gears db holds Exclude for both ids',
+          rows.get('filter.hdr') == '1' and rows.get('filter.dv') == '1')
+    check('Gears settings screen shows the matching label',
+          rows.get('filter.hdr_name') == 'Exclude' and rows.get('filter.dv_name') == 'Exclude')
+    check('rows keep the types Gears expects',
+          types.get('filter.dv') == 'action' and types.get('filter.dv_name') == 'name')
+    check('Gears live property mirrored -> no restart needed',
+          win.getProperty('gears.filter.hdr') == '1')
+
+    check('status() reads it back off the box', _sdr.status() == {'pov': True, 'gears': True})
+    check('is_enabled() agrees', _sdr.is_enabled() is True)
+
+    # turning it back off is the same path in reverse
+    off = _sdr.apply_sdr_only(False)
+    check('switching off writes Include everywhere', not _sdr.failures(off))
+    con = _sq.connect(db)
+    back = dict(con.execute('SELECT setting_id, setting_value FROM settings').fetchall())
+    con.close()
+    check('db back to Include', back.get('filter.hdr') == '0' and back.get('filter.dv') == '0')
+    check('label follows the value back', back.get('filter.hdr_name') == 'Include')
+    check('status() says off', _sdr.is_enabled() is False)
+
+    # fresh install: Gears' db is not born yet -> defer, never claim success
+    os.remove(db)
+    pending = os.path.join(HOME, 'userdata', 'addon_data',
+                           'plugin.program.masterkodi.il.wizard', 'gears_keep_pending.json')
+    if os.path.exists(pending):
+        os.remove(pending)
+    res = _sdr.apply_sdr_only(True)
+    check('no db -> reported as deferred, not as written', res['gears'] == 'deferred')
+    check('deferred is not counted as a failure', not _sdr.failures(res))
+    check('values handed to the first-boot catch-up', os.path.isfile(pending))
+    if os.path.isfile(pending):
+        stashed = _json.load(open(pending, encoding='utf-8-sig'))
+        check('and the catch-up carries both ids',
+              stashed.get('filter.hdr') == '1' and stashed.get('filter.dv') == '1')
+    check('POV still applied even though Gears had to wait', res['pov'] is True)
+
+
+def test_sdr_switch_in_the_filter_menu():
+    """The switch has to be reachable -- and readable -- from the sources window.
+
+    Once it is on, the engine drops HDR/DV BEFORE the window is built: nothing
+    on screen says the list is filtered, and there is no way back without
+    leaving the window. So the filter menu carries one row that both reports the
+    state and flips it.
+
+    Two traps this pins down:
+      * the row must read the SETTING, not "are we filtering right now" -- during
+        an explicit filterless search we stand down, but the switch is still on
+        and the menu must say so.
+      * Gears' settings_cache.set() does NOT strip a 'gears.' prefix (only get()
+        does), so a prefixed write would silently create a second, dead row and
+        the real setting would never change.
+    """
+    print(chr(10) + '=== the SDR switch, from inside the sources window ===')
+    import ast as _ast
+
+    ENGINES = {
+        'pov': {'ids': ('filter_hdr', 'filter_dv'),
+                'read': ('filter_hdr', 'filter_dv'),
+                'home': '_home_prop'},
+        'gears': {'ids': ('filter.hdr', 'filter.dv'),
+                  'read': ('gears.filter.hdr', 'gears.filter.dv'),
+                  'home': 'get_home_property'},
+    }
+
+    for engine, spec in ENGINES.items():
+        p = os.path.join(REPO, 'overlays', 'plugin.video.%s' % engine, 'files',
+                         'resources', 'lib', 'windows', 'sources.py')
+        src = open(p, encoding='utf-8').read()
+
+        want = ('_sdr_persistent_on', '_set_sdr_persistent')
+        fns = {}
+        for n in _ast.walk(_ast.parse(src)):
+            if isinstance(n, _ast.FunctionDef) and n.name in want:
+                fns[n.name] = _ast.get_source_segment(src, n)
+        check('%s: ships the switch helpers' % engine, len(fns) == len(want))
+        if len(fns) != len(want):
+            continue
+
+        import json as _json
+        settings, written, home = {}, [], {}
+        ns = {'get_setting': lambda sid, d=None: settings.get(sid, d),
+              'set_setting': lambda sid, val: written.append((sid, val)),
+              'json': _json}
+        for name in want:
+            exec(compile(_ast.parse(fns[name].replace(chr(9), '    ')), name, 'exec'), ns)
+
+        class S(object):
+            def _home_prop(self, k): return home.get(k, '')
+            def get_home_property(self, k): return home.get(k, '')
+            def _set_home_prop(self, k, v): home[k] = v
+        for name in want:
+            setattr(S, name, ns[name])
+        win = S()
+
+        check('%s: reports OFF by default' % engine, win._sdr_persistent_on() is False)
+        settings[spec['read'][0]] = '1'
+        check('%s: one filter alone is not "on"' % engine, win._sdr_persistent_on() is False)
+        settings[spec['read'][1]] = '1'
+        check('%s: both filters -> reports ON' % engine, win._sdr_persistent_on() is True)
+
+        home['fs_filterless_search'] = 'true'
+        check('%s: still reports ON during a filterless search (the SWITCH is on,'
+              ' even though we stand down)' % engine, win._sdr_persistent_on() is True)
+        home.clear()
+
+        del written[:]
+        win._set_sdr_persistent(True)
+        check('%s: turning on writes BOTH ids, as Exclude' % engine,
+              written == [(spec['ids'][0], '1'), (spec['ids'][1], '1')])
+        del written[:]
+        win._set_sdr_persistent(False)
+        check('%s: turning off writes BOTH ids, as Include' % engine,
+              written == [(spec['ids'][0], '0'), (spec['ids'][1], '0')])
+
+        # The rows and the handlers, read out of the ACTUAL functions -- a
+        # file-wide search would happily match the identical lines in the
+        # automatic pass and prove nothing about the menu.
+        bodies = {}
+        for n in _ast.walk(_ast.parse(src)):
+            if isinstance(n, _ast.FunctionDef) and n.name in ('filter_results',
+                                                              'make_filter_items',
+                                                              'filter_action'):
+                bodies[n.name] = _ast.get_source_segment(src, n)
+        rows = bodies.get('make_filter_items') or bodies.get('filter_results') or ''
+        handlers = bodies.get('filter_action') or bodies.get('filter_results') or ''
+        check('%s: menu code found' % engine, bool(rows) and bool(handlers))
+
+        check('%s: the row reports the SWITCH, not "are we filtering now"' % engine,
+              '_sdr_persistent_on()' in rows and '_sdr_only_enabled(' not in rows)
+        check('%s: offers to turn it ON only while something is hideable' % engine,
+              "'sdr_persist_on'" in rows
+              and 'sdr_count < len(self.item_list)' in rows.replace('_sdr_count', 'sdr_count'))
+        check('%s: offers the OFF row whenever the switch is on' % engine,
+              "'sdr_persist_off'" in rows)
+        check('%s: both choices are actually handled' % engine,
+              handlers.count("== 'sdr_persist_on'") == 1
+              and handlers.count("== 'sdr_persist_off'") == 1)
+        on_branch = handlers[handlers.index("== 'sdr_persist_on'"):
+                             handlers.index("== 'sdr_persist_off'")]
+        check('%s: turning it on keeps the never-empty guard' % engine,
+              'if sdr: self.item_list = sdr' in on_branch.replace('_sdr', 'sdr'))
+        check('%s: turning it off tells the user a new search shows everything'
+              % engine, 'חיפוש חדש יציג את כל המקורות' in handlers)
+        if engine == 'gears':
+            # Gears builds its filter list once, in __init__ -- both branches
+            # have to rebuild it or the menu keeps describing the old state.
+            check('gears: both branches rebuild the menu after toggling',
+                  handlers.count('_refresh_after_sdr_toggle()') == 2)
+
+    # POV alone needs the cache patch: Gears' own set_setting mirrors the value
+    pov = open(os.path.join(REPO, 'overlays', 'plugin.video.pov', 'files', 'resources',
+                            'lib', 'windows', 'sources.py'), encoding='utf-8').read()
+    check('POV also patches its live settings blob (no restart needed)',
+          "'pov_settings'" in pov and "d['filter_hdr']" in pov)
+    check('POV can actually write settings (set_setting imported)',
+          'from modules.kodi_utils import get_setting, set_setting' in pov)
+
+
+def test_sdr_indicator_on_the_panel():
+    """You must be able to see that the list is filtered WITHOUT opening a menu.
+
+    With the switch on, the engine drops HDR/DV before the window exists, so the
+    4K rows are simply absent and nothing says why. The panel marker is that
+    answer -- and it is deliberately driven by "are we actually filtering this
+    list" rather than by the switch: during an explicit filterless search we
+    stand down, the list really is complete, and claiming otherwise would lie.
+
+    The panel line itself is the one that has been rewritten repeatedly for bidi
+    and width, so this also pins the mechanics: a real LRM before the Latin run,
+    the marker appended LAST, and (Gears) inside the line rather than after the
+    newline that separates it from "N Results".
+    """
+    print(chr(10) + '=== the "list is filtered" marker on the panel ===')
+    MARK = 'מסנן: ללא ‎HDR/DV'
+    START = '########### KODIRDIL - "this list is filtered" indicator'
+
+    for engine, has_newline in (('pov', False), ('gears', True)):
+        p = os.path.join(REPO, 'overlays', 'plugin.video.%s' % engine, 'files',
+                         'resources', 'lib', 'windows', 'sources.py')
+        src = open(p, encoding='utf-8').read()
+        check('%s: ships the marker' % engine, START in src and MARK in src)
+        if START not in src:
+            continue
+
+        block = src[src.index(START):]
+        block = block[block.index(chr(10)) + 1:]
+        block = block[:block.index('####################################################################')]
+        # the block lives two tabs deep inside a method -- dedent it to run it
+        body = chr(10).join(l[2:] if l.startswith(chr(9) * 2) else l
+                            for l in block.split(chr(10)))
+
+        class _Self(object):
+            filtering = True
+            def _sdr_only_enabled(self): return self.filtering
+            def _sdr_persistent_on(self): return True
+
+        def run(panel, filtering):
+            me = _Self()
+            me.filtering = filtering
+            ns = {'self': me, 'hebrew_subtitles_panel_text': panel}
+            exec(compile(body, 'marker', 'exec'), ns)
+            return ns['hebrew_subtitles_panel_text']
+
+        nl = chr(10) if has_newline else ''
+        existing = 'נמצאו 2 כתוביות | התאמות: 4K:5' + nl
+
+        out = run(existing, True)
+        check('%s: marker appended to the existing panel text' % engine,
+              MARK in out and out.startswith('נמצאו 2 כתוביות'))
+        check('%s: marker comes LAST (Latin run at the end of the run)' % engine,
+              out.rstrip(chr(10)).endswith('[/COLOR]'))
+        check('%s: real LRM in front of the Latin' % engine, '‎' in out)
+        if has_newline:
+            check('gears: the "N Results" newline is preserved, and the marker is '
+                  'INSIDE the line', out.endswith(chr(10)) and out.count(chr(10)) == 1)
+
+        out_empty = run('', True)
+        check('%s: works with no subtitle text at all' % engine,
+              out_empty.strip(chr(10)) and MARK in out_empty)
+        check('%s: no stray separator when there is nothing to separate' % engine,
+              not out_empty.lstrip().startswith('|'))
+
+        out_off = run(existing, False)
+        check('%s: NOT shown when the list is not actually filtered '
+              '(filterless search)' % engine, MARK not in out_off)
+        check('%s: and the panel is otherwise untouched' % engine, out_off == existing)
+
+        # colour discipline: this panel already assigns a meaning to every colour
+        # it uses for subtitles -- the marker must not borrow one of them
+        utils = open(os.path.join(REPO, 'overlays', 'plugin.video.%s' % engine, 'files',
+                                  'resources', 'lib', 'kodirdil',
+                                  'hebrew_subtitles_search_utils.py'), encoding='utf-8').read()
+        marker_colour = block.split('[COLOR ')[1].split(']')[0]
+        check('%s: marker colour is not one already meaning something else' % engine,
+              '[COLOR %s]' % marker_colour not in utils)
+
+
+def test_install_question_applies_the_answer():
+    """Drive the install question itself, both answers, end to end.
+
+    The dialog copy and the write path are separately covered; this proves the
+    step in the middle -- that "לא, מסך רגיל" really turns the filter on, that
+    "כן, תומך ב-HDR" turns it back off when it was on, and that answering yes on
+    a box where it was never on writes NOTHING (so a reinstall cannot clobber a
+    user's own Prefer/Sort choice)."""
+    print(chr(10) + '=== install question: the answer is actually applied ===')
+    import sqlite3 as _sq
+
+    import resources.libs.builds as _builds
+    import resources.libs.sdr as _sdr
+
+    db = _sdr.GEARS_SETTINGS_DB
+    os.makedirs(os.path.dirname(db), exist_ok=True)
+    if os.path.exists(db):
+        os.remove(db)
+    con = _sq.connect(db)
+    con.execute('CREATE TABLE settings (setting_id text not null unique, setting_type text, '
+                'setting_default text, setting_value text)')
+    con.commit(); con.close()
+    _sdr.apply_sdr_only(False)                      # start from the shipped default
+    check('starts off, like a fresh box', _sdr.is_enabled() is False)
+
+    class _Dialog(object):
+        def __init__(self, answer):
+            self.answer, self.asked, self.oked = answer, 0, []
+
+        def yesno(self, *a, **k):
+            self.asked += 1
+            return self.answer
+
+        def ok(self, *a, **k):
+            self.oked.append(a)
+
+    mgr = _builds.BuildManager.__new__(_builds.BuildManager)   # no install side effects
+
+    mgr.dialog = _Dialog(False)                     # "לא, מסך רגיל"
+    mgr._ask_and_apply_sdr()
+    check('the question was asked', mgr.dialog.asked == 1)
+    check('"plain screen" turns the filter ON', _sdr.status() == {'pov': True, 'gears': True})
+    check('and no error dialog was shown', not mgr.dialog.oked)
+
+    mgr.dialog = _Dialog(True)                      # "כן, תומך ב-HDR" -- it WAS on
+    mgr._ask_and_apply_sdr()
+    check('"supports HDR" turns it back off', _sdr.is_enabled() is False)
+
+    before = _sdr.status()
+    mgr.dialog = _Dialog(True)                      # ...and again, already off
+    mgr._ask_and_apply_sdr()
+    check('answering "supports HDR" on an already-off box changes nothing',
+          _sdr.status() == before)
+
+
+def test_sdr_question_reads_right_in_hebrew():
+    """Every Hebrew line we ship for this feature has to survive bidi, and the
+    dialogs must not turn the filter on by a stray OK press.
+
+    Two rules, both learned the hard way in this build:
+      * a Latin run in the MIDDLE of a Hebrew line gets reordered -- the
+        maintenance sizes and the sources panel both had to be rewritten for
+        this (the panel rendered "התאמות 4" with an orphaned "K:3" elsewhere).
+        Hebrew leads, ONE Latin run, at the end.
+      * Kodi focuses NO by default. Here NO means "my TV is not HDR", so an
+        install where the user just presses OK would silently start hiding
+        sources. The focused button must be the one that changes nothing.
+    """
+    print(chr(10) + '=== the HDR question: bidi-safe, and safe to mis-click ===')
+    import ast as _ast
+    import re as _re
+
+    HEB = _re.compile('[֐-׿]')
+    LAT = _re.compile('[A-Za-z]')
+    TAGS = _re.compile(r'\[/?(?:B|I|COLOR[^\]]*|CR|UPPERCASE|LOWERCASE)\]', _re.I)
+
+    def offenders(text):
+        bad = []
+        for line in TAGS.sub('', text).split(chr(10)):
+            if not (HEB.search(line) and LAT.search(line)):
+                continue
+            # the Latin run must be LAST: nothing but punctuation/space after it
+            tail = line[max(m.start() for m in LAT.finditer(line)) + 1:]
+            if HEB.search(tail):
+                bad.append(line.strip())
+        return bad
+
+    files = {
+        'default.py': os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                                   'default.py'),
+        'builds.py': os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                                  'resources', 'libs', 'builds.py'),
+    }
+    total = 0
+    for label, path in files.items():
+        src = open(path, encoding='utf-8').read()
+        strings = []
+        for node in _ast.walk(_ast.parse(src)):
+            if isinstance(node, _ast.Constant) and isinstance(node.value, str):
+                strings.append(node.value)
+        ours = [s for s in strings if 'HDR' in s and HEB.search(s)]
+        total += len(ours)
+        bad = [b for s in ours for b in offenders(s)]
+        check('%s: every HDR line is bidi-safe (%d line(s) checked)'
+              % (label, len(ours)), not bad)
+        for b in bad:
+            print('       Latin run is not last: %s' % b)
+    check('the feature actually ships Hebrew text to check', total >= 5)
+
+    # the focused button must be the harmless one
+    builds = open(files['builds.py'], encoding='utf-8').read()
+    ask = builds[builds.index('def _ask_and_apply_sdr'):]
+    ask = ask[:ask.index('def _countdown_restart')]
+    check('install question focuses "supports HDR" (changes nothing)',
+          'DLG_YESNO_YES_BTN' in ask)
+    check('install question still works on a Kodi without defaultbutton',
+          'except (TypeError, AttributeError)' in ask)
+    check('answering "supports HDR" writes nothing unless it was ON',
+          'if any(v is True for v in state.values()):' in ask)
+
+    menu = open(files['default.py'], encoding='utf-8').read()
+    sdr = menu[menu.index('def sdr_menu'):]
+    sdr = sdr[:sdr.index('def maintenance_menu')]
+    check('maintenance toggle focuses the CURRENT state (mis-click = no change)',
+          'DLG_YESNO_NO_BTN if enabled' in sdr)
+    check('maintenance toggle survives a Kodi without defaultbutton',
+          'except (TypeError, AttributeError)' in sdr)
+
+    # ...and it has to be reachable, like the OLED one
+    maint = menu[menu.index('def maintenance_menu'):]
+    maint = maint[:maint.index('def clear_cache')]
+    check('the toggle is listed in the maintenance menu', 'מסך ללא HDR' in maint)
+    check('and it is actually dispatched', 'sdr_menu()' in maint)
+
+
 def test_pack_never_picks_a_sample():
     """A torrent pack must never resolve to the SAMPLE file.
 
@@ -3011,6 +3620,12 @@ def main():
               test_keep_cancel_aborts_the_install,
               test_services_connect_offer,
               test_sdr_filter_against_real_sources,
+              test_persistent_sdr_filter,
+              test_sdr_switch_writes_both_engines,
+              test_sdr_switch_in_the_filter_menu,
+              test_sdr_indicator_on_the_panel,
+              test_install_question_applies_the_answer,
+              test_sdr_question_reads_right_in_hebrew,
               test_pack_never_picks_a_sample,
               test_sample_fix_still_needed_upstream,
               test_no_comments_in_addon_settings,

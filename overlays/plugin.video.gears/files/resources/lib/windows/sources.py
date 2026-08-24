@@ -107,6 +107,77 @@ class SourcesResults(BaseDialog):
 	# (masked only because such releases usually also match by name).
 	_hdr_words = ('.HDR.', '.HDR10.', '.HDR10PLUS.', '.HDR10P.', '.DV.', '.DOVI.', '.DVHE.', '.DOLBY.VISION.', '.DOLBYVISION.', '.HLG.')
 
+	########### KODIRDIL - persistent "my TV is SDR" filter ###########
+	# The window already offers a one-off "הצג SDR בלבד" filter, but a display
+	# that cannot show HDR is a property of the LIVING ROOM, not of one search --
+	# so re-applying it on every single source list is pure friction.
+	#
+	# The switch is the ENGINE'S OWN pair of settings, not one of ours:
+	#     gears.filter.hdr = Exclude  AND  gears.filter.dv = Exclude
+	# Both together, because with only one of them set the engine deliberately
+	# KEEPS DV/HDR hybrids -- both is the unambiguous "this display is SDR".
+	# Using upstream's own switch means it also filters where our window code
+	# never runs (autoplay / background resolve), and the user can flip it back
+	# from the addon's own settings screen.
+	#
+	# What we add on top is COVERAGE. Upstream's pass matches two badges only,
+	# '[B]HDR[/B]' and '[B]D/VISION[/B]': it misses '[B]HDR10+[/B]', it misses HLG, and it misses every release
+	# whose HDR shows up in the NAME alone. Those slipped through and landed back
+	# in front of the one user who has told the addon he cannot display them.
+	def _sdr_persistent_on(self):
+		"""Is the persistent 'my TV is SDR' switch on? Pure setting state -- the
+		filter menu asks THIS, because it has to report the switch, not whether
+		we happen to be filtering this particular list."""
+		try: return get_setting('gears.filter.hdr', '0') == '1' and get_setting('gears.filter.dv', '0') == '1'
+		except: return False
+
+	def _set_sdr_persistent(self, enable):
+		"""Flip the ENGINE'S OWN pair of settings from inside the window.
+
+		Gears' own set_setting writes the db row, mirrors the value into the
+		`gears.<id>` window property its get_setting reads FIRST, and updates the
+		`<id>_name` row the settings screen displays -- so one call keeps all
+		three in step. Ids are passed BARE: settings_cache.set() does not strip a
+		'gears.' prefix (only get() does), and a prefixed write would create a
+		second, dead row."""
+		v = '1' if enable else '0'
+		try:
+			set_setting('filter.hdr', v)
+			set_setting('filter.dv', v)
+		except: pass
+
+	def _refresh_after_sdr_toggle(self):
+		"""Gears builds its filter list ONCE, in __init__. The row the user just
+		pressed describes a state that has changed, so rebuild it -- otherwise
+		the menu keeps offering to turn on something already on."""
+		try:
+			self.make_filter_items()
+			self.reset_window(self.filter_window_id)
+			self.add_items(self.filter_window_id, self.filter_list)
+			self.reset_window(self.window_id)
+			self.add_items(self.window_id, self.item_list)
+			self.setProperty('total_results', self.total_results)
+			self.setFocusId(self.window_id)
+		except: pass
+
+	def _sdr_only_enabled(self):
+		try:
+			if self.get_home_property('fs_filterless_search') == 'true': return False
+			return self._sdr_persistent_on()
+		except: return False
+
+	def _apply_sdr_only(self):
+		"""Drop what upstream's exclude missed. NEVER empties the window: if every
+		source is HDR/DV we show them all, exactly like upstream's own "Ignore All
+		Filters When No Results Available" -- a washed-out picture is recoverable,
+		"no sources" is not."""
+		try:
+			if not self._sdr_only_enabled(): return
+			sdr = [i for i in self.item_list if not self._is_hdr_item(i)]
+			if sdr: self.item_list = sdr
+		except: pass
+	###################################################################
+
 	def _is_hdr_item(self, item):
 		if any(x in item.getProperty('extraInfo') for x in self._hdr_tags): return True
 		n = item.getProperty('name')
@@ -162,6 +233,27 @@ class SourcesResults(BaseDialog):
 				elif filter_value == 'sdr_only':
 					filtered_list = [i for i in self.item_list if not self._is_hdr_item(i)]
 				################################################################
+				########### KODIRDIL - persistent switch: state + on/off ###########
+				elif filter_value == 'sdr_persist_on':
+					# Not a filter that BACK undoes -- the switch is now on, so
+					# narrow the list for real, exactly as it would have been had
+					# the switch been on before the search. Same never-empty guard
+					# as the automatic pass.
+					self._set_sdr_persistent(True)
+					sdr = [i for i in self.item_list if not self._is_hdr_item(i)]
+					if sdr: self.item_list = sdr
+					self.total_results = str(len(self.item_list))
+					self._refresh_after_sdr_toggle()
+					return
+				elif filter_value == 'sdr_persist_off':
+					# The rows WE hid could be put back, but the ones the engine
+					# dropped at the results level are gone before this window
+					# existed. Half a list would just look broken, so say what
+					# actually happens.
+					self._set_sdr_persistent(False)
+					self._refresh_after_sdr_toggle()
+					return ok_dialog(text='המסנן בוטל. חיפוש חדש יציג את כל המקורות')
+				####################################################################
 				else: #cache_check_rescrape
 					self.selected = ('cache_change_rescrape', 'false' if self.external_cache_check else 'true')
 					return self.close()
@@ -328,6 +420,9 @@ class SourcesResults(BaseDialog):
 			highlight_type = self.info_highlights_dict['highlight_type']
 			if filtered_list: return list(builder(filtered_list))
 			self.item_list = list(builder(self.results))
+			########### KODIRDIL - persistent "my TV is SDR" filter ###########
+			self._apply_sdr_only()
+			###################################################################
 			if self.prescrape:
 				prescrape_listitem = self.make_listitem()
 				prescrape_listitem.setProperty('perform_full_search', 'true')
@@ -376,7 +471,18 @@ class SourcesResults(BaseDialog):
 		sdr_count = len([i for i in self.item_list if not self._is_hdr_item(i)])
 		if 0 < sdr_count < len(self.item_list):
 			data.append(('[COLOR yellow]הצג SDR בלבד (ללא HDR/DV)[/COLOR] | [B]%d[/B] תוצאות' % sdr_count, 'special', 'sdr_only'))
-		#########################################################################
+		########### KODIRDIL - the persistent switch, where you already look ###########
+		# Once the switch is on the engine drops HDR/DV BEFORE this window is
+		# built, so nothing on screen says the list is filtered and there is no
+		# way back without leaving the window. This row is both: it reports the
+		# state and flips it. When the switch is on, the one-off row above
+		# disappears by itself (everything showing is already SDR), so the two
+		# never both appear.
+		if self._sdr_persistent_on():
+			data.append(('[COLOR yellow]בטל מסנן קבוע - כרגע מוסתרים HDR/DV[/COLOR]', 'special', 'sdr_persist_off'))
+		elif sdr_count < len(self.item_list):
+			data.append(('[COLOR yellow]הפעל מסנן קבוע - הסתר HDR/DV בכל חיפוש[/COLOR]', 'special', 'sdr_persist_on'))
+		###############################################################################
 		data.extend(qualities)
 		data.extend(providers)
 		data.extend([('Filter by [B]Title[/B]...', 'special', 'title'), ('Filter by [B]Info[/B]...', 'special', 'extraInfo')])
@@ -411,6 +517,27 @@ class SourcesResults(BaseDialog):
 				from modules.kodi_utils import logger
 				logger("Gears-HEBSUBS", f"Error setting panel text: {str(e)}")
 				hebrew_subtitles_panel_text = ''
+
+		########### KODIRDIL - "this list is filtered" indicator ###########
+		# With the persistent filter on, the engine drops HDR/DV before this
+		# window exists -- so the 4K rows are simply absent, with nothing on
+		# screen to say why. This marker is the answer, without opening a menu.
+		#
+		# It asks _sdr_only_enabled(), NOT the switch: during an explicit
+		# filterless search we stand down and the list really is complete, so
+		# claiming otherwise would be a lie. The menu row is the opposite case --
+		# it reports the SWITCH, because that is what it toggles.
+		#
+		# Goes BEFORE the trailing newline: that newline is what puts POV's
+		# "N Results" on its own line, and our text must stay one self-contained
+		# run. LRM before the Latin, like the quality tokens. Grey on purpose --
+		# every colour in this panel already means something about subtitles.
+		if self._sdr_only_enabled():
+			_sdr_mark = '[COLOR FFB0B0B0][B]מסנן: ללא ‎HDR/DV[/B][/COLOR]'
+			_panel = hebrew_subtitles_panel_text.rstrip('\n')
+			hebrew_subtitles_panel_text = ('%s | %s\n' % (_panel, _sdr_mark)) if _panel \
+				else '%s\n' % _sdr_mark
+		####################################################################
 
 		# Hebrew FIRST: the skin label renders "<total_results> Results", so
 		# appending dropped Hebrew into the MIDDLE of an English sentence --

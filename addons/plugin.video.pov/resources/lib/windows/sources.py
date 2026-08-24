@@ -2,7 +2,7 @@ import json
 from windows import BaseDialog
 from modules.debrid import Source
 from modules.kodi_utils import media_path, hide_busy_dialog, dialog, select_dialog, ok_dialog, local_string as ls
-from modules.kodi_utils import get_setting
+from modules.kodi_utils import get_setting, set_setting
 from modules.settings import get_art_provider, info_icons, provider_sort_ranks
 # from modules.kodi_utils import logger
 
@@ -143,6 +143,66 @@ class SourceResults(BaseDialog):
 	# substring of '[B]HDR10+[/B]', so without it the badge path had a hole
 	# (masked only because such releases usually also match by name).
 	_hdr_words = ('.HDR.', '.HDR10.', '.HDR10PLUS.', '.HDR10P.', '.DV.', '.DOVI.', '.DVHE.', '.DOLBY.VISION.', '.DOLBYVISION.', '.HLG.')
+
+	########### KODIRDIL - persistent "my TV is SDR" filter ###########
+	# The window already offers a one-off "הצג SDR בלבד" filter, but a display
+	# that cannot show HDR is a property of the LIVING ROOM, not of one search --
+	# so re-applying it on every single source list is pure friction.
+	#
+	# The switch is the ENGINE'S OWN pair of settings, not one of ours:
+	#     filter_hdr = Exclude  AND  filter_dv = Exclude
+	# Both together, because with only one of them set the engine deliberately
+	# KEEPS DV/HDR hybrids -- both is the unambiguous "this display is SDR".
+	# Using upstream's own switch means it also filters where our window code
+	# never runs (autoplay / background resolve), and the user can flip it back
+	# from the addon's own settings screen.
+	#
+	# What we add on top is COVERAGE. Upstream's pass matches two badges only,
+	# '[B]HDR[/B]' and '[B]D/VISION[/B]': it misses '[B]HDR10+[/B]', it misses HLG, and it misses every release
+	# whose HDR shows up in the NAME alone. Those slipped through and landed back
+	# in front of the one user who has told the addon he cannot display them.
+	def _sdr_persistent_on(self):
+		"""Is the persistent 'my TV is SDR' switch on? Pure setting state -- the
+		filter menu asks THIS, because it has to report the switch, not whether
+		we happen to be filtering this particular list."""
+		try: return get_setting('filter_hdr', '0') == '1' and get_setting('filter_dv', '0') == '1'
+		except: return False
+
+	def _set_sdr_persistent(self, enable):
+		"""Flip the ENGINE'S OWN pair of settings from inside the window.
+
+		POV reads its settings out of a JSON blob cached in a HOME window
+		property, so writing the setting alone would leave the running session
+		on the old value -- the user would flip the switch and see nothing
+		change until a restart. Patch the blob too."""
+		v = '1' if enable else '0'
+		try:
+			set_setting('filter_hdr', v)
+			set_setting('filter_dv', v)
+			raw = self._home_prop('pov_settings')
+			if raw:
+				d = json.loads(raw)
+				d['filter_hdr'] = d['filter_dv'] = v
+				self._set_home_prop('pov_settings', json.dumps(d))
+		except: pass
+
+	def _sdr_only_enabled(self):
+		try:
+			if self._home_prop('fs_filterless_search') == 'true': return False
+			return self._sdr_persistent_on()
+		except: return False
+
+	def _apply_sdr_only(self):
+		"""Drop what upstream's exclude missed. NEVER empties the window: if every
+		source is HDR/DV we show them all, exactly like upstream's own "Ignore All
+		Filters When No Results Available" -- a washed-out picture is recoverable,
+		"no sources" is not."""
+		try:
+			if not self._sdr_only_enabled(): return
+			sdr = [i for i in self.item_list if not self._is_hdr_item(i)]
+			if sdr: self.item_list = sdr
+		except: pass
+	###################################################################
 
 	def _is_hdr_item(self, item):
 		if any(x in item.getProperty('tikiskins.extra_info') for x in self._hdr_tags): return True
@@ -351,6 +411,9 @@ class SourceResults(BaseDialog):
 		try:
 			highlight_type = self.info_highlights_dict['highlight_type']
 			self.item_list = list(builder())
+			########### KODIRDIL - persistent "my TV is SDR" filter ###########
+			self._apply_sdr_only()
+			###################################################################
 			self.total_results = string(len(self.item_list))
 			if not self.prescrape: return
 			count = len(self.item_list)
@@ -383,6 +446,26 @@ class SourceResults(BaseDialog):
 					hebrew_subtitles_panel_text = '%s' % total_subtitles_found_text
 			except Exception:
 				hebrew_subtitles_panel_text = ''
+		########### KODIRDIL - "this list is filtered" indicator ###########
+		# With the persistent filter on, the engine drops HDR/DV before this
+		# window exists -- so the 4K rows are simply absent, with nothing on
+		# screen to say why. This marker is the answer, without opening a menu.
+		#
+		# It asks _sdr_only_enabled(), NOT the switch: during an explicit
+		# filterless search we stand down and the list really is complete, so
+		# claiming otherwise would be a lie. The menu row is the opposite case --
+		# it reports the SWITCH, because that is what it toggles.
+		#
+		# Appended LAST, with an LRM before the Latin run, like the quality
+		# tokens: this line has been rewritten for bidi more than once (it once
+		# rendered as "התאמות 4" with an orphaned "K:3" elsewhere on screen).
+		# Grey on purpose -- every colour in this panel already means something
+		# about subtitles, and one colour must not mean two things.
+		if self._sdr_only_enabled():
+			_sdr_mark = '[COLOR FFB0B0B0][B]מסנן: ללא ‎HDR/DV[/B][/COLOR]'
+			hebrew_subtitles_panel_text = '%s | %s' % (hebrew_subtitles_panel_text, _sdr_mark) \
+				if hebrew_subtitles_panel_text else _sdr_mark
+		####################################################################
 		# Our Hebrew must NOT live inside tikiskins.total_results: the skin
 		# renders that as "<total_results> Results", so anything we put there is
 		# sandwiched inside an English sentence -- first it rendered scrambled,
@@ -420,6 +503,18 @@ class SourceResults(BaseDialog):
 		_sdr_count = len([i for i in self.item_list if not self._is_hdr_item(i)])
 		if 0 < _sdr_count < len(self.item_list):
 			_ours.append(('• הצג SDR בלבד (ללא HDR/DV) | %d תוצאות' % _sdr_count, 'sdr_only'))
+		########### KODIRDIL - the persistent switch, where you already look ###########
+		# Once the switch is on the engine drops HDR/DV BEFORE this window is
+		# built, so nothing on screen says the list is filtered and there is no
+		# way back without leaving the window. This row is both: it reports the
+		# state and flips it. When the switch is on, the one-off row above
+		# disappears by itself (everything showing is already SDR), so the two
+		# never both appear.
+		if self._sdr_persistent_on():
+			_ours.append(('• בטל מסנן קבוע - כרגע מוסתרים HDR/DV', 'sdr_persist_off'))
+		elif _sdr_count < len(self.item_list):
+			_ours.append(('• הפעל מסנן קבוע - הסתר HDR/DV בכל חיפוש', 'sdr_persist_on'))
+		###############################################################################
 		choices = _ours + choices
 		########################################################################
 		list_items = [{'line1': item[0]} for item in choices]
@@ -441,6 +536,25 @@ class SourceResults(BaseDialog):
 			filtered_list = _with + _without
 		elif main_choice == 'sdr_only':
 			filtered_list = [i for i in self.item_list if not self._is_hdr_item(i)]
+		elif main_choice == 'sdr_persist_on':
+			# Not a filter that BACK undoes -- the switch is now on, so narrow the
+			# list for real, exactly as it would have been had the switch been on
+			# before the search. Same never-empty guard as the automatic pass.
+			self._set_sdr_persistent(True)
+			_sdr = [i for i in self.item_list if not self._is_hdr_item(i)]
+			if _sdr: self.item_list = _sdr
+			self.total_results = string(len(self.item_list))
+			self.win.reset()
+			self.win.addItems(self.item_list)
+			self.setFocusId(self.window_id)
+			self.setProperty('tikiskins.total_results', self.total_results)
+			return
+		elif main_choice == 'sdr_persist_off':
+			# The rows WE hid could be put back, but the ones the engine dropped
+			# at the results level are gone before this window existed. Half a
+			# list would just look broken, so say what actually happens.
+			self._set_sdr_persistent(False)
+			return ok_dialog(text='המסנן בוטל. חיפוש חדש יציג את כל המקורות')
 		###############################################################################
 		elif main_choice == 'extra_info':
 			list_items = [{'line1': item[0]} for item in extra_info_choices]

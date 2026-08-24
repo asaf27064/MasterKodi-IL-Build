@@ -1829,6 +1829,12 @@ class BuildManager:
                     f"(ייתכן שהשרת לא היה זמין).[/COLOR]\n\n"
                     "ההגדרות יושלמו אוטומטית בהפעלה הבאה של Kodi, או שניתן להריץ עדכון ידני מהאשף.")
 
+            # Step 8.5: the display question. Deliberately AFTER Step 6/8 (the
+            # addons are registered and enabled by now) -- it writes into POV's
+            # settings through Kodi's addon API and into Gears' settings.db, and
+            # neither exists for an addon Kodi hasn't registered yet.
+            self._ask_and_apply_sdr()
+
             # Countdown and restart
             self._countdown_restart(build_name, skin_name)
 
@@ -2309,6 +2315,71 @@ class BuildManager:
             self.dialog.ok(ADDON_NAME,
                            '[COLOR %s]חלק מהגדרות ה-OLED לא הוחלו[/COLOR]\n\n%s'
                            % (COLOR_WARNING, ', '.join(failed)))
+
+    def _ask_and_apply_sdr(self):
+        """Ask whether the TV can show HDR, and make the answer STICK.
+
+        Both engines already have a "SDR only" filter in the source window, but
+        it lasts exactly one window -- a user whose TV cannot display HDR was
+        re-applying it on every single search. This asks once, at install, and
+        writes the ENGINES' OWN filter settings (see resources/libs/sdr.py).
+
+        Runs AFTER the addons are registered and enabled: the values go in
+        through Kodi's addon-settings API (POV) and Gears' settings.db, neither
+        of which exists for an addon Kodi doesn't know about yet.
+
+        Default answer is "yes, it supports HDR" -- that is both the common case
+        and the harmless one. Answering yes NEVER writes anything unless the
+        filter is currently on, so it cannot clobber a user's own Prefer/Sort
+        choice on a reinstall.
+        """
+        try:
+            from resources.libs import sdr as sdr_mod
+        except Exception as e:
+            log(f"SDR question skipped (module load failed): {e}", xbmc.LOGWARNING)
+            return
+
+        try:
+            state = sdr_mod.status()
+            if all(v is None for v in state.values()):
+                log('SDR question skipped: no source engine installed')
+                return
+
+            # Every line is Hebrew-leading with at most ONE Latin run, at its END.
+            # A Latin run in the MIDDLE of a Hebrew line gets reordered by bidi
+            # and lands somewhere else in the sentence (the same trap as the
+            # maintenance sizes and the sources panel). No '>' arrows either:
+            # between two Hebrew runs a neutral arrow flips and points backwards.
+            heading = '[COLOR FF00BFFF]סוג המסך[/COLOR]'
+            body = ('[B]הטלוויזיה שלך תומכת ב-HDR / Dolby Vision?[/B]\n\n'
+                    'במסך שאינו תומך, סרט בפורמט הזה נראה דהוי או בצבעים שגויים.\n'
+                    'אם אין תמיכה, נסתיר אוטומטית בכל חיפוש מקורות HDR/DV\n\n'
+                    'ניתן לשנות זאת בכל עת בתפריט התחזוקה של האשף')
+            labels = {'yeslabel': 'כן, תומך ב-HDR/DV', 'nolabel': 'לא, מסך רגיל'}
+            # Kodi focuses NO by default, which here would mean a stray OK press
+            # silently turns the filter ON -- the exact opposite of the safe
+            # answer. Focus YES ("supports HDR" = change nothing). Guarded: the
+            # defaultbutton kwarg only exists from Kodi 20 up.
+            try:
+                supports_hdr = self.dialog.yesno(
+                    heading, body, defaultbutton=xbmcgui.DLG_YESNO_YES_BTN, **labels)
+            except (TypeError, AttributeError):
+                supports_hdr = self.dialog.yesno(heading, body, **labels)
+            if supports_hdr:
+                if any(v is True for v in state.values()):
+                    sdr_mod.apply_sdr_only(False)   # was on -> honour the answer
+                else:
+                    log('SDR: display supports HDR, nothing to change')
+                return
+
+            result = sdr_mod.apply_sdr_only(True)
+            failed = sdr_mod.failures(result)
+            if failed:
+                self.dialog.ok(ADDON_NAME,
+                               '[COLOR %s]ההגדרה לא הוחלה[/COLOR]\n\n%s'
+                               % (COLOR_WARNING, ', '.join(failed)))
+        except Exception as e:
+            log(f"SDR question failed: {e}", xbmc.LOGERROR)
 
     def _countdown_restart(self, build_name, skin_name):
         """Countdown and restart Kodi"""

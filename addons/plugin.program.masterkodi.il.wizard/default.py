@@ -156,7 +156,7 @@ def main_menu():
         handlers.append(build_status_menu)
         items.append(menu_item('כתוביות AI (Gemini)', format_status(gearsai_status), 'DefaultAddonSubtitles.png'))
         handlers.append(gearsai_menu)
-        items.append(menu_item('תחזוקה', 'ניקוי מטמון | חבילות | תמונות | OLED', 'DefaultAddonService.png'))
+        items.append(menu_item('תחזוקה', 'ניקוי מטמון | חבילות | תמונות | OLED | HDR/DV', 'DefaultAddonService.png'))
         handlers.append(maintenance_menu)
         items.append(menu_item('גיבוי ושחזור', 'מפתח Gemini | דבריד | הגדרות', 'DefaultHardDisk.png'))
         handlers.append(backup_menu)
@@ -415,6 +415,69 @@ def oled_menu():
             dialog.ok('שגיאה', 'לא הצלחתי להחיל את ההגדרות')
 
 
+# ============================================
+# SDR-ONLY (display cannot show HDR)
+# ============================================
+def sdr_menu():
+    """Turn the persistent 'hide HDR/DV sources' filter on or off.
+
+    The engines already offer this as a one-off filter inside the source window;
+    what this does is make the answer STICK, so a user whose TV cannot display
+    HDR stops re-applying it on every search. It writes the ENGINES' OWN
+    filter settings (POV filter_hdr/filter_dv, Gears filter.hdr/filter.dv) --
+    see resources/libs/sdr.py for why ours would have been the weaker choice.
+    """
+    dialog = xbmcgui.Dialog()
+    try:
+        from resources.libs import sdr as sdr_mod
+    except Exception as e:
+        log(f"Error loading sdr module: {e}")
+        dialog.ok('שגיאה', 'לא הצלחתי לטעון את ההגדרה')
+        return
+
+    state = sdr_mod.status()
+    installed = [k for k, v in state.items() if v is not None]
+    if not installed:
+        dialog.ok('מסך ללא HDR/DV', 'לא נמצא מנוע מקורות מותקן')
+        return
+    enabled = any(state[k] for k in installed)
+
+    # Bidi: every line is Hebrew-leading with at most ONE Latin run, at its end.
+    now = color('פעיל - מוסתרים מקורות HDR/DV', COLOR_SUCCESS) if enabled \
+        else color('כבוי - כל המקורות מוצגים', COLOR_WARNING)
+    heading = color('מסך ללא HDR/DV', COLOR_HEADER)
+    body = (f'{bold("הטלוויזיה שלך תומכת ב-HDR / Dolby Vision?")}\n\n'
+            f'מצב נוכחי: {now}\n\n'
+            f'במסך שאינו תומך, סרט בפורמט הזה נראה דהוי או בצבעים שגויים.\n'
+            f'בבחירת "מסך רגיל" יוסתרו אוטומטית בכל חיפוש מקורות HDR/DV')
+    labels = {'yeslabel': 'כן, תומך ב-HDR/DV', 'nolabel': 'לא, מסך רגיל'}
+    # Focus whatever is already true, so a stray OK press changes NOTHING.
+    # (Kodi focuses NO by default; defaultbutton exists from Kodi 20 up.)
+    try:
+        result = dialog.yesno(
+            heading, body,
+            defaultbutton=(xbmcgui.DLG_YESNO_NO_BTN if enabled
+                           else xbmcgui.DLG_YESNO_YES_BTN),
+            **labels)
+    except (TypeError, AttributeError):
+        result = dialog.yesno(heading, body, **labels)
+
+    # yes = the display handles HDR -> only clear the filter if it is actually on
+    if result and not enabled:
+        return
+    res = sdr_mod.apply_sdr_only(not result)
+    failed = sdr_mod.failures(res)
+    if failed:
+        dialog.ok('שגיאה', f'{color("ההגדרה לא הוחלה", COLOR_WARNING)}\n\n'
+                           f'{", ".join(failed)}')
+    elif result:
+        dialog.ok('בוצע', color('הסינון בוטל - כל המקורות יוצגו', COLOR_SUCCESS))
+    else:
+        deferred = [k for k, v in res.items() if v == 'deferred']
+        tail = '\n\nההגדרה תוחל בהפעלה הבאה' if deferred else ''
+        dialog.ok('בוצע', f'{color("מעכשיו יוסתרו מקורות HDR/DV", COLOR_SUCCESS)}{tail}')
+
+
 def maintenance_menu():
     """Maintenance menu"""
     dialog = xbmcgui.Dialog()
@@ -436,6 +499,7 @@ def maintenance_menu():
             menu_item('ניקוי הכל', f'מטמון, חבילות ותמונות יחד  |  {sizes["total"]}', 'DefaultAddonService.png'),
             menu_item('סגירת Kodi', 'סגירה מלאה (לרענון אחרי שינויים)', 'DefaultAddonService.png'),
             menu_item('הגדרות OLED', 'חיסכון בשחיקת מסך | בהירות | הגנת פיקסלים', 'DefaultAddonPVRClient.png'),
+            menu_item('מסך ללא HDR/DV', 'לטלוויזיה שאינה תומכת | הסתרת מקורות HDR/DV', 'DefaultAddonPVRClient.png'),
         ]
 
         selection = wizard_select(color('תחזוקה', COLOR_HEADER), menu_items)
@@ -454,6 +518,8 @@ def maintenance_menu():
             force_close()
         elif selection == 5:
             oled_menu()
+        elif selection == 6:
+            sdr_menu()
 
 
 def clear_cache():
