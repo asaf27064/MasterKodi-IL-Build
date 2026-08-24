@@ -2557,6 +2557,28 @@ def test_upstream_watch_urls():
           'Report adopt failures' in wf
           and wf.index('Commit & push adopted bases') < wf.index('Report adopt failures'))
 
+    # An overlay with no watchable upstream must be skipped, not crashed on.
+    # Nimbus has no base_version at all, so adopt's "already at ..." line raised
+    # KeyError -- invisible while the loop was dying earlier on the AF3 404, and
+    # the very next failure once that was fixed.
+    import tempfile as _tf
+    import adopt_upstream as _au
+    tmp = _tf.mkdtemp()
+    od = os.path.join(tmp, 'skin.nowatch')
+    os.makedirs(od)
+    open(os.path.join(od, 'base.json'), 'w', encoding='utf-8').write(
+        _json.dumps({'addon_id': 'skin.nowatch', 'base_type': 'local_committed',
+                     'overlay_version': '1.0.0'}))
+    try:
+        status = _au.adopt(od, target=None, force=False, do_build=False)
+        crashed = None
+    except Exception as e:
+        status, crashed = None, e
+    check('an overlay with no watchable upstream is skipped, not crashed on',
+          crashed is None and status == 'up-to-date')
+    if crashed:
+        print('       raised: %r' % (crashed,))
+
     # the two skins whose tag != addon version stay in human hands
     for root in ('overlays', 'overlays-piers'):
         p = os.path.join(REPO, root, 'skin.arctic.zephyr.2.resurrection.mod', 'base.json')

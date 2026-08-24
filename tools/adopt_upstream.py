@@ -59,9 +59,18 @@ def adopt(overlay_dir, target=None, force=False, do_build=False, out='addons'):
     if res.get('error'):
         print('%s: ERROR %s' % (aid, res['error']))
         return 'error'
+    # Overlays with no watchable upstream (Nimbus is our own committed tree,
+    # Estuary ships inside Kodi) have nothing to adopt -- and Nimbus has no
+    # base_version at all, so the "already at ..." line below used to raise
+    # KeyError. That never showed while the loop died earlier on the AF3 404;
+    # the moment that was fixed, it surfaced as the next failure (2026-08-24).
+    if res.get('skipped'):
+        print('%s: %s' % (aid, res['skipped']))
+        return 'up-to-date'
+
     tgt = res['latest']
     if not res['has_update']:
-        print('%s: already at %s (target %s)' % (aid, base['base_version'], tgt))
+        print('%s: already at %s (target %s)' % (aid, base.get('base_version', '?'), tgt))
         return 'up-to-date'
 
     print('%s: %s -> %s' % (aid, res['current'], tgt))
