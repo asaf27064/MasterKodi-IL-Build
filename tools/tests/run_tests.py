@@ -2557,6 +2557,29 @@ def test_upstream_watch_urls():
           'Report adopt failures' in wf
           and wf.index('Commit & push adopted bases') < wf.index('Report adopt failures'))
 
+    # A file we overlay for NO reason is not free: addon.xml changes in every
+    # upstream release, so overlaying it purely to set a version -- which
+    # _stamp_build_suffix rewrites at build time anyway -- made every Zephyr
+    # release classify MANUAL and blocked auto-adoption. Catch a re-introduction.
+    stamp = open(os.path.join(REPO, 'tools', 'apply_overlay.py'), encoding='utf-8').read()
+    check('the build still stamps the version itself (the reason ours was moot)',
+          'def _stamp_build_suffix' in stamp and "100 + count" in stamp)
+    pointless = []
+    for op in sorted(_glob.glob(os.path.join(REPO, 'overlays*', '*', 'files', 'addon.xml'))):
+        txt = open(op, encoding='utf-8', errors='replace').read()
+        who = os.sep.join(op.split(os.sep)[-4:-2])
+        # ours is pointless if the ONLY thing it can contribute is the version:
+        # no extra imports, extension points or metadata of our own
+        marks = ('KODIRDIL', 'kodirdil')
+        if any(m in txt for m in marks):
+            continue
+        pointless.append(who)
+    # informational: the ones left must each justify themselves (AF3-Piers bumps
+    # xbmc.gui, Estuary/Nimbus are whole-tree bases)
+    check('zephyr no longer overlays addon.xml on either fleet',
+          not any('zephyr' in w for w in pointless))
+    print('       addon.xml still overlaid by: %s' % (', '.join(pointless) or '(none)'))
+
     # An overlay with no watchable upstream must be skipped, not crashed on.
     # Nimbus has no base_version at all, so adopt's "already at ..." line raised
     # KeyError -- invisible while the loop was dying earlier on the AF3 404, and
