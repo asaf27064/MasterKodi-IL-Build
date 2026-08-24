@@ -131,7 +131,7 @@
     <setting id="nextep.sort_order" default="true">0</setting>
     <setting id="nextep.sort_airing_today_to_top" default="true">false</setting>
     <setting id="nextep.include_airdate">true</setting>
-    <setting id="nextep.include_unaired">true</setting>
+    <setting id="nextep.include_unaired">false</setting>
     <setting id="extras.enabled_menus" default="true">2050,2051,2052,2053,2054,2055,2056,2057,2058,2059,2060,2061,2062</setting>
     <setting id="extras.open_action" default="true">0</setting>
     <setting id="extras.manage" default="true">[B]Browse...[/B]</setting>
@@ -139,8 +139,8 @@
     <setting id="extras.exclude_non_acting_roles">true</setting>
     <setting id="include_year_in_title" default="true">0</setting>
     <setting id="default_all_episodes">1</setting>
-    <setting id="single_ep_display" default="true">0</setting>
-    <setting id="single_ep_format">2</setting>
+    <setting id="single_ep_display" default="true">1</setting>
+    <setting id="single_ep_format">0</setting>
     <setting id="paginate.lists">true</setting>
     <setting id="page_limit">100</setting>
     <setting id="nav_jump" default="true">0</setting>
@@ -149,7 +149,7 @@
     <setting id="thumb_fanart" default="true">false</setting>
     <setting id="show_unaired">true</setting>
     <setting id="show_unaired_watchlist">true</setting>
-    <setting id="sort.progress" default="true">0</setting>
+    <setting id="sort.progress" default="true">1</setting>
     <setting id="sort.watched" default="true">0</setting>
     <setting id="sort.collection" default="true">0</setting>
     <setting id="sort.watchlist_movies" default="true">0</setting>

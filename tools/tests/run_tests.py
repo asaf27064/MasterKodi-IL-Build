@@ -2713,6 +2713,35 @@ def test_continue_watching_row():
     bad_gears = [p for p, t in gears_files if 'build_continue_watching' in t]
     check('no Gears variant points at a route only POV has', not bad_gears)
 
+    # the defaults that make the row read right -- shipped, not just set on one
+    # box. Each one earns its place: an unaired episode cannot be continued, the
+    # three-part label is unreadable in Hebrew (bidi), Month-Day-Year is US
+    # ordering in an Israeli build, and POV's own In Progress menu should agree
+    # with the row above it. auto_resume_episode is deliberately NOT pinned --
+    # Asaf wants the resume prompt.
+    import re as _re2
+    WANT = {'nextep.include_unaired': 'false', 'single_ep_display': '1',
+            'single_ep_format': '0', 'sort.progress': '1'}
+    wrong = []
+    povset = _glob.glob(os.path.join(REPO, 'config-variants', '*', 'pov', 'settings.xml'))
+    check('POV variant settings found', len(povset) >= 6)
+    for sp in povset:
+        st = open(sp, encoding='utf-8').read()
+        for sid, val in WANT.items():
+            m = _re2.search(r'<setting id="%s"[^>]*>([^<]*)</setting>' % _re2.escape(sid), st)
+            got = m.group(1) if m else 'MISSING'
+            if got != val:
+                wrong.append('%s: %s=%s (want %s)'
+                             % (sp.replace(REPO + os.sep, '').split(os.sep)[1], sid, got, val))
+    check('every POV variant ships the row-friendly defaults', not wrong)
+    for w in wrong:
+        print('       %s' % w)
+    novel = [sp for sp in povset
+             if '<setting id="auto_resume_episode"' in open(sp, encoding='utf-8').read()
+             and _re2.search(r'<setting id="auto_resume_episode"[^>]*>([^<]*)</setting>',
+                             open(sp, encoding='utf-8').read()).group(1) != '0']
+    check('the resume prompt is left alone (auto_resume_episode stays 0)', not novel)
+
     # the wizard ships its OWN seed copies of these rows -- a fresh install and
     # the "restore menu" flow read those, not the variants, so a row left behind
     # there quietly reinstates the old list on the next reinstall
