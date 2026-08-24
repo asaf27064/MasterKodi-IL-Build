@@ -499,6 +499,25 @@ class BuildManager:
                     'Premium Downloads', 'Image Downloads'}
         dl_parents = {'plugin.video.gears', 'plugin.video.pov'}
 
+        # Textures13.db and Thumbnails/ are ONE cache in two places: the db holds
+        # a row per cached image, the folder holds the files. Kodi keeps that db
+        # open, so on Windows it survives the wipe -- and wiping the folder anyway
+        # left 854 rows pointing at files that were gone, so Kodi logged
+        # "Direct texture file loading failed" for every one of them and crawled
+        # through the first paint re-caching (Asaf's reinstall, 2026-08-24).
+        #
+        # Try the db FIRST and let the answer decide: if it goes, the thumbs go
+        # with it; if it is locked, the thumbs stay. Either way the two agree.
+        textures_db = os.path.join(USERDATA, 'Database', 'Textures13.db')
+        if os.path.isfile(textures_db):
+            try:
+                os.remove(textures_db)
+                log('wipe: Textures13.db removed -- thumbnails wiped with it')
+            except Exception as e:
+                exclude_dirs.append('Thumbnails')
+                log('wipe: Textures13.db is locked (%s) -- KEEPING Thumbnails so the '
+                    'texture cache stays consistent' % e, xbmc.LOGWARNING)
+
         def _prune(dirs, root):
             base = os.path.basename(root)
             return [d for d in dirs

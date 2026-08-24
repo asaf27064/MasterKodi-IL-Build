@@ -4122,6 +4122,39 @@ def test_dbmoved_install():
 
     class _P:                                     # progress stub
         def update(self, *a, **k): pass
+    # Textures13.db + Thumbnails/ are one cache in two places. Seed both, and
+    # LOCK the db the way Kodi does on Windows, so the wipe has to choose.
+    tex_db = os.path.join(builds.USERDATA, 'Database', 'Textures13.db')
+    thumbs = os.path.join(builds.USERDATA, 'Thumbnails', 'a')
+    os.makedirs(os.path.dirname(tex_db), exist_ok=True)
+    os.makedirs(thumbs, exist_ok=True)
+    open(tex_db, 'w').write('texturedb')
+    open(os.path.join(thumbs, 'aa0824b5.png'), 'w').write('png')
+
+    _real_remove = os.remove
+    def _locked_remove(path):
+        if os.path.basename(path) == 'Textures13.db':
+            raise OSError(32, 'The process cannot access the file')
+        return _real_remove(path)
+    os.remove = _locked_remove
+    try:
+        wipe_fail = bm.wipe(_P())
+    finally:
+        os.remove = _real_remove
+    check('locked Textures13.db -> Thumbnails KEPT, so no stale rows',
+          os.path.isfile(os.path.join(thumbs, 'aa0824b5.png')))
+    check('...and the db itself is still there (it could not be deleted)',
+          os.path.isfile(tex_db))
+
+    # and the other way round: if the db CAN go, the thumbs go with it
+    _real_remove(tex_db)
+    open(tex_db, 'w').write('texturedb')
+    os.makedirs(thumbs, exist_ok=True)
+    open(os.path.join(thumbs, 'aa0824b5.png'), 'w').write('png')
+    bm.wipe(_P())
+    check('deletable Textures13.db -> thumbnails wiped with it',
+          not os.path.isfile(tex_db) and not os.path.isfile(os.path.join(thumbs, 'aa0824b5.png')))
+
     wipe_fail = bm.wipe(_P())
     check('wipe: 0 undeletable files', wipe_fail == 0)
     check('wipe: LIVE Addons33.db preserved (not unlinked)', os.path.isfile(live))
