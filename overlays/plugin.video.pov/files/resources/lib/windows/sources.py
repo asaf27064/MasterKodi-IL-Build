@@ -167,7 +167,7 @@ class SourceResults(BaseDialog):
 		"""Is the persistent 'my TV is SDR' switch on? Pure setting state -- the
 		filter menu asks THIS, because it has to report the switch, not whether
 		we happen to be filtering this particular list."""
-		try: return get_setting('filter_hdr', '0') == '1' or get_setting('filter_dv', '0') == '1'
+		try: return get_setting('filter_hdr', '0') == '1' and get_setting('filter_dv', '0') == '1'
 		except: return False
 
 	def _set_sdr_persistent(self, enable):
