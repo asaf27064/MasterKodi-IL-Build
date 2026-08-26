@@ -21,7 +21,7 @@
     <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetBool(SubmenuOnly)</onload>
     <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetString(widgetPath,special://skin/extras/playlists/RandomMovies.xsp)</onload>
     <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetString(widgetTarget,videos)</onload>
-    <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetBool(HomeMultiFlixView)</onload>  <!-- KODIRDIL: factory default = Flix (was Vertical; with config flixview=true both layouts rendered stacked -> frozen foreground) -->
+    <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetBool(HomeMultiNetflix)</onload>  <!-- KODIRDIL: factory default = Netflix/Modern (Asaf 2026-08-26; was Flix, upstream ships Vertical). EXACTLY ONE of the five Home* bools may be set here -- two true stacks the layouts and freezes the home screen. -->
     <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetBool(HomeMulti)</onload>
     <onload condition="!Skin.HasSetting(SkinInit)">Skin.SetString(Icons,colorful)</onload>  <!-- KODIRDIL: build default -->
     <onload condition="!Skin.HasSetting(SkinInit)">RunScript(script.skinhelper,gradient=true,highlight=$VAR[ColorHighlight],gradient=$VAR[ColorGradient])</onload>

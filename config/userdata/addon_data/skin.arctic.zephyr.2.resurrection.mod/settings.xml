@@ -1,8 +1,8 @@
 <settings version="2">
     <setting id="homemulti" type="bool">true</setting>
-    <setting id="homemultiflixview" type="bool">true</setting>
+    <setting id="homemultiflixview" type="bool">false</setting>
     <setting id="HomeMultiVertical" type="bool">false</setting>
-    <setting id="HomeMultiNetflix" type="bool">false</setting>
+    <setting id="HomeMultiNetflix" type="bool">true</setting>
     <setting id="HomeMultiHorizontal" type="bool">false</setting>
     <setting id="HomeBasic" type="bool">false</setting>
     <setting id="DisabledProfileInfo" type="bool">true</setting>
@@ -28,7 +28,7 @@
     <setting id="customrating.tvshows.item04" type="string">Metacritic</setting>
     <setting id="customrating.tvshows.item05" type="string">RottenTomatoesCritic</setting>
     <setting id="customrating.tvshows.item06" type="string">MDbList</setting>
-    <setting id="homemultinetflix" type="bool">false</setting>
+    <setting id="homemultinetflix" type="bool">true</setting>
     <setting id="homemultihorizontal" type="bool">false</setting>
     <setting id="homebasic" type="bool">false</setting>
     <setting id="flipside" type="bool">false</setting>

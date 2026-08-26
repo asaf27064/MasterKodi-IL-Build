@@ -47,14 +47,37 @@ def _parse_expiry(value, fmt):
 	try:
 		if value is None: return None
 		if fmt == 'iso':
-			s = str(value).rstrip('Z')
-			if '.' in s: s = s.split('.')[0]
-			return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S').replace(tzinfo=timezone.utc)
+			# NOT strptime. This runs in a boot-time THREAD, and CPython imports
+			# time._strptime lazily on FIRST use -- a long-standing race that
+			# makes the first strptime call off the main thread raise
+			# "AttributeError: module 'time' has no attribute '_strptime'".
+			# That is exactly what killed this banner: the field was present and
+			# valid ('2026-08-30T11:02:56Z') but parsing returned None on every
+			# boot (Asaf, 2026-08-26). POV's own days_remaining() never hit it
+			# because it uses fromisoformat -- so do we now.
+			# 3.8's fromisoformat is STRICT (Kodi 21 = 3.8, Kodi 22 = 3.11+):
+			# it rejects a trailing 'Z' and accepts only 3- or 6-digit
+			# fractional seconds. Drop the fraction (we need day resolution)
+			# and spell the offset out, so both fleets take the same path.
+			s = str(value).strip()
+			if s.endswith('Z'): s = s[:-1] + '+00:00'
+			if '.' in s:
+				head, _, tail = s.partition('.')
+				off = ''
+				for sign in ('+', '-'):
+					if sign in tail: off = sign + tail.split(sign, 1)[1]; break
+				s = head + off
+			dt = datetime.fromisoformat(s)
+			return dt if dt.tzinfo is not None else dt.replace(tzinfo=timezone.utc)
 		if fmt == 'unix_s':
 			return datetime.fromtimestamp(int(value), tz=timezone.utc)
 		if fmt == 'unix_ms':
 			return datetime.fromtimestamp(int(value) / 1000.0, tz=timezone.utc)
-	except Exception:
+	except Exception as e:
+		# Never silent: the swallowed exception here is what made the failure
+		# unreadable for three boots.
+		_kodirdil_log('kodirdil banner: expiry parse failed on %r as %s -- %s: %s'
+		              % (value, fmt, type(e).__name__, e))
 		return None
 	return None
 
@@ -65,8 +88,8 @@ def _show_debrid_banners():
 	# Boot race: this thread starts before the skin/GUI is ready, and a toast
 	# fired that early is silently dropped. Wait for the window manager, then a
 	# small settle. Bounded -- never block more than ~15s.
+	mon = xbmc.Monitor()          # hoisted: the retry loop below uses it too
 	try:
-		mon = xbmc.Monitor()
 		for _ in range(30):
 			if xbmc.getCondVisibility('Window.IsVisible(home)') or mon.abortRequested():
 				break
@@ -81,10 +104,29 @@ def _show_debrid_banners():
 			if not get_setting(tok_set, ''): continue
 			import importlib
 			api_cls = getattr(importlib.import_module(mod_path), cls_name)
-			info = api_cls().account_info()
-			expiry = _parse_expiry(_dig(info, field), fmt)
+			# One shot at boot is fragile: the network stack is still coming up
+			# and _request swallows ConnectionError/Timeout into a None return.
+			# Retry a couple of times before giving up (Asaf, 2026-08-26 --
+			# the banner had been silently absent on three consecutive boots).
+			info = None
+			for attempt in range(3):
+				info = api_cls().account_info()
+				if isinstance(info, dict) and _dig(info, field) is not None: break
+				if attempt < 2 and mon.waitForAbort(4): return
+			raw = _dig(info, field)
+			expiry = _parse_expiry(raw, fmt)
 			if expiry is None:
-				_kodirdil_log('kodirdil banner: %s no expiry in account_info' % name)
+				# Say WHICH of the four failures this was -- the old single
+				# message covered all of them and cost a diagnosis round.
+				if info is None:
+					why = 'account_info() returned None (request failed/timed out)'
+				elif not isinstance(info, dict):
+					why = 'account_info() returned %s, not a dict (non-JSON reply?)' % type(info).__name__
+				elif raw is None:
+					why = 'field %r absent; keys=%s' % (field, sorted(info.keys())[:25])
+				else:
+					why = 'field %r present but unparsable as %s: %r' % (field, fmt, raw)
+				_kodirdil_log('kodirdil banner: %s no expiry -- %s' % (name, why))
 				continue
 			now = datetime.now(timezone.utc)
 			remaining = expiry - now

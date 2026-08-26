@@ -17,12 +17,12 @@
     <setting id="ShowClearlogo" type="bool">true</setting>
     <setting id="EnableShowItemCount" type="bool">true</setting>
     <setting id="flixhidemenu" type="bool">true</setting>
-    <setting id="homemultiflixview" type="bool">true</setting>
-    <setting id="homemultinetflix" type="bool">false</setting>
+    <setting id="homemultiflixview" type="bool">false</setting>
+    <setting id="homemultinetflix" type="bool">true</setting>
     <setting id="SkinShortcuts-FullMenu" type="bool">true</setting>
     <setting id="TMDbHelper.DisableExtendedProperties" type="bool">true</setting>
     <setting id="ExtendedNotification" type="bool">true</setting>
-    <setting id="HomeMultiNetflix" type="bool">false</setting>
+    <setting id="HomeMultiNetflix" type="bool">true</setting>
     <setting id="TMDbHelper.DirectCallAuto" type="bool">true</setting>
     <setting id="HomeMultiVertical" type="bool">false</setting>
     <setting id="EnableLanguages" type="bool">true</setting>

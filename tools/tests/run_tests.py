@@ -4260,7 +4260,9 @@ def main():
               test_maintenance_folder_contents, test_remove_skin_purges_residue, test_detect_extras_skips_kodi_defaults,
               test_gears_settings_bool_serialization,
               test_gears_settings_go_live_without_restart,
-              test_dbmoved_install):
+              test_dbmoved_install,
+              test_zephyr_home_layout_single_bool,
+              test_debrid_banner_expiry_parser):
         try:
             t()
         except Exception as e:
@@ -4272,6 +4274,100 @@ def main():
         print("  FAIL: " + f)
     shutil.rmtree(HOME, ignore_errors=True)
     return 1 if FAIL else 0
+
+
+def test_zephyr_home_layout_single_bool():
+    """Zephyr renders its home from five MUTUALLY EXCLUSIVE skin bools
+    (Home.xml: HomeMultiFlixView | HomeMultiNetflix | HomeMultiVertical |
+    HomeMultiHorizontal | HomeBasic). Two of them true stacks the layouts on top
+    of each other and freezes the home screen -- the bug that cost a whole
+    debugging round once. Kodi matches skin setting ids CASE-INSENSITIVELY, so a
+    file carrying both `homemultinetflix` and `HomeMultiNetflix` with DIFFERENT
+    values is the same trap wearing a disguise.
+
+    Guards: every shipped Zephyr settings.xml has exactly one layout true, in
+    every spelling, and it is the one Startup.xml sets on a virgin profile."""
+    print("\n=== zephyr: exactly one home-layout bool, config == Startup.xml ===")
+    import re, glob as _glob
+    LAYOUTS = ('homemultiflixview', 'homemultinetflix', 'homemultivertical',
+               'homemultihorizontal', 'homebasic')
+    files = ([os.path.join(REPO, 'config', 'userdata', 'addon_data',
+                           'skin.arctic.zephyr.2.resurrection.mod', 'settings.xml')] +
+             sorted(_glob.glob(os.path.join(REPO, 'config-variants', '*',
+                                            'skin.zephyr', 'settings.xml'))))
+    check('shipped zephyr settings.xml found', len(files) >= 5)
+    on_per_file = set()
+    for p in files:
+        txt = io.open(p, encoding='utf-8', errors='replace').read()
+        vals = {}
+        for sid, val in re.findall(r'<setting id="([^"]+)"[^>]*>([^<]*)</setting>', txt):
+            low = sid.lower()
+            if low in LAYOUTS:
+                vals.setdefault(low, set()).add(val)
+        name = os.path.basename(os.path.dirname(os.path.dirname(p)))
+        for low, seen in vals.items():
+            check('%s: %s agrees across spellings' % (name, low), len(seen) == 1)
+        on = sorted(k for k, v in vals.items() if v == {'true'})
+        check('%s: exactly one layout true (%s)' % (name, ','.join(on) or 'NONE'), len(on) == 1)
+        on_per_file.add(tuple(on))
+    check('every shipped file agrees on the same layout', len(on_per_file) == 1)
+
+    startup = io.open(os.path.join(REPO, 'overlays',
+                                   'skin.arctic.zephyr.2.resurrection.mod',
+                                   'files', '1080i', 'Startup.xml'),
+                      encoding='utf-8', errors='replace').read()
+    sets = [s.lower() for s in re.findall(r'Skin\.SetBool\((Home(?:Multi)?\w*)\)', startup)
+            if s.lower() in LAYOUTS]
+    check('Startup.xml sets exactly one layout', len(sets) == 1)
+    if sets and on_per_file:
+        check('Startup.xml default == shipped config (%s)' % sets[0],
+              (sets[0],) in on_per_file)
+
+    piers = io.open(os.path.join(REPO, 'overlays-piers',
+                                 'skin.arctic.zephyr.2.resurrection.mod',
+                                 'files', '1080i', 'Startup.xml'),
+                    encoding='utf-8', errors='replace').read()
+    psets = [s.lower() for s in re.findall(r'Skin\.SetBool\((Home(?:Multi)?\w*)\)', piers)
+             if s.lower() in LAYOUTS]
+    check('Piers Startup.xml matches Omega', psets == sets)
+
+
+def test_debrid_banner_expiry_parser():
+    """The TorBox banner was invisible for days: the field was present and
+    valid ('2026-08-30T11:02:56Z') but _parse_expiry returned None on every
+    boot, and the swallowed exception made it unreadable. The old code used
+    datetime.strptime, which is called here from a BOOT-TIME THREAD -- CPython
+    imports time._strptime lazily on first use, a documented race off the main
+    thread. POV's own days_remaining() never hit it because it uses
+    fromisoformat; the parser now does too.
+
+    Guards the parser against every ISO shape a debrid API plausibly returns,
+    including the ones Python 3.8 (Kodi 21) rejects raw: a trailing 'Z' and
+    fractional seconds that are not exactly 3 or 6 digits."""
+    print("")
+    print("=== debrid banner: expiry parser (fromisoformat, both fleets) ===")
+    src_path = os.path.join(REPO, 'overlays', 'plugin.video.pov', 'files',
+                            'resources', 'lib', 'service.py')
+    src = io.open(src_path, encoding='utf-8', errors='replace').read()
+    check('parser makes no strptime CALL (thread race)', '.strptime(' not in src)
+    check('parser uses fromisoformat', 'fromisoformat' in src)
+    ns = {'_kodirdil_log': lambda m: None}
+    exec(src[src.index('def _parse_expiry'):src.index('def _show_debrid_banners')], ns)
+    pe = ns['_parse_expiry']
+    for value in ('2026-08-30T11:02:56Z', '2026-08-30T11:02:56',
+                  '2026-08-30T11:02:56.123Z', '2026-08-30T11:02:56.1234567Z',
+                  '2026-08-30T11:02:56.12Z', '2026-08-30T11:02:56+00:00',
+                  '2026-08-30T11:02:56.500+02:00'):
+        got = pe(value, 'iso')
+        check('iso parses: %s' % value, got is not None)
+        if got is not None:
+            check('  tz-aware: %s' % value, got.tzinfo is not None)
+    check('unix_s parses', pe(1788000000, 'unix_s') is not None)
+    check('unix_ms parses', pe(1788000000000, 'unix_ms') is not None)
+    check('None stays None', pe(None, 'iso') is None)
+    check('garbage stays None', pe('not-a-date', 'iso') is None)
+    check('banner retries account_info', 'for attempt in range(3)' in src)
+    check('banner names the failure', 'no expiry --' in src)
 
 
 if __name__ == '__main__':
