@@ -4262,7 +4262,8 @@ def main():
               test_gears_settings_go_live_without_restart,
               test_dbmoved_install,
               test_zephyr_home_layout_single_bool,
-              test_debrid_banner_expiry_parser):
+              test_debrid_banner_expiry_parser,
+              test_config_version_pairing):
         try:
             t()
         except Exception as e:
@@ -4368,6 +4369,22 @@ def test_debrid_banner_expiry_parser():
     check('garbage stays None', pe('not-a-date', 'iso') is None)
     check('banner retries account_info', 'for attempt in range(3)' in src)
     check('banner names the failure', 'no expiry --' in src)
+
+
+def test_config_version_pairing():
+    """config_version lives in TWO files and CI fails the build if they drift
+    (gen_manifest: "config_version mismatch"). That check only ran in CI, so a
+    one-file bump passed every local gate and failed both release jobs after the
+    push (2026-08-26). Enforce the pairing locally instead."""
+    print("")
+    print("=== config_version: build.json and config_policy.json agree ===")
+    import json as _json
+    bj = _json.load(io.open(os.path.join(REPO, 'build.json'), encoding='utf-8'))
+    pj = _json.load(io.open(os.path.join(REPO, 'config', 'config_policy.json'), encoding='utf-8'))
+    bv, pv = bj.get('config_version'), pj.get('config_version')
+    check('build.json declares config_version', bv is not None)
+    check('config_policy.json declares config_version', pv is not None)
+    check('they match (build=%s policy=%s)' % (bv, pv), str(bv) == str(pv))
 
 
 if __name__ == '__main__':
