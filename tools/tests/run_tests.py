@@ -2336,12 +2336,21 @@ def test_persistent_sdr_filter():
               win.item_list == [HDR, SDR1])
         home.clear()
 
-        # applied where the list is BUILT, so a cleared manual filter re-applies
-        build = {'pov': 'self.item_list = list(builder())',
+        # Applied where the list is BUILT, so a cleared manual filter re-applies.
+        # POV 6.08.14 dropped the builder() generator for a flat loop, so the
+        # anchor is the count that follows the loop rather than the old
+        # `list(builder())` -- the property under test is unchanged: our pass runs
+        # after the list exists and BEFORE total_results is taken from it.
+        build = {'pov': 'self.total_results = string(len(self.item_list))',
                  'gears': 'self.item_list = list(builder(self.results))'}[engine]
-        after = src.split(build, 1)[1][:200] if build in src else ''
-        check('%s: applied straight after the item_list build' % engine,
-              '_apply_sdr_only()' in after)
+        if engine == 'pov':
+            before = src.split(build, 1)[0][-260:] if build in src else ''
+            check('pov: applied after the list is built, before it is counted',
+                  '_apply_sdr_only()' in before)
+        else:
+            after = src.split(build, 1)[1][:200] if build in src else ''
+            check('%s: applied straight after the item_list build' % engine,
+                  '_apply_sdr_only()' in after)
         check('%s: applied exactly once' % engine, src.count('self._apply_sdr_only()') == 1)
 
     # the ids the windows read must be the ids the engines DECLARE
@@ -2939,8 +2948,13 @@ def test_continue_watching_row():
     # with the row above it. auto_resume_episode is deliberately NOT pinned --
     # Asaf wants the resume prompt.
     import re as _re2
+    # results.xml_style: 6.08.14 turned this into an ENUM INDEX read through a
+    # dict with NO fallback, so the old free-text 'List Default' would raise
+    # KeyError and kill the sources window. 1 = WideList: 1700px rows instead
+    # of 1300, which is what our Hebrew match text and tried-source badge need.
     WANT = {'nextep.include_unaired': 'false', 'single_ep_display': '1',
-            'single_ep_format': '0', 'sort.progress': '1'}
+            'single_ep_format': '0', 'sort.progress': '1',
+            'results.xml_style': '1'}
     wrong = []
     povset = _glob.glob(os.path.join(REPO, 'config-variants', '*', 'pov', 'settings.xml'))
     check('POV variant settings found', len(povset) >= 6)
@@ -3477,23 +3491,30 @@ def test_sample_fix_still_needed_upstream():
     body = body[:body.index('file_url = api.unrestrict_link')]
     season_branch = body[body.index('if season:'):body.index('elif any(')]
 
-    still_buggy = ('extras_filtering_list' not in season_branch
-                   and 'if not season: selected_files.sort' in body)
-    check('upstream %s still has the bug -- keep our overlay of debrid.py'
-          % base['base_version'], still_buggy)
-    if not still_buggy:
-        print('       UPSTREAM APPEARS FIXED in %s.' % base['base_version'])
-        print('       Drop our patch: git revert 2eba636, then')
+    # The fix has TWO independent halves, and 6.08.14 took only one: upstream
+    # dropped the `if not season:` gate on the size sort (our second guard, now
+    # theirs) but still runs the extras filter on the movie branch only. So track
+    # them separately -- a single "is it fixed" flag would have read as FIXED
+    # while the sample was still a valid candidate for an episode.
+    extras_missing = 'extras_filtering_list' not in season_branch
+    sort_gated = 'if not season: selected_files.sort' in body
+    check('upstream %s still skips the extras filter for episodes -- keep our guard'
+          % base['base_version'], extras_missing)
+    if not extras_missing:
+        print('       UPSTREAM ADDED THE EXTRAS FILTER in %s.' % base['base_version'])
+        print('       Our whole debrid.py overlay can go: delete it, then')
         print('       python tools/apply_overlay.py overlays addons')
         print('       and delete this test. See kodifitzwell/repo#136.')
+    check('upstream %s now sorts by size for episodes too (they took that half)'
+          % base['base_version'], not sort_gated)
 
     # our overlay of that file exists only for this fix
     ours = os.path.join(ov, 'files', 'resources', 'lib', 'modules', 'debrid.py')
     check('we overlay debrid.py only for this reason', os.path.isfile(ours))
     if os.path.isfile(ours):
         src = open(ours, encoding='utf-8').read()
-        check('and it carries both guards, nothing else of ours',
-              src.count('KODIRDIL') == 2)
+        check('and it carries ONLY the guard upstream still lacks',
+              src.count('KODIRDIL') == 1)
 
 
 def test_no_comments_in_addon_settings():

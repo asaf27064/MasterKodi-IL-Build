@@ -1,12 +1,25 @@
-from entry import logger, POVMonitor
 
+
+########### KODIRDIL - our own logger ###########
+# 6.08.14 dropped service.py's module-level `from entry import logger` and
+# moved the import inside __main__, so the name our banner code logs through
+# no longer exists at module scope. Import it lazily rather than restoring a
+# top-level import upstream deliberately removed.
+def _kodirdil_log(msg):
+	try:
+		from entry import logger
+		logger('POV', msg)
+	except Exception:
+		pass
+################################################
 
 ########### KODIRDIL - Debrid subscription banner ###########
 # On addon startup, for every debrid service the user has authenticated
 # (rd/ad/pm/oc/tb), query its account info and show a Hebrew toast with days
 # remaining + expiration date. Ported from the Gears overlay; adapted to POV:
-# plain setting ids (no addon prefix), api modules under debrids.*, and no
-# EasyDebrid (POV has EasyNews instead, which has no subscription expiry).
+# plain setting ids (no addon prefix), api modules under indexers.* (they moved
+# there from debrids/ in 6.08.14), and no EasyDebrid (POV has EasyNews instead,
+# which has no subscription expiry).
 # Silent no-ops on: service disabled, empty token, network error, missing
 # field, or any exception. A startup banner must never break boot.
 DEBRID_SUBS = (
@@ -16,11 +29,11 @@ DEBRID_SUBS = (
 	# own days_remaining(), which reads 'premium_expires_at' flat). The Gears
 	# overlay's 'data.'-prefixed paths dug into a key that no longer exists, so
 	# _dig returned None and the banner silently never showed (Asaf, 2026-08-01).
-	('Real Debrid', 'rd.enabled', 'rd.token', 'debrids.real_debrid_api', 'RealDebridAPI', 'expiration',         'iso'),
-	('AllDebrid',   'ad.enabled', 'ad.token', 'debrids.alldebrid_api',   'AllDebridAPI',  'user.premiumUntil',  'unix_s'),
-	('Premiumize',  'pm.enabled', 'pm.token', 'debrids.premiumize_api',  'PremiumizeAPI', 'premium_until',      'unix_s'),
-	('Offcloud',    'oc.enabled', 'oc.token', 'debrids.offcloud_api',    'OffcloudAPI',   'expirationDate',     'unix_ms'),
-	('TorBox',      'tb.enabled', 'tb.token', 'debrids.torbox_api',      'TorBoxAPI',     'premium_expires_at', 'iso'),
+	('Real Debrid', 'rd.enabled', 'rd.token', 'indexers.real_debrid_api', 'RealDebridAPI', 'expiration',         'iso'),
+	('AllDebrid',   'ad.enabled', 'ad.token', 'indexers.alldebrid_api',   'AllDebridAPI',  'user.premiumUntil',  'unix_s'),
+	('Premiumize',  'pm.enabled', 'pm.token', 'indexers.premiumize_api',  'PremiumizeAPI', 'premium_until',      'unix_s'),
+	('Offcloud',    'oc.enabled', 'oc.token', 'indexers.offcloud_api',    'OffcloudAPI',   'expirationDate',     'unix_ms'),
+	('TorBox',      'tb.enabled', 'tb.token', 'indexers.torbox_api',      'TorBoxAPI',     'premium_expires_at', 'iso'),
 )
 
 def _dig(obj, dotted):
@@ -71,7 +84,7 @@ def _show_debrid_banners():
 			info = api_cls().account_info()
 			expiry = _parse_expiry(_dig(info, field), fmt)
 			if expiry is None:
-				logger('POV', 'kodirdil banner: %s no expiry in account_info' % name)
+				_kodirdil_log('kodirdil banner: %s no expiry in account_info' % name)
 				continue
 			now = datetime.now(timezone.utc)
 			remaining = expiry - now
@@ -88,12 +101,12 @@ def _show_debrid_banners():
 				msg = 'נותרו %d ימים · בתוקף עד %s · %s' % (
 					int(remaining.days), expiry.strftime('%d/%m'), name)
 			notification(msg, 6000)
-			logger('POV', 'kodirdil banner shown: %s' % msg)
+			_kodirdil_log('kodirdil banner shown: %s' % msg)
 			xbmc.sleep(1000)
 		except Exception as e:
 			# Never break boot -- but never be INVISIBLE either: a silent pass
 			# here cost a full debugging round (2026-08-01).
-			try: logger('POV', 'kodirdil banner: %s failed: %s' % (name, e))
+			try: _kodirdil_log('kodirdil banner: %s failed: %s' % (name, e))
 			except Exception: pass
 
 def _start_debrid_banner_thread():
@@ -107,14 +120,9 @@ def _start_debrid_banner_thread():
 #############################################################
 
 if __name__ == '__main__':
-	logger('POV', 'Main Monitor Service Starting (%s)' % POVMonitor.ver())
-	logger('POV', 'Settings Monitor Service Starting')
-
+	from entry import POVMonitor
 	########### KODIRDIL - fire the debrid banner (non-blocking) ###########
 	_start_debrid_banner_thread()
 	#########################################################################
 	POVMonitor().run()
-
-	logger('POV', 'Settings Monitor Service Finished')
-	logger('POV', 'Main Monitor Service Finished')
 

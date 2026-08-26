@@ -183,11 +183,11 @@
     <setting id="subtitles.language" default="true">English</setting>
     <setting id="subtitles.auto_enable">true</setting>
     <setting id="results.sort_order" default="true">0</setting>
-    <setting id="results.xml_style" default="true">List Default</setting>
+    <setting id="results.xml_style" default="true">1</setting>
     <setting id="torrent.display.uncached" default="true">false</setting>
     <setting id="search.enable.yearcheck" default="true">false</setting>
     <setting id="ignore_results_filter">true</setting>
-    <setting id="scrapers.timeout.1">10</setting>
+    <setting id="scrapers_timeout">10</setting>
     <setting id="results.language_filter" default="true">false</setting>
     <setting id="results.language" default="true">English</setting>
     <setting id="results.sort_order_display" default="true">Quality, Provider, Size</setting>
