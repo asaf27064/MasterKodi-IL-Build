@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-26T16:16:23Z",
+  "generated_utc": "2026-08-26T18:14:47Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -67,8 +67,8 @@
       "version": "6.08.14",
       "channel": "optional",
       "zip": "plugin.video.pov-6.08.14.zip",
-      "sha256": "f260c3b0159127e3d1f055eb210d98c2053c6c8314dab937e70e2f9cd73993a9",
-      "size": 3531468,
+      "sha256": "07dd6ab1933c684148d5e3928a60321c5e6c4bdb8f62c60675d8340058eed315",
+      "size": 3532459,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.08.14.zip",
       "content": "pov"
     },
@@ -511,12 +511,12 @@
     },
     {
       "id": "skin.arctic.zephyr.2.resurrection.mod",
-      "version": "1.1.10.113",
+      "version": "1.1.10.114",
       "channel": "optional",
-      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.1.10.113.zip",
-      "sha256": "0536fedba7365dc783c19361ff96daef65d2ab875d133e89c622dbdd457ae544",
-      "size": 18524447,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.2.resurrection.mod-1.1.10.113.zip"
+      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.1.10.114.zip",
+      "sha256": "f13b0b0d24679c31ae3a01e570860cf1e0c94910e85e88f2af3e865c6cc47c85",
+      "size": 18524508,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.2.resurrection.mod-1.1.10.114.zip"
     },
     {
       "id": "skin.estuary",
@@ -538,13 +538,13 @@
     }
   ],
   "config": {
-    "version": "62",
-    "zip": "config-62.zip",
-    "sha256": "692e0e825215965f5e54e4cedab40d4d019252d3bd5afbb50bf9263f44c7624e",
-    "size": 2698346,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-62.zip"
+    "version": "63",
+    "zip": "config-63.zip",
+    "sha256": "1a1eca676f95ec41d8c78dfcd4cbddeeb4095fd75737a21e0d89216a073db5ef",
+    "size": 2698347,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-63.zip"
   },
   "content_variants": {
-    "version": "9cf5ee3b9ee9f79f"
+    "version": "64d1ee74481f9125"
   }
 }
