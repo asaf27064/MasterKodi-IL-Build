@@ -2,22 +2,22 @@
 	<shortcut>
 		<defaultID>mkil_movies</defaultID>
 		<label>סרטים</label>
-		<label2>Common Shortcut</label2>
+		<label2>פריטים מותאמים אישית</label2>
 		<icon>special://skin/extras/icons/film.png</icon>
 		<thumb>special://skin/extras/icons/film.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID>mkil_tvshows</defaultID>
 		<label>סדרות</label>
-		<label2>Common Shortcut</label2>
+		<label2>פריטים מותאמים אישית</label2>
 		<icon>special://skin/extras/icons/tv.png</icon>
 		<thumb>special://skin/extras/icons/tv.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true",return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID>search</defaultID>
-		<label>חיפוש</label>
+		<label>137</label>
 		<label2>Common Shortcut</label2>
 		<icon>special://skin/extras/icons/search.png</icon>
 		<thumb>special://skin/extras/icons/search.png</thumb>
@@ -27,32 +27,40 @@
 		<defaultID>mkil_torbox</defaultID>
 		<label>חיבור שירותים</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/configure.png</icon>
-		<thumb>special://skin/extras/icons/configure.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&amp;folder_name=services",return)</action>
+		<icon>special://skin/extras/icons/cloud.png</icon>
+		<thumb>special://skin/extras/icons/cloud.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&amp;shortcut_folder=True&amp;name=Connect+Services",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID>mkil_maint</defaultID>
 		<label>תחזוקה</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/settings.png</icon>
-		<thumb>special://skin/extras/icons/settings.png</thumb>
+		<icon>special://skin/extras/icons/configure.png</icon>
+		<thumb>special://skin/extras/icons/configure.png</thumb>
 		<action>ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID>mkil_skins</defaultID>
 		<label>החלפת סקין</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/skin.png</icon>
-		<thumb>special://skin/extras/icons/skin.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=skin_switch_folder",return)</action>
+		<icon>special://skin/extras/icons/skinsettings.png</icon>
+		<thumb>special://skin/extras/icons/</thumb>
+		<action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID>settings</defaultID>
-		<label>הגדרות</label>
+		<label>5</label>
 		<label2>Common Shortcut</label2>
 		<icon>special://skin/extras/icons/settings.png</icon>
 		<thumb>special://skin/extras/icons/settings.png</thumb>
 		<action>ActivateWindow(Settings)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID>13012</defaultID>
+		<label>13012</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/power.png</icon>
+		<thumb>special://skin/extras/icons/power.png</thumb>
+		<action>ActivateWindow(shutdownmenu)</action>
 		</shortcut>
 </shortcuts>

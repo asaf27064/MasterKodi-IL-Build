@@ -4,6 +4,26 @@
   "inherit": true,
   "files": [
     {
+      "src": "skinshortcuts/skin.bingie-13012.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-13012.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.bingie-137.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-137.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.bingie-5.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-5.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.bingie-hhlptskyn.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-hhlptskyn.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.bingie-hybvrshyrvtym-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-hybvrshyrvtym-1.DATA.xml"
+    },
+    {
       "src": "skinshortcuts/skin.bingie-mainmenu.DATA.xml",
       "dest": "{addon_data}/script.skinshortcuts/skin.bingie-mainmenu.DATA.xml"
     },
@@ -12,12 +32,36 @@
       "dest": "{addon_data}/script.skinshortcuts/skin.bingie-sdrvt-1.DATA.xml"
     },
     {
+      "src": "skinshortcuts/skin.bingie-sdrvt.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-sdrvt.DATA.xml"
+    },
+    {
       "src": "skinshortcuts/skin.bingie-srtym-1.DATA.xml",
       "dest": "{addon_data}/script.skinshortcuts/skin.bingie-srtym-1.DATA.xml"
     },
     {
+      "src": "skinshortcuts/skin.bingie-srtym.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-srtym.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.bingie-thzvkh-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-thzvkh-1.DATA.xml"
+    },
+    {
       "src": "skinshortcuts/skin.bingie.properties",
       "dest": "{addon_data}/script.skinshortcuts/skin.bingie.properties"
+    },
+    {
+      "src": "themoviedb/nodes/SELECTED NETWORKS.json",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/nodes/SELECTED NETWORKS.json"
+    },
+    {
+      "src": "themoviedb/players/pov.json",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/players/pov.json"
+    },
+    {
+      "src": "themoviedb/settings.xml",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/settings.xml"
     }
   ],
   "special": [

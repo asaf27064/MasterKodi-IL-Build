@@ -1,0 +1,61 @@
+{
+  "name": "SELECTED NETWORKS",
+  "icon": "",
+  "list": [
+    {
+      "name": "Netflix",
+      "icon": "special://home/media/network_icons/jI5c3bw.png",
+      "path": "plugin://plugin.video.themoviedb.helper/?info=discover&plugin_category=Netflix&tmdb_type=tv&with_id=True&with_networks=213"
+    },
+    {
+      "name": "Amazon",
+      "icon": "special://home/media/network_icons/ru9DDlL.png",
+      "path": "plugin://plugin.video.themoviedb.helper/?info=discover&plugin_category=Amazon&tmdb_type=tv&with_id=True&with_networks=1024"
+    },
+    {
+      "name": "Apple TV +",
+      "icon": "special://home/media/network_icons/fAQMVNp.png",
+      "path": "plugin://plugin.video.themoviedb.helper/?info=discover&plugin_category=Apple TV +&tmdb_type=tv&with_id=True&with_networks=2552"
+    },
+    {
+      "name": "Disney+",
+      "icon": "special://home/media/network_icons/DVrPgbM.png",
+      "path": "plugin://plugin.video.themoviedb.helper/?info=discover&plugin_category=Disney+&tmdb_type=tv&with_id=True&with_networks=2739"
+    },
+    {
+      "name": "HBO",
+      "icon": "special://home/media/network_icons/Hyu8ZGq.png",
+      "path": "plugin://plugin.video.themoviedb.helper/?info=discover&plugin_category=HBO&tmdb_type=tv&with_id=True&with_networks=49"
+    },
+    {
+      "name": "HBO Max",
+      "icon": "special://home/media/network_icons/mmRMG75.png",
+      "path": "plugin://plugin.video.themoviedb.helper/?info=discover&plugin_category=HBO Max&tmdb_type=tv&with_id=True&with_networks=3186"
+    },
+    {
+      "name": "Hulu",
+      "icon": "special://home/media/network_icons/uSD2Cdw.png",
+      "path": "plugin://plugin.video.themoviedb.helper/?info=discover&plugin_category=Hulu&tmdb_type=tv&with_id=True&with_networks=453"
+    },
+    {
+      "name": "Paramount+",
+      "icon": "special://home/media/network_icons/dmUjWmU.png",
+      "path": "plugin://plugin.video.themoviedb.helper/?info=discover&plugin_category=Paramount+&tmdb_type=tv&with_id=True&with_networks=4330"
+    },
+    {
+      "name": "FOX",
+      "icon": "special://home/media/network_icons/6vc0Iov.png",
+      "path": "plugin://plugin.video.themoviedb.helper/?info=discover&plugin_category=FOX&tmdb_type=tv&with_id=True&with_networks=19"
+    },
+    {
+      "name": "The CW",
+      "icon": "special://home/media/network_icons/Q8tooeM.png",
+      "path": "plugin://plugin.video.themoviedb.helper/?info=discover&plugin_category=The CW&tmdb_type=tv&with_id=True&with_networks=71"
+    },
+    {
+      "name": "ABC",
+      "icon": "special://home/media/network_icons/qePLxos.png",
+      "path": "plugin://plugin.video.themoviedb.helper/?info=discover&plugin_category=ABC&tmdb_type=tv&with_id=True&with_networks=2"
+    }
+  ]
+}

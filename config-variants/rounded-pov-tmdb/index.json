@@ -4,6 +4,26 @@
   "inherit": true,
   "files": [
     {
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-13012.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-13012.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-137.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-137.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-5.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-5.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-hhlptskyn.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-hhlptskyn.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-hybvrshyrvtym-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-hybvrshyrvtym-1.DATA.xml"
+    },
+    {
       "src": "skinshortcuts/skin.arctic.zephyr.rounded-mainmenu.DATA.xml",
       "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-mainmenu.DATA.xml"
     },
@@ -12,12 +32,36 @@
       "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-sdrvt-1.DATA.xml"
     },
     {
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-sdrvt.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-sdrvt.DATA.xml"
+    },
+    {
       "src": "skinshortcuts/skin.arctic.zephyr.rounded-srtym-1.DATA.xml",
       "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-srtym-1.DATA.xml"
     },
     {
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-srtym.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-srtym.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-thzvkh-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-thzvkh-1.DATA.xml"
+    },
+    {
       "src": "skinshortcuts/skin.arctic.zephyr.rounded.properties",
       "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded.properties"
+    },
+    {
+      "src": "themoviedb/nodes/SELECTED NETWORKS.json",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/nodes/SELECTED NETWORKS.json"
+    },
+    {
+      "src": "themoviedb/players/pov.json",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/players/pov.json"
+    },
+    {
+      "src": "themoviedb/settings.xml",
+      "dest": "{addon_data}/plugin.video.themoviedb.helper/settings.xml"
     }
   ],
   "special": [
