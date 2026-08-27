@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<shortcuts>
+	<shortcut>
+		<label>המשך צפייה</label>
+		<label2>MasterKodi IL</label2>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Continue Watching&amp;mode=build_movie_list&amp;action=in_progress_movies&amp;random_support=true&amp;iconImage=player",return)</action>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/player.png</thumb>
+	</shortcut>
+	<shortcut>
+		<label>חם עכשיו</label>
+		<label2>MasterKodi IL</label2>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/trending.png</thumb>
+	</shortcut>
+	<shortcut>
+		<label>בקולנוע</label>
+		<label2>MasterKodi IL</label2>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=In+Theaters&amp;mode=build_movie_list&amp;action=tmdb_movies_premieres&amp;random_support=true&amp;iconImage=intheatres",return)</action>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/intheatres.png</thumb>
+	</shortcut>
+	<shortcut>
+		<label>שוברי קופות</label>
+		<label2>MasterKodi IL</label2>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Blockbusters&amp;mode=build_movie_list&amp;action=tmdb_movies_blockbusters&amp;random_support=true&amp;iconImage=most_voted",return)</action>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/most_voted.png</thumb>
+	</shortcut>
+	<shortcut>
+		<label>הנצפים ביותר</label>
+		<label2>MasterKodi IL</label2>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Most+Watched&amp;mode=build_movie_list&amp;action=trakt_movies_most_watched&amp;random_support=true&amp;iconImage=oscar_winners",return)</action>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/oscar_winners.png</thumb>
+	</shortcut>
+	<shortcut>
+		<label>ז'אנרים</label>
+		<label2>MasterKodi IL</label2>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Genres&amp;mode=navigator.genres&amp;menu_type=movie&amp;random_support=true&amp;iconImage=genres",return)</action>
+		<thumb>special://home/addons/plugin.video.pov/resources/media/icons/genres.png</thumb>
+	</shortcut>
+</shortcuts>

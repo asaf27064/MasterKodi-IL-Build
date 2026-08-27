@@ -85,6 +85,11 @@ SKIN_OF = {
     'nimbus': 'skin.nimbus',
     'af3': 'skin.arctic.fuse.3',
     'zephyr': 'skin.arctic.zephyr.2.resurrection.mod',
+    # 'rounded' must be tested BEFORE 'zephyr' would ever match it -- the
+    # variant is named rounded-*, so ordering is not an issue here, but the
+    # two skins are different addons despite the shared Arctic Zephyr name.
+    'rounded': 'skin.arctic.zephyr.rounded',
+    'bingie': 'skin.bingie',
 }
 
 
