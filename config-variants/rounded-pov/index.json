@@ -8,12 +8,12 @@
       "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-mainmenu.DATA.xml"
     },
     {
-      "src": "skinshortcuts/skin.arctic.zephyr.rounded-x1111.DATA.xml",
-      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-x1111.DATA.xml"
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-sdrvt-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-sdrvt-1.DATA.xml"
     },
     {
-      "src": "skinshortcuts/skin.arctic.zephyr.rounded-x1112.DATA.xml",
-      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-x1112.DATA.xml"
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-srtym-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-srtym-1.DATA.xml"
     },
     {
       "src": "skinshortcuts/skin.arctic.zephyr.rounded.properties",

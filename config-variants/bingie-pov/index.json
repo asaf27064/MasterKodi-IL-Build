@@ -8,12 +8,12 @@
       "dest": "{addon_data}/script.skinshortcuts/skin.bingie-mainmenu.DATA.xml"
     },
     {
-      "src": "skinshortcuts/skin.bingie-moviehub.DATA.xml",
-      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-moviehub.DATA.xml"
+      "src": "skinshortcuts/skin.bingie-sdrvt-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-sdrvt-1.DATA.xml"
     },
     {
-      "src": "skinshortcuts/skin.bingie-tvshowhub.DATA.xml",
-      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-tvshowhub.DATA.xml"
+      "src": "skinshortcuts/skin.bingie-srtym-1.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-srtym-1.DATA.xml"
     },
     {
       "src": "skinshortcuts/skin.bingie.properties",

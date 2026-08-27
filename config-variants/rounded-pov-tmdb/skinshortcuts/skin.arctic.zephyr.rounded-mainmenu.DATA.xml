@@ -5,7 +5,7 @@
 		<label2>Common Shortcut</label2>
 		<icon>special://skin/extras/icons/film.png</icon>
 		<thumb>special://skin/extras/icons/film.png</thumb>
-		<action>ActivateWindow(1111,return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_movie_list&amp;action=trakt_movies_trending&amp;random_support=true",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID>mkil_tvshows</defaultID>
@@ -13,7 +13,7 @@
 		<label2>Common Shortcut</label2>
 		<icon>special://skin/extras/icons/tv.png</icon>
 		<thumb>special://skin/extras/icons/tv.png</thumb>
-		<action>ActivateWindow(1112,return)</action>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true",return)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID>search</defaultID>
@@ -27,8 +27,8 @@
 		<defaultID>mkil_torbox</defaultID>
 		<label>חיבור שירותים</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/cloud.png</icon>
-		<thumb>special://skin/extras/icons/cloud.png</thumb>
+		<icon>special://skin/extras/icons/configure.png</icon>
+		<thumb>special://skin/extras/icons/configure.png</thumb>
 		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=navigator.build_shortcut_folder_list&amp;folder_name=services",return)</action>
 		</shortcut>
 	<shortcut>
