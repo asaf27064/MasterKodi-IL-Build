@@ -4,16 +4,20 @@
   "inherit": true,
   "files": [
     {
-      "src": "skinshortcuts/mainmenu.DATA.xml",
-      "dest": "{addon_data}/script.skinshortcuts/mainmenu.DATA.xml"
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-mainmenu.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-mainmenu.DATA.xml"
     },
     {
-      "src": "skinshortcuts/x1111.DATA.xml",
-      "dest": "{addon_data}/script.skinshortcuts/x1111.DATA.xml"
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-x1111.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-x1111.DATA.xml"
     },
     {
-      "src": "skinshortcuts/x1112.DATA.xml",
-      "dest": "{addon_data}/script.skinshortcuts/x1112.DATA.xml"
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-x1112.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-x1112.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded.properties",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded.properties"
     }
   ],
   "special": [

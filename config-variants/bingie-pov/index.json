@@ -4,16 +4,20 @@
   "inherit": true,
   "files": [
     {
-      "src": "skinshortcuts/mainmenu.DATA.xml",
-      "dest": "{addon_data}/script.skinshortcuts/mainmenu.DATA.xml"
+      "src": "skinshortcuts/skin.bingie-mainmenu.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-mainmenu.DATA.xml"
     },
     {
-      "src": "skinshortcuts/moviehub.DATA.xml",
-      "dest": "{addon_data}/script.skinshortcuts/moviehub.DATA.xml"
+      "src": "skinshortcuts/skin.bingie-moviehub.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-moviehub.DATA.xml"
     },
     {
-      "src": "skinshortcuts/tvshowhub.DATA.xml",
-      "dest": "{addon_data}/script.skinshortcuts/tvshowhub.DATA.xml"
+      "src": "skinshortcuts/skin.bingie-tvshowhub.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-tvshowhub.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.bingie.properties",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie.properties"
     }
   ],
   "special": [
