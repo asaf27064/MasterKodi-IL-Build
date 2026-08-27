@@ -26,11 +26,33 @@ def get_mdbl_top_lists(params):
 def build_mdbl_list(params):
 	return MdblistBuilder(params).build()
 
+def integrity_check():
+	try:
+		mdbl_db = kodi_utils.translate_path(kodi_utils.mdbl_db)
+		with kodi_utils.database.connect(mdbl_db) as dbcon:
+			dbcur = dbcon.cursor()
+			dbcur.execute("""PRAGMA integrity_check""")
+			result = dbcur.fetchone()
+			if 'ok' in result: status = 'passed'
+			else: raise kodi_utils.database.Error(result)
+			dbcur.execute("""VACUUM""")
+		return status
+	except kodi_utils.database.Error as e: status = str(e)
+	try:
+		with open(mdbl_db, 'w') as _: pass
+		from modules.cache import check_databases, clear_cache
+		check_databases()
+		clear_cache('mdblist', silent=True)
+		status = 'repaired'
+	except Exception as e: kodi_utils.logger('mdblist integrity error', '\n%s\n%s' % (status, e))
+	return status
+
 def mdbl_account_info():
 	from datetime import timedelta
 	from modules.utils import jsondate_to_datetime
 	try:
 		kodi_utils.show_busy_dialog()
+		db_status = integrity_check()
 		account_info = mdblist_api.call_mdblist('user')
 		stats = mdblist_api.call_mdblist('user/stats')['stats']
 		joined = jsondate_to_datetime(account_info['date_joined']).astimezone()
@@ -60,6 +82,7 @@ def mdbl_account_info():
 		append('[B]Shows:[/B] [B]%s[/B] Watched' % shows_watched)
 		append('[B]Episodes:[/B] [B]%s[/B] Watched for [B]%s[/B]' % (episodes_watched, episodes_watched_minutes))
 		append('[B]Movies:[/B] [B]%s[/B] Watched for [B]%s[/B]' % (movies_watched, movies_watched_minutes))
+		append('[B]Cache Integrity:[/B] %s' % db_status.upper())
 		kodi_utils.hide_busy_dialog()
 		return kodi_utils.show_text('MDBList'.upper(), '[CR]'.join(body), font_size='large')
 	except: kodi_utils.hide_busy_dialog()

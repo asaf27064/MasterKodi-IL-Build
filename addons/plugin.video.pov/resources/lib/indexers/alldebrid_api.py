@@ -76,7 +76,7 @@ class AllDebridAPI:
 		url = 'v4.1/magnet/status'
 		params = {'id': transfer_id}
 		result = self._get(url, params)
-		result = result['magnets'][0]
+		result = result['magnets']
 		return result
 
 	def delete_torrent(self, transfer_id):

@@ -37,6 +37,7 @@ class Menu(Debrid):
 		string = 'pov_ad_user_cloud'
 		items = cache_object(self.user_cloud, string, [], 0.5)
 		if not items or not items['magnets']: return []
+		items['magnets'].sort(key=lambda k: (k['uploadDate'], k['id']), reverse=True)
 		folders = []
 		folders_append = folders.append
 		for count, item in enumerate(items['magnets'], 1):

@@ -82,7 +82,7 @@
 			<setting id="tb_cloud.title_filter" label="Filter Results with Aliases" type="bool" default="false" subsetting="true" visible="eq(-1,true)+eq(-5,true)+!eq(-6,)" />
 			<setting id="check.tb_cloud" label="Check Before Full Search" type="bool" default="false" subsetting="true" visible="eq(-2,true)+eq(-6,true)+!eq(-7,)" />
 			<setting id="results.sort_tbcloud_first" label="Show Results at Top" type="bool" default="true" subsetting="true" visible="eq(-3,true)+eq(-7,true)+!eq(-8,)" />
-		<setting id="tb.priority" label="Priority (Lower Number Equals Higher Priority)" type="slider" default="9" range="1,1,10" option="int" visible="eq(-8,true)+!eq(-9,)" />
+		<setting id="tb.priority" label="Priority (Lower Number Equals Higher Priority)" type="slider" default="8" range="1,1,10" option="int" visible="eq(-8,true)+!eq(-9,)" />
 		<setting id="tb.expires" label="Premium Expires Notification (days)" type="slider" default="0" range="0,1,7" option="int" visible="eq(-9,true)+!eq(-10,)" />
 	</category>
 	<category label="My Services">

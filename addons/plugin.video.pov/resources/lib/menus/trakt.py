@@ -31,11 +31,12 @@ def integrity_check():
 	try:
 		trakt_db = kodi_utils.translate_path(kodi_utils.trakt_db)
 		with kodi_utils.database.connect(trakt_db) as dbcon:
-			cur = dbcon.cursor()
-			cur.execute("""PRAGMA integrity_check""")
-			result = cur.fetchone()
-		if 'ok' in result: status = 'passed'
-		else: raise kodi_utils.database.Error(result)
+			dbcur = dbcon.cursor()
+			dbcur.execute("""PRAGMA integrity_check""")
+			result = dbcur.fetchone()
+			if 'ok' in result: status = 'passed'
+			else: raise kodi_utils.database.Error(result)
+			dbcur.execute("""VACUUM""")
 		return status
 	except kodi_utils.database.Error as e: status = str(e)
 	try:

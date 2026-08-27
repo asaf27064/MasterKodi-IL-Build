@@ -211,7 +211,6 @@
 								<width max="180">auto</width>
 								<top>-20</top>
 								<left>-20</left>
-								<visible>!String.IsEmpty(ListItem.Property(tikiskins.perform_full_search))</visible>
 								<align>left</align>
 								<aligny>top</aligny>
 								<texture>forward_arrow.png</texture>
@@ -452,7 +451,6 @@
 								<width max="180">auto</width>
 								<top>-20</top>
 								<left>-20</left>
-								<visible>!String.IsEmpty(ListItem.Property(tikiskins.perform_full_search))</visible>
 								<align>left</align>
 								<aligny>top</aligny>
 								<texture>forward_arrow.png</texture>

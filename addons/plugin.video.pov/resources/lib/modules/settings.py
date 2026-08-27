@@ -335,7 +335,7 @@ def provider_sort_ranks():
 	en_priority = int(get_setting('en.priority', '7'))
 	pm_priority = int(get_setting('pm.priority', '8'))
 	oc_priority = int(get_setting('oc.priority', '8'))
-	tb_priority = int(get_setting('tb.priority', '9'))
+	tb_priority = int(get_setting('tb.priority', '8'))
 	ad_priority = int(get_setting('ad.priority', '9'))
 	rd_priority = int(get_setting('rd.priority', '10'))
 	return {
@@ -359,7 +359,6 @@ def sort_to_top(provider):
 def scraping_settings():
 	def provider_color(provider, fallback):
 		return get_setting('provider.%s_colour' % provider, fallback)
-
 	highlight_type = int(get_setting('highlight.type', '0'))
 	settings = {
 		'uncached': 'dimgray', 'highlight_type': highlight_type,
@@ -373,7 +372,6 @@ def scraping_settings():
 		'4k': '', '1080p': '', '720p': '',
 		'sd': '', 'cam': '', 'tele': '', 'scr': '',
 	}
-
 	if highlight_type == 0:
 		settings['hoster_highlight'] = get_setting('hoster.identify', 'dodgerblue')
 		settings['torrent_highlight'] = get_setting('torrent.identify', 'magenta')
@@ -383,7 +381,6 @@ def scraping_settings():
 		settings['torbox'] = provider_color('tb', 'darkseagreen')
 		settings['realdebrid'] = provider_color('rd', 'seagreen')
 		settings['alldebrid'] = provider_color('tb', 'goldenrod')
-
 	if highlight_type in (0, 1):
 		debrid_cloud = provider_color('debrid_cloud', 'darkviolet')
 		settings['pm_cloud'] = debrid_cloud
@@ -399,7 +396,6 @@ def scraping_settings():
 		settings['1080p'] = get_setting('scraper_1080p_highlight', 'lawngreen')
 		settings['720p'] = get_setting('scraper_720p_highlight', 'gold')
 		for key in ('sd', 'cam', 'tele', 'scr'): settings[key] = sd_color
-
 	return settings
 
 def info_icons():

@@ -43,9 +43,9 @@ class Navigator:
 		self._add_item({'mode': 'clear_cache', 'cache': 'oc_cloud', 'name': clca_str }, 'offcloud.png', n_ins, False)
 
 	def torbox(self):
-		tor_str, usenet_str, web_str = 'Torrent', 'Usenet', 'Web Download'
 		tb_str, acc_str, cloud_str = 'TorBox', ls(32494), ls(32496)
 		clca_str, n_ins = ls(32497) % tb_str, _in_str % (tb_str.upper(), '')
+		tor_str, usenet_str, web_str = 'Torrent', 'Usenet', 'Web Download'
 		self._add_item({'mode': 'torbox.tb_torrent_cloud', 'mediatype': 'torrents', 'name': tor_str   }, 'torbox.png', n_ins)
 		self._add_item({'mode': 'torbox.tb_torrent_cloud', 'mediatype': 'usenet',   'name': usenet_str}, 'torbox.png', n_ins)
 		self._add_item({'mode': 'torbox.tb_torrent_cloud', 'mediatype': 'webdl',    'name': web_str   }, 'torbox.png', n_ins)
@@ -196,41 +196,38 @@ class Navigator:
 		self._end_directory()
 
 	def settings(self):
-		manager_str, changelog_str, short_str = ls(32513), ls(32508), ls(32514)
-		log_utils, views_str, clean_str, lang_inv_str, ms_str = ls(32777), ls(32510), ls(32512), ls(32978), ls(32455)
-		settings_str, changelog_log_viewer_str = ls(32247), '%s & %s' % (changelog_str, log_utils)
-		shortcut_manager_str = '%s %s' % (short_str, manager_str)
-		n_ins = _in_str % (settings_str.upper(), '')
-		pov_vstr, pov_istr = ku.get_addoninfo('version'), ku.get_addoninfo('id')
-		kl_loc, mt_str = 'special://logpath/kodi.log', 'special://home/addons/%s/changelog.txt' % pov_istr
-		pov_str, cl_str, lut_str, k_str, lv_str = ku.get_addoninfo('name'), ls(32508), ls(32777), ls(32538), ls(32509)
-		mh_str, klv_h, klu_h = '%s  [I](v.%s)[/I]' % (pov_str, pov_vstr), '%s %s' % (k_str, lv_str), ls(32853)
-		cl_n_ins, lu_n_ins, k_n_ins = _in_str % (cl_str.upper(), ''), _in_str % (lut_str.upper(), ''), _in_str % (ls(32538).upper(), '')
-		self._add_item({'mode': 'open_settings',                 'name': pov_str                 }, 'pov.png', n_ins, False)
-		self._add_item({'mode': 'myservices',                    'name': ms_str                  }, 'settings.png', n_ins, False)
-		self._add_item({'mode': 'navigator.clear_info',          'name': clean_str               }, 'settings.png', n_ins)
-#		self._add_item({'mode': 'navigator.log_utils',           'name': changelog_log_viewer_str}, 'settings.png', n_ins)
-		self._add_item({'mode': 'navigator.set_view_modes',      'name': views_str               }, 'settings.png', n_ins)
-		self._add_item({'mode': 'navigator.shortcut_folders',    'name': shortcut_manager_str    }, 'settings.png', n_ins)
-		self._add_item({'mode': 'toggle_language_invoker',       'name': lang_inv_str            }, 'settings.png', n_ins, False)
-		self._add_item({'mode': 'show_text', 'heading': mh_str, 'file': mt_str,                    'exclude_external': 'true', 'name': mh_str}, 'lists.png', cl_n_ins, False)
-		self._add_item({'mode': 'show_text', 'heading': klv_h, 'file': kl_loc, 'kodi_log': 'true', 'exclude_external': 'true', 'name': klv_h }, 'lists.png', lu_n_ins, False)
-		self._add_item({'mode': 'upload_logfile',                                                  'exclude_external': 'true', 'name': klu_h }, 'lists.png', lu_n_ins, False)
-		self._add_item({'mode': 'clear_streams',                                                    'name': 'Clear Stale Kodi Stream Details'}, 'tools.png', k_n_ins, False)
-		self._add_item({'mode': 'clear_thumbnails',                                                     'name': 'Clear Stale Kodi Thumbnails'}, 'tools.png', k_n_ins, False)
+		pov_str, pov_vstr, pov_istr = ku.get_addoninfo('name'), ku.get_addoninfo('version'), ku.get_addoninfo('id')
+		services_str, clean_str, views_str, lang_inv_str = ls(32455), ls(32512), ls(32510), ls(32978)
+		changelog_str, lut_str, k_str, klu_str = ls(32508), ls(32777), ls(32538), ls(32853)
+		shortcuts_str = '%s %s' % (ls(32514), ls(32513))
+		cl_h, cl_loc = '%s [I](v.%s)[/I]' % (pov_str, pov_vstr), 'special://home/addons/%s/changelog.txt' % pov_istr
+		klv_h, kl_loc = '%s %s' % (k_str, ls(32509)), 'special://logpath/kodi.log'
+		cl_n_ins, lu_n_ins = _in_str % (changelog_str.upper(), ''), _in_str % (lut_str.upper(), '')
+		n_ins, k_n_ins = _in_str % (ls(32247).upper(), ''), _in_str % (k_str.upper(), '')
+		self._add_item({'mode': 'open_settings', 'name': pov_str}, 'pov.png', n_ins, False)
+		self._add_item({'mode': 'myservices', 'name': services_str}, 'settings.png', n_ins, False)
+		self._add_item({'mode': 'navigator.clear_info', 'name': clean_str}, 'settings.png', n_ins)
+		self._add_item({'mode': 'navigator.set_view_modes', 'name': views_str}, 'settings.png', n_ins)
+		self._add_item({'mode': 'navigator.shortcut_folders', 'name': shortcuts_str}, 'settings.png', n_ins)
+		self._add_item({'mode': 'toggle_language_invoker', 'name': lang_inv_str}, 'settings.png', n_ins, False)
+		self._add_item({'mode': 'show_text', 'heading': cl_h, 'file': cl_loc, 'exclude_external': 'true', 'name': cl_h}, 'lists.png', cl_n_ins, False)
+		self._add_item({'mode': 'show_text', 'heading': klv_h, 'file': kl_loc, 'kodi_log': 'true', 'exclude_external': 'true', 'name': klv_h}, 'lists.png', lu_n_ins, False)
+		self._add_item({'mode': 'upload_logfile', 'exclude_external': 'true', 'name': klu_str}, 'lists.png', lu_n_ins, False)
+		self._add_item({'mode': 'clear_streams', 'name': 'Clear Stale Kodi Stream Details'}, 'tools.png', k_n_ins, False)
+		self._add_item({'mode': 'clear_thumbnails', 'name': 'Clear Stale Kodi Thumbnails'}, 'tools.png', k_n_ins, False)
 		self._end_directory()
 
 	def clear_info(self):
 		cache_str, clca_str, clean_str, all_str, settings_str = ls(32524), ls(32497), ls(32526), ls(32525), ls(32247)
+		clean_all_str = '%s %s %s' % (clean_str, all_str, settings_str)
 		clean_set_cache_str = '%s %s %s' % (clean_str, ls(32247), ls(32524))
 		clean_databases_str = '%s %s' % (clean_str, ls(32523))
-		clean_all_str = '%s %s %s' % (clean_str, all_str, settings_str)
-		clear_all_str, clear_meta_str = clca_str % all_str, clca_str % ls(32527)
-		clear_list_str, clear_trakt_str, clear_mdbl_str = clca_str % ls(32501), clca_str % 'Trakt', clca_str % 'MDBList'
-		clint_str, clext_str, clear_imdb_str = clca_str % ls(32096), clca_str % ls(32118), clca_str % 'IMDb'
+		clear_all_upper = '[B]%s[/B]' % (clca_str % all_str).upper()
+		clear_meta_str, clear_list_str = clca_str % ls(32527), clca_str % ls(32501)
+		clint_str, clext_str = clca_str % ls(32096), clca_str % ls(32118)
+		clear_trakt_str, clear_mdbl_str, clear_imdb_str = clca_str % 'Trakt', clca_str % 'MDBList', clca_str % 'IMDb'
 		clear_pm_str, clear_oc_str, clear_tb_str = clca_str % 'Premiumize', clca_str % 'Offcloud', clca_str % 'TorBox'
-		clear_rd_str, clear_ad_str = clca_str % 'Real Debrid', clca_str % 'All Debrid'
-		clear_all_upper = '[B]%s[/B]' % clear_all_str.upper()
+		clear_rd_str, clear_ad_str, clear_en_str = clca_str % 'Real Debrid', clca_str % 'All Debrid', clca_str % 'Easynews'
 		n_ins, clean_ins = _in_str % (cache_str.upper(), ''), _in_str % (clean_str.upper(), '')
 		self._add_item({'mode': 'clean_settings',                            'name': clean_all_str      }, 'tools.png', clean_ins, False)
 		self._add_item({'mode': 'clean_settings_window_properties',          'name': clean_set_cache_str}, 'tools.png', clean_ins, False)
@@ -248,6 +245,7 @@ class Navigator:
 		self._add_item({'mode': 'clear_cache', 'cache': 'tb_cloud',          'name': clear_tb_str       }, 'tools.png', n_ins, False)
 		self._add_item({'mode': 'clear_cache', 'cache': 'rd_cloud',          'name': clear_rd_str       }, 'tools.png', n_ins, False)
 		self._add_item({'mode': 'clear_cache', 'cache': 'ad_cloud',          'name': clear_ad_str       }, 'tools.png', n_ins, False)
+		self._add_item({'mode': 'clear_cache', 'cache': 'easynews',          'name': clear_en_str       }, 'tools.png', n_ins, False)
 		self._end_directory()
 
 	def set_view_modes(self):
@@ -361,7 +359,6 @@ class Navigator:
 		from caches.watched_cache import get_watched_info_movie, get_watched_info_tv
 		def _convert_pov_watched_episodes_info(watched_indicators):
 			_watched = get_watched_info_tv(watched_indicators)
-#			_watched.sort(key=lambda x: (x[0], x[1], x[2]), reverse=True)
 			return {k: (v[0][0], v[0][1], v[0][2], v[0][3], v[0][4]) for k, v in _watched.items()}
 		watched_indicators = ks.watched_indicators()
 		mediatype = self.params_get('menu_type')
