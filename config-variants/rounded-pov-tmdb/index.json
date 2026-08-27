@@ -4,6 +4,10 @@
   "inherit": true,
   "files": [
     {
+      "src": "skin.rounded/settings.xml",
+      "dest": "{addon_data}/{skin}/settings.xml"
+    },
+    {
       "src": "skinshortcuts/skin.arctic.zephyr.rounded-mainmenu.DATA.xml",
       "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-mainmenu.DATA.xml"
     },

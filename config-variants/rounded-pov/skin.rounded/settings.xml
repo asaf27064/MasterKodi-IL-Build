@@ -1,0 +1,12 @@
+<settings version="2">
+    <setting id="startup.init" type="bool">true</setting>
+    <setting id="settingperflevel" type="string">2</setting>
+    <setting id="settingthemecolor" type="string">1</setting>
+    <setting id="settingskinfont" type="string">11</setting>
+    <setting id="daynight.autocolor" type="bool">false</setting>
+    <setting id="home.style.flix" type="bool">true</setting>
+    <setting id="home.horizontal" type="bool">false</setting>
+    <setting id="home.style.horizontal.clean" type="bool">false</setting>
+    <setting id="hide.home.menu" type="bool">false</setting>
+    <setting id="enable.blur.on.home" type="bool">true</setting>
+</settings>
