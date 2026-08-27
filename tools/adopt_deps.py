@@ -54,6 +54,17 @@ AUTO_DEPS = {
     'script.module.magneto': (
         'https://kodiyashimaru.github.io/repo/packages/addons.xml', 'addons_xml',
         'https://kodiyashimaru.github.io/repo/{id}/{id}-{ver}.zip'),
+    # Third-party SKINS, vendored unmodified (nothing of ours inside them), so
+    # they track their developers the same way any other vanilla dep does.
+    # Rounded also has a PIERS build in a different repo (repository.nanomani,
+    # skinshortcuts 3.x) -- deliberately not adopted here; the author warns 2.x
+    # menus cannot migrate to 3.x, so Piers needs its own Hebrew menu set.
+    'skin.arctic.zephyr.rounded': (
+        'https://raw.githubusercontent.com/Nanomani/repository.omega.nanomani/main/addons.xml', 'addons_xml',
+        'https://raw.githubusercontent.com/Nanomani/repository.omega.nanomani/main/{id}/{id}-{ver}.zip'),
+    'skin.bingie': (
+        'https://raw.githubusercontent.com/matke-84/repository.bingie/main/omega/addons.xml', 'addons_xml',
+        'https://raw.githubusercontent.com/matke-84/repository.bingie/main/omega/{id}/{id}-{ver}.zip'),
     'script.texturemaker': (
         _JURIAL + '/addons.xml', 'addons_xml', _JURIAL + '/{id}/{id}-{ver}.zip'),
     'resource.font.robotocjksc': (

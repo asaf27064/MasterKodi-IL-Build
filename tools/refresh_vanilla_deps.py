@@ -44,6 +44,12 @@ JURIAL_DIRS = (
     'https://raw.githubusercontent.com/jurialmunkey/repository.jurialmunkey/master/repo/zips',
 )
 KODI = 'https://mirrors.kodi.tv/addons/omega'
+# Third-party skin repos. Both skins are vendored UNMODIFIED (nothing of
+# ours lives inside them), so they are ordinary vanilla deps: we re-vendor
+# the clean upstream zip and ship it through our own manifest, exactly as
+# the wizard-controls-updates invariant requires.
+NANOMANI = 'https://raw.githubusercontent.com/Nanomani/repository.omega.nanomani/main'
+BINGIE = 'https://raw.githubusercontent.com/matke-84/repository.bingie/main/omega'
 
 # id -> source. 'jurialmunkey' = his repo datadir; 'kodi' = official Kodi mirror.
 VANILLA_DEPS = {
@@ -60,6 +66,8 @@ VANILLA_DEPS = {
     'resource.images.moviegenreicons.transparent': 'kodi',
     'resource.images.moviecountryicons.maps': 'kodi',
     'resource.images.weathericons.white': 'kodi',
+    'skin.arctic.zephyr.rounded': 'nanomani',
+    'skin.bingie': 'bingie',
 }
 
 
@@ -96,6 +104,22 @@ def jurial_latest(aid):
             if vm:
                 return vm.group(1), '%s/%s/%s-%s.zip' % (base, aid, aid, vm.group(1))
     return None, None
+
+
+_simple_index = {}
+
+
+def simple_latest(aid, base):
+    """Repo layout: <base>/addons.xml plus <base>/<id>/<id>-<ver>.zip."""
+    if base not in _simple_index:
+        _simple_index[base] = http(base + '/addons.xml').decode('utf-8', 'replace')
+    m = re.search(r'<addon\s[^>]*id="%s"[^>]*>' % re.escape(aid), _simple_index[base])
+    if not m:
+        return None, None
+    vm = re.search(r'version="([^"]+)"', m.group(0))
+    if not vm:
+        return None, None
+    return vm.group(1), '%s/%s/%s-%s.zip' % (base, aid, aid, vm.group(1))
 
 
 def kodi_latest(aid):
@@ -148,7 +172,14 @@ def main():
         assert aid not in MODDED_ADDONS, 'refusing to touch modded addon %s' % aid
         ours = local_version(aid)
         try:
-            latest, url = jurial_latest(aid) if src == 'jurialmunkey' else kodi_latest(aid)
+            if src == 'jurialmunkey':
+                latest, url = jurial_latest(aid)
+            elif src == 'nanomani':
+                latest, url = simple_latest(aid, NANOMANI)
+            elif src == 'bingie':
+                latest, url = simple_latest(aid, BINGIE)
+            else:
+                latest, url = kodi_latest(aid)
         except Exception as e:
             log('%s: source check failed: %s' % (aid, e))
             continue

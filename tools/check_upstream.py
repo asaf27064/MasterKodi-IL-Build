@@ -262,6 +262,8 @@ DEPS_WATCH = [
     # updated together with the skin.nimbus fork.
     ('script.nimbus.helper',
      'https://raw.githubusercontent.com/ivarbrandt/script.nimbus.helper/master/addon.xml', 'github_addon_xml'),
+    ('skin.arctic.zephyr.rounded', 'https://raw.githubusercontent.com/Nanomani/repository.omega.nanomani/main/addons.xml', 'addons_xml'),
+    ('skin.bingie', 'https://raw.githubusercontent.com/matke-84/repository.bingie/main/omega/addons.xml', 'addons_xml'),
 ]
 
 
