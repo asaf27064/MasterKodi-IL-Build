@@ -28,6 +28,10 @@
       "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-mainmenu.DATA.xml"
     },
     {
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-powermenu.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-powermenu.DATA.xml"
+    },
+    {
       "src": "skinshortcuts/skin.arctic.zephyr.rounded-sdrvt-1.DATA.xml",
       "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-sdrvt-1.DATA.xml"
     },

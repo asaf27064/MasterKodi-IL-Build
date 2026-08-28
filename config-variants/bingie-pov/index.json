@@ -28,6 +28,10 @@
       "dest": "{addon_data}/script.skinshortcuts/skin.bingie-mainmenu.DATA.xml"
     },
     {
+      "src": "skinshortcuts/skin.bingie-powermenu.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.bingie-powermenu.DATA.xml"
+    },
+    {
       "src": "skinshortcuts/skin.bingie-sdrvt-1.DATA.xml",
       "dest": "{addon_data}/script.skinshortcuts/skin.bingie-sdrvt-1.DATA.xml"
     },

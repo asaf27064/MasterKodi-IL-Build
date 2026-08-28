@@ -1,0 +1,82 @@
+<shortcuts>
+	<shortcut>
+		<defaultID />
+		<label>$LOCALIZE[31114]</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/skinsettings.png</icon>
+		<thumb>special://skin/extras/icons/skinsettings.png</thumb>
+		<action>ActivateWindowAndFocus(skinsettings,9108,2)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>$LOCALIZE[5]</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/settings.png</icon>
+		<thumb>special://skin/extras/icons/settings.png</thumb>
+		<action>ActivateWindow(settings)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>תחזוקה</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/configure.png</icon>
+		<thumb>special://skin/extras/icons/configure.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>החלפת סקין</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/skinsettings.png</icon>
+		<thumb>special://skin/extras/icons/skinsettings.png</thumb>
+		<action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>$LOCALIZE[31146]</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/update.png</icon>
+		<thumb>special://skin/extras/icons/update.png</thumb>
+		<action>ReloadSkin()</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>$LOCALIZE[130]</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/info.png</icon>
+		<thumb>special://skin/extras/icons/info.png</thumb>
+		<action>ActivateWindow(systeminfo)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>$LOCALIZE[13011]</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/power.png</icon>
+		<thumb>special://skin/extras/icons/power.png</thumb>
+		<action>Suspend()</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>$LOCALIZE[13013]</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/network.png</icon>
+		<thumb>special://skin/extras/icons/network.png</thumb>
+		<action>Reset()</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>$LOCALIZE[13005]</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/power.png</icon>
+		<thumb>special://skin/extras/icons/power.png</thumb>
+		<action>Powerdown()</action>
+		</shortcut>
+	<shortcut>
+		<defaultID />
+		<label>$LOCALIZE[13012]</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/logout.png</icon>
+		<thumb>special://skin/extras/icons/logout.png</thumb>
+		<action>Quit()</action>
+		</shortcut>
+</shortcuts>
