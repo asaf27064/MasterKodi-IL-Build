@@ -4263,7 +4263,11 @@ def main():
               test_dbmoved_install,
               test_zephyr_home_layout_single_bool,
               test_debrid_banner_expiry_parser,
-              test_config_version_pairing):
+              test_config_version_pairing,
+              test_powermenu_matches_established_skins,
+              test_tmdb_uses_local_kodi_db,
+              test_rounded_ratings_are_visible,
+              test_new_skins_are_registered_with_the_wizard):
         try:
             t()
         except Exception as e:
@@ -4385,6 +4389,164 @@ def test_config_version_pairing():
     check('build.json declares config_version', bv is not None)
     check('config_policy.json declares config_version', pv is not None)
     check('they match (build=%s policy=%s)' % (bv, pv), str(bv) == str(pv))
+
+
+def test_powermenu_matches_established_skins():
+    """A new skin's power menu must carry the MasterKodi actions, not the
+    skin author's generic Kodi list.
+
+    Rounded and Bingie both shipped their own defaults (system info / suspend /
+    reboot / powerdown / logoff), which is not what our other skins do -- AF3
+    offers reload-skin, skin switch, cache clearing, send-logs, favourites and
+    the wizard's fast_exit. Asaf reported the gap twice (2026-08-28).
+
+    The cache-clear entry is the sharp edge: it must point at the variant's OWN
+    content engine. A zephyr branch once shipped Gears' clear_all_cache on a POV
+    box, where it was a silent no-op."""
+    print("")
+    print("=== power menu parity with the established skins ===")
+    import glob as _glob
+    WANT = ('?mode=skins', '?mode=send_logs', '?mode=fast_exit',
+            'ReloadSkin', 'ActivateWindow(1160)', 'clean_cache_functions.py')
+    files = sorted(_glob.glob(os.path.join(
+        REPO, 'config-variants', '*', 'skinshortcuts', '*-powermenu.DATA.xml')))
+    check('power menus found', len(files) > 0)
+    for f in files:
+        variant = f.replace(os.sep, '/').split('config-variants/')[1].split('/')[0]
+        txt = io.open(f, encoding='utf-8').read()
+        missing = [w for w in WANT if w not in txt]
+        check('%s: has every MasterKodi action%s'
+              % (variant, '' if not missing else ' (missing %s)' % missing),
+              not missing)
+        engine = 'gears' if '-gears' in variant else 'pov'
+        other = 'pov' if engine == 'gears' else 'gears'
+        check('%s: clears %s cache, not %s' % (variant, engine, other),
+              ('plugin.video.%s/?mode=clear_all_cache' % engine) in txt
+              and ('plugin.video.%s/?mode=clear_all_cache' % other) not in txt)
+
+
+def test_tmdb_uses_local_kodi_db():
+    """use_kodi_local_db must be 2 (Preferred) in every shipped TMDb config.
+
+    Enum is 0=Disabled 1=Supplement 2=Preferred; the addon's own default is 0.
+    Asaf asked for Preferred fleet-wide (2026-08-28).
+
+    The attribute matters as much as the value: Kodi writes default="true" to
+    mean "this setting still holds the addon default". Leaving that marker on a
+    value we deliberately changed invites Kodi to reset it to 0 on load and
+    silently undo the change -- so the setting must carry no default marker,
+    like the other values our build overrides (language, omdb_apikey)."""
+    print("")
+    print("=== TMDb use_kodi_local_db = Preferred, fleet-wide ===")
+    import glob as _glob
+    import re as _re
+    targets = sorted(_glob.glob(os.path.join(
+        REPO, 'config-variants', '*', 'themoviedb', 'settings.xml')))
+    targets.append(os.path.join(REPO, 'config', 'userdata', 'addon_data',
+                                'plugin.video.themoviedb.helper', 'settings.xml'))
+    pat = _re.compile(r'<setting\s+id="use_kodi_local_db"([^>]*)>([^<]*)</setting>')
+    seen = 0
+    for f in targets:
+        if not os.path.isfile(f):
+            continue
+        name = f.replace(os.sep, '/')
+        name = (name.split('config-variants/')[1].split('/')[0]
+                if 'config-variants/' in name else 'config (base)')
+        m = pat.search(io.open(f, encoding='utf-8').read())
+        check('%s: declares use_kodi_local_db' % name, m is not None)
+        if not m:
+            continue
+        seen += 1
+        check('%s: = 2 (Preferred)' % name, m.group(2).strip() == '2')
+        check('%s: no stale default marker' % name, 'default=' not in m.group(1))
+    check('every shipped TMDb config covered (%d)' % seen, seen >= 10)
+
+
+def test_rounded_ratings_are_visible():
+    """Every gate that can hide Rounded's rating flags must be shipped open.
+
+    Measured on the live box 2026-08-29: ratings were being fetched correctly
+    the whole time (a focused item reported IMDb 8.5 / Metacritic 88 /
+    MDBList 89 / TMDb 8.0, for POV widgets as well as TMDb ones), but nothing
+    rendered on the home screen. Furniture_Video_Flags' home branch is
+
+        Window.IsVisible(Home) + ControlGroup(301).HasFocus() + <DBType>
+        + Skin.HasSetting(home.vertical)
+        + !Skin.HasSetting(hide.furniture.flags.vertical.widgets)
+
+    We ship home.vertical (the Netflix layout) and the skin defaults
+    hide.furniture.flags.vertical.widgets to TRUE, so the whole flags row --
+    ratings included -- was hidden. Assert the full gate set, not just that one
+    id, so a future re-capture of the settings file cannot quietly close
+    another one."""
+    print("")
+    print("=== Rounded: every rating gate ships open ===")
+    import glob as _glob
+    import re as _re
+    MUST = {
+        'hide.furniture.flags.vertical.widgets': 'false',   # the one that broke it
+        'hide.furniture.flags': 'false',
+        'enable.furniture.flags.icons': 'true',
+        'hide.video.ratings': 'false',
+        'hide.flags.rating': 'false',
+        'tmdbhelper.disableratings': 'false',
+        'show.flags.rating.imdb': 'true',
+        'show.flags.rating.tmdb': 'true',
+        'show.flags.rating.trakt': 'true',
+        'show.flags.rating.mdblist': 'true',
+        'show.flags.rating.metacritics': 'true',
+        'show.flags.rating.tomatoes': 'true',
+        'show.flags.rating.letterboxd': 'true',
+    }
+    seeds = sorted(_glob.glob(os.path.join(
+        REPO, 'config-variants', 'rounded-*', 'skin.rounded', 'settings.xml')))
+    check('rounded variants ship a skin settings seed (%d)' % len(seeds), len(seeds) == 2)
+    for f in seeds:
+        variant = f.replace(os.sep, '/').split('config-variants/')[1].split('/')[0]
+        txt = io.open(f, encoding='utf-8').read()
+        vals = dict(_re.findall(r'<setting id="([^"]+)"[^>]*>([^<]*)</setting>', txt))
+        wrong = {k: vals.get(k, 'ABSENT') for k, v in MUST.items() if vals.get(k) != v}
+        check('%s: all %d rating gates correct%s'
+              % (variant, len(MUST), '' if not wrong else ' -- %s' % wrong), not wrong)
+        # Kodi crashes NATIVELY on a comment in addon_data settings.xml
+        check('%s: no XML comment' % variant, '<!--' not in txt)
+
+
+def test_new_skins_are_registered_with_the_wizard():
+    """A vendored skin is not integrated until the wizard knows about it.
+
+    Rounded and Bingie shipped with complete config-variants but were absent
+    from SKIN_VARIANTS and _APPLY, so _apply_pov_core bailed out with "no POV
+    variant for this skin/version" and applied nothing -- a user switching to
+    them got the bare upstream skin. Rounded is additionally in the skin
+    catalogue so the wizard can install it.
+
+    Bingie is deliberately NOT in the catalogue: its
+    plugin.video.tmdb.bingie.helper hard-imports script.module.pil, which we do
+    not vendor, so Kodi would refuse to enable the helper."""
+    print("")
+    print("=== new skins are wired into the wizard ===")
+    cs = io.open(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                              'resources', 'libs', 'content_source.py'),
+                 encoding='utf-8').read()
+    bl = io.open(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                              'resources', 'libs', 'builds.py'),
+                 encoding='utf-8').read()
+    for sid in ('skin.arctic.zephyr.rounded', 'skin.bingie'):
+        check('%s in SKIN_VARIANTS' % sid, ("'%s':" % sid) in cs)
+        check('%s in _APPLY' % sid, cs.count("'%s'" % sid) >= 2)
+    # Asaf wants POV widgets as Rounded's default (2026-08-29)
+    check("rounded default variant is rounded-pov (POV widgets)",
+          "'skin.arctic.zephyr.rounded':            ('rounded-pov', None)" in cs)
+    check('rounded is installable from the skin catalogue',
+          "'id': 'skin.arctic.zephyr.rounded'" in bl)
+    check('bingie stays OUT of the catalogue (script.module.pil not vendored)',
+          "'id': 'skin.bingie'" not in bl)
+    check('script.module.pil really is absent (the reason bingie is held back)',
+          not os.path.isdir(os.path.join(REPO, 'addons', 'script.module.pil')))
+    # the skin must stay unmodified so it keeps auto-updating upstream
+    check('rounded skin is NOT overlaid (keeps upstream auto-update)',
+          not os.path.isdir(os.path.join(REPO, 'overlays', 'skin.arctic.zephyr.rounded')))
 
 
 if __name__ == '__main__':

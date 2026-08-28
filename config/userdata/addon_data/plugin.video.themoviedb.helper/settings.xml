@@ -4,7 +4,7 @@
     <setting id="ignore_regionreleasefilter" default="true">false</setting>
     <setting id="artwork_quality" default="true">0</setting>
     <setting id="force_english_plot_fallback" default="true">false</setting>
-    <setting id="use_kodi_local_db" default="true">0</setting>
+    <setting id="use_kodi_local_db">2</setting>
     <setting id="flatten_seasons" default="true">false</setting>
     <setting id="seasons_specials" default="true">true</setting>
     <setting id="seasons_anticipated">false</setting>

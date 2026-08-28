@@ -1,4 +1,5 @@
 <settings version="2">
     <setting id="omdb_apikey">8e4dcdac</setting>
     <setting id="use_online_ratings" default="false">true</setting>
+	<setting id="use_kodi_local_db">2</setting>
 </settings>

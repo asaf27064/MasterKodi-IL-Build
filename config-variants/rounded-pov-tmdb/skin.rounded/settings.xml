@@ -1,0 +1,23 @@
+<settings>
+	<setting id="show.flags.rating.imdb" type="bool">true</setting>
+	<setting id="show.flags.rating.tmdb" type="bool">true</setting>
+	<setting id="show.flags.rating.trakt" type="bool">true</setting>
+	<setting id="show.flags.rating.mdblist" type="bool">true</setting>
+	<setting id="show.flags.rating.metacritics" type="bool">true</setting>
+	<setting id="show.flags.rating.tomatoes" type="bool">true</setting>
+	<setting id="show.flags.rating.letterboxd" type="bool">true</setting>
+	<setting id="enable.flags.rating.numeric" type="bool">true</setting>
+	<setting id="hide.video.ratings" type="bool">false</setting>
+	<setting id="hide.flags.rating" type="bool">false</setting>
+	<setting id="hide.501.507.flags.numeric.rating" type="bool">false</setting>
+	<setting id="enable.furniture.flags.icons" type="bool">true</setting>
+	<setting id="hide.furniture.flags" type="bool">false</setting>
+	<setting id="hide.furniture.flags.vertical.widgets" type="bool">false</setting>
+	<setting id="tmdbhelper.disableratings" type="bool">false</setting>
+	<setting id="show.home.flix.title.clearlogo" type="bool">true</setting>
+	<setting id="show.view.netflix.title.clearlogo.video" type="bool">true</setting>
+	<setting id="show.view.509.title.clearlogo" type="bool">true</setting>
+	<setting id="show.view.511.title.clearlogo" type="bool">true</setting>
+	<setting id="show.view.514.title.clearlogo" type="bool">true</setting>
+	<setting id="show.osd.video.clearlogo" type="bool">true</setting>
+</settings>

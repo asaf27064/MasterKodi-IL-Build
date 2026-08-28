@@ -1,0 +1,2574 @@
+# Kodi Media Center language file
+# Addon Name: Arctic: Zephyr - Rounded
+# Addon id: skin.arctic.zephyr.mod
+# Addon Provider: jurialmunkey, beatmasterrs
+msgid ""
+msgstr ""
+"Project-Id-Version: XBMC Skins\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2022-10-23 07:52+0000\n"
+"Last-Translator: Christian Gade <gade@kodi.tv>\n"
+"Language-Team: Hebrew (Israel) <https://kodi.weblate.cloud/projects/kodi-add-ons-skins/skin-arctic-zephyr-mod/he_il/>\n"
+"Language: he_il\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && n % 10 == 0) ? 2 : 3));\n"
+"X-Generator: Weblate 4.14.1\n"
+
+msgctxt "#31000"
+msgid "Limit number of items"
+msgstr "הגבל את כמות הפריטים בווידג'ט"
+
+msgctxt "#31001"
+msgid "Backup / Restore"
+msgstr "גיבוי / אחזור"
+
+msgctxt "#31002"
+msgid "Director show information"
+msgstr "הצגת פרטי במאי"
+
+msgctxt "#31003"
+msgid "Feature ends at"
+msgstr "הסרט מסתיים ב"
+
+msgctxt "#31004"
+msgid "Flix"
+msgstr "נטפליקס"
+
+msgctxt "#31005"
+msgid "Modern Fanart"
+msgstr "פאנארט מודרני (Modern Fanart)"
+
+msgctxt "#31006"
+msgid "Colored icon media flags"
+msgstr "סמלי דגלי מדיה צבעוניים"
+
+msgctxt "#31007"
+msgid "Arctic Zephyr - Rounded"
+msgstr "Arctic Zephyr - Rounded"
+
+msgctxt "#31008"
+msgid "Metacritic"
+msgstr "Metacritic"
+
+msgctxt "#31009"
+msgid "Resources"
+msgstr "משאבים"
+
+msgctxt "#31010"
+msgid "Video Infodialog"
+msgstr "חלון מידע וידאו"
+
+msgctxt "#31011"
+msgid "Show clearLogo"
+msgstr "הצג ClearLogo"
+
+msgctxt "#31012"
+msgid "Videolyrics"
+msgstr "מילות שיר בווידאו"
+
+msgctxt "#31013"
+msgid "Shifted"
+msgstr "מוסט (Shifted)"
+
+msgctxt "#31014"
+msgid "movies in the library"
+msgstr "סרטים בספרייה"
+
+msgctxt "#31015"
+msgid "Use fanart instead of landscape on Tv Shows"
+msgstr "השתמש בפאנארט במקום בתמונת רוחב לסדרות"
+
+msgctxt "#31016"
+msgid "Use fanart instead of landscape on movies"
+msgstr "השתמש בפאנארט במקום בתמונת רוחב לסרטים"
+
+msgctxt "#31017"
+msgid "Use fanart instead of landscape on seasons"
+msgstr "השתמש בפאנארט במקום בתמונת רוחב לעונות"
+
+msgctxt "#31018"
+msgid "Hide bar/CD on lyrics"
+msgstr "הסתר פס/תקליטור במילות השיר"
+
+msgctxt "#31019"
+msgid "Show PVR technical info"
+msgstr "הצג מידע טכני של PVR"
+
+msgctxt "#31020"
+msgid "Fullscreen Fanart"
+msgstr "פאנארט במסך מלא"
+
+msgctxt "#31021"
+msgid "Extended information"
+msgstr "מידע מורחב"
+
+msgctxt "#31022"
+msgid "IPTV Recorder"
+msgstr "מקליט IPTV"
+
+msgctxt "#31023"
+msgid "Recordings"
+msgstr "הקלטות"
+
+msgctxt "#31024"
+msgid "Last Played Channels"
+msgstr "ערוצים שנוגנו לאחרונה"
+
+msgctxt "#31025"
+msgid "All Channels"
+msgstr "כל הערוצים"
+
+msgctxt "#31026"
+msgid "New Movies"
+msgstr "סרטים חדשים"
+
+msgctxt "#31027"
+msgid "Recently Played Movies"
+msgstr "סרטים שנוגנו לאחרונה"
+
+msgctxt "#31028"
+msgid "Random Movies"
+msgstr "סרטים אקראיים"
+
+msgctxt "#31029"
+msgid "In Progress Movies"
+msgstr "סרטים בתהליך"
+
+msgctxt "#31030"
+msgid "Top Rated Movies"
+msgstr "סרטים בדירוג גבוה"
+
+msgctxt "#31031"
+msgid "Top 250 Movies"
+msgstr "250 הסרטים המובילים"
+
+msgctxt "#31032"
+msgid "Unwatched Movies"
+msgstr "סרטים שלא נצפו"
+
+msgctxt "#31033"
+msgid "Movie Sets"
+msgstr "אוספי סרטים"
+
+msgctxt "#31034"
+msgid "New Tv Shows"
+msgstr "סדרות חדשות"
+
+msgctxt "#31035"
+msgid "Recently Watched TV Shows"
+msgstr "סדרות שנצפו לאחרונה"
+
+msgctxt "#31036"
+msgid "Random Tv Shows"
+msgstr "סדרות אקראיות"
+
+msgctxt "#31037"
+msgid "Top Rated Tv Shows"
+msgstr "הסדרות המדורגות ביותר"
+
+msgctxt "#31038"
+msgid "New Episodes"
+msgstr "פרקים חדשים"
+
+msgctxt "#31039"
+msgid "Recently Played Episodes"
+msgstr "פרקים שנוגנו לאחרונה"
+
+msgctxt "#31040"
+msgid "Random Episodes"
+msgstr "פרקים אקראיים"
+
+msgctxt "#31041"
+msgid "Unwatched Episodes"
+msgstr "פרקים שלא נצפו"
+
+msgctxt "#31042"
+msgid "In Progress Episodes"
+msgstr "פרקים בתהליך צפייה"
+
+msgctxt "#31043"
+msgid "Top Rated Episodes"
+msgstr "הפרקים המדורגים ביותר"
+
+msgctxt "#31044"
+msgid "New Albums"
+msgstr "אלבומים חדשים"
+
+msgctxt "#31045"
+msgid "Recently Played Albums"
+msgstr "אלבומים שנוגנו לאחרונה"
+
+msgctxt "#31046"
+msgid "Top Albums"
+msgstr "האלבומים המובילים"
+
+msgctxt "#31047"
+msgid "Random Albums"
+msgstr "אלבומים אקראיים"
+
+msgctxt "#31048"
+msgid "Random Artists"
+msgstr "אמנים אקראיים"
+
+msgctxt "#31049"
+msgid "Show fanart/landscape view"
+msgstr "הצג תצוגת פאנארט/תמונת רוחב"
+
+msgctxt "#31050"
+msgid "Display blur effect"
+msgstr "הצג אפקט טשטוש"
+
+msgctxt "#31051"
+msgid "This view"
+msgstr "תצוגה זו"
+
+msgctxt "#31052"
+msgid "Misc"
+msgstr "שונות"
+
+msgctxt "#31053"
+msgid "Global options"
+msgstr "אפשרויות גלובליות"
+
+msgctxt "#31054"
+msgid "Show discart"
+msgstr "הצג DiscArt"
+
+msgctxt "#31055"
+msgid "Fullsize fanart"
+msgstr "פאנארט בגודל מלא"
+
+msgctxt "#31056"
+msgid "Double Poster"
+msgstr "פוסטר כפול (Double Poster)"
+
+msgctxt "#31057"
+msgid "Flip poster/fanart"
+msgstr "החלף פוסטר/פאנארט"
+
+msgctxt "#31058"
+msgid "Show list instead of posters"
+msgstr "הצג רשימה במקום פוסטרים"
+
+msgctxt "#31059"
+msgid "Fanart & poster 2"
+msgstr "פאנארט ופוסטר 2"
+
+msgctxt "#31060"
+msgid "episodes watched"
+msgstr "פרקים שנצפו"
+
+msgctxt "#31061"
+msgid "h"
+msgstr "ש"
+
+msgctxt "#31062"
+msgid "m"
+msgstr "ד"
+
+msgctxt "#31063"
+msgid "New time format"
+msgstr "פורמט זמן חדש"
+
+msgctxt "#31064"
+msgid "Double Banner"
+msgstr "באנר כפול (Double Banner)"
+
+msgctxt "#31065"
+msgid "Flip fanart/banner"
+msgstr "החלף פאנארט/באנר"
+
+msgctxt "#31066"
+msgid "Hourly forecast"
+msgstr "תחזית לפי שעה"
+
+msgctxt "#31067"
+msgid "Next days forecast"
+msgstr "תחזית לימים הקרובים"
+
+msgctxt "#31068"
+msgid "Show RSS Feed on home menu"
+msgstr "הצג פיד RSS בתפריט הבית"
+
+msgctxt "#31069"
+msgid "Show RSS Feed on top instead on bottom"
+msgstr "הצג פיד RSS למעלה במקום למטה"
+
+msgctxt "#31070"
+msgid "RSS Feed"
+msgstr "פיד RSS"
+
+msgctxt "#31071"
+msgid "Flip list and info"
+msgstr "החלף רשימה ומידע"
+
+msgctxt "#31072"
+msgid "Elapsed / Remaining Time"
+msgstr "זמן שחלף / נותר"
+
+msgctxt "#31073"
+msgid "items"
+msgstr "פריטים"
+
+msgctxt "#31074"
+msgid "min"
+msgstr "דק'"
+
+msgctxt "#31075"
+msgid "Live TV"
+msgstr "טלוויזיה חיה"
+
+msgctxt "#31076"
+msgid "Used Memory"
+msgstr "זיכרון בשימוש"
+
+msgctxt "#31077"
+msgid "Spotlight"
+msgstr "זרקור"
+
+msgctxt "#31078"
+msgid "Finishes at"
+msgstr "מסתיים ב"
+
+msgctxt "#31079"
+msgid "Video Stream"
+msgstr "זרם וידאו"
+
+msgctxt "#31080"
+msgid "Customise home menu"
+msgstr "התאם את תפריט הבית אישית"
+
+msgctxt "#31081"
+msgid "Background"
+msgstr "רקע"
+
+msgctxt "#31082"
+msgid "Show now playing video in background"
+msgstr "הצג את הווידאו המתנגן ברקע"
+
+msgctxt "#31083"
+msgid "Submenu"
+msgstr "תת-תפריט"
+
+msgctxt "#31084"
+msgid "No Timer"
+msgstr "אין טיימר"
+
+msgctxt "#31085"
+msgid "Show header info"
+msgstr "הצג מידע בכותרת"
+
+msgctxt "#31086"
+msgid "DVD Menu"
+msgstr "תפריט DVD"
+
+msgctxt "#31087"
+msgid "Show artist slideshow"
+msgstr "הצג מצגת אמן"
+
+msgctxt "#31088"
+msgid "Show visualisation behind slideshow"
+msgstr "הצג ויזואליזציה מאחורי המצגת"
+
+msgctxt "#31089"
+msgid "Animate artist slideshow"
+msgstr "הנפש את מצגת האמן"
+
+msgctxt "#31090"
+msgid "Show fanart"
+msgstr "הצג פאנארט"
+
+msgctxt "#31091"
+msgid "Letterboxd"
+msgstr "Letterboxd"
+
+msgctxt "#31092"
+msgid "Accent colors"
+msgstr "צבעי הדגשה"
+
+msgctxt "#31093"
+msgid "Rating stars (media flags section)"
+msgstr "כוכבי דירוג (אזור דגלי המדיה)"
+
+msgctxt "#31094"
+msgid "MPAA rating (media flags section)"
+msgstr "דירוג MPAA (אזור דגלי המדיה)"
+
+msgctxt "#31095"
+msgid "Focus squares"
+msgstr "ריבועי מיקוד"
+
+msgctxt "#31096"
+msgid "Trakt"
+msgstr "Trakt"
+
+msgctxt "#31097"
+msgid "Userrating (media flags section)"
+msgstr "דירוג משתמש (אזור דגלי המדיה)"
+
+msgctxt "#31098"
+msgid "Hide watched"
+msgstr "הסתר שנצפו"
+
+msgctxt "#31099"
+msgid "[CR]Based on the original Arctic: Zephyr skin by jurialmunkey and [CR]Arctic: Zephyr Reloaded  skin by beatmasterrs."
+msgstr "[CR]מבוסס על סקין Arctic: Zephyr המקורי מאת jurialmunkey ועל [CR]סקין Arctic: Zephyr Reloaded מאת beatmasterrs."
+
+msgctxt "#31100"
+msgid "Play trailer in windowed mode"
+msgstr "נגן טריילר בחלון"
+
+msgctxt "#31101"
+msgid "Youtube"
+msgstr "יו-טיוב"
+
+msgctxt "#31102"
+msgid "Set weather fanart"
+msgstr "הגדר פאנארט מזג אוויר"
+
+msgctxt "#31103"
+msgid "Widgets"
+msgstr "יישומונים"
+
+msgctxt "#31104"
+msgid "Show time, date and weather"
+msgstr "הצג שעה, תאריך ומזג אוויר"
+
+msgctxt "#31105"
+msgid "Animate fanart"
+msgstr "הנפש פאנארט"
+
+msgctxt "#31106"
+msgid "Extra Info"
+msgstr "פרטים נוספים"
+
+msgctxt "#31107"
+msgid "Wrap list"
+msgstr "רשימה מעגלית"
+
+msgctxt "#31108"
+msgid "Set fallback image"
+msgstr "הגדר תמונת ברירת מחדל"
+
+msgctxt "#31109"
+msgid "Power Menu"
+msgstr "תפריט כיבוי"
+
+msgctxt "#31110"
+msgid "Furniture"
+msgstr "עיצוב ממשק"
+
+msgctxt "#31111"
+msgid "Show in the header"
+msgstr "הצג בכותרת"
+
+msgctxt "#31112"
+msgid "Show media flags"
+msgstr "הצג דגלי מידע על הסרט"
+
+msgctxt "#31113"
+msgid "Show now playing info"
+msgstr "הצג מידע על המתנגן כעת"
+
+msgctxt "#31114"
+msgid "[COLOR=$VAR[Color_Label_AZR]]Rounded[/COLOR] Skin-Settings"
+msgstr "הגדרות סקין [COLOR=$VAR[Color_Label_AZR]]Rounded[/COLOR]"
+
+msgctxt "#31115"
+msgid "Trailer of"
+msgstr "טריילר של"
+
+msgctxt "#31116"
+msgid "Movies by"
+msgstr "סרטים מאת"
+
+msgctxt "#31117"
+msgid "Tv Shows by"
+msgstr "סדרות מאת"
+
+msgctxt "#31118"
+msgid "[B]Configure System Settings[/B][CR][CR] •     Setup and calibrate displays[CR] •     Configure audio output[CR] •     Setup remote controls[CR] •     Set power saving options[CR] •     Enable debugging[CR] •     Setup master lock"
+msgstr "[B]הגדרות מערכת[/B][CR][CR] •     הגדרה וכיול תצוגות[CR] •     הגדרת פלט שמע[CR] •     הגדרת שלטים[CR] •     אפשרויות חיסכון בחשמל[CR] •     הפעלת ניפוי שגיאות[CR] •     הגדרת נעילת מנהל"
+
+msgctxt "#31119"
+msgid "[B]Configure Add-Ons[/B][CR][CR] •     Manage your installed Add-ons[CR] •     Install Add-ons from kodi.tv[CR] •     Modify Add-on settings"
+msgstr "[B]הגדרת הרחבות[/B][CR][CR] •     ניהול ההרחבות המותקנות[CR] •     התקנת הרחבות מ-kodi.tv[CR] •     שינוי הגדרות הרחבות"
+
+msgctxt "#31120"
+msgid "[B]Configure TV Settings[/B][CR][CR] •     Change full screen info[CR] •     Manage EPG data settings"
+msgstr "[B]הגדרות טלוויזיה[/B][CR][CR] •     שינוי מידע במסך מלא[CR] •     ניהול הגדרות נתוני EPG"
+
+msgctxt "#31121"
+msgid "[B]Configure Service Settings[/B][CR][CR] •     Control via UPnP and HTTP[CR] •     Configure file sharing[CR] •     Enable Zeroconf[CR] •     Configure AirPlay"
+msgstr "[B]הגדרות שירותים[/B][CR][CR] •     שליטה דרך UPnP ו-HTTP[CR] •     הגדרת שיתוף קבצים[CR] •     הפעלת Zeroconf[CR] •     הגדרת AirPlay"
+
+msgctxt "#31122"
+msgid "[B]Configure Profile Settings[/B][CR][CR] •     Setup user profiles[CR] •     Enable login screen[CR] •     Set master locks[CR] •     Control access to content"
+msgstr "[B]הגדרות פרופילים[/B][CR][CR] •     הגדרת פרופילי משתמש[CR] •     הפעלת מסך כניסה[CR] •     הגדרת נעילות מנהל[CR] •     שליטה בגישה לתוכן"
+
+msgctxt "#31123"
+msgid "[B]Configure Skin Settings[/B][CR][CR] •     Customise the home screen[CR] •     Set background options[CR] •     Configure OSD options[CR] •     Enable add-on support[CR] •     Disable screen elements"
+msgstr "[B]הגדרות סקין[/B][CR][CR] •     התאמת מסך הבית[CR] •     הגדרת אפשרויות רקע[CR] •     הגדרת אפשרויות OSD[CR] •     הפעלת תמיכה בהרחבות[CR] •     הסתרת רכיבי מסך"
+
+msgctxt "#31124"
+msgid "[B]View System Information[/B][CR][CR] •     Summary[CR] •     Storage[CR] •     Network[CR] •     Video[CR] •     Hardware[CR] •     PVR Backend"
+msgstr "[B]מידע מערכת[/B][CR][CR] •     סיכום[CR] •     אחסון[CR] •     רשת[CR] •     וידאו[CR] •     חומרה[CR] •     שרת PVR"
+
+msgctxt "#31125"
+msgid "Startup video or music playlist"
+msgstr "רשימת השמעה של וידאו או מוזיקה בהפעלה"
+
+msgctxt "#31126"
+msgid "Extras"
+msgstr "מיוחדים"
+
+msgctxt "#31127"
+msgid "Cinema Experience"
+msgstr "Cinema Experience"
+
+msgctxt "#31128"
+msgid "Movies by"
+msgstr "סרטים מאת"
+
+msgctxt "#31129"
+msgid "Recently added"
+msgstr "נוסף לאחרונה"
+
+msgctxt "#31130"
+msgid "Recently played"
+msgstr "נוגן לאחרונה"
+
+msgctxt "#31131"
+msgid "Play random"
+msgstr "נגן אקראי"
+
+msgctxt "#31132"
+msgid "Delete Settings Shortcut"
+msgstr "מחק קיצור דרך להגדרות"
+
+msgctxt "#31133"
+msgid "Are you sure you want to remove the settings shortcut?[CR]Please ensure that you have an alternative method of accessing settings before you remove this shortcut."
+msgstr "האם אתה בטוח שברצונך להסיר את קיצור הדרך להגדרות?[CR]אנא ודא שיש לך דרך חלופית לגשת להגדרות לפני הסרת קיצור זה."
+
+msgctxt "#31134"
+msgid "Hub items"
+msgstr "פריטי HUB"
+
+msgctxt "#31135"
+msgid "Cast of"
+msgstr "צוות השחקנים של"
+
+msgctxt "#31136"
+msgid "Similar to"
+msgstr "דומה ל-"
+
+msgctxt "#31137"
+msgid "Fanart of"
+msgstr "פאנארט של"
+
+msgctxt "#31138"
+msgid "Youtube videos of"
+msgstr "סרטוני Youtube של"
+
+msgctxt "#31139"
+msgid "Crew of"
+msgstr "צוות של"
+
+msgctxt "#31140"
+msgid "Big poster"
+msgstr "פוסטר גדול"
+
+msgctxt "#31141"
+msgid "Filmography of"
+msgstr "פילמוגרפיה של"
+
+msgctxt "#31142"
+msgid "TV Show appearances of"
+msgstr "הופעות בסדרות של"
+
+msgctxt "#31143"
+msgid "Discography of"
+msgstr "דיסקוגרפיה של"
+
+msgctxt "#31144"
+msgid "Movie Hub"
+msgstr "HUB סרטים"
+
+msgctxt "#31145"
+msgid "TV Hub"
+msgstr "HUB סדרות"
+
+msgctxt "#31146"
+msgid "Reload Skin"
+msgstr "טען סקין מחדש"
+
+msgctxt "#31147"
+msgid "Cards"
+msgstr "כרטיסים (Cards)"
+
+msgctxt "#31148"
+msgid "Kiosk mode"
+msgstr "מצב קיוסק"
+
+msgctxt "#31149"
+msgid "IMDb"
+msgstr "IMDb"
+
+msgctxt "#31150"
+msgid "Show detailed info when video is paused"
+msgstr "הצג מידע מפורט כשהווידאו מושהה"
+
+msgctxt "#31151"
+msgid "Artwork"
+msgstr "עטיפות"
+
+msgctxt "#31152"
+msgid "Released by"
+msgstr "הופק על ידי"
+
+msgctxt "#31153"
+msgid "Similar"
+msgstr "דומים"
+
+msgctxt "#31154"
+msgid "Movies by"
+msgstr "סרטים מאת"
+
+msgctxt "#31155"
+msgid "In Cinemas"
+msgstr "בקולנוע"
+
+msgctxt "#31156"
+msgid "Upcoming"
+msgstr "בקרוב"
+
+msgctxt "#31157"
+msgid "Popular"
+msgstr "פופולריים"
+
+msgctxt "#31158"
+msgid "Top Rated"
+msgstr "המדורגים ביותר"
+
+msgctxt "#31159"
+msgid "Airing"
+msgstr "משודר"
+
+msgctxt "#31160"
+msgid "Today"
+msgstr "היום"
+
+msgctxt "#31161"
+msgid "Show plot"
+msgstr "הצג תקציר"
+
+msgctxt "#31162"
+msgid "Tracklist of"
+msgstr "רשימת רצועות של"
+
+msgctxt "#31163"
+msgid "Show numeric rating"
+msgstr "הצג דירוג מספרי"
+
+msgctxt "#31164"
+msgid "Next Aired"
+msgstr "שודר הבא"
+
+msgctxt "#31165"
+msgid "Studio"
+msgstr "אולפן"
+
+msgctxt "#31166"
+msgid "Cast"
+msgstr "צוות שחקנים"
+
+msgctxt "#31167"
+msgid "Youtube"
+msgstr "יו-טיוב"
+
+msgctxt "#31168"
+msgid "Crew"
+msgstr "צוות"
+
+msgctxt "#31169"
+msgid "Albums of"
+msgstr "אלבומים של"
+
+msgctxt "#31170"
+msgid "Tracklist"
+msgstr "רשימת רצועות"
+
+msgctxt "#31171"
+msgid "Screenshots of"
+msgstr "צילומי מסך של"
+
+msgctxt "#31172"
+msgid "Reboot to eMMC/NAND"
+msgstr "אתחול ל-eMMC/NAND"
+
+msgctxt "#31173"
+msgid "TMDb"
+msgstr "TMDb"
+
+msgctxt "#31174"
+msgid "Now playing..."
+msgstr "מתנגן כעת..."
+
+msgctxt "#31175"
+msgid "Select highlight color"
+msgstr "בחר צבע הדגשה"
+
+msgctxt "#31176"
+msgid "Current Color"
+msgstr "הצבע הנוכחי"
+
+msgctxt "#31177"
+msgid "Thumbnail Horizontal"
+msgstr "תמונות ממוזערות אופקי (Thumbnail Horizontal)"
+
+msgctxt "#31178"
+msgid "Icons Info"
+msgstr "סמלים ומידע (Icons Info)"
+
+msgctxt "#31179"
+msgid "from themoviedb.org"
+msgstr "מתוך themoviedb.org"
+
+msgctxt "#31180"
+msgid "Startup image"
+msgstr "תמונת הפעלה"
+
+msgctxt "#31181"
+msgid "Home menu style"
+msgstr "סגנון תפריט הבית"
+
+msgctxt "#31182"
+msgid "Vertical"
+msgstr "אנכי"
+
+msgctxt "#31183"
+msgid "Seasons of"
+msgstr "עונות של"
+
+msgctxt "#31184"
+msgid "Collections of"
+msgstr "אוספים של"
+
+msgctxt "#31185"
+msgid "Display OSD at startup"
+msgstr "הצג OSD בהפעלה"
+
+msgctxt "#31186"
+msgid "Fanart Thumbs"
+msgstr "תמונות פאנארט (Fanart Thumbs)"
+
+msgctxt "#31187"
+msgid "Extra fanart"
+msgstr "Fanart נוסף"
+
+msgctxt "#31188"
+msgid "Set weather icons"
+msgstr "הגדר סמלי מזג אוויר"
+
+msgctxt "#31189"
+msgid "Widget aspect"
+msgstr "יחס תצוגת וידג'ט"
+
+msgctxt "#31190"
+msgid "Poster"
+msgstr "פוסטר"
+
+msgctxt "#31191"
+msgid "Square"
+msgstr "ריבוע"
+
+msgctxt "#31192"
+msgid "Extended information"
+msgstr "מידע מורחב"
+
+msgctxt "#31193"
+msgid "Fanart"
+msgstr "פאנארט"
+
+msgctxt "#31194"
+msgid "Action"
+msgstr "פעולה"
+
+msgctxt "#31195"
+msgid "Label"
+msgstr "תווית"
+
+msgctxt "#31196"
+msgid "Fallback widget"
+msgstr "וידג'ט חלופי"
+
+msgctxt "#31197"
+msgid "Video / Music OSD"
+msgstr "OSD וידאו / מוזיקה"
+
+msgctxt "#31198"
+msgid "Single Image"
+msgstr "תמונה בודדת"
+
+msgctxt "#31199"
+msgid "Multi Image"
+msgstr "מספר תמונות"
+
+msgctxt "#31200"
+msgid "Hub widget"
+msgstr "וידג'ט HUB"
+
+msgctxt "#31201"
+msgid "Most played Song"
+msgstr "השיר המושמע ביותר"
+
+msgctxt "#31202"
+msgid "[B]Configure Interface Settings[/B][CR][CR] •     Skin[CR] •     Region[CR] •     Control[CR] •     Screensaver[CR] •     Master Lock[CR]"
+msgstr "[B]הגדרות ממשק[/B][CR][CR] •     סקין[CR] •     אזור[CR] •     שליטה[CR] •     שומר מסך[CR] •     נעילת מנהל[CR]"
+
+msgctxt "#31203"
+msgid "[B]Configure Library Settings[/B][CR][CR] •     Display[CR] •     Navigation[CR] •     Media Database[CR]"
+msgstr "[B]הגדרות ספרייה[/B][CR][CR] •     תצוגה[CR] •     ניווט[CR] •     מסד נתוני מדיה[CR]"
+
+msgctxt "#31204"
+msgid "[B]Configure Player Settings[/B][CR][CR] •     Playback Actions[CR] •     How Content is Played[CR]"
+msgstr "[B]הגדרות נגן[/B][CR][CR] •     פעולות ניגון[CR] •     אופן ניגון התוכן[CR]"
+
+msgctxt "#31205"
+msgid "Video decoder"
+msgstr "מפענח וידאו"
+
+msgctxt "#31206"
+msgid "Pixel format"
+msgstr "פורמט פיקסל"
+
+msgctxt "#31207"
+msgid "Play Speed"
+msgstr "מהירות ניגון"
+
+msgctxt "#31208"
+msgid "Special Features"
+msgstr "תכנים מיוחדים"
+
+msgctxt "#31209"
+msgid "Select artwork"
+msgstr "בחר עיצוב אמנותי"
+
+msgctxt "#31210"
+msgid "Top Songs"
+msgstr "השירים המובילים"
+
+msgctxt "#31211"
+msgid "Random Songs"
+msgstr "שירים אקראיים"
+
+msgctxt "#31212"
+msgid "Horizontal"
+msgstr "אופקי"
+
+msgctxt "#31213"
+msgid "Weather - daily"
+msgstr "מזג אוויר - יומי"
+
+msgctxt "#31214"
+msgid "Weather - hourly"
+msgstr "מזג אוויר - שעתי"
+
+msgctxt "#31215"
+msgid "Open Player Process Information"
+msgstr "פתח מידע על תהליך הנגן"
+
+msgctxt "#31216"
+msgid "Player-Cache"
+msgstr "מטמון הנגן"
+
+msgctxt "#31217"
+msgid "Channel List"
+msgstr "רשימת ערוצים"
+
+msgctxt "#31218"
+msgid "This is your personal rating and will not be published."
+msgstr "זהו הדירוג האישי שלך והוא לא יפורסם."
+
+msgctxt "#31219"
+msgid "       "
+msgstr ""
+
+msgctxt "#31220"
+msgid "Video / Music Info"
+msgstr "מידע וידאו / מוזיקה"
+
+msgctxt "#31221"
+msgid "Show plot on HUB"
+msgstr "הצג תקציר ב-HUB"
+
+msgctxt "#31222"
+msgid "Colors"
+msgstr "צבעים"
+
+msgctxt "#31223"
+msgid "Video OSD"
+msgstr "וידאו - תפריט צף (OSD)"
+
+msgctxt "#31224"
+msgid "Music OSD"
+msgstr "מוזיקה - תפריט צף (OSD)"
+
+msgctxt "#31225"
+msgid "Widgets"
+msgstr "יישומונים"
+
+msgctxt "#31226"
+msgid "Views"
+msgstr "תצוגות"
+
+msgctxt "#31227"
+msgid "HUBs"
+msgstr "HUBs"
+
+msgctxt "#31228"
+msgid "ClearArt"
+msgstr "ClearArt"
+
+msgctxt "#31229"
+msgid "Media-Flags"
+msgstr "דגלי מדיה"
+
+msgctxt "#31230"
+msgid "Enable grid"
+msgstr "הפעל רשת"
+
+msgctxt "#31231"
+msgid "Hide play/pause info"
+msgstr "הסתר מידע ניגון/השהיה"
+
+msgctxt "#31232"
+msgid "Auto close OSD after delay (in seconds)"
+msgstr "סגירה אוטומטית של OSD לאחר השהיה (בשניות)"
+
+msgctxt "#31233"
+msgid "Random Artists with biography only"
+msgstr "אמנים אקראיים עם ביוגרפיה בלבד"
+
+msgctxt "#31234"
+msgid "People"
+msgstr "אנשים"
+
+msgctxt "#31235"
+msgid "Recently added Artists"
+msgstr "אמנים שנוספו לאחרונה"
+
+msgctxt "#31236"
+msgid "Recently added Artists with biography only"
+msgstr "אמנים שנוספו לאחרונה עם ביוגרפיה בלבד"
+
+msgctxt "#31237"
+msgid "Top 20 User Rated Movies"
+msgstr "20 הסרטים המדורגים על ידי המשתמש"
+
+msgctxt "#31238"
+msgid "Reset skin settings to defaults"
+msgstr "אפס הגדרות סקין לברירת המחדל"
+
+msgctxt "#31239"
+msgid "Reset skin settings to defaults? WARNING: This will also reset your home menu to skin defaults!"
+msgstr "לאפס את הגדרות הסקין לברירת המחדל? אזהרה: פעולה זו תאפס גם את תפריט הבית להגדרות הסקין!"
+
+msgctxt "#31240"
+msgid "Random Actors ordered by movies"
+msgstr "שחקנים אקראיים לפי מספר סרטים"
+
+msgctxt "#31241"
+msgid "New Unwatched Movies"
+msgstr "סרטים חדשים שלא נצפו"
+
+msgctxt "#31242"
+msgid "New Unwatched Episodes"
+msgstr "פרקים חדשים שלא נצפו"
+
+msgctxt "#31243"
+msgid "New Unwatched Tv Shows"
+msgstr "סדרות חדשות שלא נצפו"
+
+msgctxt "#31244"
+msgid "Search results for"
+msgstr "תוצאות חיפוש עבור"
+
+msgctxt "#31245"
+msgid "Side Cards"
+msgstr "כרטיסים בצד (Side Cards)"
+
+msgctxt "#31246"
+msgid "Seasons info"
+msgstr "מידע עונות (Seasons info)"
+
+msgctxt "#31247"
+msgid "ClearLogo"
+msgstr "ClearLogo"
+
+msgctxt "#31248"
+msgid "Show ClearLogo"
+msgstr "הצג ClearLogo"
+
+msgctxt "#31249"
+msgid "Songs by"
+msgstr "שירים מאת"
+
+msgctxt "#31250"
+msgid "Poster Wall Small"
+msgstr "קיר פוסטרים קטן (Poster Wall Small)"
+
+msgctxt "#31251"
+msgid "MDBList"
+msgstr "MDBList"
+
+msgctxt "#31252"
+msgid "10"
+msgstr "10"
+
+msgctxt "#31253"
+msgid "15"
+msgstr "15"
+
+msgctxt "#31254"
+msgid "20"
+msgstr "20"
+
+msgctxt "#31255"
+msgid "25"
+msgstr "25"
+
+msgctxt "#31256"
+msgid "Auto-scrolling"
+msgstr "גלילה אוטומטית"
+
+msgctxt "#31257"
+msgid "Widget-listtype"
+msgstr "סוג רשימת וידג'ט"
+
+msgctxt "#31258"
+msgid "List"
+msgstr "רשימה"
+
+msgctxt "#31259"
+msgid "Fixed list"
+msgstr "רשימה קבועה"
+
+msgctxt "#31260"
+msgid "Studio logo"
+msgstr "לוגו אולפן"
+
+msgctxt "#31261"
+msgid "Rating flag"
+msgstr "דגל דירוג"
+
+msgctxt "#31262"
+msgid "Movie Genre Icons"
+msgstr "סמלי ז'אנרים לסרטים"
+
+msgctxt "#31263"
+msgid "Studio Icons"
+msgstr "סמלי אולפנים"
+
+msgctxt "#31264"
+msgid "Record Label Icons"
+msgstr "סמלי חברות תקליטים"
+
+msgctxt "#31265"
+msgid "Animate fanart/slideshow"
+msgstr "הנפש פאנארט/מצגת"
+
+msgctxt "#31266"
+msgid "Normal"
+msgstr "רגיל"
+
+msgctxt "#31267"
+msgid "Slow"
+msgstr "איטי"
+
+msgctxt "#31268"
+msgid "Very slow"
+msgstr "איטי מאוד"
+
+msgctxt "#31269"
+msgid "Fadetime"
+msgstr "זמן עמעום"
+
+msgctxt "#31270"
+msgid "Customise power menu"
+msgstr "התאם את תפריט הכיבוי אישית"
+
+msgctxt "#31271"
+msgid "Log off: $INFO[system.profilename]"
+msgstr "התנתקות: $INFO[system.profilename]"
+
+msgctxt "#31272"
+msgid "Delete/Disable Settings Menu Item?"
+msgstr "למחוק/לבטל את פריט תפריט ההגדרות?"
+
+msgctxt "#31273"
+msgid "Are you sure you want to remove the Settings menu item?[CR]Please ensure that you have an alternative method of accessing Settings before you remove this menu item."
+msgstr "האם אתה בטוח שברצונך להסיר את פריט תפריט ההגדרות?[CR]ודא שיש לך דרך חלופית לגשת להגדרות לפני הסרת הפריט."
+
+msgctxt "#31274"
+msgid "Shutdown in: [B]$INFO[System.Alarmpos][/B]"
+msgstr "כיבוי בעוד: [B]$INFO[System.Alarmpos][/B]"
+
+msgctxt "#31275"
+msgid "Show Filenames"
+msgstr "הצג שמות קבצים"
+
+msgctxt "#31276"
+msgid "Shifted ClearArt"
+msgstr "מוסט עם ClearArt (Shifted ClearArt)"
+
+msgctxt "#31277"
+msgid "total"
+msgstr "סך הכל"
+
+msgctxt "#31278"
+msgid "last on"
+msgstr "לאחרונה ב"
+
+msgctxt "#31279"
+msgid "[B]Configure LibreELEC Settings[/B][CR][CR] •     Setup system settings[CR] •     Configure system updatesSetup and calibrate network[CR] •     Setup and calibrate network[CR] •     Configure connections [CR]"
+msgstr "[B]הגדרות LibreELEC[/B][CR][CR] •     הגדרות מערכת[CR] •     הגדרת עדכוני מערכת[CR] •     הגדרה וכיול רשת[CR] •     הגדרת חיבורים [CR]"
+
+msgctxt "#31280"
+msgid "[B]Configure CoreELEC Settings[/B][CR][CR] •     Setup system settings[CR] •     Configure system updatesSetup and calibrate network[CR] •     Setup and calibrate network[CR] •     Configure connections [CR]"
+msgstr "[B]הגדרות CoreELEC[/B][CR][CR] •     הגדרות מערכת[CR] •     הגדרת עדכוני מערכת[CR] •     הגדרה וכיול רשת[CR] •     הגדרת חיבורים [CR]"
+
+msgctxt "#31281"
+msgid " -- "
+msgstr " -- "
+
+msgctxt "#31282"
+msgid "n/a"
+msgstr "לא זמין"
+
+msgctxt "#31283"
+msgid "TBD"
+msgstr "ייקבע בהמשך"
+
+msgctxt "#31284"
+msgid "Fallback label for ratings in list views"
+msgstr "תווית ברירת מחדל לדירוגים בתצוגות רשימה"
+
+msgctxt "#31285"
+msgid "Size of Icons"
+msgstr "גודל הסמלים"
+
+msgctxt "#31286"
+msgid "Align"
+msgstr "יישור"
+
+msgctxt "#31287"
+msgid "left"
+msgstr "שמאל"
+
+msgctxt "#31288"
+msgid "center"
+msgstr "מרכז"
+
+msgctxt "#31289"
+msgid "ClearLogo with fanart"
+msgstr "ClearLogo עם פאנארט"
+
+msgctxt "#31290"
+msgid "Fullsize EPG"
+msgstr "EPG במסך מלא"
+
+msgctxt "#31291"
+msgid "Also use for widgets"
+msgstr "השתמש גם עבור וידג'טים"
+
+msgctxt "#31292"
+msgid "Also use for system-icons"
+msgstr "השתמש גם עבור סמלי מערכת"
+
+msgctxt "#31293"
+msgid "DiscArt Fallback"
+msgstr "ברירת מחדל ל-DiscArt"
+
+msgctxt "#31294"
+msgid "CD"
+msgstr "CD"
+
+msgctxt "#31295"
+msgid "Fake CD"
+msgstr "CD מדומה"
+
+msgctxt "#31296"
+msgid "Vinyl"
+msgstr "ויניל"
+
+msgctxt "#31297"
+msgid "Limit number of items in hub"
+msgstr "הגבל את מספר הפריטים ב-HUB"
+
+msgctxt "#31298"
+msgid "Multi-Widgets"
+msgstr "ריבוי וידג'טים"
+
+msgctxt "#31299"
+msgid "Gradient"
+msgstr "מעבר צבע"
+
+msgctxt "#31300"
+msgid "RAM"
+msgstr "RAM"
+
+msgctxt "#31301"
+msgid "Skin-Version:"
+msgstr "גרסת סקין:"
+
+msgctxt "#31302"
+msgid "Scroll behavior"
+msgstr "התנהגות גלילה"
+
+msgctxt "#31303"
+msgid "Aspect ratio"
+msgstr "יחס תצוגה"
+
+msgctxt "#31304"
+msgid "Select aspect ratio for square widget"
+msgstr "בחר יחס תצוגה לווידג'ט ריבועי"
+
+msgctxt "#31305"
+msgid "Scale"
+msgstr "קנה מידה"
+
+msgctxt "#31306"
+msgid "Sunrise at"
+msgstr "זריחה ב-"
+
+msgctxt "#31307"
+msgid "Sunset at"
+msgstr "שקיעה ב-"
+
+msgctxt "#31308"
+msgid "Square small"
+msgstr "ריבוע קטן"
+
+msgctxt "#31309"
+msgid "Square medium"
+msgstr "ריבוע בינוני"
+
+msgctxt "#31310"
+msgid "Home menu bar"
+msgstr "סרגל תפריט הבית"
+
+msgctxt "#31311"
+msgid "Fullscreen widget"
+msgstr "וידג'ט במסך מלא"
+
+msgctxt "#31312"
+msgid "Weather location"
+msgstr "מיקום מזג אוויר"
+
+msgctxt "#31313"
+msgid "Big Poster"
+msgstr "פוסטר גדול (Big Poster)"
+
+msgctxt "#31314"
+msgid "Images"
+msgstr "תמונות"
+
+msgctxt "#31315"
+msgid "Big wide"
+msgstr "רחב גדול (Big wide)"
+
+msgctxt "#31316"
+msgid "Big list"
+msgstr "רשימה גדולה (Big list)"
+
+msgctxt "#31317"
+msgid "Customize view types"
+msgstr "התאמת סוגי תצוגה"
+
+msgctxt "#31318"
+msgid "Seconds"
+msgstr "שניות"
+
+msgctxt "#31319"
+msgid "Big Thumbnail"
+msgstr "תמונה ממוזערת גדולה (Big Thumbnail)"
+
+msgctxt "#31320"
+msgid "more..."
+msgstr "עוד..."
+
+msgctxt "#31321"
+msgid "item"
+msgstr "פריט"
+
+msgctxt "#31322"
+msgid "Alternative layout"
+msgstr "פריסה חלופית"
+
+msgctxt "#31323"
+msgid "Smart Shortcuts"
+msgstr "קיצורי דרך חכמים"
+
+msgctxt "#31324"
+msgid "Movies and TV shows"
+msgstr "סרטים וסדרות"
+
+msgctxt "#31325"
+msgid "Recently added Songs"
+msgstr "שירים שנוספו לאחרונה"
+
+msgctxt "#31326"
+msgid "Most played Songs"
+msgstr "השירים המושמעים ביותר"
+
+msgctxt "#31327"
+msgid "Chapter markers"
+msgstr "סמני פרקים"
+
+msgctxt "#31328"
+msgid "Rotten Tomatoes"
+msgstr "Rotten Tomatoes"
+
+msgctxt "#31329"
+msgid "Select media flags"
+msgstr "בחר דגלי מדיה"
+
+msgctxt "#31330"
+msgid "Subtitle icon"
+msgstr "סמל כתוביות"
+
+msgctxt "#31331"
+msgid "Subtitle extended info"
+msgstr "מידע מורחב על כתוביות"
+
+msgctxt "#31332"
+msgid "Reminder enabled"
+msgstr "תזכורת פעילה"
+
+msgctxt "#31333"
+msgid "Reminder Rule enabled"
+msgstr "כלל תזכורת פעיל"
+
+msgctxt "#31334"
+msgid "Debugging"
+msgstr "ניפוי שגיאות"
+
+msgctxt "#31335"
+msgid "Extended debugging information"
+msgstr "מידע ניפוי שגיאות מורחב"
+
+msgctxt "#31336"
+msgid "Extended grid"
+msgstr "רשת מורחבת"
+
+msgctxt "#31337"
+msgid "Play next episode"
+msgstr "נגן את הפרק הבא"
+
+msgctxt "#31338"
+msgid "Widget"
+msgstr "יישומון"
+
+msgctxt "#31339"
+msgid "Edge distance"
+msgstr "מרחק מהקצה"
+
+msgctxt "#31340"
+msgid "30px"
+msgstr "30px"
+
+msgctxt "#31341"
+msgid "Path intros"
+msgstr "פתיחים לנתיב"
+
+msgctxt "#31342"
+msgid "Trailer count"
+msgstr "מספר טריילרים"
+
+msgctxt "#31343"
+msgid "Some other"
+msgstr "אחר"
+
+msgctxt "#31344"
+msgid "Video preview"
+msgstr "תצוגה מקדימה של וידאו"
+
+msgctxt "#31345"
+msgid "DiscArt"
+msgstr "DiscArt"
+
+msgctxt "#31346"
+msgid "Fake Blu-ray"
+msgstr "Blu-ray מדומה"
+
+msgctxt "#31347"
+msgid "Artwork section"
+msgstr "אזור עיצוב אמנותי"
+
+msgctxt "#31348"
+msgid "Landscape"
+msgstr "תמונת נוף"
+
+msgctxt "#31349"
+msgid "Artwork of"
+msgstr "עיצוב אמנותי של"
+
+msgctxt "#31350"
+msgid "disabled"
+msgstr "מושבת"
+
+msgctxt "#31351"
+msgid "Required add-ons"
+msgstr "הרחבות נדרשות"
+
+msgctxt "#31352"
+msgid "Recommended add-ons"
+msgstr "הרחבות מומלצות"
+
+msgctxt "#31353"
+msgid "CoreELEC Settings"
+msgstr "הגדרות CoreELEC"
+
+msgctxt "#31354"
+msgid "Configure custom widget"
+msgstr "הגדר וידג'ט מותאם אישית"
+
+msgctxt "#31355"
+msgid "Flix fanart window"
+msgstr "חלון פאנארט Flix"
+
+msgctxt "#31356"
+msgid "Media status"
+msgstr "סטטוס מדיה"
+
+msgctxt "#31357"
+msgid "HDR"
+msgstr "HDR"
+
+msgctxt "#31358"
+msgid "Blu-ray / HD DVD / DVD / WEB-DL"
+msgstr "Blu-ray / HD DVD / DVD / WEB-DL"
+
+msgctxt "#31359"
+msgid "IMDB Top 250"
+msgstr "IMDB Top 250"
+
+msgctxt "#31360"
+msgid "Audio Channels"
+msgstr "ערוצי שמע"
+
+msgctxt "#31361"
+msgid "Widget path"
+msgstr "נתיב וידג'ט"
+
+msgctxt "#31362"
+msgid "Origin"
+msgstr "מקור"
+
+msgctxt "#31363"
+msgid "Trakt"
+msgstr "Trakt"
+
+msgctxt "#31364"
+msgid "CPU"
+msgstr "CPU"
+
+msgctxt "#31365"
+msgid "Underlined homemenu items"
+msgstr "קו תחתון לפריטי תפריט הבית"
+
+msgctxt "#31366"
+msgid "Poster Flix"
+msgstr "פוסטר Flix (Poster Flix)"
+
+msgctxt "#31367"
+msgid "Paused"
+msgstr "מושהה"
+
+msgctxt "#31368"
+msgid "Watched"
+msgstr "נצפה"
+
+msgctxt "#31369"
+msgid "New!"
+msgstr "חדש!"
+
+msgctxt "#31370"
+msgid "Alternative indicators"
+msgstr "מחוונים חלופיים"
+
+msgctxt "#31371"
+msgid "Label"
+msgstr "תווית"
+
+msgctxt "#31372"
+msgid "Director"
+msgstr "במאי"
+
+msgctxt "#31373"
+msgid "Collection"
+msgstr "אוסף"
+
+msgctxt "#31374"
+msgid "Prefer percentage"
+msgstr "העדף אחוזים"
+
+msgctxt "#31375"
+msgid "Prefer local list information"
+msgstr "העדף מידע מרשימה מקומית"
+
+msgctxt "#31376"
+msgid "On back, widgets do not return to initial position"
+msgstr "בחזרה, הווידג'טים לא חוזרים למיקום ההתחלתי"
+
+msgctxt "#31377"
+msgid "On up, when at first widget, do not jump back to last widget"
+msgstr "למעלה, בווידג'ט הראשון, אל תקפוץ לווידג'ט האחרון"
+
+msgctxt "#31378"
+msgid "On down, when at last widget, widgets do not return to initial position"
+msgstr "למטה, בווידג'ט האחרון, הווידג'טים לא חוזרים למיקום ההתחלתי"
+
+msgctxt "#31379"
+msgid "On up/down at first/last widget, go to last/first widget"
+msgstr "למעלה/למטה בווידג'ט הראשון/האחרון, עבור לאחרון/ראשון"
+
+msgctxt "#31380"
+msgid "Layout options"
+msgstr "אפשרויות פריסה"
+
+msgctxt "#31381"
+msgid "Global"
+msgstr "כללי"
+
+msgctxt "#31382"
+msgid "4K Movies"
+msgstr "סרטי 4K"
+
+msgctxt "#31383"
+msgid "Recent recordings"
+msgstr "הקלטות אחרונות"
+
+msgctxt "#31384"
+msgid "Grouped recent recordings"
+msgstr "הקלטות אחרונות מקובצות"
+
+msgctxt "#31385"
+msgid "Grouped deleted recordings"
+msgstr "הקלטות שנמחקו מקובצות"
+
+msgctxt "#31386"
+msgid "Hide"
+msgstr "הסתר"
+
+msgctxt "#31387"
+msgid "Last Played Radio Channels"
+msgstr "ערוצי רדיו שנוגנו לאחרונה"
+
+msgctxt "#31388"
+msgid "Mini-EPG (vertical, only 5 Items)"
+msgstr "מיני-EPG (אנכי, 5 פריטים בלבד)"
+
+msgctxt "#31389"
+msgid "Unwatched Tv Shows"
+msgstr "סדרות שלא נצפו"
+
+msgctxt "#31390"
+msgid "for"
+msgstr "עבור"
+
+msgctxt "#31391"
+msgid "Poster Wall"
+msgstr "קיר פוסטרים - Poster Wall"
+
+msgctxt "#31392"
+msgid "Fanart Flix"
+msgstr "פאנארט Flix (Fanart Flix)"
+
+msgctxt "#31393"
+msgid "IMDB Position"
+msgstr "מיקום IMDB"
+
+msgctxt "#31394"
+msgid "Use default MPAA rating icons"
+msgstr "השתמש בסמלי דירוג MPAA כברירת מחדל"
+
+msgctxt "#31395"
+msgid "Seasons info v2"
+msgstr "מידע עונות v2 (Seasons info v2)"
+
+msgctxt "#31396"
+msgid "Up Next"
+msgstr "הבא בתור"
+
+msgctxt "#31397"
+msgid "Use thumbnail instead of fanart"
+msgstr "השתמש בתמונה ממוזערת במקום בפאנארט"
+
+msgctxt "#31398"
+msgid "Clean and minimal"
+msgstr "נקי ומינימלי"
+
+msgctxt "#31399"
+msgid "Hide plot, when widget is not focused"
+msgstr "הסתר תקציר כשהווידג'ט לא במיקוד"
+
+msgctxt "#31400"
+msgid "Audio streams"
+msgstr "זרמי שמע"
+
+msgctxt "#31401"
+msgid "Info slider"
+msgstr "מחוון מידע"
+
+msgctxt "#31402"
+msgid "Additional fanart"
+msgstr "פאנארט נוסף"
+
+msgctxt "#31403"
+msgid "HD Movies"
+msgstr "סרטי HD"
+
+msgctxt "#31404"
+msgid "Hide, when not focused/used"
+msgstr "הסתר כשלא במיקוד/בשימוש"
+
+msgctxt "#31405"
+msgid "Hide seekbar"
+msgstr "הסתר סרגל דילוג"
+
+msgctxt "#31406"
+msgid "Hide OSD"
+msgstr "הסתר OSD"
+
+msgctxt "#31407"
+msgid "Scrolling text"
+msgstr "טקסט נגלל"
+
+msgctxt "#31408"
+msgid "Numeric rating"
+msgstr "דירוג מספרי"
+
+msgctxt "#31409"
+msgid "Artist slideshow"
+msgstr "מצגת אמן"
+
+msgctxt "#31410"
+msgid "Low list"
+msgstr "רשימה נמוכה"
+
+msgctxt "#31411"
+msgid "Filenames"
+msgstr "שמות קבצים"
+
+msgctxt "#31412"
+msgid "Fallback image"
+msgstr "תמונת ברירת מחדל"
+
+msgctxt "#31413"
+msgid "ClearLogo/ClearArt"
+msgstr "ClearLogo/ClearArt"
+
+msgctxt "#31414"
+msgid "Clearlogo instead of title"
+msgstr "ClearLogo במקום כותרת"
+
+msgctxt "#31415"
+msgid "Media flags"
+msgstr "דגלי מדיה"
+
+msgctxt "#31416"
+msgid "Play/pause info"
+msgstr "מידע ניגון/השהיה"
+
+msgctxt "#31417"
+msgid "PVR technical info"
+msgstr "מידע טכני של PVR"
+
+msgctxt "#31418"
+msgid "Progress graphic"
+msgstr "גרפיקת התקדמות"
+
+msgctxt "#31419"
+msgid "Hide widget label"
+msgstr "הסתר תווית וידג'ט"
+
+msgctxt "#31420"
+msgid "Show behind slideshow"
+msgstr "הצג מאחורי המצגת"
+
+msgctxt "#31421"
+msgid "Zoom focused items"
+msgstr "הגדל פריטים במיקוד"
+
+msgctxt "#31422"
+msgid "Enable auto scrolling for titles"
+msgstr "הפעל גלילה אוטומטית לכותרות"
+
+msgctxt "#31423"
+msgid "Show glow on focused items"
+msgstr "הצג זוהר על פריטים במיקוד"
+
+msgctxt "#31424"
+msgid "List type"
+msgstr "סוג רשימה"
+
+msgctxt "#31425"
+msgid "Enable auto playing trailers in flix views"
+msgstr "הפעל ניגון אוטומטי של טריילרים בתצוגות Flix"
+
+msgctxt "#31426"
+msgid "Try to hide black bars"
+msgstr "נסה להסתיר פסים שחורים"
+
+msgctxt "#31427"
+msgid "playing"
+msgstr "מנגן"
+
+msgctxt "#31428"
+msgid "paused"
+msgstr "מושהה"
+
+msgctxt "#31429"
+msgid "caching"
+msgstr "שומר במטמון"
+
+msgctxt "#31430"
+msgid "Auto start delay"
+msgstr "השהיה לפני הפעלה אוטומטית"
+
+msgctxt "#31431"
+msgid "Auto playing trailers"
+msgstr "ניגון אוטומטי של טריילרים"
+
+msgctxt "#31432"
+msgid "None"
+msgstr "ללא"
+
+msgctxt "#31433"
+msgid "Medium"
+msgstr "בינוני"
+
+msgctxt "#31434"
+msgid "Maximal"
+msgstr "מרבי"
+
+msgctxt "#31435"
+msgid "On back, jump to first item in widget list"
+msgstr "בחזרה, קפוץ לפריט הראשון ברשימת הווידג'טים"
+
+msgctxt "#31436"
+msgid "After that, focus home menu"
+msgstr "לאחר מכן, מקד את תפריט הבית"
+
+msgctxt "#31437"
+msgid "If home menu is focused, jump to widgets on back"
+msgstr "אם תפריט הבית במיקוד, קפוץ לווידג'טים בחזרה"
+
+msgctxt "#31438"
+msgid "Only, when widget is focused"
+msgstr "רק כאשר הווידג'ט במיקוד"
+
+msgctxt "#31439"
+msgid "Hide mouse warning"
+msgstr "הסתר אזהרת עכבר"
+
+msgctxt "#31440"
+msgid "EDL markers"
+msgstr "סמני EDL"
+
+msgctxt "#31441"
+msgid "Hub widget content type"
+msgstr "סוג תוכן וידג'ט HUB"
+
+msgctxt "#31442"
+msgid "Playback action when video info dialog is shown"
+msgstr "פעולת ניגון כשחלון מידע הווידאו מוצג"
+
+msgctxt "#31443"
+msgid "Stop playback when item is no longer focused"
+msgstr "עצור ניגון כשהפריט כבר לא במיקוד"
+
+msgctxt "#31444"
+msgid "LibreELEC Settings"
+msgstr "הגדרות LibreELEC"
+
+msgctxt "#31445"
+msgid "Is playing"
+msgstr "מנגן כעת"
+
+msgctxt "#31446"
+msgid "Icon"
+msgstr "סמליל"
+
+msgctxt "#31447"
+msgid "Now playing"
+msgstr "מנגן כעת"
+
+msgctxt "#31448"
+msgid "Now playing..."
+msgstr "מתנגן כעת..."
+
+msgctxt "#31449"
+msgid "User rating overrides"
+msgstr "עקיפת דירוג המשתמש"
+
+msgctxt "#31450"
+msgid "Star rating and value"
+msgstr "כוכבי דירוג וערך"
+
+msgctxt "#31451"
+msgid "Show player controls"
+msgstr "הצג פקדי נגן"
+
+msgctxt "#31452"
+msgid "Show clearart"
+msgstr "הצג ClearArt"
+
+msgctxt "#31453"
+msgid "Ratings"
+msgstr "דירוגים"
+
+msgctxt "#31454"
+msgid "Show detailed info when video starts (in seconds)"
+msgstr "הצג מידע מפורט בתחילת הווידאו (בשניות)"
+
+msgctxt "#31455"
+msgid "Customized"
+msgstr "מותאם אישית"
+
+msgctxt "#31456"
+msgid "Color presets"
+msgstr "ערכות צבעים"
+
+msgctxt "#31457"
+msgid "Preset"
+msgstr "קביעון"
+
+msgctxt "#31458"
+msgid "Lavender"
+msgstr "לבנדר"
+
+msgctxt "#31459"
+msgid "Bright Turquoise"
+msgstr "טורקיז בהיר"
+
+msgctxt "#31460"
+msgid "Orange Pumpkin"
+msgstr "כתום דלעת"
+
+msgctxt "#31461"
+msgid "Azure Blue"
+msgstr "כחול תכלת"
+
+msgctxt "#31462"
+msgid "Spring Green"
+msgstr "ירוק אביבי"
+
+msgctxt "#31463"
+msgid "Brick Red"
+msgstr "אדום לבנים"
+
+msgctxt "#31464"
+msgid "Save color configuration"
+msgstr "שמור תצורת צבעים"
+
+msgctxt "#31465"
+msgid "Overwrite existing color configuration?"
+msgstr "לדרוס את תצורת הצבעים הקיימת?"
+
+msgctxt "#31466"
+msgid "Hide PVR recording dialog"
+msgstr "הסתר חלון הקלטת PVR"
+
+msgctxt "#31467"
+msgid "Player"
+msgstr "נגן"
+
+msgctxt "#31468"
+msgid "Players"
+msgstr "נגנים"
+
+msgctxt "#31469"
+msgid "Local"
+msgstr "מקומי"
+
+msgctxt "#31470"
+msgid "Online"
+msgstr "מקוון"
+
+msgctxt "#31471"
+msgid "Game studio/flag icons"
+msgstr "סמלי אולפן/דגל משחקים"
+
+msgctxt "#31472"
+msgid "Pick a color..."
+msgstr "בחר צבע..."
+
+msgctxt "#31473"
+msgid "Use thumb for episodes background"
+msgstr "השתמש בתמונה ממוזערת כרקע לפרקים"
+
+msgctxt "#31474"
+msgid "Small landscape"
+msgstr "תמונת רוחב קטנה"
+
+msgctxt "#31475"
+msgid "Small fanart"
+msgstr "פאנארט קטן"
+
+msgctxt "#31476"
+msgid "Small poster fanart"
+msgstr "פאנארט פוסטר קטן"
+
+msgctxt "#31477"
+msgid "Wikipedia"
+msgstr "Wikipedia"
+
+msgctxt "#31478"
+msgid "Rating stars"
+msgstr "כוכבי דירוג"
+
+msgctxt "#31479"
+msgid "Auto show now playing info after 5 seconds delay if hidden"
+msgstr "הצג אוטומטית מידע על המתנגן כעת לאחר 5 שניות אם מוסתר"
+
+msgctxt "#31480"
+msgid "Animation"
+msgstr "אנימציה"
+
+msgctxt "#31481"
+msgid "Year"
+msgstr "שנה"
+
+msgctxt "#31482"
+msgid "Prefer to separate animation from movies"
+msgstr "העדף להפריד אנימציה מסרטים"
+
+msgctxt "#31483"
+msgid "Widgets/Items return to initial position on return to menu"
+msgstr "וידג'טים/פריטים חוזרים למיקום ההתחלתי בחזרה לתפריט"
+
+msgctxt "#31484"
+msgid "Documentary"
+msgstr "תיעודי"
+
+msgctxt "#31485"
+msgid "End at"
+msgstr "מסתיים ב"
+
+msgctxt "#31486"
+msgid "Tv Shows of the year"
+msgstr "סדרות השנה"
+
+msgctxt "#31487"
+msgid "[B]File Manager[/B][CR][CR] •     Copy[CR] •     Move[CR] •     Delete[CR] •     Rename[CR] •     Manage Source"
+msgstr "[B]מנהל הקבצים[/B][CR][CR] •     העתקה[CR] •     העברה[CR] •     מחיקה[CR] •     שינוי שם[CR] •     ניהול מקור"
+
+msgctxt "#31488"
+msgid "Hide OSD / Seekbar on pause"
+msgstr "הסתר OSD / סרגל דילוג בהשהיה"
+
+msgctxt "#31489"
+msgid "IMDb rating"
+msgstr "דירוג IMDb"
+
+msgctxt "#31490"
+msgid "Use PreShow Experience add-on instead"
+msgstr "השתמש בהרחבת PreShow Experience במקום"
+
+msgctxt "#31491"
+msgid "Light Taupe"
+msgstr "חום בהיר"
+
+msgctxt "#31492"
+msgid "Show media path"
+msgstr "הצג נתיב מדיה"
+
+msgctxt "#31493"
+msgid "On down, when at last widget, do not jump back to first widget"
+msgstr "למטה, בווידג'ט האחרון, אל תקפוץ לווידג'ט הראשון"
+
+msgctxt "#31494"
+msgid "Hide in others views"
+msgstr "הסתר בתצוגות אחרות"
+
+msgctxt "#31495"
+msgid "Hide home menu bar and header"
+msgstr "הסתר את סרגל תפריט הבית והכותרת"
+
+msgctxt "#31496"
+msgid "Hide the shadows"
+msgstr "הסתר את הצללים"
+
+msgctxt "#31497"
+msgid "DiscArt fallback only"
+msgstr "ברירת מחדל ל-DiscArt בלבד"
+
+msgctxt "#31498"
+msgid "On left go to last item widget"
+msgstr "בשמאלה עבור לפריט האחרון בווידג'ט"
+
+msgctxt "#31499"
+msgid "Show debug item info"
+msgstr "הצג מידע ניפוי שגיאות על הפריט"
+
+msgctxt "#31500"
+msgid "Countries Icons"
+msgstr "סמלי מדינות"
+
+msgctxt "#31501"
+msgid "Back auto to main menu after 10s"
+msgstr "חזרה אוטומטית לתפריט הראשי אחרי 10 שניות"
+
+msgctxt "#31502"
+msgid "From submenu only"
+msgstr "מתת-תפריט בלבד"
+
+msgctxt "#31503"
+msgid "Replace jumpbar by wall view"
+msgstr "החלף את סרגל הדילוג בתצוגת קיר"
+
+msgctxt "#31504"
+msgid "Display info in footer"
+msgstr "הצג מידע בכותרת התחתונה"
+
+msgctxt "#31505"
+msgid "vertical"
+msgstr "אנכי"
+
+msgctxt "#31506"
+msgid "Horizontal"
+msgstr "אופקי"
+
+msgctxt "#31507"
+msgid "Background presets"
+msgstr "ערכות רקע"
+
+msgctxt "#31508"
+msgid "Auto-scrolling"
+msgstr "גלילה אוטומטית"
+
+msgctxt "#31509"
+msgid "Slow"
+msgstr "איטי"
+
+msgctxt "#31510"
+msgid "Thumbnail Wall Small"
+msgstr "קיר תמונות ממוזערות קטן (Thumbnail Wall Small)"
+
+msgctxt "#31511"
+msgid "Sort by"
+msgstr "מיין לפי"
+
+msgctxt "#31512"
+msgid "Order"
+msgstr "סדר"
+
+msgctxt "#31513"
+msgid "Thumbnail Square Small"
+msgstr "תמונה ממוזערת ריבועית קטנה (Thumbnail Square Small)"
+
+msgctxt "#31514"
+msgid "Initialising Skin"
+msgstr "מאתחל את הסקין"
+
+msgctxt "#31515"
+msgid "Building includes"
+msgstr "בונה includes"
+
+msgctxt "#31516"
+msgid "Press [B]Down[/B]"
+msgstr "לחץ [B]למטה[/B]"
+
+msgctxt "#31517"
+msgid "Display menu label on focus"
+msgstr "הצג תווית תפריט במיקוד"
+
+msgctxt "#31518"
+msgid "Listened"
+msgstr "הואזן"
+
+msgctxt "#31519"
+msgid "Show menu background"
+msgstr "הצג רקע לתפריט"
+
+msgctxt "#31520"
+msgid "Extended Info on artist"
+msgstr "מידע מורחב על האמן"
+
+msgctxt "#31521"
+msgid "Extended Info on this song"
+msgstr "מידע מורחב על שיר זה"
+
+msgctxt "#31522"
+msgid "Known For"
+msgstr "מוכר בזכות"
+
+msgctxt "#31523"
+msgid "Birthdate"
+msgstr "תאריך לידה"
+
+msgctxt "#31524"
+msgid "Place of Birth"
+msgstr "מקום לידה"
+
+msgctxt "#31525"
+msgid "Age"
+msgstr "גיל"
+
+msgctxt "#31526"
+msgid "Written by"
+msgstr "נכתב על ידי"
+
+msgctxt "#31527"
+msgid "Writer"
+msgstr "תסריטאי"
+
+msgctxt "#31528"
+msgid "Day of Death"
+msgstr "תאריך פטירה"
+
+msgctxt "#31529"
+msgid "Tv shows with"
+msgstr "סדרות עם"
+
+msgctxt "#31530"
+msgid "years old"
+msgstr "בן/בת"
+
+msgctxt "#31531"
+msgid "Pictures of"
+msgstr "תמונות של"
+
+msgctxt "#31532"
+msgid "Studio series"
+msgstr "סדרות האולפן"
+
+msgctxt "#31533"
+msgid "Recommended"
+msgstr "מומלצים"
+
+msgctxt "#31534"
+msgid "Creator"
+msgstr "יוצר"
+
+msgctxt "#31535"
+msgid "in the crew"
+msgstr "בצוות"
+
+msgctxt "#31536"
+msgid "members"
+msgstr "חברים"
+
+msgctxt "#31537"
+msgid "Created by"
+msgstr "נוצר על ידי"
+
+msgctxt "#31538"
+msgid "Video version management"
+msgstr "ניהול גרסאות וידאו"
+
+msgctxt "#31539"
+msgid "Manage extras"
+msgstr "ניהול תוספות"
+
+msgctxt "#31540"
+msgid "Press [B]RIGHT[/B] to execute the search"
+msgstr "לחץ [B]ימינה[/B] כדי לבצע את החיפוש"
+
+msgctxt "#31541"
+msgid "Display submenu on CLICK"
+msgstr "הצג תת-תפריט בלחיצה"
+
+msgctxt "#31542"
+msgid "On up, when at first widget, do not jump back to main menu"
+msgstr "למעלה, בווידג'ט הראשון, אל תקפוץ חזרה לתפריט הראשי"
+
+msgctxt "#31543"
+msgid "Display sub menu"
+msgstr "הצג תת-תפריט"
+
+msgctxt "#31544"
+msgid "Button info local only?"
+msgstr "מידע כפתור מקומי בלבד?"
+
+msgctxt "#31545"
+msgid "Show video in flix windows"
+msgstr "הצג וידאו בחלונות Flix"
+
+msgctxt "#31546"
+msgid "Loading info"
+msgstr "טוען מידע"
+
+msgctxt "#31547"
+msgid "Press [B]Down[/B] displays other buttons"
+msgstr "לחיצה [B]למטה[/B] מציגה כפתורים נוספים"
+
+msgctxt "#31548"
+msgid "Display item"
+msgstr "הצג פריט"
+
+msgctxt "#31549"
+msgid "Event log"
+msgstr "יומן אירועים"
+
+msgctxt "#31550"
+msgid "[B]Show event log[/B][CR][CR] •     Basic[CR] •     Information[CR] •     Warning[CR] •     Error [CR]"
+msgstr "[B]הצג יומן אירועים[/B][CR][CR] •     בסיסי[CR] •     מידע[CR] •     אזהרה[CR] •     שגיאה [CR]"
+
+msgctxt "#31551"
+msgid "Customize color"
+msgstr "התאם צבע"
+
+msgctxt "#31552"
+msgid "local"
+msgstr "מקומי"
+
+msgctxt "#31553"
+msgid "online"
+msgstr "מקוון"
+
+msgctxt "#31554"
+msgid "Music Infodialog"
+msgstr "חלון מידע מוזיקה"
+
+msgctxt "#31555"
+msgid "Show poster"
+msgstr "הצג פוסטר"
+
+msgctxt "#31556"
+msgid "Flix List"
+msgstr "רשימת Flix (Flix List)"
+
+msgctxt "#31557"
+msgid "Press [B]Up[/B]"
+msgstr "לחץ [B]למעלה[/B]"
+
+msgctxt "#31558"
+msgid "Choose widget"
+msgstr "בחר וידג'ט"
+
+msgctxt "#31559"
+msgid "Content type"
+msgstr "סוג תוכן"
+
+msgctxt "#31560"
+msgid "Show only background Other / Unknown"
+msgstr "הצג רקע רק עבור אחר / לא ידוע"
+
+msgctxt "#31561"
+msgid "Text"
+msgstr "טקסט"
+
+msgctxt "#31562"
+msgid "Menu style"
+msgstr "סגנון תפריט"
+
+msgctxt "#31563"
+msgid "Submenu style"
+msgstr "סגנון תת-תפריט"
+
+msgctxt "#31564"
+msgid "Show video in flix views"
+msgstr "הצג וידאו בתצוגות Flix"
+
+msgctxt "#31565"
+msgid "Show profile picture"
+msgstr "הצג תמונת פרופיל"
+
+msgctxt "#31566"
+msgid "Prefer casting"
+msgstr "העדף ליהוק"
+
+msgctxt "#31567"
+msgid "No gradient"
+msgstr "ללא מעבר צבע"
+
+msgctxt "#31568"
+msgid "Disable colour"
+msgstr "בטל צבע"
+
+msgctxt "#31569"
+msgid "Focus, information"
+msgstr "מיקוד, מידע"
+
+msgctxt "#31570"
+msgid "Settings menu title"
+msgstr "כותרת תפריט ההגדרות"
+
+msgctxt "#31571"
+msgid "Invert info colour"
+msgstr "הפוך את צבע המידע"
+
+msgctxt "#31572"
+msgid "Show logo Record Company"
+msgstr "הצג לוגו של חברת התקליטים"
+
+msgctxt "#31573"
+msgid "Next location"
+msgstr "המיקום הבא"
+
+msgctxt "#31574"
+msgid "Banner Wall"
+msgstr "קיר באנרים (Banner Wall)"
+
+msgctxt "#31575"
+msgid "Online casting loading"
+msgstr "טוען ליהוק מקוון"
+
+msgctxt "#31576"
+msgid "Press [B]Down[/B] displays next location"
+msgstr "לחיצה [B]למטה[/B] מציגה את המיקום הבא"
+
+msgctxt "#31577"
+msgid "Loading photos"
+msgstr "טוען תמונות"
+
+msgctxt "#31578"
+msgid "Episode of"
+msgstr "פרק של"
+
+msgctxt "#31579"
+msgid "Show music visualisation in background"
+msgstr "הצג ויזואליזציה של מוזיקה ברקע"
+
+msgctxt "#31580"
+msgid "Thumbnail Wall"
+msgstr "קיר תמונות ממוזערות (Thumbnail Wall)"
+
+msgctxt "#31581"
+msgid "Big Poster v2"
+msgstr "פוסטר גדול v2 (Big Poster v2)"
+
+msgctxt "#31582"
+msgid "Creator show information"
+msgstr "הצגת פרטי יוצר"
+
+msgctxt "#31583"
+msgid "Hide channel numbers"
+msgstr "הסתר מספרי ערוצים"
+
+msgctxt "#31584"
+msgid "Remaining"
+msgstr "נותר"
+
+msgctxt "#31585"
+msgid "Search history"
+msgstr "היסטוריית חיפוש"
+
+msgctxt "#31586"
+msgid "Automatic proposal"
+msgstr "הצעה אוטומטית"
+
+msgctxt "#31587"
+msgid "List Square"
+msgstr "רשימה ריבועית (List Square)"
+
+msgctxt "#31588"
+msgid "Show plot on pause"
+msgstr "הצג תקציר בהשהיה"
+
+msgctxt "#31589"
+msgid "Navigation"
+msgstr "ניווט"
+
+msgctxt "#31590"
+msgid "Movies of the year"
+msgstr "סרטי השנה"
+
+msgctxt "#31591"
+msgid "No favourites found. You can add items from media and other views by using the context menu."
+msgstr "לא נמצאו מועדפים. ניתן להוסיף פריטים ממדיה ומתצוגות אחרות באמצעות תפריט ההקשר."
+
+msgctxt "#31592"
+msgid "Auto close"
+msgstr "סגירה אוטומטית"
+
+msgctxt "#31593"
+msgid "Extended information about the album"
+msgstr "מידע מורחב על האלבום"
+
+msgctxt "#31594"
+msgid "Local subtitle available"
+msgstr "כתובית מקומית זמינה"
+
+msgctxt "#31595"
+msgid "No auto-update"
+msgstr "ללא עדכון אוטומטי"
+
+msgctxt "#31596"
+msgid "Online"
+msgstr "מקוון"
+
+msgctxt "#31597"
+msgid "Local"
+msgstr "מקומי"
+
+msgctxt "#31598"
+msgid "Prefer list information"
+msgstr "העדף מידע מהרשימה"
+
+msgctxt "#31599"
+msgid "Recommended skin settings for limited processors"
+msgstr "הגדרות סקין מומלצות למעבדים חלשים"
+
+msgctxt "#31600"
+msgid "Press [B]Left[/B] to step back, or [B]Right[/B] to step forward"
+msgstr "לחץ [B]שמאלה[/B] כדי לחזור אחורה, או [B]ימינה[/B] כדי להתקדם"
+
+msgctxt "#31601"
+msgid "Press [B]Right[/B] to frame advance"
+msgstr "לחץ [B]ימינה[/B] לקידום פריים"
+
+msgctxt "#31602"
+msgid "Press [B]OK[/B] to select"
+msgstr "לחץ [B]OK[/B] לבחירה"
+
+msgctxt "#31603"
+msgid "Hide Tips"
+msgstr "הסתר טיפים"
+
+msgctxt "#31604"
+msgid "Rewind / Forward"
+msgstr "הרצה אחורה / קדימה"
+
+msgctxt "#31605"
+msgid "Recommended movies"
+msgstr "סרטים מומלצים"
+
+msgctxt "#31606"
+msgid "Recommended Tv Shows"
+msgstr "סדרות מומלצות"
+
+msgctxt "#31607"
+msgid "Misc options"
+msgstr "אפשרויות שונות"
+
+msgctxt "#31608"
+msgid "Audio podcast"
+msgstr "פודקאסט שמע"
+
+msgctxt "#31609"
+msgid "Edit nodes"
+msgstr "ערוך צמתים"
+
+msgctxt "#31610"
+msgid "Performance"
+msgstr "ביצועים"
+
+msgctxt "#31611"
+msgid "Balanced"
+msgstr "מאוזן"
+
+msgctxt "#31612"
+msgid "Quality"
+msgstr "איכות"
+
+msgctxt "#31613"
+msgid "Dark"
+msgstr "כהה"
+
+msgctxt "#31614"
+msgid "Light"
+msgstr "בהיר"
+
+msgctxt "#31615"
+msgid "Auto day and night mode"
+msgstr "מצב יום ולילה אוטומטי"
+
+msgctxt "#31616"
+msgid "Reset all menus and widgets to defaults"
+msgstr "אפס את כל התפריטים והווידג'טים לברירת המחדל"
+
+msgctxt "#31617"
+msgid "Auto Play / Pause"
+msgstr "ניגון / השהיה אוטומטיים"
+
+msgctxt "#31618"
+msgid "No preview"
+msgstr "ללא תצוגה מקדימה"
+
+msgctxt "#31619"
+msgid "Lowercase"
+msgstr "אותיות קטנות"
+
+msgctxt "#31620"
+msgid "Squarepics"
+msgstr "תמונות ריבועיות (Squarepics)"
+
+msgctxt "#31621"
+msgid "Slider"
+msgstr "מחוון (Slider)"
+
+msgctxt "#31622"
+msgid "Setup wizard"
+msgstr "אשף הגדרה"
+
+msgctxt "#31623"
+msgid "Cancelled"
+msgstr "בוטל"
+
+msgctxt "#31624"
+msgid "Ended"
+msgstr "הסתיים"
+
+msgctxt "#31625"
+msgid "Released"
+msgstr "יצא לאור"
+
+msgctxt "#31626"
+msgid "In-Production"
+msgstr "בהפקה"
+
+msgctxt "#31627"
+msgid "Planned"
+msgstr "מתוכנן"
+
+msgctxt "#31628"
+msgid "Premiering"
+msgstr "בכורה"
+
+msgctxt "#31629"
+msgid "Returning"
+msgstr "חוזר"
+
+msgctxt "#31630"
+msgid "Airing"
+msgstr "משודר"
+
+msgctxt "#31631"
+msgid "Last aired"
+msgstr "שודר לאחרונה"
+
+msgctxt "#31632"
+msgid "Rewind"
+msgstr "הרצה אחורה"
+
+msgctxt "#31633"
+msgid "Fast forward"
+msgstr "הרצה קדימה"
+
+msgctxt "#31634"
+msgid "Bookmark"
+msgstr "סימניה"
+
+msgctxt "#31635"
+msgid "Customise search menu"
+msgstr "התאם את תפריט החיפוש אישית"
+
+msgctxt "#31636"
+msgid "DOWN / UP key to return to the main menu"
+msgstr "מקש למטה / למעלה לחזרה לתפריט הראשי"
+
+msgctxt "#31637"
+msgid "Customize Widgets"
+msgstr "התאם וידג'טים אישית"
+
+msgctxt "#31638"
+msgid "Edit Action"
+msgstr "ערוך פעולה"

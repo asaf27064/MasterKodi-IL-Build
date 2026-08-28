@@ -4,6 +4,10 @@
   "inherit": true,
   "files": [
     {
+      "src": "skin.rounded/settings.xml",
+      "dest": "{addon_data}/{skin}/settings.xml"
+    },
+    {
       "src": "skinshortcuts/skin.arctic.zephyr.rounded-13012.DATA.xml",
       "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-13012.DATA.xml"
     },
@@ -38,6 +42,10 @@
     {
       "src": "skinshortcuts/skin.arctic.zephyr.rounded-sdrvt.DATA.xml",
       "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-sdrvt.DATA.xml"
+    },
+    {
+      "src": "skinshortcuts/skin.arctic.zephyr.rounded-searchmenulist.DATA.xml",
+      "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded-searchmenulist.DATA.xml"
     },
     {
       "src": "skinshortcuts/skin.arctic.zephyr.rounded-srtym-1.DATA.xml",

@@ -1,0 +1,10 @@
+<shortcuts>
+	<shortcut>
+		<defaultID>search-pov</defaultID>
+		<label>$LOCALIZE[137]</label>
+		<label2>Common Shortcut</label2>
+		<icon>special://skin/extras/icons/search.png</icon>
+		<thumb>special://skin/extras/icons/search.png</thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=navigator.search",return)</action>
+		</shortcut>
+</shortcuts>

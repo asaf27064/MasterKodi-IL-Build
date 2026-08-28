@@ -1,82 +1,58 @@
 <shortcuts>
 	<shortcut>
 		<defaultID />
-		<label>$LOCALIZE[31114]</label>
+		<label>טען סקין מחדש</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/skinsettings.png</icon>
-		<thumb>special://skin/extras/icons/skinsettings.png</thumb>
-		<action>ActivateWindowAndFocus(skinsettings,9108,2)</action>
-		</shortcut>
-	<shortcut>
-		<defaultID />
-		<label>$LOCALIZE[5]</label>
-		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/settings.png</icon>
-		<thumb>special://skin/extras/icons/settings.png</thumb>
-		<action>ActivateWindow(settings)</action>
-		</shortcut>
-	<shortcut>
-		<defaultID />
-		<label>תחזוקה</label>
-		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/configure.png</icon>
-		<thumb>special://skin/extras/icons/configure.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.program.masterkodi.il.wizard/?mode=maintenance_folder",return)</action>
+		<icon>common/reload-skin.png</icon>
+		<thumb>common/reload-skin.png</thumb>
+		<action>ReloadSkin()</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />
 		<label>החלפת סקין</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/skinsettings.png</icon>
-		<thumb>special://skin/extras/icons/skinsettings.png</thumb>
+		<icon>common/settings1.png</icon>
+		<thumb>common/settings1.png</thumb>
 		<action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=skins)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />
-		<label>$LOCALIZE[31146]</label>
+		<label>ניקוי קאש POV</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/update.png</icon>
-		<thumb>special://skin/extras/icons/update.png</thumb>
-		<action>ReloadSkin()</action>
+		<icon>common/settings1.png</icon>
+		<thumb>common/settings1.png</thumb>
+		<action>RunPlugin(plugin://plugin.video.pov/?mode=clear_all_cache)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />
-		<label>$LOCALIZE[130]</label>
+		<label>ניקוי קאש Gears AI</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/info.png</icon>
-		<thumb>special://skin/extras/icons/info.png</thumb>
-		<action>ActivateWindow(systeminfo)</action>
+		<icon>common/settings1.png</icon>
+		<thumb>common/settings1.png</thumb>
+		<action>RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />
-		<label>$LOCALIZE[13011]</label>
+		<label>שלח לוגים לתמיכה</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/power.png</icon>
-		<thumb>special://skin/extras/icons/power.png</thumb>
-		<action>Suspend()</action>
+		<icon>common/settings1.png</icon>
+		<thumb>common/settings1.png</thumb>
+		<action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />
-		<label>$LOCALIZE[13013]</label>
+		<label>$LOCALIZE[1036]</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/network.png</icon>
-		<thumb>special://skin/extras/icons/network.png</thumb>
-		<action>Reset()</action>
+		<icon>shortcuts/mylist.png</icon>
+		<thumb>shortcuts/mylist.png</thumb>
+		<action>ActivateWindow(1160)</action>
 		</shortcut>
 	<shortcut>
 		<defaultID />
-		<label>$LOCALIZE[13005]</label>
+		<label>$LOCALIZE[13009]</label>
 		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/power.png</icon>
-		<thumb>special://skin/extras/icons/power.png</thumb>
-		<action>Powerdown()</action>
-		</shortcut>
-	<shortcut>
-		<defaultID />
-		<label>$LOCALIZE[13012]</label>
-		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/logout.png</icon>
-		<thumb>special://skin/extras/icons/logout.png</thumb>
-		<action>Quit()</action>
+		<icon>common/exit1.png</icon>
+		<thumb>common/exit1.png</thumb>
+		<action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=fast_exit)</action>
 		</shortcut>
 </shortcuts>

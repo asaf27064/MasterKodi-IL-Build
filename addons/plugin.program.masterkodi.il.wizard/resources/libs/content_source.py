@@ -32,6 +32,22 @@ SKIN_VARIANTS = {
     'skin.nimbus':                           ('nimbus-pov', None),
     'skin.arctic.fuse.3':                    ('af3-pov-tmdb', None),
     'skin.arctic.zephyr.2.resurrection.mod': ('zephyr-pov-tmdb', 'zephyr-piers-pov'),
+    # Added 2026-08-28. Both were vendored with full config-variants, but
+    # neither was registered here or in _APPLY, so the wizard silently did
+    # nothing for them ("no POV variant for this skin/version") -- a user who
+    # switched to either got the bare upstream skin with none of our menus,
+    # widgets or settings. It only looked right on the dev box because the
+    # files had been copied there by hand.
+    # Rounded defaults to the POV-widget variant (Asaf, 2026-08-29). Measured
+    # on the live box that day: the TMDb Helper ListItem monitor resolves POV
+    # widget items just as well as TMDb ones (a focused POV row reported IMDb
+    # 8.5 / Metacritic 88 / MDBList 89 / TMDb 8.0), so choosing POV widgets
+    # costs no ratings. rounded-pov-tmdb stays available for the TMDb build.
+    # Piers: Rounded's Kodi-22 build is a different repo on skinshortcuts 3.x
+    # and its author warns 2.x menus cannot migrate, so it needs its own Hebrew
+    # menu set before it can be listed here. Bingie has no Piers build yet.
+    'skin.arctic.zephyr.rounded':            ('rounded-pov', None),
+    'skin.bingie':                           ('bingie-pov-tmdb', None),
 }
 
 
@@ -415,11 +431,37 @@ def _apply_zephyr(roots, skin_id):
 
 
 
+def _apply_skinshortcuts_skin(roots, skin_id):
+    """Generic handler for any skinshortcuts-driven skin (Rounded, Bingie).
+
+    Same shape as _apply_zephyr, but the hash filename follows skin_id instead
+    of being hard-coded, so adding a skin needs a registration line rather than
+    a bespoke copy of this function. Dropping the hash is what forces
+    skinshortcuts to recompile the menus from the DATA files we just wrote;
+    without it the skin keeps serving the previously compiled menu.
+
+    Do NOT also delete script-skinshortcuts-includes.xml -- removing that file
+    instead of the hash produced a stunted 20KB build and a "Skin has invalid
+    include" error (2026-08-27).
+    """
+    _applied, failed = _apply_index(roots, skin_id)
+    h = os.path.join(ADDON_DATA_PATH, 'script.skinshortcuts', '%s.hash' % skin_id)
+    try:
+        if os.path.exists(h):
+            os.remove(h)
+    except Exception:
+        pass
+    _seed_pov_db(roots)
+    return failed
+
+
 _APPLY = {
     'skin.estuary': _apply_estuary,
     'skin.nimbus': _apply_nimbus,
     'skin.arctic.fuse.3': _apply_af3,
     'skin.arctic.zephyr.2.resurrection.mod': _apply_zephyr,
+    'skin.arctic.zephyr.rounded': _apply_skinshortcuts_skin,
+    'skin.bingie': _apply_skinshortcuts_skin,
 }
 
 

@@ -1440,6 +1440,41 @@ class BuildManager:
                             'resource.images.moviegenreicons.transparent',
                             'resource.images.moviecountryicons.maps',
                             'resource.images.weathericons.white']},
+        # Added 2026-08-28. No CI bundle exists for Rounded, so there is no
+        # url_key -- skin_zip_url stays None and the manifest_install path is
+        # taken on both fleets (the lookup at the call site is guarded with
+        # skin.get('url_key'), so omitting it is supported).
+        # Kodi refuses to ENABLE an addon whose <import> is unmet, so deps is
+        # the skin's full import closure plus the transitive module deps of
+        # skinshortcuts and TMDb Helper -- every one verified present in
+        # addons/. TMDbHelper without jurialmunkey/infotagger/addon.signals/
+        # qrcode/six crashes its service on a fresh install.
+        # Piers is deliberately absent: Rounded's Kodi-22 build lives in a
+        # different repo on skinshortcuts 3.x and its author warns 2.x menus
+        # cannot migrate, so it needs its own Hebrew menu set first.
+        'rounded': {'id': 'skin.arctic.zephyr.rounded', 'name': 'Arctic Zephyr Rounded',
+                    'manifest_install': True,
+                    'deps': ['script.skinshortcuts', 'script.skin.info.service',
+                             'script.skinvariables', 'plugin.video.themoviedb.helper',
+                             'script.wikipedia', 'script.artistslideshow',
+                             'script.globalsearch', 'script.image.resource.select',
+                             'script.module.simplejson', 'script.module.unidecode',
+                             'script.module.simpleeval',
+                             'script.module.jurialmunkey', 'script.module.infotagger',
+                             'script.module.addon.signals', 'script.module.qrcode',
+                             'script.module.six',
+                             'resource.images.recordlabels.white',
+                             'resource.images.studios.coloured',
+                             'resource.images.moviecountryicons.flags',
+                             'resource.images.weathericons.white',
+                             'resource.images.weatherfanart.single']},
+        # skin.bingie is NOT listed yet on purpose: its plugin.video.tmdb.bingie
+        # .helper hard-imports script.module.pil (not optional="true"), which we
+        # do not vendor -- Kodi would refuse to enable the helper and the skin
+        # would install broken. The Python only uses PIL lazily for optional
+        # image effects, so the fix is either to vendor PIL or to drop that
+        # import in an overlay (as was done for the PIL-free skinhelper), which
+        # makes the addon a modified dep and takes it off auto-update.
     }
 
     def install_build(self, build_info, skin_choice='estuary', with_arctic_fuse=None,
