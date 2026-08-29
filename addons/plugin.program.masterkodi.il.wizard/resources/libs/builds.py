@@ -2725,6 +2725,9 @@ _SKIN_DESC = {
     'estuary': 'הרגיל | הכי מהיר | עיצוב פשוט',
     'nimbus':  'מהיר כמעט כמו הרגיל | יפה ומודרני | מתאים גם למכשירים חלשים',
     'zephyr':  'עשיר ומעוצב בסגנון נטפליקס | מהיר | מתאים לרוב המכשירים',
+    # Bidi: Hebrew-leading with the single Latin run at the END, like every
+    # other user-visible mixed string we ship.
+    'rounded': 'עיצוב מעוגל ומודרני | הרבה סוגי תצוגה | מבוסס על Arctic Zephyr',
     'arctic':  'הכי יפה ומעוצב | הכי איטי בטעינה | למכשירים חזקים',
 }
 
@@ -2734,10 +2737,16 @@ _SKIN_CATALOG = [
     ('estuary', 'Estuary', 'skin.estuary', 'estuary.jpg'),
     ('nimbus', 'Nimbus', 'skin.nimbus', 'nimbus.jpg'),
     ('zephyr', 'Arctic Zephyr', 'skin.arctic.zephyr.2.resurrection.mod', 'zephyr.jpg'),
+    # Placed after Zephyr because it is an Arctic Zephyr derivative and should
+    # sit next to it. Its boot time is NOT measured -- the ordering rule below
+    # is fastest-first from docs/skin-performance.md, so re-measure and move it
+    # if it turns out slower than AF3.
+    ('rounded', 'Arctic Zephyr Rounded', 'skin.arctic.zephyr.rounded', 'rounded.jpg'),
     ('arctic', 'Arctic Fuse', 'skin.arctic.fuse.3', 'af3.jpg'),
 ]
 _OPTIONAL_SKIN_IDS = {'skin.arctic.fuse.3', 'skin.nimbus',
-                      'skin.arctic.zephyr.2.resurrection.mod'}
+                      'skin.arctic.zephyr.2.resurrection.mod',
+                      'skin.arctic.zephyr.rounded'}
 
 # (AF3/Nimbus used to be hidden on Kodi 22 -- no loadable Piers build existed.
 # manifest-piers now ships gui-5.18 variants of all four skins and every

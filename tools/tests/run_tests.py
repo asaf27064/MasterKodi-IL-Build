@@ -4541,6 +4541,30 @@ def test_new_skins_are_registered_with_the_wizard():
           "'skin.arctic.zephyr.rounded':            ('rounded-pov', None)" in cs)
     check('rounded is installable from the skin catalogue',
           "'id': 'skin.arctic.zephyr.rounded'" in bl)
+    # OPTIONAL_SKINS (installable) and _SKIN_CATALOG (what the picker actually
+    # SHOWS) are two different lists. Rounded was added to the first but not the
+    # second, so it was installable yet invisible in the skin picker
+    # (2026-08-29). Assert all three lists plus the preview image.
+    check('rounded is in _SKIN_CATALOG (the picker list)',
+          "('rounded', 'Arctic Zephyr Rounded', 'skin.arctic.zephyr.rounded'" in bl)
+    # target the DEFINITION, not the later _SKIN_DESC.get(...) reference
+    _desc = _re.search(r'_SKIN_DESC = \{(.*?)\n\}', bl, _re.S)
+    check('rounded has a picker description',
+          bool(_desc) and "'rounded':" in _desc.group(1))
+    check('rounded is in _OPTIONAL_SKIN_IDS (so it can be removed)',
+          "'skin.arctic.zephyr.rounded'" in bl.split('_OPTIONAL_SKIN_IDS')[1][:300])
+    prev = os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                        'resources', 'media', 'skin_previews')
+    check('rounded preview image exists', os.path.isfile(os.path.join(prev, 'rounded.jpg')))
+    check('rounded preview slideshow exists (>=1 image)',
+          os.path.isdir(os.path.join(prev, 'rounded'))
+          and len([f for f in os.listdir(os.path.join(prev, 'rounded'))
+                   if f.lower().endswith('.jpg')]) >= 1)
+    # every catalogue entry must have its image, or the picker renders a blank
+    for _m in _re.finditer(r"\('([a-z0-9]+)', '[^']+', '[^']+', '([^']+)'\)",
+                           bl.split('_SKIN_CATALOG = [')[1].split(']')[0]):
+        check('picker image present for %s (%s)' % (_m.group(1), _m.group(2)),
+              os.path.isfile(os.path.join(prev, _m.group(2))))
     check('bingie stays OUT of the catalogue (script.module.pil not vendored)',
           "'id': 'skin.bingie'" not in bl)
     check('script.module.pil really is absent (the reason bingie is held back)',
