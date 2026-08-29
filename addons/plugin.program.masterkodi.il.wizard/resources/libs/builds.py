@@ -2347,16 +2347,25 @@ class BuildManager:
                 # view. The staging dir is OUTSIDE addons/ -- a leftover folder
                 # inside addons/ is itself scanned as an addon.
                 stage = os.path.join(TEMP_FOLDER, f'{skin_id}.removing')
+                staged = True
                 try:
                     if os.path.isdir(stage):
                         shutil.rmtree(stage, ignore_errors=True)
                     os.makedirs(os.path.dirname(stage), exist_ok=True)
                     os.rename(folder, stage)
                 except Exception as e:
-                    log(f"remove_skin {skin_id}: could not move the folder aside: {e}",
-                        xbmc.LOGERROR)
-                    return False
-                shutil.rmtree(stage, ignore_errors=True)   # leftovers here are harmless
+                    # On Android special://temp can sit on a different mount than
+                    # special://home, and a cross-device rename fails with EXDEV.
+                    # Deleting in place is fine on POSIX anyway (an open file
+                    # unlinks happily), so fall back to it rather than giving up.
+                    # The verification below is unchanged, so this cannot turn a
+                    # real failure into a false success.
+                    log(f"remove_skin {skin_id}: staging failed ({e}); deleting in place",
+                        xbmc.LOGWARNING)
+                    staged = False
+                    shutil.rmtree(folder, ignore_errors=True)
+                if staged:
+                    shutil.rmtree(stage, ignore_errors=True)   # leftovers here are harmless
             # Verify, do not assume. This is the check whose absence made a
             # failed removal look like a success.
             if os.path.isdir(folder):
@@ -2930,9 +2939,14 @@ def _skin_switch_flow():
     # Ask what to do with the previous optional skin FIRST -- it's an instant
     # user decision. The POV re-apply below fetches ~17 variant files from GitHub
     # one-by-one, which used to run BEFORE this prompt and made the window take
-    # seconds to appear. Prompt first, network after. Removal is DEFERRED to the
-    # next startup: the old skin is still the running one until we restart, and
-    # deleting a live skin (Windows file locks) fails.
+    # seconds to appear. Prompt first, network after.
+    #
+    # The removal is DEFERRED via this marker rather than done here: the dropped
+    # skin is still the running one at this point, and on Windows its folder is
+    # locked. The wizard service picks the marker up as soon as the skin is no
+    # longer the active one -- from its IDLE LOOP, not only at startup, because
+    # on Android nothing ever restarts and a startup-only handoff meant the skin
+    # was never removed at all (Asaf, Xiaomi, 2026-08-29).
     if prev_active in _OPTIONAL_SKIN_IDS and prev_active != sid:
         if dialog.yesno('סקינים',
                         f'מה לעשות עם הסקין הקודם ({_skin_name(prev_active)})?',

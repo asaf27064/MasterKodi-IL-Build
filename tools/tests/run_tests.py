@@ -4257,7 +4257,9 @@ def main():
               test_no_invalid_tmdb_widgets,
               test_seeds_survive_a_reinstall,
               test_active_skin_update_on_windows,
-              test_maintenance_folder_contents, test_remove_skin_purges_residue, test_detect_extras_skips_kodi_defaults,
+              test_maintenance_folder_contents, test_remove_skin_purges_residue,
+              test_pending_skin_removal_needs_no_restart,
+              test_skin_removal_is_identical_for_every_skin, test_detect_extras_skips_kodi_defaults,
               test_gears_settings_bool_serialization,
               test_gears_settings_go_live_without_restart,
               test_dbmoved_install,
@@ -4765,6 +4767,163 @@ def test_new_skins_are_registered_with_the_wizard():
         bad = {k: (v, d[TMDB].get(k)) for k, v in d[eng].items() if d[TMDB].get(k) != v}
         check('%s: %s mirrors %s%s'
               % (variant, TMDB, eng, '' if not bad else ' -- %s' % bad), not bad)
+
+
+def test_pending_skin_removal_needs_no_restart():
+    """The dropped-skin removal must complete WITHOUT a Kodi restart.
+
+    Asaf, Xiaomi, 2026-08-29: "the deletion doesn't work" -- on ANDROID. The
+    switch defers the removal to a marker file, and that marker used to be read
+    only on the service's startup path. Android has no working Kodi restart (the
+    switch is applied live), so the boot that was meant to do the removal never
+    came and the dropped skin stayed on disk forever.
+
+    Pinned here: the idle loop processes the marker, the removal works when the
+    dropped skin is no longer running, and -- the safety that makes running it
+    mid-session legitimate -- it removes NOTHING while the dropped skin is still
+    the active one, so Kodi's "keep this skin?" prompt can still revert the
+    switch without us having deleted the skin it would revert to."""
+    print("\n=== pending skin removal: completes with no restart (Android) ===")
+    import importlib.util
+    import resources.libs.config as _C
+    import xbmc as _x
+
+    sp = importlib.util.spec_from_file_location(
+        'mk_wizard_service_removal',
+        os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard', 'service.py'))
+    svc = importlib.util.module_from_spec(sp)
+    try:
+        sp.loader.exec_module(svc)
+    except SystemExit:
+        check('wizard service importable', False)
+        return
+
+    # 1. the idle loop -- not just the boot paths -- processes the marker
+    src = io.open(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                               'service.py'), encoding='utf-8').read()
+    tail = src.split('# Keep the service alive until Kodi shuts down.')[-1]
+    check('idle loop processes the pending removal (no restart needed)',
+          '_process_pending_skin_removal()' in tail)
+    check('marker path has a single definition', hasattr(svc, '_pending_removal_marker'))
+
+    sid = 'skin.nimbus'
+    marker = svc._pending_removal_marker()
+    os.makedirs(os.path.dirname(marker), exist_ok=True)
+
+    def plant():
+        d = os.path.join(_C.ADDONS, sid)
+        os.makedirs(d, exist_ok=True)
+        io.open(os.path.join(d, 'addon.xml'), 'w', encoding='utf-8').write('x')
+        io.open(marker, 'w', encoding='utf-8').write(sid)
+        return d
+
+    orig = _x.getSkinDir
+    try:
+        # 2. the keep-prompt window: the dropped skin is STILL the running skin.
+        #    Nothing may be deleted, and the marker must survive for a retry --
+        #    this is what makes polling from the idle loop safe.
+        folder = plant()
+        _x.getSkinDir = lambda: sid
+        svc._process_pending_skin_removal()
+        check('still-active skin is NOT removed', os.path.isdir(folder))
+        check('marker kept so the removal is retried', os.path.isfile(marker))
+
+        # 3. the switch settled on the new skin -> removal completes in-session
+        _x.getSkinDir = lambda: 'skin.arctic.zephyr.rounded'
+        svc._process_pending_skin_removal()
+        check('dropped skin removed without any restart', not os.path.isdir(folder))
+        check('marker cleared after a successful removal', not os.path.isfile(marker))
+
+        # 4. Android's cross-device special://temp makes the staging rename fail
+        #    with EXDEV. Deleting in place is fine on POSIX, so the removal must
+        #    still succeed rather than give up.
+        folder = plant()
+        real_rename = builds.os.rename
+
+        def _exdev(a, b):
+            raise OSError(18, 'Invalid cross-device link')
+
+        builds.os.rename = _exdev
+        try:
+            ok = builds.BuildManager().remove_skin(sid)
+        finally:
+            builds.os.rename = real_rename
+        check('removal survives a cross-device staging failure', ok)
+        check('folder gone after the in-place fallback', not os.path.isdir(folder))
+    finally:
+        _x.getSkinDir = orig
+        for p in (marker,):
+            if os.path.isfile(p):
+                os.remove(p)
+
+
+def test_skin_removal_is_identical_for_every_skin():
+    """Removal must behave the SAME for every optional skin.
+
+    Asaf asked the right question after the Android bug: "shouldn't the deletion
+    work exactly like it does for the other skins?" It should -- and it did not,
+    for none of them: the deferred-removal handoff was startup-only, so on
+    Android the dropped skin survived whichever skin it was. The bug was never
+    Rounded-specific.
+
+    This drives EVERY optional skin through the real path (marker -> service ->
+    remove_skin) and asserts the same outcome, so a future skin cannot be added
+    with a quietly different removal story. Estuary is checked to be refused --
+    the one intentional asymmetry."""
+    print("\n=== skin removal: identical for every optional skin ===")
+    import importlib.util
+    import re
+    import resources.libs.config as _C
+    import xbmc as _x
+
+    sp = importlib.util.spec_from_file_location(
+        'mk_wizard_service_parity',
+        os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard', 'service.py'))
+    svc = importlib.util.module_from_spec(sp)
+    try:
+        sp.loader.exec_module(svc)
+    except SystemExit:
+        check('wizard service importable', False)
+        return
+
+    bl = io.open(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                              'resources', 'libs', 'builds.py'), encoding='utf-8').read()
+    sids = sorted(re.findall(r"'(skin\.[a-z0-9.]+)'",
+                             bl.split('_OPTIONAL_SKIN_IDS = {')[1].split('}')[0]))
+    check('every optional skin is removable (%d found)' % len(sids), len(sids) >= 5)
+
+    marker = svc._pending_removal_marker()
+    os.makedirs(os.path.dirname(marker), exist_ok=True)
+    ad = os.path.join(_C.USERDATA, 'addon_data')
+    orig = _x.getSkinDir
+    try:
+        _x.getSkinDir = lambda: 'skin.estuary'          # never the one being dropped
+        for sid in sids:
+            d = os.path.join(_C.ADDONS, sid)
+            os.makedirs(d, exist_ok=True)
+            io.open(os.path.join(d, 'addon.xml'), 'w', encoding='utf-8').write('x')
+            os.makedirs(os.path.join(ad, sid), exist_ok=True)
+            io.open(os.path.join(ad, sid, 'settings.xml'), 'w', encoding='utf-8').write('x')
+            io.open(marker, 'w', encoding='utf-8').write(sid)
+
+            svc._process_pending_skin_removal()
+
+            check('%s: folder removed' % sid, not os.path.isdir(d))
+            check('%s: addon_data removed' % sid, not os.path.isdir(os.path.join(ad, sid)))
+            check('%s: marker cleared' % sid, not os.path.isfile(marker))
+
+        # the one intentional difference: Estuary is the fallback skin and must
+        # never be removable, whatever a marker says
+        est = os.path.join(_C.ADDONS, 'skin.estuary')
+        os.makedirs(est, exist_ok=True)
+        io.open(os.path.join(est, 'addon.xml'), 'w', encoding='utf-8').write('x')
+        _x.getSkinDir = lambda: 'skin.nimbus'
+        check('skin.estuary is refused', not builds.BuildManager().remove_skin('skin.estuary'))
+        check('skin.estuary survives', os.path.isdir(est))
+    finally:
+        _x.getSkinDir = orig
+        if os.path.isfile(marker):
+            os.remove(marker)
 
 
 if __name__ == '__main__':

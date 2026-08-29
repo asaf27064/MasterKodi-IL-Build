@@ -364,11 +364,17 @@ def _process_pending_view_rebuild():
         pass
 
 
+def _pending_removal_marker():
+    """Path of the marker the skins menu drops when the user asks for the
+    previous skin to be removed."""
+    return os.path.join(xbmcvfs.translatePath('special://userdata/addon_data/'),
+                        ADDON_ID, 'pending_skin_removal')
+
+
 def _process_pending_skin_removal():
     """Uninstall the skin the user dropped during a skin switch. Deferred from
     the skins menu to now (the old skin is no longer the running one)."""
-    marker = os.path.join(xbmcvfs.translatePath('special://userdata/addon_data/'),
-                          ADDON_ID, 'pending_skin_removal')
+    marker = _pending_removal_marker()
     if not os.path.isfile(marker):
         return
     try:
@@ -680,9 +686,33 @@ class POVHebrewService(xbmc.Monitor):
         _prewarm_gears(self)
 
         # Keep the service alive until Kodi shuts down.
+        #
+        # The pending skin removal is also processed HERE, not only on the boot
+        # paths above. On Android there is no working Kodi restart, so a skin
+        # switch is applied live (_apply_skin_live) and the boot that was meant
+        # to carry out the deferred removal never comes -- the dropped skin sat
+        # on disk forever and the user was told nothing (Asaf, Xiaomi,
+        # 2026-08-29). Doing it from the idle loop needs no restart anywhere.
+        #
+        # Safe to call at any moment: _process_pending_skin_removal removes
+        # nothing while the skin named in the marker is still the running skin,
+        # so it cannot fire while Kodi's "keep this skin?" prompt could still
+        # revert the switch, and it cannot pull the skin out from under the user.
+        removal_ticks = 0
         while not self.abortRequested():
-            if self.waitForAbort(300):
+            pending = os.path.isfile(_pending_removal_marker())
+            if not pending:
+                removal_ticks = 0
+            # Poll quickly for the first minute after a marker appears (the
+            # Android case: the user is looking at the result now), then fall
+            # back to the idle cadence so a marker we can never act on -- the
+            # user reverted, so the old skin is the running skin again -- is
+            # retried cheaply rather than spun on.
+            if self.waitForAbort(5 if (pending and removal_ticks < 12) else 300):
                 break
+            if pending:
+                removal_ticks += 1
+                _process_pending_skin_removal()
         log("Service stopped")
 
 
