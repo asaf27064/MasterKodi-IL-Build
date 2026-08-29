@@ -2727,7 +2727,7 @@ _SKIN_DESC = {
     'zephyr':  'עשיר ומעוצב בסגנון נטפליקס | מהיר | מתאים לרוב המכשירים',
     # Bidi: Hebrew-leading with the single Latin run at the END, like every
     # other user-visible mixed string we ship.
-    'rounded': 'עיצוב מעוגל ומודרני | הרבה סוגי תצוגה | מבוסס על Arctic Zephyr',
+    'rounded': 'בסגנון נטפליקס | הכי ניתן להתאמה אישית | מבוסס על Arctic Zephyr',
     'arctic':  'הכי יפה ומעוצב | הכי איטי בטעינה | למכשירים חזקים',
 }
 
