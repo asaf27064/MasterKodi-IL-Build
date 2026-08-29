@@ -595,11 +595,11 @@ msgstr "דיסקוגרפיה של"
 
 msgctxt "#31144"
 msgid "Movie Hub"
-msgstr "HUB סרטים"
+msgstr "מרכז סרטים"
 
 msgctxt "#31145"
 msgid "TV Hub"
-msgstr "HUB סדרות"
+msgstr "מרכז סדרות"
 
 msgctxt "#31146"
 msgid "Reload Skin"
@@ -767,7 +767,7 @@ msgstr "תמונות פאנארט (Fanart Thumbs)"
 
 msgctxt "#31187"
 msgid "Extra fanart"
-msgstr "Fanart נוסף"
+msgstr "פאנארט נוסף"
 
 msgctxt "#31188"
 msgid "Set weather icons"
@@ -807,7 +807,7 @@ msgstr "וידג'ט חלופי"
 
 msgctxt "#31197"
 msgid "Video / Music OSD"
-msgstr "OSD וידאו / מוזיקה"
+msgstr "וידאו / מוזיקה (OSD)"
 
 msgctxt "#31198"
 msgid "Single Image"
@@ -1175,11 +1175,11 @@ msgstr "מרכז"
 
 msgctxt "#31289"
 msgid "ClearLogo with fanart"
-msgstr "ClearLogo עם פאנארט"
+msgstr "פאנארט עם ClearLogo"
 
 msgctxt "#31290"
 msgid "Fullsize EPG"
-msgstr "EPG במסך מלא"
+msgstr "לוח שידורים במסך מלא"
 
 msgctxt "#31291"
 msgid "Also use for widgets"
@@ -1199,7 +1199,7 @@ msgstr "CD"
 
 msgctxt "#31295"
 msgid "Fake CD"
-msgstr "CD מדומה"
+msgstr "תקליטור מדומה"
 
 msgctxt "#31296"
 msgid "Vinyl"
@@ -1403,7 +1403,7 @@ msgstr "DiscArt"
 
 msgctxt "#31346"
 msgid "Fake Blu-ray"
-msgstr "Blu-ray מדומה"
+msgstr "בלו-ריי מדומה"
 
 msgctxt "#31347"
 msgid "Artwork section"
@@ -1675,7 +1675,7 @@ msgstr "ClearLogo/ClearArt"
 
 msgctxt "#31414"
 msgid "Clearlogo instead of title"
-msgstr "ClearLogo במקום כותרת"
+msgstr "במקום כותרת - ClearLogo"
 
 msgctxt "#31415"
 msgid "Media flags"

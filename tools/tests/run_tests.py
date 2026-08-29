@@ -4589,11 +4589,39 @@ def test_new_skins_are_registered_with_the_wizard():
     # separator fix, 466 mechanical sites). Assert the hand-written two are
     # present and that everything else carries the generated marker only, so a
     # hand edit cannot sneak into a generated file and be silently overwritten.
-    check('rounded overlay keeps its two hand-written files',
-          {'1080i/Home.xml', '1080i/Includes_OSD.xml'} <= set(files))
+    check('rounded overlay keeps its hand-written files',
+          {'1080i/Home.xml', '1080i/Includes_OSD.xml',
+           'language/resource.language.he_il/strings.po'} <= set(files))
+
+    # The Hebrew translation. Upstream ships 52/639; we ship the rest. Assert
+    # coverage AND that no string starts with a Latin run -- a Latin head on a
+    # Hebrew line is reordered by bidi and reads backwards (nine were rewritten
+    # for exactly this, e.g. "HUB סרטים" -> "מרכז סרטים").
+    _pofile = os.path.join(ovdir, 'files', 'language',
+                           'resource.language.he_il', 'strings.po')
+    check('rounded ships a Hebrew strings.po', os.path.isfile(_pofile))
+    if os.path.isfile(_pofile):
+        _po = io.open(_pofile, encoding='utf-8').read()
+        _rows = _re.findall(
+            r'msgctxt "#(\d+)"\s*\nmsgid "((?:[^"\\]|\\.)*)"\s*\nmsgstr "((?:[^"\\]|\\.)*)"', _po)
+        _done = [r for r in _rows if r[2].strip()]
+        check('Hebrew coverage >= 99%% (%d/%d)' % (len(_done), len(_rows)),
+              len(_rows) and len(_done) * 100 // len(_rows) >= 99)
+        _strip = lambda s: _re.sub(
+            r'\[/?[A-Z][^\]]*\]|\$INFO\[[^\]]*\]|\$VAR\[[^\]]*\]|\$LOCALIZE\[\d+\]', '', s).strip()
+        _lead = [c for c, _e, h in _done
+                 if _re.search(r'[֐-׿]', h) and _re.match(r'^[A-Za-z]', _strip(h))]
+        check('no Latin-leading Hebrew string%s'
+              % ('' if not _lead else ' -- #%s' % _lead[:5]), not _lead)
+        _TAG = _re.compile(r'(\[/?[A-Z]+[^\]]*\]|\$INFO\[[^\]]*\]|\$VAR\[[^\]]*\]|\$LOCALIZE\[\d+\])')
+        _mm = [c for c, en, he in _done
+               if sorted(_TAG.findall(en)) != sorted(_TAG.findall(he))]
+        check('translation preserves every markup tag%s'
+              % ('' if not _mm else ' -- #%s' % _mm[:5]), not _mm)
     LRM = '‎'
-    generated = [f for f in files
-                 if f not in ('1080i/Home.xml', '1080i/Includes_OSD.xml')]
+    HANDWRITTEN = ('1080i/Home.xml', '1080i/Includes_OSD.xml',
+                   'language/resource.language.he_il/strings.po')
+    generated = [f for f in files if f not in HANDWRITTEN]
     bad = []
     for f in generated:
         txt = io.open(os.path.join(ovdir, 'files', f.replace('/', os.sep)),
