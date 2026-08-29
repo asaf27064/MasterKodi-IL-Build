@@ -386,16 +386,26 @@ def _process_pending_skin_removal():
         # retried on a later boot instead of being silently lost.
         log(f"pending skin removal deferred: {sid} is still the active skin")
         return
-    try:
-        os.remove(marker)
-    except Exception:
-        pass
+    # Attempt the removal BEFORE dropping the marker. The old order deleted the
+    # marker first, so a removal that failed (or returned False) was never
+    # retried on a later boot and nothing was logged -- the skin simply stayed
+    # on disk with no trace of why (Asaf, 2026-08-29).
     try:
         from resources.libs.builds import BuildManager
-        if BuildManager().remove_skin(sid):
-            log(f"Removed previous skin after switch: {sid}")
+        ok = BuildManager().remove_skin(sid)
     except Exception as e:
         log(f"pending skin removal failed for {sid}: {e}", xbmc.LOGWARNING)
+        ok = False
+    if ok:
+        log(f"Removed previous skin after switch: {sid}")
+        try:
+            os.remove(marker)
+        except Exception:
+            pass
+    else:
+        # keep the marker so the next boot tries again
+        log(f"pending skin removal for {sid} did not succeed; will retry next boot",
+            xbmc.LOGWARNING)
 
 
 def _prewarm_gears(mon):

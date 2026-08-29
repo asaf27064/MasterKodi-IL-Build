@@ -4656,6 +4656,31 @@ def test_new_skins_are_registered_with_the_wizard():
     check('rounded is OUT of adopt_deps (an overlay must never be auto-adopted)',
           "'skin.arctic.zephyr.rounded': (" not in ad)
 
+    # Skin removal. Three faults, all silent (Asaf, 2026-08-29):
+    #  * remove_skin rmtree'd in place with ignore_errors=True and then returned
+    #    True regardless, so a folder locked by Windows survived while the user
+    #    was told the skin was removed.
+    #  * service.py deleted the pending-removal marker BEFORE attempting the
+    #    removal, so a failure was never retried and never logged.
+    #  * skin.bingie reaches boxes through the optional channel but was missing
+    #    from _OPTIONAL_SKIN_IDS, so it could not be removed at all.
+    svc = io.open(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                               'service.py'), encoding='utf-8').read()
+    check('remove_skin moves the folder aside instead of rmtree-in-place',
+          'os.rename(folder, stage)' in bl)
+    check('remove_skin VERIFIES the folder is gone before reporting success',
+          'folder still present after removal' in bl)
+    check('the staging dir is outside addons/ (a leftover there is scanned)',
+          "os.path.join(TEMP_FOLDER, f'{skin_id}.removing')" in bl)
+    check('the pending marker is dropped only after a SUCCESSFUL removal',
+          'will retry next boot' in svc
+          and 'ok = BuildManager().remove_skin(sid)' in svc
+          and svc.index('ok = BuildManager().remove_skin(sid)')
+              < svc.index('will retry next boot'))
+    _opt = bl.split('_OPTIONAL_SKIN_IDS = {')[1].split('}')[0]
+    for aid in ('skin.arctic.zephyr.rounded', 'skin.bingie'):
+        check('%s is removable via the wizard' % aid, ("'%s'" % aid) in _opt)
+
     # The font must be pinned to NotoSans Regular (settingskinfont=11): it is the
     # only one of the skin's eleven fontsets carrying a Hebrew face, and the
     # skin's setup wizard lets the user pick a font AFTER anything we seed into

@@ -2337,13 +2337,41 @@ class BuildManager:
         try:
             folder = os.path.join(ADDONS, skin_id)
             if os.path.isdir(folder):
-                shutil.rmtree(folder, ignore_errors=True)
+                # STAGE-THEN-DELETE. rmtree(ignore_errors=True) in place used to
+                # swallow Windows file locks on a just-unloaded skin: the folder
+                # survived (or was left half-deleted) and we STILL returned True
+                # and logged "removed", so the user was told the skin was gone
+                # while it was still on disk (Asaf, 2026-08-29).
+                # Renaming aside almost always succeeds where deleting in place
+                # does not, and it is what makes the skin vanish from Kodi's
+                # view. The staging dir is OUTSIDE addons/ -- a leftover folder
+                # inside addons/ is itself scanned as an addon.
+                stage = os.path.join(TEMP_FOLDER, f'{skin_id}.removing')
+                try:
+                    if os.path.isdir(stage):
+                        shutil.rmtree(stage, ignore_errors=True)
+                    os.makedirs(os.path.dirname(stage), exist_ok=True)
+                    os.rename(folder, stage)
+                except Exception as e:
+                    log(f"remove_skin {skin_id}: could not move the folder aside: {e}",
+                        xbmc.LOGERROR)
+                    return False
+                shutil.rmtree(stage, ignore_errors=True)   # leftovers here are harmless
+            # Verify, do not assume. This is the check whose absence made a
+            # failed removal look like a success.
+            if os.path.isdir(folder):
+                log(f"remove_skin {skin_id}: folder still present after removal",
+                    xbmc.LOGERROR)
+                return False
             ad = os.path.join(USERDATA, 'addon_data', skin_id)
             if os.path.isdir(ad):
                 shutil.rmtree(ad, ignore_errors=True)
             self._db_remove_addon(skin_id)
             self._purge_skin_residue(skin_id)
             xbmc.executebuiltin('UpdateLocalAddons()')
+            leftovers = [p for p in (folder, ad) if os.path.isdir(p)]
+            if leftovers:
+                log(f"remove_skin {skin_id}: leftovers {leftovers}", xbmc.LOGWARNING)
             log(f"removed skin {skin_id} (+ residue purged)")
             return True
         except Exception as e:
@@ -2754,9 +2782,16 @@ _SKIN_CATALOG = [
     ('rounded', 'Arctic Zephyr Rounded', 'skin.arctic.zephyr.rounded', 'rounded.jpg'),
     ('arctic', 'Arctic Fuse', 'skin.arctic.fuse.3', 'af3.jpg'),
 ]
+# Removable = every optional skin that can end up on a box, which is NOT the
+# same as every skin we offer to install. skin.bingie is vendored and reaches
+# devices through the manifest's optional channel, but it is deliberately absent
+# from _SKIN_CATALOG (its TMDb helper hard-imports script.module.pil, which we
+# do not ship). Leaving it out of THIS set meant a user with Bingie installed
+# had no way to remove it from the wizard at all (Asaf, 2026-08-29).
 _OPTIONAL_SKIN_IDS = {'skin.arctic.fuse.3', 'skin.nimbus',
                       'skin.arctic.zephyr.2.resurrection.mod',
-                      'skin.arctic.zephyr.rounded'}
+                      'skin.arctic.zephyr.rounded',
+                      'skin.bingie'}
 
 # (AF3/Nimbus used to be hidden on Kodi 22 -- no loadable Piers build existed.
 # manifest-piers now ships gui-5.18 variants of all four skins and every
