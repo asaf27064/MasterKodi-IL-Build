@@ -335,7 +335,7 @@
                     <aligny>center</aligny>
                     <font>Consensus</font>
                     <textcolor>$VAR[Color_OSD_Panel_White100]</textcolor>
-                    <label>$INFO[System.Time,  •  ,]</label>
+                    <label>$INFO[System.Time,‎  •  ‎,]</label>
                 </control>
 
                 <control type="image">
