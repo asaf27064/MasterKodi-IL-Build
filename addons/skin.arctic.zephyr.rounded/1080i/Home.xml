@@ -23,6 +23,39 @@
 
     <onload condition="String.IsEqual(Skin.String(settingthemecolor),2) + !String.IsEqual(Window(Home).Property(SkinInfo.Setting.lookandfeel.skincolors),Light)">RunScript(script.skin.info.service,action=set_setting,setting=lookandfeel.skincolors,value=Light,noconfirm=true)</onload>
 
+    <!-- KODIRDIL: our functional defaults, applied ONCE.
+         Gated on startup.init so it runs AFTER the skin's own first-run
+         block (which sets that flag last), and on our own marker so it
+         never runs again. The user therefore still gets the skin's setup
+         wizard and keeps ownership of every one of these afterwards -
+         turning ratings off again sticks.
+         These are only the things that would otherwise be invisible or
+         hard to find: the gates that hide the ratings row, and clearlogo
+         instead of title. Nothing cosmetic - no theme, layout or font
+         choice, those are the user's. -->
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.Reset(hide.furniture.flags.vertical.widgets)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.Reset(hide.furniture.flags)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(enable.furniture.flags.icons)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.Reset(hide.flags.rating)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.Reset(hide.video.ratings)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.Reset(hide.501.507.flags.numeric.rating)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(enable.flags.rating.numeric)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.Reset(tmdbhelper.disableratings)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.imdb)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.tmdb)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.trakt)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.mdblist)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.metacritics)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.tomatoes)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.letterboxd)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.home.flix.title.clearlogo)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.view.netflix.title.clearlogo.video)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.view.509.title.clearlogo)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.view.511.title.clearlogo)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.view.514.title.clearlogo)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.osd.video.clearlogo)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetString(kodirdil.defaults,1)</onload>
+
     <!-- KODIRDIL: pin the font to NotoSans Regular (index 11).
          Of the eleven fontsets this skin ships it is the ONLY one whose
          faces contain Hebrew (NotoSans-Regular.ttf); any other choice

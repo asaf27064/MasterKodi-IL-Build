@@ -4463,53 +4463,56 @@ def test_tmdb_uses_local_kodi_db():
 
 
 def test_rounded_ratings_are_visible():
-    """Every gate that can hide Rounded's rating flags must be shipped open.
+    """Our functional defaults must be applied ONCE, after the skin's own setup.
 
-    Measured on the live box 2026-08-29: ratings were being fetched correctly
-    the whole time (a focused item reported IMDb 8.5 / Metacritic 88 /
-    MDBList 89 / TMDb 8.0, for POV widgets as well as TMDb ones), but nothing
-    rendered on the home screen. Furniture_Video_Flags' home branch is
-
-        Window.IsVisible(Home) + ControlGroup(301).HasFocus() + <DBType>
-        + Skin.HasSetting(home.vertical)
-        + !Skin.HasSetting(hide.furniture.flags.vertical.widgets)
-
-    We ship home.vertical (the Netflix layout) and the skin defaults
-    hide.furniture.flags.vertical.widgets to TRUE, so the whole flags row --
-    ratings included -- was hidden. Assert the full gate set, not just that one
-    id, so a future re-capture of the settings file cannot quietly close
-    another one."""
+    We used to pre-seed 189 skin settings including startup.init -- the flag the
+    skin's first-run block is gated on -- which suppressed that block, and with
+    Home.xml setting FullInitEnded on first load the setup wizard never offered
+    itself: a new install came up fully configured (Asaf, 2026-08-29). We now
+    ship NO skin settings and apply only the functional ones from Home.xml,
+    gated on startup.init (so they land AFTER the skin's own defaults) and on
+    our own marker (so they never re-apply and the user keeps control)."""
     print("")
-    print("=== Rounded: every rating gate ships open ===")
+    print("=== Rounded: functional defaults applied once, setup left alone ===")
     import glob as _glob
-    import re as _re
-    MUST = {
-        'hide.furniture.flags.vertical.widgets': 'false',   # the one that broke it
-        'hide.furniture.flags': 'false',
-        'enable.furniture.flags.icons': 'true',
-        'hide.video.ratings': 'false',
-        'hide.flags.rating': 'false',
-        'tmdbhelper.disableratings': 'false',
-        'show.flags.rating.imdb': 'true',
-        'show.flags.rating.tmdb': 'true',
-        'show.flags.rating.trakt': 'true',
-        'show.flags.rating.mdblist': 'true',
-        'show.flags.rating.metacritics': 'true',
-        'show.flags.rating.tomatoes': 'true',
-        'show.flags.rating.letterboxd': 'true',
-    }
-    seeds = sorted(_glob.glob(os.path.join(
-        REPO, 'config-variants', 'rounded-*', 'skin.rounded', 'settings.xml')))
-    check('rounded variants ship a skin settings seed (%d)' % len(seeds), len(seeds) == 2)
-    for f in seeds:
-        variant = f.replace(os.sep, '/').split('config-variants/')[1].split('/')[0]
-        txt = io.open(f, encoding='utf-8').read()
-        vals = dict(_re.findall(r'<setting id="([^"]+)"[^>]*>([^<]*)</setting>', txt))
-        wrong = {k: vals.get(k, 'ABSENT') for k, v in MUST.items() if vals.get(k) != v}
-        check('%s: all %d rating gates correct%s'
-              % (variant, len(MUST), '' if not wrong else ' -- %s' % wrong), not wrong)
-        # Kodi crashes NATIVELY on a comment in addon_data settings.xml
-        check('%s: no XML comment' % variant, '<!--' not in txt)
+    seeds = _glob.glob(os.path.join(REPO, 'config-variants', 'rounded-*',
+                                    'skin.rounded', 'settings.xml'))
+    check('no pre-seeded skin settings (they suppressed the setup wizard)',
+          not seeds)
+    home = io.open(os.path.join(REPO, 'overlays', 'skin.arctic.zephyr.rounded',
+                                'files', '1080i', 'Home.xml'), encoding='utf-8').read()
+    GATE = ('Skin.HasSetting(startup.init) + '
+            'String.IsEmpty(Skin.String(kodirdil.defaults))')
+    check('defaults are gated on the skin having finished its first run',
+          GATE in home)
+    check('the marker is set so they apply exactly once',
+          'Skin.SetString(kodirdil.defaults,1)' in home)
+    # the gates that actually make ratings visible
+    MUST_ON = ('enable.furniture.flags.icons', 'enable.flags.rating.numeric',
+               'show.flags.rating.imdb', 'show.flags.rating.tmdb',
+               'show.flags.rating.trakt', 'show.flags.rating.mdblist',
+               'show.flags.rating.metacritics', 'show.flags.rating.tomatoes',
+               'show.flags.rating.letterboxd',
+               'show.home.flix.title.clearlogo')
+    MUST_OFF = ('hide.furniture.flags.vertical.widgets', 'hide.furniture.flags',
+                'hide.flags.rating', 'hide.video.ratings',
+                'tmdbhelper.disableratings')
+    miss_on = [s for s in MUST_ON if 'Skin.SetBool(%s)' % s not in home]
+    miss_off = [s for s in MUST_OFF if 'Skin.Reset(%s)' % s not in home]
+    check('every rating/clearlogo default is turned ON%s'
+          % ('' if not miss_on else ' -- %s' % miss_on), not miss_on)
+    check('every hiding gate is cleared%s'
+          % ('' if not miss_off else ' -- %s' % miss_off), not miss_off)
+    # cosmetics must NOT be forced -- the user picks those in setup
+    COSMETIC = ('settinghomestyle', 'settingthemecolor', 'settingpresetcolor',
+                'daynight.autocolor', 'home.vertical')
+    forced = [s for s in COSMETIC
+              if 'Skin.SetBool(%s)' % s in home or 'Skin.SetString(%s,' % s in home]
+    check('no cosmetic setting is forced%s'
+          % ('' if not forced else ' -- %s' % forced), not forced)
+    check('FullInitEnded is never pre-set (it gates the setup wizard)',
+          'Skin.SetString(FullInitEnded' not in
+          home.split('KODIRDIL: our functional defaults')[-1].split('-->')[0])
 
 
 def test_new_skins_are_registered_with_the_wizard():
@@ -4705,14 +4708,6 @@ def test_new_skins_are_registered_with_the_wizard():
                 'skin.arctic.zephyr.2.resurrection.mod', SKIN_R):
         check('refresh_vanilla_deps guard covers %s' % aid, ("'%s'" % aid) in rv_modded)
 
-    # the shipped seed must NOT contain the setup-wizard-completed flag, or new
-    # users would never see the skin's own setup (Asaf wants them to choose)
-    seed = io.open(os.path.join(REPO, 'config-variants', 'rounded-pov',
-                                'skin.rounded', 'settings.xml'), encoding='utf-8').read()
-    check('seed pins startup.init (so our settings survive the first-run block)',
-          'id="startup.init"' in seed)
-    check('seed does NOT ship FullInitEnded (setup wizard still runs per user)',
-          'FullInitEnded' not in seed and 'fullinitended' not in seed)
     # view types ship like AF3/Zephyr do
     for v in ('rounded-pov', 'rounded-pov-tmdb'):
         check('%s ships its view types' % v,

@@ -2055,6 +2055,16 @@ class BuildManager:
                         xbmc.LOGERROR)
                     failed.append(aid)
                     continue
+                # Skip what is already on disk AND current. Without this, every
+                # manifest install re-downloaded and re-extracted every dep --
+                # including plugin.video.themoviedb.helper, which is large and
+                # almost always already present -- so a Rounded install was far
+                # slower than the one-zip skins for no benefit (Asaf 2026-08-29).
+                # state[aid] is the sha recorded when we last installed it.
+                if (os.path.isfile(os.path.join(ADDONS, aid, 'addon.xml'))
+                        and state.get(aid) == entry['sha256']):
+                    log(f"manifest install: {aid} already current, skipping")
+                    continue
                 progress.update(int(i / max(len(ids), 1) * 100), f"[COLOR yellow]מתקין: {aid}[/COLOR]")
                 try:
                     mu._apply_one(entry)          # sha-verified download + extract to addons/
