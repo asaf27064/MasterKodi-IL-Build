@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-29T16:27:50Z",
+  "generated_utc": "2026-08-29T16:50:14Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -48,8 +48,8 @@
       "version": "2.4.181",
       "channel": "core",
       "zip": "plugin.program.masterkodi.il.wizard-2.4.181.zip",
-      "sha256": "df668eaa6d79c270af2812373d73e9d5e398708e0d5e4ccbe9ba373eb79e516a",
-      "size": 6251152,
+      "sha256": "920994c89ca35be59dd3b3299d922201007b11bcd830f0796f2472c83533fe20",
+      "size": 6251146,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.181.zip"
     },
     {
