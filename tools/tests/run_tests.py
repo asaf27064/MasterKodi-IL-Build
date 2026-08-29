@@ -4647,6 +4647,33 @@ def test_new_skins_are_registered_with_the_wizard():
               os.path.isfile(os.path.join(REPO, 'config-variants', v, 'skinvariables',
                                           '%s-viewtypes.json' % SKIN_R)))
 
+    # Every variant that overrides views for its CONTENT engine must mirror
+    # those onto plugin.video.themoviedb.helper, or "more..." from a widget
+    # opens a differently-styled list depending on which engine produced the
+    # widget -- so rounded-pov and rounded-pov-tmdb would disagree on the same
+    # content. zephyr-* and af3-* have always mirrored; rounded shipped without
+    # the bucket at all (2026-08-29). Checked across ALL variants, not just
+    # rounded, so the next skin cannot repeat it.
+    import glob as _g
+    import json as _j
+    TMDB = 'plugin.video.themoviedb.helper'
+    ENGINES = ('plugin.video.pov', 'plugin.video.gears')
+    vfiles = sorted(_g.glob(os.path.join(REPO, 'config-variants', '*', 'skinvariables',
+                                         '*-viewtypes.json')))
+    check('variants shipping view types found', len(vfiles) > 0)
+    for f in vfiles:
+        variant = f.replace(os.sep, '/').split('config-variants/')[1].split('/')[0]
+        d = _j.load(io.open(f, encoding='utf-8'))
+        eng = next((e for e in ENGINES if e in d), None)
+        if not eng:
+            continue
+        check('%s: has a %s bucket' % (variant, TMDB), TMDB in d)
+        if TMDB not in d:
+            continue
+        bad = {k: (v, d[TMDB].get(k)) for k, v in d[eng].items() if d[TMDB].get(k) != v}
+        check('%s: %s mirrors %s%s'
+              % (variant, TMDB, eng, '' if not bad else ' -- %s' % bad), not bad)
+
 
 if __name__ == '__main__':
     sys.exit(main())
