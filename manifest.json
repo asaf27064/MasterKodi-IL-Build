@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-29T18:05:50Z",
+  "generated_utc": "2026-08-29T18:17:40Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -667,8 +667,8 @@
       "version": "1.3.00",
       "channel": "optional",
       "zip": "skin.arctic.zephyr.rounded-1.3.00.zip",
-      "sha256": "0aec93c5a178faeb57fec54bb412ddad8b9630f0ee38a773e2ac5178fbb95530",
-      "size": 76524531,
+      "sha256": "b96a3cb2ad9c58cff0c940e507cb091583e7b8790af5a7a1b7910a1ced382ecd",
+      "size": 76524952,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.zephyr.rounded-1.3.00.zip"
     },
     {
