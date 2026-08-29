@@ -64,6 +64,10 @@
       "dest": "{addon_data}/script.skinshortcuts/skin.arctic.zephyr.rounded.properties"
     },
     {
+      "src": "skinvariables/skin.arctic.zephyr.rounded-viewtypes.json",
+      "dest": "{addon_data}/script.skinvariables/skin.arctic.zephyr.rounded-viewtypes.json"
+    },
+    {
       "src": "themoviedb/nodes/SELECTED NETWORKS.json",
       "dest": "{addon_data}/plugin.video.themoviedb.helper/nodes/SELECTED NETWORKS.json"
     },

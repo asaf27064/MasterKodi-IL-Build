@@ -31,8 +31,15 @@ ADDONS = os.path.join(ROOT, 'addons')
 
 # NEVER refresh these -- they carry our modifications (overlay-managed or ours).
 MODDED_ADDONS = {
-    'plugin.video.gears', 'skin.estuary', 'skin.nimbus', 'skin.arctic.fuse.3',
-    'skin.arctic.zephyr.2.resurrection.mod', 'script.skinhelper',
+    'plugin.video.gears', 'plugin.video.pov',
+    'skin.estuary', 'skin.nimbus', 'skin.arctic.fuse.3',
+    'skin.arctic.zephyr.2.resurrection.mod',
+    # overlaid 2026-08-29 (upstream's duplicate buildxml call that killed every
+    # widget, + the NotoSans font pin). It WAS in VANILLA_DEPS below; leaving it
+    # there would have rmtree'd the addon and extracted clean upstream over the
+    # overlay on the next --apply.
+    'skin.arctic.zephyr.rounded',
+    'script.skinhelper',
     'script.module.gearsscrapers', 'service.subtitles.gearsai',
     'service.masterkodi.skipintro', 'service.kodi.il.firstrun',
     'plugin.program.masterkodi.il.wizard', 'repository.masterkodi.il',
@@ -44,10 +51,13 @@ JURIAL_DIRS = (
     'https://raw.githubusercontent.com/jurialmunkey/repository.jurialmunkey/master/repo/zips',
 )
 KODI = 'https://mirrors.kodi.tv/addons/omega'
-# Third-party skin repos. Both skins are vendored UNMODIFIED (nothing of
-# ours lives inside them), so they are ordinary vanilla deps: we re-vendor
-# the clean upstream zip and ship it through our own manifest, exactly as
-# the wizard-controls-updates invariant requires.
+# Third-party skin repos. skin.bingie is vendored UNMODIFIED, so it is an
+# ordinary vanilla dep: we re-vendor the clean upstream zip and ship it
+# through our own manifest, as the wizard-controls-updates invariant
+# requires. skin.arctic.zephyr.rounded is NO LONGER vanilla (overlaid
+# 2026-08-29) -- it moved to MODDED_ADDONS above and is updated by a
+# 3-way overlay re-merge instead. NANOMANI stays: it is still the base
+# zip source in overlays/skin.arctic.zephyr.rounded/base.json.
 NANOMANI = 'https://raw.githubusercontent.com/Nanomani/repository.omega.nanomani/main'
 BINGIE = 'https://raw.githubusercontent.com/matke-84/repository.bingie/main/omega'
 
@@ -66,7 +76,6 @@ VANILLA_DEPS = {
     'resource.images.moviegenreicons.transparent': 'kodi',
     'resource.images.moviecountryicons.maps': 'kodi',
     'resource.images.weathericons.white': 'kodi',
-    'skin.arctic.zephyr.rounded': 'nanomani',
     'skin.bingie': 'bingie',
 }
 

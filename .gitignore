@@ -47,3 +47,7 @@ logs_admin_key.txt
 
 # KEEP-verification snapshots: per-box state with credential fingerprints -- never in git
 .keep_snapshots/
+
+# Rounded clean base zip: 73 MB, too large to commit. apply_overlay
+# falls back to base_zip_url when it is absent (e.g. in CI).
+overlays/skin.arctic.zephyr.rounded/base/*.zip

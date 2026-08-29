@@ -56,12 +56,17 @@ AUTO_DEPS = {
         'https://kodiyashimaru.github.io/repo/{id}/{id}-{ver}.zip'),
     # Third-party SKINS, vendored unmodified (nothing of ours inside them), so
     # they track their developers the same way any other vanilla dep does.
+    #
+    # skin.arctic.zephyr.rounded is NOT here any more (2026-08-29): it now has
+    # an overlay, and adopting it would overwrite addons/ with clean upstream
+    # and silently drop that patch. No overlaid addon belongs in AUTO_DEPS --
+    # plugin.video.pov, plugin.video.gears, skin.arctic.fuse.3 and
+    # skin.arctic.zephyr.2.resurrection.mod are all absent for the same reason.
+    # It is watched instead by check_upstream's overlay pass, and updated with a
+    # 3-way re-merge (see overlays/skin.arctic.zephyr.rounded/base.json).
     # Rounded also has a PIERS build in a different repo (repository.nanomani,
-    # skinshortcuts 3.x) -- deliberately not adopted here; the author warns 2.x
-    # menus cannot migrate to 3.x, so Piers needs its own Hebrew menu set.
-    'skin.arctic.zephyr.rounded': (
-        'https://raw.githubusercontent.com/Nanomani/repository.omega.nanomani/main/addons.xml', 'addons_xml',
-        'https://raw.githubusercontent.com/Nanomani/repository.omega.nanomani/main/{id}/{id}-{ver}.zip'),
+    # skinshortcuts 3.x) -- deliberately not adopted; the author warns 2.x menus
+    # cannot migrate to 3.x, so Piers needs its own Hebrew menu set.
     'skin.bingie': (
         'https://raw.githubusercontent.com/matke-84/repository.bingie/main/omega/addons.xml', 'addons_xml',
         'https://raw.githubusercontent.com/matke-84/repository.bingie/main/omega/{id}/{id}-{ver}.zip'),

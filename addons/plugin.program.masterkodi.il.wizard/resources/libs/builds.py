@@ -1348,6 +1348,15 @@ class BuildManager:
         'skin.arctic.zephyr.2.resurrection.mod': 'Hebrew (Rubik)',
         'skin.estuary': 'Hebrew (Rubik)',
         'skin.nimbus': 'Hebrew (Rubik)',
+        # Rounded ships no "Hebrew (*)" fontset. Of the eleven it does ship,
+        # "NotoSans Regular" is the ONLY one containing a Hebrew-capable face
+        # (NotoSans-Regular.ttf); every other one is Roboto Condensed / Arial /
+        # Inter / Segoe and renders Hebrew as tofu. Set it at switch time so a
+        # user coming from AF3 (which leaves lookandfeel.font on the missing
+        # "Hebrew (Rubik)") does not get a broken first frame -- the skin then
+        # keeps it there itself, because our seed ships settingskinfont=11 and
+        # Home.xml re-applies the matching fontset on every load.
+        'skin.arctic.zephyr.rounded': 'NotoSans Regular',
     }
 
     def set_skin_font(self, skin_id):

@@ -1,10 +1,18 @@
 <shortcuts>
 	<shortcut>
-		<defaultID>search-pov</defaultID>
-		<label>$LOCALIZE[137]</label>
-		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/search.png</icon>
-		<thumb>special://skin/extras/icons/search.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=navigator.search",return)</action>
+		<defaultID>search-movies</defaultID>
+		<label>$LOCALIZE[342]</label>
+		<label2>Prédéfini</label2>
+		<icon>special://skin/extras/icons/film.png</icon>
+		<thumb></thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=search_history&amp;action=movie",return)</action>
+		</shortcut>
+	<shortcut>
+		<defaultID>search-tvshows</defaultID>
+		<label>$LOCALIZE[20343]</label>
+		<label2>Prédéfini</label2>
+		<icon>special://skin/extras/icons/tv.png</icon>
+		<thumb></thumb>
+		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=search_history&amp;action=tvshow",return)</action>
 		</shortcut>
 </shortcuts>

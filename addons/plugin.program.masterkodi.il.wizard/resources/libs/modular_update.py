@@ -746,6 +746,13 @@ MODDED_ADDONS = {
     'skin.nimbus',             # in Kodi's official repo -> real clobber risk
     'skin.arctic.fuse.3',
     'skin.arctic.zephyr.2.resurrection.mod',
+    'skin.arctic.zephyr.rounded',   # overlaid 2026-08-29 (upstream double
+                               # buildxml call that killed every widget, plus
+                               # the NotoSans font pin). It lives in
+                               # repository.omega.nanomani, which the user may
+                               # have installed -> real clobber risk, so Kodi
+                               # must never auto-update it. WE are its only
+                               # updater, via the overlay re-merge.
     'script.skinhelper',       # we removed its PIL requirement
     'script.module.gearsscrapers',
     'service.subtitles.gearsai',

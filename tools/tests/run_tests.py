@@ -4526,6 +4526,7 @@ def test_new_skins_are_registered_with_the_wizard():
     not vendor, so Kodi would refuse to enable the helper."""
     print("")
     print("=== new skins are wired into the wizard ===")
+    import re as _re
     cs = io.open(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
                               'resources', 'libs', 'content_source.py'),
                  encoding='utf-8').read()
@@ -4544,9 +4545,107 @@ def test_new_skins_are_registered_with_the_wizard():
           "'id': 'skin.bingie'" not in bl)
     check('script.module.pil really is absent (the reason bingie is held back)',
           not os.path.isdir(os.path.join(REPO, 'addons', 'script.module.pil')))
-    # the skin must stay unmodified so it keeps auto-updating upstream
-    check('rounded skin is NOT overlaid (keeps upstream auto-update)',
-          not os.path.isdir(os.path.join(REPO, 'overlays', 'skin.arctic.zephyr.rounded')))
+    # Rounded IS overlaid as of 2026-08-29, for exactly one upstream bug:
+    # Home.xml calls skinshortcuts' buildxml twice on load, once with the real
+    # parameters and once bare (which defaults to levels=0). They race, and when
+    # the bare one wins it overwrites the full ~324KB includes with a 20KB
+    # level-0-only file -- no widget template, no submenu groups, every widget
+    # row dead. Keep that overlay MINIMAL and keep it out of adopt_deps, or CI
+    # would overwrite addons/ with clean upstream and silently drop the patch.
+    ovdir = os.path.join(REPO, 'overlays', 'skin.arctic.zephyr.rounded')
+    check('rounded overlay exists', os.path.isdir(ovdir))
+    files = []
+    for d, _s, fs in os.walk(os.path.join(ovdir, 'files')):
+        files += [os.path.relpath(os.path.join(d, f), os.path.join(ovdir, 'files'))
+                  .replace(os.sep, '/') for f in fs]
+    # Keep this list EXACT, not a "<= n" bound: every file we patch is one we
+    # must re-merge by hand whenever Nanomani touches it, so growing the overlay
+    # should be a deliberate decision that updates this test, never a drift.
+    #   Home.xml         - the duplicate buildxml call + the NotoSans font pin
+    #   Includes_OSD.xml - the GearsAI wand button in the subtitles submenu
+    check('rounded overlay patches exactly the expected files (%s)' % (files or 'none'),
+          sorted(files) == ['1080i/Home.xml', '1080i/Includes_OSD.xml'])
+    osd = io.open(os.path.join(ovdir, 'files', '1080i', 'Includes_OSD.xml'),
+                  encoding='utf-8').read()
+    check('the OSD carries the GearsAI wand call',
+          'RunScript(service.subtitles.gearsai,sub_window)' in osd)
+    check('no "--" inside any comment in the overlaid Includes_OSD.xml',
+          all('--' not in c for c in _re.findall(r'<!--(.*?)-->', osd, _re.S)))
+    home = io.open(os.path.join(ovdir, 'files', '1080i', 'Home.xml'),
+                   encoding='utf-8').read()
+    check('the bare parameterless buildxml call is gone',
+          '<onload>RunScript(script.skinshortcuts,type=buildxml)</onload>' not in home)
+    check('the real parameterised buildxml call survives',
+          'type=buildxml&amp;mainmenuID=300' in home and 'levels=10' in home)
+    ad = io.open(os.path.join(REPO, 'tools', 'adopt_deps.py'), encoding='utf-8').read()
+    check('rounded is OUT of adopt_deps (an overlay must never be auto-adopted)',
+          "'skin.arctic.zephyr.rounded': (" not in ad)
+
+    # The font must be pinned to NotoSans Regular (settingskinfont=11): it is the
+    # only one of the skin's eleven fontsets carrying a Hebrew face, and the
+    # skin's setup wizard lets the user pick a font AFTER anything we seed into
+    # addon_data, so seeding alone cannot hold it. Verified live 2026-08-29 by
+    # forcing settingskinfont=4 / lookandfeel.font=Arial: one boot corrected
+    # both back to 11 / NotoSans Regular.
+    check('font index is pinned to 11 on every Home load',
+          '!String.IsEqual(Skin.String(settingskinfont),11)' in home
+          and 'Skin.SetString(settingskinfont,11)' in home)
+    check('lookandfeel.font is pushed in the same pass (no one-load lag)',
+          'setting=lookandfeel.font,value=NotoSans Regular' in home)
+    # an XML comment containing "--" is malformed and Kodi refuses the file
+    check('no "--" inside any comment in the overlaid Home.xml',
+          all('--' not in c for c in _re.findall(r'<!--(.*?)-->', home, _re.S)))
+
+    # ANDROID: there is no working Kodi restart there, so the skin switch is
+    # applied LIVE. _apply_skin_live sets lookandfeel.skin and then the fontset
+    # through Settings.SetSettingValue (the API, safe while Kodi runs) using
+    # SKIN_FONTSET -- so Rounded must resolve to NotoSans Regular there too,
+    # or an Android user switching from AF3 keeps "Hebrew (Rubik)", a fontset
+    # Rounded does not ship, and the whole UI renders as tofu.
+    m = _re.search(r'SKIN_FONTSET = \{(.*?)\}', bl, _re.S)
+    fontmap = dict(_re.findall(r"'([^']+)':\s*'([^']+)'", m.group(1) if m else ''))
+    check('SKIN_FONTSET maps rounded to NotoSans Regular (Android live switch)',
+          fontmap.get('skin.arctic.zephyr.rounded') == 'NotoSans Regular')
+    check('the live switch sets the fontset via the settings API, not a file write',
+          "'setting': 'lookandfeel.font', 'value': fontset" in bl)
+
+    # Now that Rounded is overlaid, EVERY path that could re-vendor clean
+    # upstream over the overlay must exclude it, and Kodi must never auto-update
+    # it (the wizard is its only updater). Three separate lists, all of which
+    # were wrong when the overlay was created (2026-08-29):
+    SKIN_R = 'skin.arctic.zephyr.rounded'
+    mu = io.open(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                              'resources', 'libs', 'modular_update.py'),
+                 encoding='utf-8').read()
+    rv = io.open(os.path.join(REPO, 'tools', 'refresh_vanilla_deps.py'),
+                 encoding='utf-8').read()
+    modded = mu.split('MODDED_ADDONS')[1].split('}')[0]
+    check('rounded is in modular_update MODDED_ADDONS (pins off Kodi auto-update)',
+          ("'%s'" % SKIN_R) in modded)
+    rv_modded = rv.split('MODDED_ADDONS = {')[1].split('}')[0]
+    rv_vanilla = rv.split('VANILLA_DEPS = {')[1].split('}')[0]
+    check('rounded is in refresh_vanilla_deps MODDED_ADDONS',
+          ("'%s'" % SKIN_R) in rv_modded)
+    check('rounded is NOT in VANILLA_DEPS (would rmtree the overlay on --apply)',
+          ("'%s'" % SKIN_R) not in rv_vanilla)
+    # the file documents its own set as a superset of modular_update's
+    for aid in ('plugin.video.gears', 'plugin.video.pov', 'skin.arctic.fuse.3',
+                'skin.arctic.zephyr.2.resurrection.mod', SKIN_R):
+        check('refresh_vanilla_deps guard covers %s' % aid, ("'%s'" % aid) in rv_modded)
+
+    # the shipped seed must NOT contain the setup-wizard-completed flag, or new
+    # users would never see the skin's own setup (Asaf wants them to choose)
+    seed = io.open(os.path.join(REPO, 'config-variants', 'rounded-pov',
+                                'skin.rounded', 'settings.xml'), encoding='utf-8').read()
+    check('seed pins startup.init (so our settings survive the first-run block)',
+          'id="startup.init"' in seed)
+    check('seed does NOT ship FullInitEnded (setup wizard still runs per user)',
+          'FullInitEnded' not in seed and 'fullinitended' not in seed)
+    # view types ship like AF3/Zephyr do
+    for v in ('rounded-pov', 'rounded-pov-tmdb'):
+        check('%s ships its view types' % v,
+              os.path.isfile(os.path.join(REPO, 'config-variants', v, 'skinvariables',
+                                          '%s-viewtypes.json' % SKIN_R)))
 
 
 if __name__ == '__main__':
