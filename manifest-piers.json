@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-29T18:27:22Z",
+  "generated_utc": "2026-08-29T19:15:46Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -48,8 +48,8 @@
       "version": "2.4.181",
       "channel": "core",
       "zip": "plugin.program.masterkodi.il.wizard-2.4.181.zip",
-      "sha256": "da4f9f34841656f6a2f7968e9ed1e955b87292797e80ca6919c8116d3a48a55c",
-      "size": 6234082,
+      "sha256": "5e385edaefb032a102880747ab5245bc821a14483adb1d3f30b93f885bbdb423",
+      "size": 6234113,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.181.zip"
     },
     {
@@ -667,8 +667,8 @@
       "version": "1.3.00",
       "channel": "optional",
       "zip": "skin.arctic.zephyr.rounded-1.3.00.zip",
-      "sha256": "6d5c7198e439f3ed14dac3a47120cade0cf6169211c80fc3dec0a15b2c821744",
-      "size": 76530578,
+      "sha256": "0df29ee462d7543cb200bd6fb26d9fcf5c9643785f0a770cc0eaca3c12c5d797",
+      "size": 76531122,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.rounded-1.3.00.zip"
     },
     {
@@ -707,6 +707,6 @@
     "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-64.zip"
   },
   "content_variants": {
-    "version": "b2c482e51718df11"
+    "version": "ca1e612d1423abd7"
   }
 }
