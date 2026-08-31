@@ -4260,7 +4260,8 @@ def main():
               test_maintenance_folder_contents, test_remove_skin_purges_residue,
               test_pending_skin_removal_needs_no_restart,
               test_skin_removal_is_identical_for_every_skin,
-              test_skin_setup_wizard_runs_after_install, test_detect_extras_skips_kodi_defaults,
+              test_skin_setup_wizard_runs_after_install,
+              test_every_optional_skin_has_its_stack, test_detect_extras_skips_kodi_defaults,
               test_gears_settings_bool_serialization,
               test_gears_settings_go_live_without_restart,
               test_dbmoved_install,
@@ -5058,6 +5059,38 @@ def test_skin_setup_wizard_runs_after_install():
         if os.path.isfile(marker):
             os.remove(marker)
 
+
+def test_every_optional_skin_has_its_stack():
+    """Every optional skin needs a SKIN_STACKS entry covering its install deps.
+
+    Rounded had none (found on Asaf's own install, 2026-08-31):
+    sync_skin_stacks then computed its stack as just the skin itself, disabled
+    all 18 addons in the OTHER skins' stacks -- skinshortcuts, skinvariables,
+    tmdbhelper, infotagger among them -- and Kodi reported them as non-existing
+    scripts. The menu never compiled ("includes STILL MISSING after 90s") and
+    the whole UI crawled. Nothing caught it because nothing checked that the
+    install deps and the stack agree.
+
+    CORE addons must never appear in a stack set: they are shared by every
+    skin, so disabling one breaks the build rather than just a skin."""
+    print("\n=== skin stacks: every optional skin can actually run ===")
+    CORE = {'script.module.six', 'script.module.requests', 'script.module.urllib3',
+            'script.module.certifi', 'script.module.chardet', 'script.module.idna'}
+    stacks = builds.BuildManager.SKIN_STACKS
+    for key, cfg in sorted(builds.BuildManager.OPTIONAL_SKINS.items()):
+        sid = cfg['id']
+        check('%s: has a SKIN_STACKS entry' % sid, sid in stacks)
+        if sid not in stacks:
+            continue
+        stack, deps = stacks[sid], set(cfg.get('deps', []))
+        missing = sorted((deps - CORE) - stack)
+        check('%s: stack covers its install deps%s'
+              % (sid, '' if not missing else ' -- missing %s' % missing), not missing)
+        leaked = sorted(stack & CORE)
+        check('%s: stack has no CORE addon%s'
+              % (sid, '' if not leaked else ' -- %s' % leaked), not leaked)
+    for sid, stack in stacks.items():
+        check('%s: not in its own stack' % sid, sid not in stack)
 
 if __name__ == '__main__':
     sys.exit(main())

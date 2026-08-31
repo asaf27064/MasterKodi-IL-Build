@@ -1938,6 +1938,26 @@ class BuildManager:
             'script.module.qrcode', 'resource.images.weathericons.white',
             'resource.images.studios.coloured', 'resource.font.robotocjksc'},
         'skin.nimbus': {'script.nimbus.helper'},
+        # Rounded had NO entry here until 2026-08-31, so installing it disabled
+        # all 18 addons in the other skins' stacks -- skinshortcuts, skinvariables,
+        # tmdbhelper, infotagger, jurialmunkey among them. Kodi then reported them
+        # as "non-existing scripts", the menu never compiled and the UI crawled.
+        # This is the skin's own declared install deps minus script.module.six
+        # (core -- never allowed in a stack set).
+        'skin.arctic.zephyr.rounded': {
+            'script.skinshortcuts', 'script.skin.info.service',
+            'script.skinvariables', 'plugin.video.themoviedb.helper',
+            'script.module.jurialmunkey', 'script.module.infotagger',
+            'script.module.addon.signals', 'script.module.qrcode',
+            'script.module.simplejson', 'script.module.unidecode',
+            'script.module.simpleeval', 'script.wikipedia',
+            'script.artistslideshow', 'script.globalsearch',
+            'script.image.resource.select',
+            'resource.images.recordlabels.white',
+            'resource.images.studios.coloured',
+            'resource.images.moviecountryicons.flags',
+            'resource.images.weathericons.white',
+            'resource.images.weatherfanart.single'},
     }
 
     def _disable_addons_in_db(self, addon_ids):
