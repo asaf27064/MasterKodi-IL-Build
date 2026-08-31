@@ -458,12 +458,17 @@ def _wait_for_skin_setup(monitor, appear=25, finish=900):
         log('skin setup: never appeared within %ss; carrying on' % appear,
             xbmc.LOGWARNING)
         return
-    waited = 0
+    # The chain drops back to the skin's startup window BETWEEN steps, so a
+    # single "not on screen" reading is a gap, not the end -- the first version
+    # of this resumed after 2s while the user was still on step 2 of 5, and only
+    # luck kept the rebuild's reload from landing in one of those gaps
+    # (Asaf's install, 2026-08-31). Require a run of clear readings instead.
+    CLEAR = 6
+    waited = clear = 0
     while waited < finish and not monitor.abortRequested():
-        if not _setup_is_on_screen():
+        clear = 0 if _setup_is_on_screen() else clear + 1
+        if clear >= CLEAR:
             log('skin setup: finished after %ss; resuming our work' % waited)
-            if not monitor.waitForAbort(2):
-                return
             return
         if monitor.waitForAbort(2):
             return
@@ -480,8 +485,13 @@ def _setup_is_on_screen():
         return False
     if not cfg:
         return False
-    return any(xbmc.getCondVisibility('Window.IsVisible(%d)' % w)
-               for w in cfg['windows'])
+    if any(xbmc.getCondVisibility('Window.IsVisible(%d)' % w)
+           for w in cfg['windows']):
+        return True
+    # The setup chain hops through the skin's startup window between steps, so
+    # 1100 counts as "still in the setup" too. Callers only ask while a setup is
+    # actually in progress, so this cannot be confused with an ordinary boot.
+    return xbmc.getCondVisibility('Window.IsVisible(1100)')
 
 
 def _rearm_setup_marker():
