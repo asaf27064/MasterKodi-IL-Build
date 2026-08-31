@@ -4,6 +4,7 @@ MasterKodi IL Wizard - Build Installation
 Flow: Select Build (from build.txt) -> Select Skin (Estuary/Arctic Fuse) -> Install
       OR: Add Arctic Fuse to existing build
 """
+import io
 import os
 import shutil
 import time
@@ -2824,9 +2825,43 @@ def _schedule_skin_setup(skin_id):
         os.makedirs(os.path.dirname(marker), exist_ok=True)
         with open(marker, 'w', encoding='utf-8') as f:
             f.write(skin_id)
+        _suppress_skin_auto_setup(skin_id)
         log(f"scheduled the setup wizard for {skin_id}")
     except Exception as e:
         log(f"could not schedule the skin setup: {e}", xbmc.LOGWARNING)
+
+
+def _suppress_skin_auto_setup(skin_id):
+    """Stamp the skin's own auto-launch gates so WE own the setup launch.
+
+    On the post-install boot the skin's startup path would open the setup ~3s in,
+    and our skinshortcuts rebuild then reloads the skin -- which drops that
+    window AND leaves FullInitStarted stamped, i.e. the setup is gone for good.
+    Two launchers racing a reload has no reliable winner, so we take the skin's
+    out of the race and run it ourselves after the reload.
+
+    Only the two gates are written. `startup.init` is deliberately untouched, so
+    the skin still applies its own first-run defaults when it loads -- we
+    suppress the auto-launch, never the skin's own configuration."""
+    try:
+        d = os.path.join(USERDATA, 'addon_data', skin_id)
+        os.makedirs(d, exist_ok=True)
+        p = os.path.join(d, 'settings.xml')
+        gates = ('fullinitstarted', 'fullinitended')
+        if os.path.isfile(p):
+            t = io.open(p, encoding='utf-8').read()
+        else:
+            t = '<settings version="2">\n</settings>\n'
+        for g in gates:
+            if 'id="%s"' % g in t:
+                continue
+            t = t.replace('</settings>',
+                          '    <setting id="%s" type="string">1</setting>\n</settings>' % g, 1)
+        with io.open(p, 'w', encoding='utf-8', newline='\n') as f:
+            f.write(t)
+        log(f"suppressed {skin_id}'s own setup auto-launch (we run it instead)")
+    except Exception as e:
+        log(f"could not suppress the skin auto-setup: {e}", xbmc.LOGWARNING)
 
 
 def _launch_skin_setup(skin_id):

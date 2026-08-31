@@ -5008,20 +5008,24 @@ def test_skin_setup_wizard_runs_after_install():
         check('a skin without its own setup schedules nothing',
               not os.path.isfile(marker))
 
-        # 2. gates still empty -> the skin's own boot path will run it, so we
-        #    stand down rather than showing the user two setups
+        # 2. scheduling also takes the SKIN's own auto-launch out of the race.
+        #    Two launchers plus our skinshortcuts rebuild (which reloads the skin
+        #    and drops whatever window is open) has no reliable winner: the
+        #    skin's setup would die WITH FullInitStarted already stamped, i.e.
+        #    gone for good. So we stamp the gates and own the launch.
+        import resources.libs.config as _cfg
+        sp_file = os.path.join(_cfg.USERDATA, 'addon_data', SID, 'settings.xml')
+        if os.path.isfile(sp_file):
+            os.remove(sp_file)
         builds._schedule_skin_setup(SID)
-        _x.getInfoLabel = lambda s: ''
-        svc._drop_setup_marker_if_skin_runs_it()
-        check('stands down when the skin runs its own setup',
-              not os.path.isfile(marker))
+        check('install writes the skin settings file', os.path.isfile(sp_file))
+        gated = io.open(sp_file, encoding='utf-8').read() if os.path.isfile(sp_file) else ''
+        check('the skin auto-launch gates are stamped',
+              'fullinitstarted' in gated and 'fullinitended' in gated)
+        check('startup.init is NOT touched (the skin keeps its own defaults)',
+              'startup.init' not in gated)
 
-        # 3. gates already stamped (a reinstall, or Android) -> we run it
-        builds._schedule_skin_setup(SID)
-        _x.getInfoLabel = lambda s: '1'
-        svc._drop_setup_marker_if_skin_runs_it()
-        check('keeps the marker when the skin will NOT run it',
-              os.path.isfile(marker))
+        # 3. and OUR launcher then runs it
         visible['Window.IsVisible(home)'] = True
         del fired[:]
         svc._process_pending_skin_setup()

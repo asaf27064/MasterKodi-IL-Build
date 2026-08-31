@@ -378,30 +378,6 @@ def _pending_setup_marker():
                         ADDON_ID, 'pending_skin_setup')
 
 
-def _drop_setup_marker_if_skin_runs_it():
-    """Called ONCE at service start, before Home appears. If the skin's own gates
-    are still empty its startup window is about to run the setup by itself, so we
-    stay out of the way and drop our marker -- otherwise the user would get the
-    setup twice."""
-    marker = _pending_setup_marker()
-    if not os.path.isfile(marker):
-        return
-    try:
-        sid = open(marker, encoding='utf-8').read().strip()
-    except Exception:
-        return
-    if not sid or xbmc.getSkinDir() != sid:
-        return
-    started = xbmc.getInfoLabel('Skin.String(FullInitStarted)')
-    ended = xbmc.getInfoLabel('Skin.String(FullInitEnded)')
-    if not started and not ended:
-        log("skin setup: the skin's own first-run path will run it; standing down")
-        try:
-            os.remove(marker)
-        except Exception:
-            pass
-
-
 def _process_pending_skin_setup():
     """Run a newly-installed skin's OWN setup wizard.
 
@@ -690,8 +666,6 @@ class POVHebrewService(xbmc.Monitor):
 
     def run(self):
         """Main service loop: sweep, run one manifest update pass, then idle."""
-        # Before Home appears: if the skin will run its own setup, drop our marker.
-        _drop_setup_marker_if_skin_runs_it()
         # First boot after a skin (re)install: the skin compiles its menu on
         # Home load but the loaded skin still holds the pre-build include stubs,
         # so WIDGETS don't render until a reload. Run the marker rebuild FIRST,
