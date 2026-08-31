@@ -108,6 +108,32 @@
         "resource.images.weathericons.white"
       ]
     },
+    "Rounded_Skin.zip": {
+      "fresh": [
+        "skin.arctic.zephyr.rounded",
+        "script.skinshortcuts",
+        "script.skin.info.service",
+        "script.skinvariables",
+        "plugin.video.themoviedb.helper",
+        "script.module.jurialmunkey",
+        "script.module.infotagger",
+        "script.module.addon.signals",
+        "script.module.qrcode",
+        "script.module.simplejson",
+        "script.module.unidecode",
+        "script.module.simpleeval",
+        "script.module.six",
+        "script.wikipedia",
+        "script.artistslideshow",
+        "script.globalsearch",
+        "script.image.resource.select",
+        "resource.images.recordlabels.white",
+        "resource.images.studios.coloured",
+        "resource.images.moviecountryicons.flags",
+        "resource.images.weathericons.white",
+        "resource.images.weatherfanart.single"
+      ]
+    },
     "POV_Estuary.zip": {
       "fresh": [
         "metadata.common.fanart.tv",

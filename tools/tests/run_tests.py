@@ -4261,7 +4261,8 @@ def main():
               test_pending_skin_removal_needs_no_restart,
               test_skin_removal_is_identical_for_every_skin,
               test_skin_setup_wizard_runs_after_install,
-              test_every_optional_skin_has_its_stack, test_detect_extras_skips_kodi_defaults,
+              test_every_optional_skin_has_its_stack,
+              test_skin_bundles_match_their_skin, test_detect_extras_skips_kodi_defaults,
               test_gears_settings_bool_serialization,
               test_gears_settings_go_live_without_restart,
               test_dbmoved_install,
@@ -5091,6 +5092,47 @@ def test_every_optional_skin_has_its_stack():
               % (sid, '' if not leaked else ' -- %s' % leaked), not leaked)
     for sid, stack in stacks.items():
         check('%s: not in its own stack' % sid, sid not in stack)
+
+def test_skin_bundles_match_their_skin():
+    """Every optional skin that installs from a one-zip bundle must have that
+    bundle defined in build.json, and the bundle must carry the skin plus all
+    of its declared install deps.
+
+    Rounded had no bundle at all until 2026-08-31, so it fell back to
+    manifest_install and fetched the skin plus ~20 deps one at a time -- which
+    is what Asaf saw as a slow, piecemeal install. A bundle that merely EXISTS
+    is not enough either: one missing dep and the skin installs broken, with
+    nothing to repair it (the bundle path does not consult the manifest)."""
+    print("\n=== skin bundles: contain the skin and all its deps ===")
+    import json as _js
+    bj = _js.load(io.open(os.path.join(REPO, 'build.json'), encoding='utf-8'))
+    bundles = bj.get('bundles', {})
+    for key, cfg in sorted(builds.BuildManager.OPTIONAL_SKINS.items()):
+        zipname = cfg.get('zip')
+        if not zipname:
+            continue
+        # build.json keys are the real filenames; cfg["zip"] is the local name
+        # the local filename and the release asset name differ for some skins
+        # (arctic_fuse.zip vs Arctic_Fuse_Skin.zip), so compare on the stem
+        def _stem(n):
+            return n.lower().replace("_", "").replace(".zip", "")
+        want = _stem(zipname)
+        match = next((b for b in bundles
+                      if _stem(b) == want or _stem(b).startswith(want)
+                      or want.startswith(_stem(b))), None)
+        check('%s: bundle %s defined in build.json' % (cfg['id'], zipname),
+              match is not None)
+        if not match:
+            continue
+        spec = bundles[match]
+        fresh = set(spec.get('fresh') or [])
+        if not fresh:
+            continue          # repack bundles carry whatever the original had
+        check('%s: bundle carries the skin itself' % cfg['id'], cfg['id'] in fresh)
+        missing = sorted(set(cfg.get('deps', [])) - fresh)
+        check('%s: bundle carries every declared dep%s'
+              % (cfg['id'], '' if not missing else ' -- missing %s' % missing),
+              not missing)
 
 if __name__ == '__main__':
     sys.exit(main())

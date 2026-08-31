@@ -1463,6 +1463,13 @@ class BuildManager:
         # different repo on skinshortcuts 3.x and its author warns 2.x menus
         # cannot migrate, so it needs its own Hebrew menu set first.
         'rounded': {'id': 'skin.arctic.zephyr.rounded', 'name': 'Arctic Zephyr Rounded',
+                    # One-zip CI bundle on Omega, same as AF3/Nimbus/Zephyr.
+                    # manifest_install fetched the skin + ~20 deps one at a
+                    # time, which is what made the install slow and piecemeal
+                    # (Asaf, 2026-08-31). It stays as the PIERS fallback: the
+                    # bundle carries Omega gui-5.17 addons that cannot load on
+                    # Kodi 22 -- the same gate Zephyr already uses.
+                    'url_key': 'rounded_skin_url', 'zip': 'rounded_skin.zip',
                     'manifest_install': True,
                     'deps': ['script.skinshortcuts', 'script.skin.info.service',
                              'script.skinvariables', 'plugin.video.themoviedb.helper',
