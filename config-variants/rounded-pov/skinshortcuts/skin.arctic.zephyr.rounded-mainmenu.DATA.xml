@@ -16,14 +16,6 @@
 		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
 		</shortcut>
 	<shortcut>
-		<defaultID>search</defaultID>
-		<label>137</label>
-		<label2>Common Shortcut</label2>
-		<icon>special://skin/extras/icons/search.png</icon>
-		<thumb>special://skin/extras/icons/search.png</thumb>
-		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?mode=navigator.search",return)</action>
-		</shortcut>
-	<shortcut>
 		<defaultID>mkil_torbox</defaultID>
 		<label>חיבור שירותים</label>
 		<label2>Common Shortcut</label2>

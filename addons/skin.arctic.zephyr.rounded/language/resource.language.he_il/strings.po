@@ -263,11 +263,11 @@ msgstr "פרקים שנצפו"
 
 msgctxt "#31061"
 msgid "h"
-msgstr "ש"
+msgstr ""
 
 msgctxt "#31062"
 msgid "m"
-msgstr "ד"
+msgstr ""
 
 msgctxt "#31063"
 msgid "New time format"

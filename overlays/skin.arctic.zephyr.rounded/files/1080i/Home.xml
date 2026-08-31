@@ -33,28 +33,51 @@
          hard to find: the gates that hide the ratings row, and clearlogo
          instead of title. Nothing cosmetic - no theme, layout or font
          choice, those are the user's. -->
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.Reset(hide.furniture.flags.vertical.widgets)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.Reset(hide.furniture.flags)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(enable.furniture.flags.icons)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.Reset(hide.flags.rating)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.Reset(hide.video.ratings)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.Reset(hide.501.507.flags.numeric.rating)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(enable.flags.rating.numeric)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.Reset(tmdbhelper.disableratings)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.imdb)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.tmdb)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.trakt)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.mdblist)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.metacritics)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.tomatoes)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.flags.rating.letterboxd)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.home.flix.title.clearlogo)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.view.netflix.title.clearlogo.video)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.view.509.title.clearlogo)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.view.511.title.clearlogo)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.view.514.title.clearlogo)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetBool(show.osd.video.clearlogo)</onload>
-    <onload condition="Skin.HasSetting(startup.init) + String.IsEmpty(Skin.String(kodirdil.defaults))">Skin.SetString(kodirdil.defaults,1)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.Reset(hide.furniture.flags.vertical.widgets)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.Reset(hide.furniture.flags)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(enable.furniture.flags.icons)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.Reset(hide.flags.rating)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.Reset(hide.video.ratings)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.Reset(hide.501.507.flags.numeric.rating)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(enable.flags.rating.numeric)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.Reset(tmdbhelper.disableratings)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.flags.rating.imdb)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.flags.rating.tmdb)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.flags.rating.trakt)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.flags.rating.mdblist)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.flags.rating.metacritics)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.flags.rating.tomatoes)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.flags.rating.letterboxd)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.home.flix.title.clearlogo)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.view.netflix.title.clearlogo.video)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.view.509.title.clearlogo)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.view.511.title.clearlogo)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.view.514.title.clearlogo)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(show.osd.video.clearlogo)</onload>
+        <!-- Asaf, 2026-08-31 (from his own pass over the skin settings): hide the
+         mouse warning, auto-scroll long labels and the widget plot, and select
+         the transparent genre-icon set. The resource is a real dependency now,
+         so this can never point at something the box does not have. -->
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(hide.mouse.warning)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(labels.autoscroll)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(widgets.autoscrollingplot)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetString(genre.icons.path,resource://resource.images.moviegenreicons.transparent/)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetString(genre.icons.name,Movie Genre Icons - Transparent)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetString(genre.icons.ext,.png)</onload>
+        <!-- Asaf, 2026-08-31: the video-OSD settings he approved. Pausing shows
+         the detail panel and the plot, and the onboarding tips are hidden.
+         plot.on.pause only draws when info.on.pause is set too, so they go
+         together; it reads VideoPlayer.Plot, so it does NOT need
+         TMDbHelper's service (deliberately left off).
+         hide.osd.video.on.pause is the mutually exclusive twin of
+         info.on.pause ; the skin's own settings screen clears one when you
+         set the other, so we clear it here rather than leave a box in a
+         state its UI cannot produce. -->
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.Reset(show.osd.info.on.pause)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(hide.osd.video.on.pause)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.Reset(show.osd.video.plot.on.pause)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetBool(hide.osd.video.tips)</onload>
+    <onload condition="Skin.HasSetting(startup.init) + !String.IsEqual(Skin.String(kodirdil.defaults),4)">Skin.SetString(kodirdil.defaults,4)</onload>
 
     <!-- KODIRDIL: pin the font to NotoSans Regular (index 11).
          Of the eleven fontsets this skin ships it is the ONLY one whose

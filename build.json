@@ -5,7 +5,7 @@
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "manifest_schema": 1,
-  "config_version": 64,
+  "config_version": 65,
   "piers": {
     "release_tag": "addons-piers",
     "manifest": "manifest-piers.json",
@@ -131,7 +131,8 @@
         "resource.images.studios.coloured",
         "resource.images.moviecountryicons.flags",
         "resource.images.weathericons.white",
-        "resource.images.weatherfanart.single"
+        "resource.images.weatherfanart.single",
+        "resource.images.moviegenreicons.transparent"
       ]
     },
     "POV_Estuary.zip": {

@@ -1484,7 +1484,11 @@ class BuildManager:
                              'resource.images.studios.coloured',
                              'resource.images.moviecountryicons.flags',
                              'resource.images.weathericons.white',
-                             'resource.images.weatherfanart.single']},
+                             'resource.images.weatherfanart.single',
+                             # the genre-icon set our defaults select; a box
+                             # installing only this skin would not otherwise
+                             # have it, so the setting could not be chosen
+                             'resource.images.moviegenreicons.transparent']},
         # skin.bingie is NOT listed yet on purpose: its plugin.video.tmdb.bingie
         # .helper hard-imports script.module.pil (not optional="true"), which we
         # do not vendor -- Kodi would refuse to enable the helper and the skin
@@ -1964,7 +1968,8 @@ class BuildManager:
             'resource.images.studios.coloured',
             'resource.images.moviecountryicons.flags',
             'resource.images.weathericons.white',
-            'resource.images.weatherfanart.single'},
+            'resource.images.weatherfanart.single',
+            'resource.images.moviegenreicons.transparent'},
     }
 
     def _disable_addons_in_db(self, addon_ids):

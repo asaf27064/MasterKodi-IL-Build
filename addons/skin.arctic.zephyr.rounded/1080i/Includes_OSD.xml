@@ -1095,6 +1095,24 @@
 
             <scrolltime>200</scrolltime>
 
+            <!-- KODIRDIL: GearsAI subtitles (the "Wand" window). Every other skin in the
+                 build exposes this; Rounded shipped no reference to the addon at all.
+                 First in the subtitle group and gold-labelled so it stands out. Gold, not
+                 the theme accent: the accent is ALSO the focus background, so an
+                 accent-coloured label vanished into the highlight when focused (Asaf,
+                 2026-08-31). Hidden when the addon is absent, and on LiveTV / music
+                 videos where it has nothing to do. -->
+            <control type="button" id="9326" description="GearsAI Subtitles">
+               <width>100%</width>
+               <height>60</height>
+               <include>Object_OSD_Button_Focus_Menu</include>
+               <align>left</align>
+               <label>[COLOR FFFFC107]כתוביות GearsAI[/COLOR]</label>
+               <onclick>RunScript(service.subtitles.gearsai,sub_window)</onclick>
+               <visible>System.HasAddon(service.subtitles.gearsai) + !VideoPlayer.Content(LiveTV) + !VideoPlayer.Content(musicvideos)</visible>
+               <onfocus>SetProperty(OSDVideo_DONT_AUTO_CLOSE,1,Home)</onfocus>
+               <onunfocus>ClearProperty(OSDVideo_DONT_AUTO_CLOSE,Home)</onunfocus>
+            </control>
             <control type="button" id="9301" description="Download">
                <width>100%</width>
                <height>60</height>
@@ -1103,21 +1121,6 @@
                <align>left</align>
                <label>33003</label>
                <onclick>ActivateWindow(SubtitleSearch)</onclick>
-               <onfocus>SetProperty(OSDVideo_DONT_AUTO_CLOSE,1,Home)</onfocus>
-               <onunfocus>ClearProperty(OSDVideo_DONT_AUTO_CLOSE,Home)</onunfocus>
-            </control>
-            <!-- KODIRDIL: GearsAI subtitles (the "Wand" window). Every other skin
-                 in the build exposes this; Rounded shipped no reference to the
-                 addon at all. Same call Zephyr uses. Hidden when the addon is
-                 absent, and on LiveTV / music videos where it has nothing to do. -->
-            <control type="button" id="9326" description="GearsAI Subtitles">
-               <width>100%</width>
-               <height>60</height>
-               <include>Object_OSD_Button_Focus_Menu</include>
-               <align>left</align>
-               <label>כתוביות GearsAI</label>
-               <onclick>RunScript(service.subtitles.gearsai,sub_window)</onclick>
-               <visible>System.HasAddon(service.subtitles.gearsai) + !VideoPlayer.Content(LiveTV) + !VideoPlayer.Content(musicvideos)</visible>
                <onfocus>SetProperty(OSDVideo_DONT_AUTO_CLOSE,1,Home)</onfocus>
                <onunfocus>ClearProperty(OSDVideo_DONT_AUTO_CLOSE,Home)</onunfocus>
             </control>

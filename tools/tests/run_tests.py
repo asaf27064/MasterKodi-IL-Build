@@ -4486,12 +4486,28 @@ def test_rounded_ratings_are_visible():
           not seeds)
     home = io.open(os.path.join(REPO, 'overlays', 'skin.arctic.zephyr.rounded',
                                 'files', '1080i', 'Home.xml'), encoding='utf-8').read()
+    # The marker carries a VERSION, not a bare flag: bumping it lets one more
+    # batch of defaults reach boxes that already took the previous batch, without
+    # re-applying anything the user has changed since (Asaf's 2026-08-31 pass
+    # added the mouse warning, the auto-scrolls and the genre-icon set).
+    import re as _re
+    m = _re.search(r'Skin\.SetString\(kodirdil\.defaults,(\d+)\)', home)
+    check('the defaults marker is versioned', bool(m))
+    ver = m.group(1) if m else '?'
     GATE = ('Skin.HasSetting(startup.init) + '
-            'String.IsEmpty(Skin.String(kodirdil.defaults))')
+            '!String.IsEqual(Skin.String(kodirdil.defaults),%s)' % ver)
     check('defaults are gated on the skin having finished its first run',
           GATE in home)
+    # every default must carry the gate -- one ungated line would re-apply on
+    # every single Home load and stamp over the user's own choice
+    gated = home.count('<onload condition="%s">' % GATE)
+    check('all %d default lines are gated' % gated, gated >= 25)
     check('the marker is set so they apply exactly once',
-          'Skin.SetString(kodirdil.defaults,1)' in home)
+          'Skin.SetString(kodirdil.defaults,%s)' % ver in home)
+    # the settings Asaf asked for on 2026-08-31 must be in that batch
+    for sid in ('hide.mouse.warning', 'labels.autoscroll', 'widgets.autoscrollingplot',
+                'genre.icons.name'):
+        check('default applied: %s' % sid, sid in home)
     # the gates that actually make ratings visible
     MUST_ON = ('enable.furniture.flags.icons', 'enable.flags.rating.numeric',
                'show.flags.rating.imdb', 'show.flags.rating.tmdb',
@@ -4638,13 +4654,43 @@ def test_new_skins_are_registered_with_the_wizard():
             bad.append(f)
     check('every generated overlay file carries the LRM separator%s'
           % ('' if not bad else ' -- %s' % bad), not bad)
-    # the separator must be LRM (U+200E). RLM (U+200F) is the earlier WRONG fix:
-    # it forces the very bidi absorption this is meant to prevent.
-    rlm = [f for f in files
-           if '‏' in io.open(os.path.join(ovdir, 'files', f.replace('/', os.sep)),
-                                  encoding='utf-8').read()]
-    check('no RLM anywhere in the overlay (it was the wrong mark)%s'
-          % ('' if not rlm else ' -- %s' % rlm), not rlm)
+    # The SEPARATOR must be LRM (U+200E): it is a neutral run that must not be
+    # absorbed by the Hebrew beside it. RLM there is the July WRONG fix and
+    # forces the very absorption this prevents -- so no RLM may touch it.
+    #
+    # RLM (U+200F) IS correct in one other place: a Hebrew label glued to its
+    # number ("עונה 3"), which must stay together AND in RTL order. Measured
+    # with a UAX#9 engine, the token order in an RTL line is "9 H 3 | H" without
+    # it and "9 H | 3 H" with it -- the first is what Asaf photographed as
+    # "3 • עונה 9פרק" (2026-08-31). So the rule is not "never RLM", it is
+    # "never RLM inside the separator".
+    import re as _re2
+    SEP = '‎  •  ‎'
+    bad_sep, stray = [], []
+    for f in files:
+        txt = io.open(os.path.join(ovdir, 'files', f.replace('/', os.sep)),
+                      encoding='utf-8').read()
+        if '‏' in SEP or SEP.replace('‎', '‏') in txt:
+            bad_sep.append(f)
+        # Not every bullet in the skin is one of ours -- upstream has its own,
+        # with different spacing, which the generator leaves alone. What must
+        # hold is that no UNCONVERTED separator survives: every "  •  " has
+        # become the LRM form. An RLM may follow a separator (it starts the next
+        # number group) but must never appear inside one.
+        if '  •  ' in txt:
+            stray.append((f, txt.count('  •  ')))
+    check('the separator never uses RLM%s'
+          % ('' if not bad_sep else ' -- %s' % bad_sep), not bad_sep)
+    check('no unconverted "  •  " separator remains%s'
+          % ('' if not stray else ' -- %s' % stray[:3]), not stray)
+    # No RLM is shipped: an on-screen probe (2026-08-31) rendered the
+    # season/episode/date/duration line CORRECTLY with no marks at all, so the
+    # RLM experiment was reverted. The rule survives, disabled, in
+    # tools/gen_rounded_bidi_overlay.py in case the real cause turns out to need
+    # it -- but nothing may ship it without an on-screen check first.
+    rlm_sites = sum(io.open(os.path.join(ovdir, 'files', f.replace('/', os.sep)),
+                            encoding='utf-8').read().count('‏') for f in files)
+    check('no RLM is shipped (the probe showed it is not the fix)', rlm_sites == 0)
     osd = io.open(os.path.join(ovdir, 'files', '1080i', 'Includes_OSD.xml'),
                   encoding='utf-8').read()
     check('the OSD carries the GearsAI wand call',
