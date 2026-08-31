@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-08-31T14:12:29Z",
+  "generated_utc": "2026-08-31T15:42:45Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -45,12 +45,12 @@
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.188",
+      "version": "2.4.189",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.188.zip",
-      "sha256": "d50ee78321f7d3727a7b0e9707cd681cc8f20de04878e2c4fdb47e77f336ce77",
-      "size": 6239927,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.188.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.189.zip",
+      "sha256": "2c2440c8cdcbd75d3e3cd38d7016f0ea4f6b4d83fcab23d8f61f474c2ab17bb4",
+      "size": 6239995,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.189.zip"
     },
     {
       "id": "plugin.video.gears",
@@ -667,8 +667,8 @@
       "version": "1.3.00",
       "channel": "optional",
       "zip": "skin.arctic.zephyr.rounded-1.3.00.zip",
-      "sha256": "0df29ee462d7543cb200bd6fb26d9fcf5c9643785f0a770cc0eaca3c12c5d797",
-      "size": 76531122,
+      "sha256": "80329918c86ac9352a900f7bfc3d42bdcf08ad700471f3c6eeeed57a436b6afe",
+      "size": 76531815,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.zephyr.rounded-1.3.00.zip"
     },
     {
@@ -700,13 +700,13 @@
     }
   ],
   "config": {
-    "version": "64",
-    "zip": "config-64.zip",
-    "sha256": "c293d4735ce70584e1b333f3ed7fe55c4abcfee54a9373efc0f792a49df251e4",
+    "version": "65",
+    "zip": "config-65.zip",
+    "sha256": "0526018ec661864d62f0a04ae9a455519f595e7b8eb9a735a7e4fb838ab1c502",
     "size": 2698350,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-64.zip"
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-65.zip"
   },
   "content_variants": {
-    "version": "ca1e612d1423abd7"
+    "version": "f9d2689becca5d21"
   }
 }
