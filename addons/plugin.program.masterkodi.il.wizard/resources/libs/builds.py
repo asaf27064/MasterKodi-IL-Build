@@ -2847,12 +2847,18 @@ def _schedule_skin_setup(skin_id):
     reloaded into it."""
     if skin_id not in SKIN_SETUP_WIZARD:
         return
+    if not _is_android():
+        # Everywhere with a working restart, the SKIN runs its own setup on the
+        # next boot -- before Home, with nothing competing, exactly like a clean
+        # skin install. We must not race it: we only make our post-install
+        # rebuild wait for it (see _wait_for_skin_setup in service.py).
+        log(f"{skin_id}: leaving the setup to the skin's own first-run path")
+        return
     try:
         marker = os.path.join(ADDON_DATA_PATH, ADDON_ID, 'pending_skin_setup')
         os.makedirs(os.path.dirname(marker), exist_ok=True)
         with open(marker, 'w', encoding='utf-8') as f:
             f.write(skin_id)
-        _suppress_skin_auto_setup(skin_id)
         log(f"scheduled the setup wizard for {skin_id}")
     except Exception as e:
         log(f"could not schedule the skin setup: {e}", xbmc.LOGWARNING)

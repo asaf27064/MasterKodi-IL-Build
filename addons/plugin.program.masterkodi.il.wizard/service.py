@@ -421,7 +421,82 @@ def _process_pending_skin_setup():
         pass
 
 
-def _run_pending_skin_setup_when_home(monitor, timeout=45):
+def _skin_will_run_its_own_setup():
+    """True when the active skin is about to run its own first-run setup.
+
+    The skin starts it only while BOTH of its gates are still empty, so an
+    empty pair means this boot is the one that shows it."""
+    try:
+        from resources.libs.builds import SKIN_SETUP_WIZARD
+        if xbmc.getSkinDir() not in SKIN_SETUP_WIZARD:
+            return False
+    except Exception:
+        return False
+    return not (xbmc.getInfoLabel('Skin.String(FullInitStarted)')
+                or xbmc.getInfoLabel('Skin.String(FullInitEnded)'))
+
+
+def _wait_for_skin_setup(monitor, appear=25, finish=900):
+    """Hold our post-install work while the skin shows its own setup.
+
+    Our menu rebuild RELOADS the skin, and a reload drops whatever window is
+    open -- which would kill the setup mid-way and leave FullInitStarted
+    stamped, i.e. the setup gone for good. So when the skin is going to run
+    its setup, we wait for it to appear and then for the user to finish it.
+    Cheap no-op otherwise: one getSkinDir plus two info labels."""
+    if not _skin_will_run_its_own_setup():
+        return
+    log('skin setup: the skin is running its own first-run setup; holding our work')
+    waited = 0
+    while waited < appear and not monitor.abortRequested():
+        if _setup_is_on_screen():
+            break
+        if monitor.waitForAbort(1):
+            return
+        waited += 1
+    if not _setup_is_on_screen():
+        log('skin setup: never appeared within %ss; carrying on' % appear,
+            xbmc.LOGWARNING)
+        return
+    waited = 0
+    while waited < finish and not monitor.abortRequested():
+        if not _setup_is_on_screen():
+            log('skin setup: finished after %ss; resuming our work' % waited)
+            if not monitor.waitForAbort(2):
+                return
+            return
+        if monitor.waitForAbort(2):
+            return
+        waited += 2
+    log('skin setup: still open after %ss; carrying on' % finish, xbmc.LOGWARNING)
+
+
+def _setup_is_on_screen():
+    """True while any window of a skin's setup chain is showing."""
+    try:
+        from resources.libs.builds import SKIN_SETUP_WIZARD
+        cfg = SKIN_SETUP_WIZARD.get(xbmc.getSkinDir())
+    except Exception:
+        return False
+    if not cfg:
+        return False
+    return any(xbmc.getCondVisibility('Window.IsVisible(%d)' % w)
+               for w in cfg['windows'])
+
+
+def _rearm_setup_marker():
+    """Put the marker back so the launch can be retried."""
+    try:
+        p = _pending_setup_marker()
+        if not os.path.isfile(p):
+            os.makedirs(os.path.dirname(p), exist_ok=True)
+            with open(p, 'w', encoding='utf-8') as f:
+                f.write(xbmc.getSkinDir())
+    except Exception as e:
+        log('could not re-arm the setup marker: %s' % e, xbmc.LOGWARNING)
+
+
+def _run_pending_skin_setup_when_home(monitor, timeout=60):
     """Wait (briefly) for Home, then run a pending skin setup.
 
     Called early on every boot path. The setup wizard has to land within a
@@ -431,16 +506,39 @@ def _run_pending_skin_setup_when_home(monitor, timeout=45):
     a normal boot pays one os.path.isfile."""
     if not os.path.isfile(_pending_setup_marker()):
         return
-    waited = 0
+    # Home must be STABLE, not merely visible. The skin's startup window arms
+    # AlarmClock(GoHome,ReplaceWindow(home),00:03) whenever FullInitStarted is
+    # set -- which it always is now, because we stamp it to suppress the skin's
+    # own auto-launch. Firing inside those 3 seconds means the alarm replaces the
+    # setup with Home ~2s later, which is exactly what happened on Asaf's
+    # install. Requiring several consecutive seconds of Home outlives the alarm.
+    STABLE = 6
+    waited = stable = 0
     while waited < timeout and not monitor.abortRequested():
-        if xbmc.getCondVisibility('Window.IsVisible(home)'):
-            _process_pending_skin_setup()
-            return
+        stable = stable + 1 if xbmc.getCondVisibility('Window.IsVisible(home)') else 0
+        if stable >= STABLE:
+            break
         if monitor.waitForAbort(1):
             return
         waited += 1
-    log('skin setup: Home never appeared in %ss; leaving it pending' % timeout,
-        xbmc.LOGWARNING)
+    if stable < STABLE:
+        log('skin setup: Home never settled within %ss; leaving it pending' % timeout,
+            xbmc.LOGWARNING)
+        return
+    # Launch, then CHECK it is still there. Anything that replaces the window
+    # (an alarm, a skin reload) would otherwise lose the setup silently, and the
+    # marker is already gone by then.
+    for attempt in (1, 2, 3):
+        _process_pending_skin_setup()
+        if monitor.waitForAbort(4):
+            return
+        if _setup_is_on_screen():
+            log('skin setup: on screen (attempt %d)' % attempt)
+            return
+        log('skin setup: something replaced it; retrying (attempt %d)' % attempt,
+            xbmc.LOGWARNING)
+        _rearm_setup_marker()
+    log('skin setup: could not keep it on screen', xbmc.LOGWARNING)
 
 
 def _process_pending_skin_removal():
@@ -673,6 +771,11 @@ class POVHebrewService(xbmc.Monitor):
         # compiled includes to appear, so the one visible reload lands seconds
         # after boot, before the user starts navigating (running it after the
         # 15s settle yanked mid-navigation users back to home).
+        # Never reload the skin out from under its own first-run setup: the
+        # rebuild below reloads, and a reload would drop the setup AND leave
+        # FullInitStarted stamped, losing it permanently (Asaf, 2026-08-31).
+        _wait_for_skin_setup(self)
+
         if not self.waitForAbort(2):
             # Make sure the Gears shortcut folder the default networks widget
             # points at exists BEFORE the rebuild's reload populates widgets
@@ -716,10 +819,15 @@ class POVHebrewService(xbmc.Monitor):
             # this IS the boot right after an install -- the moment the build
             # comes up with no credentials, which is what the offer is for
             _offer_services_connect(self)
+            # Tick fast while a setup is still pending: this loop used to wait
+            # 300s before its first retry, so the retry added in 2.4.183 could
+            # not help for five minutes on the one boot that needs it.
             while not self.abortRequested():
-                if self.waitForAbort(300):
+                pending = os.path.isfile(_pending_setup_marker())
+                if self.waitForAbort(5 if pending else 300):
                     break
-                _process_pending_skin_setup()
+                if pending:
+                    _run_pending_skin_setup_when_home(self, timeout=20)
             return
 
         # Remove a previous skin the user chose to drop when switching skins
