@@ -371,6 +371,102 @@ def _pending_removal_marker():
                         ADDON_ID, 'pending_skin_removal')
 
 
+def _pending_setup_marker():
+    """Path of the marker install_skin drops when a newly-installed skin has its
+    own setup wizard to run."""
+    return os.path.join(xbmcvfs.translatePath('special://userdata/addon_data/'),
+                        ADDON_ID, 'pending_skin_setup')
+
+
+def _drop_setup_marker_if_skin_runs_it():
+    """Called ONCE at service start, before Home appears. If the skin's own gates
+    are still empty its startup window is about to run the setup by itself, so we
+    stay out of the way and drop our marker -- otherwise the user would get the
+    setup twice."""
+    marker = _pending_setup_marker()
+    if not os.path.isfile(marker):
+        return
+    try:
+        sid = open(marker, encoding='utf-8').read().strip()
+    except Exception:
+        return
+    if not sid or xbmc.getSkinDir() != sid:
+        return
+    started = xbmc.getInfoLabel('Skin.String(FullInitStarted)')
+    ended = xbmc.getInfoLabel('Skin.String(FullInitEnded)')
+    if not started and not ended:
+        log("skin setup: the skin's own first-run path will run it; standing down")
+        try:
+            os.remove(marker)
+        except Exception:
+            pass
+
+
+def _process_pending_skin_setup():
+    """Run a newly-installed skin's OWN setup wizard.
+
+    The skin only starts it from its startup window, and only while both of its
+    gates are empty -- and those get stamped by the first Home load, so a
+    reinstall (Kodi keeps addon_data) or an Android live switch never shows it
+    again. We drive the skin's own documented entry point instead."""
+    marker = _pending_setup_marker()
+    if not os.path.isfile(marker):
+        return
+    try:
+        sid = open(marker, encoding='utf-8').read().strip()
+    except Exception:
+        sid = ''
+    if not sid:
+        try:
+            os.remove(marker)
+        except Exception:
+            pass
+        return
+    if xbmc.getSkinDir() != sid:
+        return                      # not the active skin yet -- try again later
+    if not xbmc.getCondVisibility('Window.IsVisible(home)'):
+        return                      # the properties it sets live on Home
+    try:
+        from resources.libs.builds import _launch_skin_setup, SKIN_SETUP_WIZARD
+    except Exception as e:
+        log(f"skin setup import failed: {e}", xbmc.LOGWARNING)
+        return
+    if sid not in SKIN_SETUP_WIZARD:
+        try:
+            os.remove(marker)
+        except Exception:
+            pass
+        return
+    if not _launch_skin_setup(sid):
+        return                      # already on screen -- keep the marker, retry
+    try:
+        os.remove(marker)
+    except Exception:
+        pass
+
+
+def _run_pending_skin_setup_when_home(monitor, timeout=45):
+    """Wait (briefly) for Home, then run a pending skin setup.
+
+    Called early on every boot path. The setup wizard has to land within a
+    few seconds of Home appearing: reaching it from the idle loop instead
+    took 108s on the live box, which drops the setup on a user who has
+    already started navigating. Returns at once when nothing is pending, so
+    a normal boot pays one os.path.isfile."""
+    if not os.path.isfile(_pending_setup_marker()):
+        return
+    waited = 0
+    while waited < timeout and not monitor.abortRequested():
+        if xbmc.getCondVisibility('Window.IsVisible(home)'):
+            _process_pending_skin_setup()
+            return
+        if monitor.waitForAbort(1):
+            return
+        waited += 1
+    log('skin setup: Home never appeared in %ss; leaving it pending' % timeout,
+        xbmc.LOGWARNING)
+
+
 def _process_pending_skin_removal():
     """Uninstall the skin the user dropped during a skin switch. Deferred from
     the skins menu to now (the old skin is no longer the running one)."""
@@ -594,6 +690,8 @@ class POVHebrewService(xbmc.Monitor):
 
     def run(self):
         """Main service loop: sweep, run one manifest update pass, then idle."""
+        # Before Home appears: if the skin will run its own setup, drop our marker.
+        _drop_setup_marker_if_skin_runs_it()
         # First boot after a skin (re)install: the skin compiles its menu on
         # Home load but the loaded skin still holds the pre-build include stubs,
         # so WIDGETS don't render until a reload. Run the marker rebuild FIRST,
@@ -623,6 +721,12 @@ class POVHebrewService(xbmc.Monitor):
                 log(f"gears networks seed error: {e}", xbmc.LOGWARNING)
             _process_pending_view_rebuild()
 
+        # A freshly installed skin gets its own setup wizard now -- before the
+        # branch below, because the post-install boot returns into its own idle
+        # loop and would otherwise never reach it. This is the boot the user is
+        # looking at right after installing a skin.
+        _run_pending_skin_setup_when_home(self)
+
         # Skip the check once right after a build install (the wizard sets this).
         if ADDON.getSetting('skip_update_check') == 'true':
             log("Skipping update check (after build installation)")
@@ -641,6 +745,7 @@ class POVHebrewService(xbmc.Monitor):
             while not self.abortRequested():
                 if self.waitForAbort(300):
                     break
+                _process_pending_skin_setup()
             return
 
         # Remove a previous skin the user chose to drop when switching skins
@@ -700,7 +805,8 @@ class POVHebrewService(xbmc.Monitor):
         # revert the switch, and it cannot pull the skin out from under the user.
         removal_ticks = 0
         while not self.abortRequested():
-            pending = os.path.isfile(_pending_removal_marker())
+            pending = (os.path.isfile(_pending_removal_marker())
+                       or os.path.isfile(_pending_setup_marker()))
             if not pending:
                 removal_ticks = 0
             # Poll quickly for the first minute after a marker appears (the
@@ -712,7 +818,9 @@ class POVHebrewService(xbmc.Monitor):
                 break
             if pending:
                 removal_ticks += 1
-                _process_pending_skin_removal()
+                if os.path.isfile(_pending_removal_marker()):
+                    _process_pending_skin_removal()
+            _process_pending_skin_setup()
         log("Service stopped")
 
 

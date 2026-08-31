@@ -2169,7 +2169,10 @@ class BuildManager:
             return False
         if skin.get('manifest_install') and (_kodi_major() >= 22 or not skin_url):
             # Piers always; Omega only when no bundle URL is available
-            return self._install_from_manifest(skin['id'], skin.get('deps', []), skin['name'])
+            ok = self._install_from_manifest(skin['id'], skin.get('deps', []), skin['name'])
+            if ok:
+                _schedule_skin_setup(skin['id'])
+            return ok
         if not skin_url:
             return False
         progress = xbmcgui.DialogProgress()
@@ -2221,6 +2224,7 @@ class BuildManager:
             progress.update(100, "[COLOR lime]הותקן![/COLOR]")
             xbmc.sleep(400)
             progress.close()
+            _schedule_skin_setup(skin.get('id'))
             return True
         except Exception as e:
             try:
@@ -2797,6 +2801,52 @@ _SKIN_CATALOG = [
 # from _SKIN_CATALOG (its TMDb helper hard-imports script.module.pil, which we
 # do not ship). Leaving it out of THIS set meant a user with Bingie installed
 # had no way to remove it from the wizard at all (Asaf, 2026-08-29).
+# Skins that ship their OWN first-run setup wizard, and the windows it uses.
+# Rounded is the only one: every other skin ships our preconfigured settings on
+# purpose, while Rounded deliberately lets each user choose (Asaf, 2026-08-29).
+# 'start' is the first step; 'windows' is the whole chain, used to tell whether
+# the setup is already on screen so we never restart it from step 1.
+SKIN_SETUP_WIZARD = {
+    'skin.arctic.zephyr.rounded': {'start': 1153,
+                                   'windows': (1153, 1154, 1155, 1156, 1159)},
+}
+
+
+def _schedule_skin_setup(skin_id):
+    """Ask the service to run this skin's own setup wizard once it is on
+    screen. Deferred rather than done here because the skin is not the active
+    one yet at install time -- and on the restart platforms Kodi has not even
+    reloaded into it."""
+    if skin_id not in SKIN_SETUP_WIZARD:
+        return
+    try:
+        marker = os.path.join(ADDON_DATA_PATH, ADDON_ID, 'pending_skin_setup')
+        os.makedirs(os.path.dirname(marker), exist_ok=True)
+        with open(marker, 'w', encoding='utf-8') as f:
+            f.write(skin_id)
+        log(f"scheduled the setup wizard for {skin_id}")
+    except Exception as e:
+        log(f"could not schedule the skin setup: {e}", xbmc.LOGWARNING)
+
+
+def _launch_skin_setup(skin_id):
+    """Run the skin's own setup wizard now, the way the skin's own Skin Settings
+    button does it. The launchsetupwizard property is the skin's documented
+    override in Condition_Show_Button_Setup_Wizard, so this works even once
+    FullInitStarted/FullInitEnded have been stamped."""
+    cfg = SKIN_SETUP_WIZARD.get(skin_id)
+    if not cfg:
+        return False
+    if any(xbmc.getCondVisibility('Window.IsVisible(%d)' % w)
+           for w in cfg['windows']):
+        return False                      # already running -- never restart it
+    xbmc.executebuiltin('SetProperty(launchsetupwizard,1,Home)')
+    xbmc.executebuiltin('SetProperty(SetupWizardDirection,Next,Home)')
+    xbmc.executebuiltin('ActivateWindow(%d)' % cfg['start'])
+    log(f"launched the setup wizard for {skin_id}")
+    return True
+
+
 _OPTIONAL_SKIN_IDS = {'skin.arctic.fuse.3', 'skin.nimbus',
                       'skin.arctic.zephyr.2.resurrection.mod',
                       'skin.arctic.zephyr.rounded',
@@ -2917,6 +2967,9 @@ def _skin_switch_flow():
         return
 
     prev_active = active
+    # a fresh install is what earns the skin's own setup wizard; switching back
+    # to a skin the user already had configured must not re-run it
+    fresh_install = not installed
     # install if it's an optional skin that isn't present yet
     if not installed and key != 'estuary':
         skin_cfg = BuildManager.OPTIONAL_SKINS.get(key, {})
@@ -3013,6 +3066,12 @@ def _skin_switch_flow():
                 xbmcgui.NOTIFICATION_INFO, 3000)
             xbmc.executebuiltin('Dialog.Close(all,true)')
             xbmc.executebuiltin('ActivateWindow(home)')
+            # A live switch never goes through the skin's startup window, so the
+            # skin's own first-run path cannot run and Home immediately stamps
+            # FullInitEnded. Drive the skin's own setup entry point directly --
+            # there is no restart here for the service marker to be picked up on.
+            if fresh_install and sid in SKIN_SETUP_WIZARD:
+                _launch_skin_setup(sid)
             return 'close'          # tell skins_menu to stop looping
         else:
             # fall back to the hard exit -- disk already holds the new skin, so

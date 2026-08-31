@@ -4259,7 +4259,8 @@ def main():
               test_active_skin_update_on_windows,
               test_maintenance_folder_contents, test_remove_skin_purges_residue,
               test_pending_skin_removal_needs_no_restart,
-              test_skin_removal_is_identical_for_every_skin, test_detect_extras_skips_kodi_defaults,
+              test_skin_removal_is_identical_for_every_skin,
+              test_skin_setup_wizard_runs_after_install, test_detect_extras_skips_kodi_defaults,
               test_gears_settings_bool_serialization,
               test_gears_settings_go_live_without_restart,
               test_dbmoved_install,
@@ -4922,6 +4923,134 @@ def test_skin_removal_is_identical_for_every_skin():
         check('skin.estuary survives', os.path.isdir(est))
     finally:
         _x.getSkinDir = orig
+        if os.path.isfile(marker):
+            os.remove(marker)
+
+
+def test_skin_setup_wizard_runs_after_install():
+    """A newly-installed skin's OWN setup wizard must actually run.
+
+    Asaf, 2026-08-31: "it doesn't pop up the skin's initial setup". Measured on
+    the live box: the skin starts its setup only from its startup window, and
+    only while BOTH its gates are empty --
+
+        String.IsEmpty(Skin.String(FullInitStarted)) +
+        String.IsEmpty(Skin.String(FullInitEnded))   -> ReplaceWindow(1153)
+
+    FullInitStarted is stamped the moment step 1 merely loads, and FullInitEnded
+    by every Home load, so after one Home the setup can never appear again --
+    and Kodi keeps addon_data across a reinstall. On Android the live switch
+    never passes through the startup window at all.
+
+    So we drive the skin's own documented entry point (the launchsetupwizard
+    override its own Skin Settings button uses). Pinned here: install schedules
+    it, we stand down when the skin will run it itself, we fire it when the
+    gates are already stamped, and we never restart a setup already on
+    screen."""
+    print("\n=== skin setup wizard: runs after install ===")
+    import importlib.util
+    import xbmc as _x
+
+    sp = importlib.util.spec_from_file_location(
+        'mk_wizard_service_setup',
+        os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard', 'service.py'))
+    svc = importlib.util.module_from_spec(sp)
+    try:
+        sp.loader.exec_module(svc)
+    except SystemExit:
+        check('wizard service importable', False)
+        return
+
+    SID = 'skin.arctic.zephyr.rounded'
+    cfg = builds.SKIN_SETUP_WIZARD.get(SID)
+    check('rounded is registered as having its own setup', bool(cfg))
+    if not cfg:
+        return
+    check('setup starts at window 1153', cfg['start'] == 1153)
+    check('the whole setup chain is known', set(cfg['windows']) ==
+          {1153, 1154, 1155, 1156, 1159})
+    check('no other skin claims a setup wizard', len(builds.SKIN_SETUP_WIZARD) == 1)
+
+    # The setup has to be reachable on EVERY boot path. The boot right after an
+    # install takes the skip_update_check branch, which returns into its own idle
+    # loop -- so a setup run only from the main idle loop would never fire on the
+    # one boot that matters most (found 2026-08-31).
+    ssrc = io.open(os.path.join(REPO, 'addons', 'plugin.program.masterkodi.il.wizard',
+                                'service.py'), encoding='utf-8').read()
+    run_body = ssrc.split('def run(self):')[-1]
+    early, branch = (run_body.find('_run_pending_skin_setup_when_home(self)'),
+                     run_body.find("ADDON.getSetting('skip_update_check')"))
+    check('setup runs early, before the post-install branch',
+          early != -1 and branch != -1 and early < branch)
+    post = run_body[branch:branch + run_body[branch:].find('return') + 200]
+    check('the post-install idle loop retries the setup too',
+          '_process_pending_skin_setup()' in post)
+
+    marker = svc._pending_setup_marker()
+    os.makedirs(os.path.dirname(marker), exist_ok=True)
+
+    orig_skin, orig_label, orig_cond, orig_exec = (
+        _x.getSkinDir, _x.getInfoLabel, _x.getCondVisibility, _x.executebuiltin)
+    fired = []
+    visible = {}
+    try:
+        _x.executebuiltin = lambda s, *a: fired.append(s)
+        _x.getCondVisibility = lambda s: visible.get(s, False)
+        _x.getSkinDir = lambda: SID
+
+        # 1. installing a skin that has a setup schedules it; others do not
+        if os.path.isfile(marker):
+            os.remove(marker)
+        builds._schedule_skin_setup(SID)
+        check('install schedules the setup', os.path.isfile(marker))
+        os.remove(marker)
+        builds._schedule_skin_setup('skin.nimbus')
+        check('a skin without its own setup schedules nothing',
+              not os.path.isfile(marker))
+
+        # 2. gates still empty -> the skin's own boot path will run it, so we
+        #    stand down rather than showing the user two setups
+        builds._schedule_skin_setup(SID)
+        _x.getInfoLabel = lambda s: ''
+        svc._drop_setup_marker_if_skin_runs_it()
+        check('stands down when the skin runs its own setup',
+              not os.path.isfile(marker))
+
+        # 3. gates already stamped (a reinstall, or Android) -> we run it
+        builds._schedule_skin_setup(SID)
+        _x.getInfoLabel = lambda s: '1'
+        svc._drop_setup_marker_if_skin_runs_it()
+        check('keeps the marker when the skin will NOT run it',
+              os.path.isfile(marker))
+        visible['Window.IsVisible(home)'] = True
+        del fired[:]
+        svc._process_pending_skin_setup()
+        check('setup launched despite the stamped gates', len(fired) == 3)
+        check('sets the launchsetupwizard override',
+              any('SetProperty(launchsetupwizard,1,Home)' == f for f in fired))
+        check('sets the wizard direction',
+              any('SetProperty(SetupWizardDirection,Next,Home)' == f for f in fired))
+        check('activates the first setup window',
+              any('ActivateWindow(1153)' == f for f in fired))
+        check('marker cleared once launched', not os.path.isfile(marker))
+
+        # 4. never restart a setup that is already on screen (mid-chain)
+        builds._schedule_skin_setup(SID)
+        visible['Window.IsVisible(1154)'] = True
+        del fired[:]
+        svc._process_pending_skin_setup()
+        check('does NOT restart a setup already running', not fired)
+        check('marker kept so it is retried', os.path.isfile(marker))
+        visible['Window.IsVisible(1154)'] = False
+
+        # 5. never fire before Home exists -- the properties live on it
+        visible['Window.IsVisible(home)'] = False
+        del fired[:]
+        svc._process_pending_skin_setup()
+        check('waits for Home before firing', not fired)
+    finally:
+        (_x.getSkinDir, _x.getInfoLabel, _x.getCondVisibility, _x.executebuiltin) = (
+            orig_skin, orig_label, orig_cond, orig_exec)
         if os.path.isfile(marker):
             os.remove(marker)
 
