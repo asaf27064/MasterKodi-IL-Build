@@ -3,6 +3,7 @@
 """
 
 import os
+import importlib
 from pkgutil import walk_packages
 from magneto.modules.control import setting as getSetting
 
@@ -19,15 +20,13 @@ def sources(specified_folders=None, ret_all=False):
 		for i in sourceSubFolders:
 			for loader, module_name, is_pkg in walk_packages([os.path.join(sourceFolderLocation, i)]):
 				if is_pkg: continue
-				if ret_all or enabledCheck(module_name):
-					try:
-#						module = loader.find_module(module_name).load_module(module_name)
-						module = loader.find_spec(module_name).loader.load_module(module_name)
-						append((module_name, module.source))
-					except Exception as e:
-						if debug:
-							from magneto.modules import log_utils
-							log_utils.log('Error: Loading module: "%s": %s' % (module_name, e), level=log_utils.LOGWARNING)
+				if not ret_all and not enabledCheck(module_name): continue
+				try:
+					module = importlib.import_module('.%s.%s.%s' % (sourceFolder, i, module_name), package=__name__)
+					append((module_name, module.source))
+				except Exception as e:
+					from magneto.modules import log_utils
+					log_utils.log('Error: Loading module: "%s": %s' % (module_name, e), level=log_utils.LOGWARNING)
 		return sourceDict
 	except:
 		from magneto.modules import log_utils
