@@ -142,7 +142,7 @@ def routing(sys):
 
 class SettingsServiceMonitor(control.monitor_class):
 	def __enter__(self):
-		xbmc.log('[ script.module.magneto ]  Service Started', LOGINFO)
+		xbmc.log('[ script.module.magneto ]  Service Started (%s)' % self.ver(), LOGINFO)
 		self._check_settings_file()
 		window.setProperty('magneto.debug.reversed', control.setting('debug.reversed'))
 		xbmc.log('[ script.module.magneto ]  Settings Monitor Service Starting...', LOGINFO)
@@ -158,6 +158,9 @@ class SettingsServiceMonitor(control.monitor_class):
 			self._check_version_update()
 			Thread(target=self._check_undesirables_database).start()
 			self.waitForAbort()
+
+	def ver(*args):
+		return f"{control.addonInfo('id')}-{control.addonInfo('version')}"
 
 	def onSettingsChanged(self):
 		window.clearProperty('magneto_settings')

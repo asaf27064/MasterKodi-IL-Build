@@ -62,7 +62,7 @@ class source:
 		for file in files:
 			try:
 				hash = file['infoHash']
-				file_title = file['description'].replace('┈➤', '\n').split('\n')
+				file_title = (file.get('title') or file['description']).split('\n')
 				file_info = [x for x in file_title if _INFO.search(x)][0]
 
 				name = source_utils.clean_name(file_title[0])
@@ -118,7 +118,7 @@ class source:
 		for file in files:
 			try:
 				hash = file['infoHash']
-				file_title = file['description'].replace('┈➤', '\n').split('\n')
+				file_title = (file.get('title') or file['description']).split('\n')
 				file_info = [x for x in file_title if _INFO.search(x)][0]
 
 				name = source_utils.clean_name(file_title[0])

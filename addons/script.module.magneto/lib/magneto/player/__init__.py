@@ -338,9 +338,14 @@ class MagnetoPlayer:
 	def resolve_sources(self, item):
 		logger('aiostreams', f"resolve_sources\n{json.dumps(item, indent=2)}")
 		headers = item.get('requestHeaders')
-		if headers: url = '|'.join((item.get('url'), kore.urlencode(headers)))
-		else: url = item.get('url')
-		return url
+		import requests
+		try: # some servers do not accept HEAD requests, must use GET + stream
+			with requests.get(item.get('url'), headers=headers, stream=True, timeout=30) as response:
+				response.raise_for_status() # 3xx passes, 4xx/5xx raises
+			if headers: return '|'.join((response.url, kore.urlencode(headers)))
+			return response.url
+		except requests.exceptions.RequestException as e:
+			logger('resolve_sources error', f"{type(e)}: {e}")
 
 	def play_cancelled(self):
 #		kore.xbmcplugin.setResolvedUrl(int(sys.argv[1]), False, listitem=make_listitem())

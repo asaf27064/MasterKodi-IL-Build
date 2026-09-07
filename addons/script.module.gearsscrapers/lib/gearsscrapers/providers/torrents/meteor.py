@@ -1,6 +1,6 @@
-# created for Fenomscrapers
+# created for gearsscrapers
 """
-	Fenomscrapers Project
+	gearsscrapers Project
 """
 
 from json import loads as jsloads
@@ -11,7 +11,7 @@ from gearsscrapers.modules import source_utils
 
 class source:
 	timeout = 10
-	priority = 2
+	priority = 1
 	pack_capable = True
 	hasMovies = True
 	hasEpisodes = True
@@ -75,7 +75,7 @@ class source:
 				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
 
 				try:
-					seeders = int(re.search(r'👥\s*(\d+)', file['description']).group(1))
+					seeders = int(re.search(r'👤\s*(\d+)', file['description']).group(1))
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 
@@ -106,10 +106,7 @@ class source:
 			imdb = data['imdb']
 			year = data['year']
 			season = data['season']
-			# dead code removed: building a per-episode url here always raised
-			# KeyError('episode') during season-pack searches (data has no
-			# 'episode' key), which silently zeroed sources_packs() for every
-			# provider that copied this pattern.
+			url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, data['episode']))
 			files = self._queue.get(timeout=self.timeout + 1)
 			_INFO = re.compile(r'💾.*')
 			undesirables = source_utils.get_undesirables()
@@ -146,7 +143,7 @@ class source:
 
 				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
 				try:
-					seeders = int(re.search(r'👥\s*(\d+)', file['description']).group(1))
+					seeders = int(re.search(r'👤\s*(\d+)', file['description']).group(1))
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 

@@ -3,7 +3,6 @@
 	Fenomscrapers Project
 """
 
-import ctypes, math, random, time
 from json import loads as jsloads
 import queue
 from magneto.modules import client
@@ -51,9 +50,12 @@ class source:
 			return self.sources
 
 	def get_sources(self, url):
+		headers = {'Referer': '%s/%s/%s' % (self.base_link, 'show' if self.season else 'movie', self.imdb)}
 		try:
-			url += '&dmmProblemKey=%s&solution=%s' % get_secret()
-			results = client.request(url, timeout=self.timeout)
+			results = client.request('%s/api/challenge' % self.base_link, headers=headers, timeout=3.05)
+			get_secret = jsloads(results)
+			url += '&dmmProblemKey=%s&solution=%s' % (get_secret['token'], get_secret['hash'])
+			results = client.request(url, headers=headers, timeout=self.timeout)
 			files = jsloads(results)['results']
 			self.files += files
 		except:
@@ -164,66 +166,3 @@ class source:
 			except:
 				source_utils.scraper_error('DMM')
 
-
-def get_secret():
-
-	def calc_value_alg(t, n, const):
-		temp = t ^ n
-		t = ctypes.c_long((temp * const)).value
-		t4 = ctypes.c_long(t << 5).value
-		x32 = t & 0xFFFFFFFF  # convert to 32-bit unsigned value
-		t5 = ctypes.c_long(x32 >> 27).value
-		t6 = t4 | t5
-
-		return t6
-
-	def slice(e, t):
-		a = math.floor(len(e) / 2)
-		s = e[0:a]
-		n = e[a:]
-		i = t[0:a]
-		o = t[a:]
-
-		l = ""
-		for e in range(0, a):
-			l += s[e] + i[e]
-
-		temp = l + (o[::-1] + n[::-1])
-
-		return temp
-
-	def generateHash(e):
-		t = int(3735928559) ^ int(len(e))
-		t = ctypes.c_long(t).value
-		a = 1103547991 ^ len(e)
-
-		for s in range(len(e)):
-			n = ord(e[s])
-			t = calc_value_alg(t, n, 2654435761)
-			# a=(a ^ n*1597334677) << 5 | a >> 27
-			a = calc_value_alg(a, n, 1597334677)
-
-		t_o = t
-		t = ctypes.c_long(t + ctypes.c_long(a * 1566083941).value | 0).value
-		a = ctypes.c_long(a + ctypes.c_long(t * 2024237689).value | 0).value
-
-		return (ctypes.c_long(t ^ a).value & 0xFFFFFFFF) >> 0
-
-	ran = random.randrange(10**80)
-	myhex = "%064x" % ran
-
-	# limit string to 64 characters
-	e = myhex[:8]
-	t = int(time.time())
-	a = str(e) + '-' + str(t)
-
-	s = generateHash(a)
-	s = hex(s).replace('0x', '')
-
-	n = generateHash("debridmediamanager.com%%fe7#td00rA3vHz%VmI-" + e)
-	n = hex(n).replace('0x', '')
-
-	i = slice(s, n)
-	dmmProblemKey = a
-	solution = i
-	return dmmProblemKey, solution

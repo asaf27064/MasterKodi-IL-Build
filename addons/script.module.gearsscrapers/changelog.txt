@@ -1,6 +1,18 @@
-[COLORcyan] VERSION 1.5.8[/COLOR]
+[COLORcyan] VERSION 1.5.9[/COLOR]
 
 
+
+ Fixed/Updated
+
+• TORZ — Fixed scraper issues and restored functionality.
+• MediaFusion — Fixed scraper integration and improved reliability.
+• Meteor — Fixed scraper issues and restored functionality.
+
+ Improvements
+
+• Improved overall scraper stability.
+• Updated affected sources for more reliable results.
+• General performance and reliability improvements.
 
  3 New Scraper Sources Added
 
