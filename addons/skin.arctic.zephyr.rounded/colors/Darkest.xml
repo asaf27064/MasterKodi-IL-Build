@@ -41,11 +41,11 @@
     <color name="Background">FF050505</color>
     <color name="BackgroundNew">D9050505</color>
     <color name="BackgroundFlag">FF444444</color>
-    <color name="BackgroundOverlay">FF181818</color>
+    <color name="BackgroundOverlay">FF050505</color>
 
     <color name="FanartFade">FFFFFFFF</color>
     <color name="FanartFadeBlur">FFFFFFFF</color>
-    <color name="FloorFade">FF181818</color>
+    <color name="FloorFade">FF050505</color>
     <color name="FloorFade2">CC050505</color>
     <color name="FloorFadeBlur">CC050505</color>
 
@@ -65,7 +65,7 @@
     <color name="BoxShadow">FF020202</color>
     <color name="DialogShadow">FF010101</color>
 
-    <color name="UnWatchedIcons">E600BCD4</color>
+    <color name="UnWatchedIcons">E62980B9</color>
 
     <color name="ProgressBarCacheColor">FFA0A0A0</color>
 </colors>

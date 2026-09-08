@@ -36,7 +36,7 @@
                 <width>78</width>
                 <height>36</height>
                 <align>center</align>
-                <texture colordiffuse="$VAR[Color_Background_Flag]">common/circle3.png</texture>
+                <texture colordiffuse="$VAR[Color_Flag_Background]">common/circle3.png</texture>
             </control>
             <control type="label">
                 <width>78</width>
@@ -85,7 +85,7 @@
                 <width>78</width>
                 <height>36</height>
                 <align>center</align>
-                <texture colordiffuse="$VAR[Color_Background_Flag]">common/circle3.png</texture>
+                <texture colordiffuse="$VAR[Color_Flag_Background]">common/circle3.png</texture>
             </control>
             <control type="label">
                 <width>78</width>
@@ -123,7 +123,7 @@
                 <width>78</width>
                 <height>36</height>
                 <align>center</align>
-                <texture colordiffuse="$VAR[Color_Background_Flag]">common/circle3.png</texture>
+                <texture colordiffuse="$VAR[Color_Flag_Background]">common/circle3.png</texture>
             </control>
             <control type="label">
                 <centertop>53%</centertop>
@@ -158,7 +158,7 @@
                 <width>78</width>
                 <height>36</height>
                 <align>center</align>
-                <texture colordiffuse="$VAR[Color_Background_Flag]">common/circle3.png</texture>
+                <texture colordiffuse="$VAR[Color_Flag_Background]">common/circle3.png</texture>
             </control>
             <control type="label">
                 <visible>!String.IsEmpty(Container($PARAM[controlid]).ListItem.Property(TotalEpisodes))</visible>
@@ -356,7 +356,7 @@
                     <align>center</align>
                     <centertop>50%</centertop>
 
-                    <itemgap>-4</itemgap>
+                    <itemgap>-2</itemgap>
                     <orientation>vertical</orientation>
 
                     <control type="image">
@@ -365,7 +365,7 @@
                         <texture background="true" colordiffuse="$VAR[Def_Flag_Colordiffuse_Dark1]">flags/video/$VAR[Def_Flag_Color]/aspectratio/$INFO[ListItem.VideoAspect].png</texture>
                     </control>
                     <control type="label">
-                        <height>20</height>
+                        <height>18</height>
                         <align>center</align>
                         <aligny>top</aligny>
                         <label>[B]$INFO[ListItem.VideoAspect,,:1][/B]</label>
@@ -1143,9 +1143,9 @@
                 <top>910</top>
                 <align>left</align>
                 <left>View_List_Side</left>
+                <right>180</right>
 
                 <control type="grouplist">
-                    <width>1400</width>
                     <height>120</height>
                     <align>left</align>
 
@@ -1190,7 +1190,7 @@
                         <align>center</align>
                         <centertop>50%</centertop>
 
-                        <itemgap>-4</itemgap>
+                        <itemgap>-2</itemgap>
                         <orientation>vertical</orientation>
 
                         <control type="image">
@@ -1199,7 +1199,7 @@
                             <texture background="true" colordiffuse="$VAR[Def_Flag_Colordiffuse_Dark1]">flags/video/$VAR[Def_Flag_Color]/aspectratio/$INFO[Container($PARAM[controlid]).ListItem.VideoAspect].png</texture>
                         </control>
                         <control type="label">
-                            <height>20</height>
+                            <height>18</height>
                             <align>center</align>
                             <aligny>top</aligny>
                             <label>[B]$INFO[Container($PARAM[controlid]).ListItem.VideoAspect,,:1][/B]</label>
@@ -1323,7 +1323,7 @@
                         <control type="image">
                             <height>16</height>
                             <aspectratio aligny="center" align="center">keep</aspectratio>
-                            <texture>flags/video/$VAR[Def_Flag_Color]/audiochannels/channel.png</texture>
+                            <texture background="true" colordiffuse="$VAR[Def_Flag_Colordiffuse_Dark2]">flags/video/$VAR[Def_Flag_Color]/audiochannels/channel.png</texture>
                         </control>
                     </control>
 
@@ -1829,7 +1829,7 @@
                 <align>center</align>
                 <centertop>50%</centertop>
 
-                <itemgap>-4</itemgap>
+                <itemgap>-2</itemgap>
                 <orientation>vertical</orientation>
 
                 <control type="image">
@@ -1838,7 +1838,7 @@
                     <texture background="true" colordiffuse="$VAR[Def_VideoPlayer_Flag_Colordiffuse_Dark1]">flags/video/$VAR[Def_VideoPlayer_Flag_Color]/aspectratio/$INFO[VideoPlayer.VideoAspect].png</texture>
                 </control>
                 <control type="label">
-                    <height>20</height>
+                    <height>18</height>
                     <align>center</align>
                     <aligny>top</aligny>
                     <font>Ratio</font>
@@ -2059,7 +2059,7 @@
                     <align>center</align>
                     <centertop>50%</centertop>
 
-                    <itemgap>-4</itemgap>
+                    <itemgap>-2</itemgap>
                     <orientation>vertical</orientation>
 
                     <control type="image">
@@ -2068,7 +2068,7 @@
                         <texture background="true" colordiffuse="$VAR[Def_VideoPlayer_Flag_Colordiffuse_Dark1]">flags/video/$VAR[Def_VideoPlayer_Flag_Color]/aspectratio/$INFO[VideoPlayer.VideoAspect].png</texture>
                     </control>
                     <control type="label">
-                        <height>20</height>
+                        <height>18</height>
                         <align>center</align>
                         <aligny>top</aligny>
                         <font>Ratio</font>
@@ -2118,7 +2118,7 @@
 
                 <control type="image">
                     <visible>Skin.HasSetting(show.osd.video.flags.imdb.rating) + !String.IsEmpty(VideoPlayer.DBID)</visible>
-                    <visible>[!String.IsEmpty(Window(Home).Property(TMDbHelper.Player.IMDb_Rating)) | !String.IsEmpty(VideoPlayers.Rating(imdb))]</visible>
+                    <visible>!String.IsEmpty(Window(Home).Property(TMDbHelper.Player.IMDb_Rating)) | !String.IsEmpty(VideoPlayer.Rating(imdb))</visible>
                     <width>70</width>
                     <include>Def_Flag_Image</include>
                     <texture colordiffuse="$VAR[Def_VideoPlayer_Flag_Colordiffuse_Dark1]" background="true">flags/rating/$VAR[Def_VideoPlayer_Flag_Color]/imdb/imdb.png</texture>

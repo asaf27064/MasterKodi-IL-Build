@@ -50,7 +50,9 @@
                     <width>PosterW</width>
                     <height>PosterH</height>
 
-                    <include>Def_Art_Full_Background_b24</include>
+                    <include content="Def_Art_Full_Background_b24">
+                        <param name="colordiffuse_border" value="$VAR[Color_Border]" />
+                    </include>
 
                     <include content="Def_Art_Icon_Image">
                         <param name="texture" value="$VAR[Image_Poster]" />
@@ -60,12 +62,17 @@
                     </include>
                 </control>
 
+                <!-- TEXTBOX -->
+
                 <include content="Layout_Poster_Textbox_Info">
                     <param name="left" value="0" />
                     <param name="right" value="-130" />
                     <param name="bottom" value="305" />
                 </include>
-                <include content="Layout_Poster_Rating_Set_Version_Info" condition="Skin.HasSetting(show.furniture.video.rating.num.set.version)">
+
+                <!-- POSTER - FLAG - RATING - TYPE -->
+
+                <include content="Layout_Poster_Flag_Rating_Type" >
                     <param name="left" value="0" />
                     <param name="right" value="-130" />
                     <param name="bottom" value="305" />
@@ -73,11 +80,7 @@
 
                 <!-- WATCHED STATUS -->
 
-                <include content="Layout_Poster_Indicator_Status_Icon" condition="!Skin.HasSetting(hide.markers) + !Skin.HasSetting(furniture.markers.alternative)">
-                    <param name="right" value="-138" />
-                    <param name="top" value="110" />
-                </include>
-                <include content="Layout_Poster_Indicator_Status_Banner" condition="!Skin.HasSetting(hide.markers) + Skin.HasSetting(furniture.markers.alternative)">
+                <include content="Layout_Poster_Indicator_Status">
                     <param name="right" value="-138" />
                     <param name="top" value="110" />
                 </include>

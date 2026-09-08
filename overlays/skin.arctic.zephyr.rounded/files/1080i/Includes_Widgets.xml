@@ -1286,7 +1286,7 @@
                 <param name="texture" value="$PARAM[texture]" />
                 <param name="texture_diffuse" value="$PARAM[texture_diffuse]" />
                 <param name="fallback" value="$PARAM[fallback]" />
-                <param name="visible" value="![String.IsEqual(ListItem.Path,favourites://) | Container.Content(favourites)]" />
+                <param name="visible" value="![String.IsEqual(ListItem.Path,favourites://) | Container.Content(favourites) | String.StartsWith(ListItem.Path,pvr://channels)]" />
             </include>
 
             <!-- FAVOURITES -->
@@ -1302,6 +1302,19 @@
                 <param name="visible" value="[String.IsEqual(ListItem.Path,favourites://) | Container.Content(favourites)]" />
             </include>
 
+            <!-- PVR -->
+
+            <include content="Def_Art_Image">
+                <param name="pad_image" value="$PARAM[pad_image]" />
+                <param name="aspectratio" value="keep" />
+                <param name="texture" value="$INFO[ListItem.Icon]" />
+                <param name="texture_diffuse" value="$PARAM[texture_diffuse]" />
+                <param name="fallback" value="defaultpvrchannels" />
+                <param name="condition_fadetime" value="false" />
+                <param name="visible_background_b12" value="$PARAM[visible_background_b12]" />
+                <param name="visible" value="String.StartsWith(ListItem.Path,pvr://channels)" />
+            </include>
+
             <!-- TEXTBOX -->
 
             <include content="Layout_Poster_Textbox_Info">
@@ -1309,24 +1322,28 @@
                 <param name="bottom" value="-10" />
             </include>
 
-            <!-- RATING -->
+            <!-- POSTER - FLAG - RATING - TYPE -->
 
-            <include content="Layout_Poster_Rating_Set_Version_Info" condition="Skin.HasSetting(show.furniture.video.rating.num.set.version)">
-                <param name="left" value="5" />
-                <param name="bottom" value="-10" />
-            </include>
-
-            <!-- TMDB - DBID -->
-
-            <include content="Layout_Poster_TMDb_Status" condition="!Skin.HasSetting(show.furniture.video.rating.num.set.version)">
+            <include content="Layout_Poster_Flag_Rating_Type" >
                 <param name="left" value="5" />
                 <param name="bottom" value="-10" />
             </include>
 
             <!-- WATCHED STATUS -->
 
-            <include condition="!Skin.HasSetting(hide.markers) + !Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Icon</include>
-            <include condition="!Skin.HasSetting(hide.markers) + Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Banner</include>
+            <include>Layout_Poster_Indicator_Status</include>
+
+            <!-- PLAYED - PROGRESS BAR -->
+
+            <include content="Layout_Poster_Progress_Bar_PercentPlayed" >
+                <param name="bottom" value="20" />
+            </include>
+
+            <!-- PVR - PROGRESS BAR -->
+
+            <include content="Layout_Poster_Progress_Bar_PVR" >
+                <param name="bottom" value="20" />
+            </include>
 
             <!-- WIDGET "MORE" -->
 
@@ -1371,7 +1388,7 @@
                     <param name="texture_diffuse" value="$PARAM[texture_diffuse]" />
                     <param name="fallback" value="$PARAM[fallback]" />
                     <param name="visible_background_b12" value="$PARAM[visible_background_b12]" />
-                    <param name="visible" value="!String.StartsWith(ListItem.Path,pvr://channels) + ![String.IsEqual(ListItem.Path,favourites://) | Container.Content(favourites)] + !Container.Content(images)" />
+                    <param name="visible" value="!String.StartsWith(ListItem.Path,pvr://channels) + ![String.IsEqual(ListItem.Path,favourites://) | Container.Content(favourites)] + !Container.Content(images) + !Container.Content(countries) + !Container.Content(genres) + !Container.Content(studios)" />
                 </include>
 
                 <!-- FAVOURITES -->
@@ -1385,6 +1402,45 @@
                     <param name="condition_fadetime" value="false" />
                     <param name="visible_background_b12" value="$PARAM[visible_background_b12]" />
                     <param name="visible" value="[String.IsEqual(ListItem.Path,favourites://) | Container.Content(favourites)]" />
+                </include>
+
+                <!-- COUNTRIES -->
+
+                <include content="Def_Art_Icon_Image">
+                    <param name="pad_image" value="$PARAM[pad_image]" />
+                    <param name="aspectratio" value="keep" />
+                    <param name="texture" value="$VAR[Image_Poster]" />
+                    <param name="texture_diffuse" value="$PARAM[texture_diffuse]" />
+                    <param name="fallback" value="DefaultCountry" />
+                    <param name="condition_fadetime" value="false" />
+                    <param name="visible_background_b12" value="$PARAM[visible_background_b12]" />
+                    <param name="visible" value="Container.Content(countries)" />
+                </include>
+
+                <!-- GENRES -->
+
+                <include content="Def_Art_Icon_Image">
+                    <param name="pad_image" value="$PARAM[pad_image]" />
+                    <param name="aspectratio" value="keep" />
+                    <param name="texture" value="$VAR[Image_Poster]" />
+                    <param name="texture_diffuse" value="$PARAM[texture_diffuse]" />
+                    <param name="fallback" value="DefaultGenres" />
+                    <param name="condition_fadetime" value="false" />
+                    <param name="visible_background_b12" value="$PARAM[visible_background_b12]" />
+                    <param name="visible" value="Container.Content(genres)" />
+                </include>
+
+                <!-- STUDIOS -->
+
+                <include content="Def_Art_Icon_Image">
+                    <param name="pad_image" value="$PARAM[pad_image]" />
+                    <param name="aspectratio" value="keep" />
+                    <param name="texture" value="$VAR[Image_Poster]" />
+                    <param name="texture_diffuse" value="$PARAM[texture_diffuse]" />
+                    <param name="fallback" value="DefaultStudios" />
+                    <param name="condition_fadetime" value="false" />
+                    <param name="visible_background_b12" value="$PARAM[visible_background_b12]" />
+                    <param name="visible" value="Container.Content(studios)" />
                 </include>
 
                 <!-- ADDONS -->
@@ -1435,87 +1491,29 @@
                 <param name="bottom" value="-10" />
             </include>
 
-            <!-- RATING -->
+            <!-- POSTER - FLAG - RATING - TYPE -->
 
-            <include content="Layout_Poster_Rating_Set_Version_Info" condition="Skin.HasSetting(show.furniture.video.rating.num.set.version)">
+            <include content="Layout_Poster_Flag_Rating_Type" >
                 <param name="left" value="5" />
                 <param name="bottom" value="-10" />
             </include>
 
-            <!-- TMDB - DBID -->
+            <!-- LABEL -->
 
-            <include content="Layout_Poster_TMDb_Status" condition="!Skin.HasSetting(show.furniture.video.rating.num.set.version)">
-                <param name="left" value="5" />
-                <param name="bottom" value="-10" />
-            </include>
-
-            <control type="group">
+            <control type="label">
+                <bottom>13</bottom>
+                <left>35</left>
+                <right>35</right>
+                <align>center</align>
+                <font>InfoNetflix</font>
+                <textcolor>PanelWhite70</textcolor>
+                <selectedcolor>PanelWhite70</selectedcolor>
+                <label>$VAR[Label_Widget_Lign_1]</label>
                 <visible>$PARAM[middle]</visible>
-
-                <!-- PVR - PROGRESS BAR -->
-
-                <control type="image">
-                    <left>10</left>
-                    <right>10</right>
-                    <bottom>75</bottom>
-                    <height>28</height>
-                    <texture border="12" colordiffuse="$VAR[Color_Widget_Progress_Bar_Background_light]">$VAR[texture_box12]</texture>
-                    <visible>String.StartsWith(ListItem.Path,pvr://channels)</visible>
-                    <visible>!String.IsEqual(ListItem.Path,pvr://channels/tv/)</visible>
-                    <visible>Integer.IsGreater(ListItem.Progress,1) + !Integer.IsGreater(ListItem.Progress,99)</visible>
-                </control>
-                <control type="progress">
-                    <left>20</left>
-                    <right>20</right>
-                    <height>8</height>
-                    <bottom>85</bottom>
-                    <info>ListItem.Progress</info>
-                    <texturebg colordiffuse="Black12" border="8,0,8,0">progress/progress-nib.png</texturebg>
-                    <visible>String.StartsWith(ListItem.Path,pvr://channels)</visible>
-                    <visible>!String.IsEqual(ListItem.Path,pvr://channels/tv/)</visible>
-                    <visible>Integer.IsGreater(ListItem.Progress,1) + !Integer.IsGreater(ListItem.Progress,99)</visible>
-                </control>
-
-                <!-- LABEL -->
-
-                <control type="label">
-                    <bottom>13</bottom>
-                    <left>35</left>
-                    <right>35</right>
-                    <align>center</align>
-                    <font>InfoNetflix</font>
-                    <textcolor>PanelWhite70</textcolor>
-                    <selectedcolor>PanelWhite70</selectedcolor>
-                    <label>$VAR[Label_Widget_Lign_1]</label>
-                </control>
             </control>
 
             <control type="group">
                 <visible>$PARAM[small]</visible>
-
-                <!-- PVR - PROGRESS BAR -->
-
-                <control type="image">
-                    <left>10</left>
-                    <right>10</right>
-                    <bottom>113</bottom>
-                    <height>28</height>
-                    <texture border="12" colordiffuse="$VAR[Color_Widget_Progress_Bar_Background_light]">$VAR[texture_box12]</texture>
-                    <visible>String.StartsWith(ListItem.Path,pvr://channels)</visible>
-                    <visible>!String.IsEqual(ListItem.Path,pvr://channels/tv/)</visible>
-                    <visible>Integer.IsGreater(ListItem.Progress,1) + !Integer.IsGreater(ListItem.Progress,99)</visible>
-                </control>
-                <control type="progress">
-                    <left>20</left>
-                    <right>20</right>
-                    <height>8</height>
-                    <bottom>123</bottom>
-                    <info>ListItem.Progress</info>
-                    <texturebg colordiffuse="Black12" border="8,0,8,0">progress/progress-nib.png</texturebg>
-                    <visible>String.StartsWith(ListItem.Path,pvr://channels)</visible>
-                    <visible>!String.IsEqual(ListItem.Path,pvr://channels/tv/)</visible>
-                    <visible>Integer.IsGreater(ListItem.Progress,1) + !Integer.IsGreater(ListItem.Progress,99)</visible>
-                </control>
 
                 <!-- PVR - LABEL -->
 
@@ -1562,8 +1560,23 @@
 
             <!-- WATCHED STATUS -->
 
-            <include condition="!Skin.HasSetting(hide.markers) + !Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Icon</include>
-            <include condition="!Skin.HasSetting(hide.markers) + Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Banner</include>
+            <include>Layout_Poster_Indicator_Status</include>
+
+            <!-- PLAYED - PROGRESS BAR -->
+
+            <include content="Layout_Poster_Progress_Bar_PercentPlayed" >
+                <param name="bottom" value="20" />
+                <param name="middle" value="$PARAM[middle]" />
+                <param name="bottom_middle" value="85" />
+            </include>
+
+            <!-- PVR - PROGRESS BAR -->
+
+            <include content="Layout_Poster_Progress_Bar_PVR" >
+                <param name="bottom" value="20" />
+                <param name="middle" value="$PARAM[middle]" />
+                <param name="bottom_middle" value="85" />
+            </include>
 
             <!-- WIDGET "MORE" -->
 
@@ -1655,36 +1668,6 @@
             <control type="group">
                 <visible>$PARAM[small]</visible>
 
-                <!-- PVR - PROGRESS BAR -->
-
-                <control type="image">
-                    <left>10</left>
-                    <right>10</right>
-                    <include content="Def_Bottom" condition="$PARAM[small]">
-                       <param name="bottom" value="100" />
-                    </include>
-                    <bottom>10</bottom>
-                    <height>28</height>
-                    <texture border="12" colordiffuse="$VAR[Color_Widget_Progress_Bar_Background_darkest]">$VAR[texture_box12]</texture>
-                    <visible>String.StartsWith(ListItem.Path,pvr://channels) + $PARAM[small]</visible>
-                    <visible>!String.IsEqual(ListItem.Path,pvr://channels/tv/)</visible>
-                    <visible>Integer.IsGreater(ListItem.Progress,1) + !Integer.IsGreater(ListItem.Progress,99)</visible>
-                </control>
-                <control type="progress">
-                    <left>20</left>
-                    <right>20</right>
-                    <height>8</height>
-                    <include content="Def_Bottom" condition="$PARAM[small]">
-                       <param name="bottom" value="110" />
-                    </include>
-                    <bottom>20</bottom>
-                    <info>ListItem.Progress</info>
-                    <texturebg colordiffuse="Black12" border="8,0,8,0">progress/progress-nib.png</texturebg>
-                    <visible>String.StartsWith(ListItem.Path,pvr://channels) + $PARAM[small]</visible>
-                    <visible>!String.IsEqual(ListItem.Path,pvr://channels/tv/)</visible>
-                    <visible>Integer.IsGreater(ListItem.Progress,1) + !Integer.IsGreater(ListItem.Progress,99)</visible>
-                </control>
-
                 <!-- LABEL - 1st LINE -->
 
                 <control type="label">
@@ -1737,18 +1720,9 @@
                 <param name="bottom_small" value="82" />
             </include>
 
-            <!-- RATING -->
+            <!-- POSTER - FLAG - RATING - TYPE -->
 
-            <include content="Layout_Poster_Rating_Set_Version_Info" condition="Skin.HasSetting(show.furniture.video.rating.num.set.version)">
-                <param name="left" value="7" />
-                <param name="bottom" value="-10" />
-                <param name="small" value="$PARAM[small]" />
-                <param name="bottom_small" value="82" />
-            </include>
-
-            <!-- TMDB - DBID -->
-
-            <include content="Layout_Poster_TMDb_Status" condition="!Skin.HasSetting(show.furniture.video.rating.num.set.version)">
+            <include content="Layout_Poster_Flag_Rating_Type" >
                 <param name="left" value="7" />
                 <param name="bottom" value="-10" />
                 <param name="small" value="$PARAM[small]" />
@@ -1757,8 +1731,23 @@
 
             <!-- WATCHED STATUS -->
 
-            <include condition="!Skin.HasSetting(hide.markers) + !Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Icon</include>
-            <include condition="!Skin.HasSetting(hide.markers) + Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Banner</include>
+            <include>Layout_Poster_Indicator_Status</include>
+
+            <!-- PLAYED - PROGRESS BAR -->
+
+            <include content="Layout_Poster_Progress_Bar_PercentPlayed" >
+                <param name="bottom" value="20" />
+                <param name="small" value="$PARAM[small]" />
+                <param name="bottom_small" value="110" />
+            </include>
+
+            <!-- PVR - PROGRESS BAR -->
+
+            <include content="Layout_Poster_Progress_Bar_PVR" >
+                <param name="bottom" value="20" />
+                <param name="small" value="$PARAM[small]" />
+                <param name="bottom_small" value="110" />
+            </include>
 
             <!-- WIDGET "MORE" -->
 
@@ -1771,7 +1760,7 @@
 
     <include name="Def_Widget_Fanart">
         <param name="visible_background_b12" value="$PARAM[visible_background_b12]" default="false" />
-        <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" default="$VAR[Color_Border_Widget]" />
+        <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" default="$VAR[Color_Widget_Border]" />
         <param name="colordiffuse_shadow" value="$PARAM[colordiffuse_shadow]" default="$VAR[Color_Shadow]" />
         <param name="colordiffuse" value="$PARAM[colordiffuse]" default="White100" />
         <param name="texture" value="$PARAM[texture]"  default="$VAR[Image_Widget_Fanart]" />
@@ -1882,62 +1871,34 @@
                 <!-- <visible>![String.IsEqual(ListItem.DBType,genre) | String.EndsWith(Container.FolderPath,Genres)]</visible> -->
             </control>
 
-            <!-- PVR - PROGRESS BAR -->
-
-            <control type="image">
-                <left>10</left>
-                <right>10</right>
-                <include content="Def_Bottom" condition="$PARAM[small]">
-                   <param name="bottom" value="100" />
-                </include>
-                <bottom>10</bottom>
-                <height>28</height>
-                <texture border="12" colordiffuse="$VAR[Color_Widget_Progress_Bar_Background_darkest]">$VAR[texture_box12]</texture>
-                <visible>String.StartsWith(ListItem.Path,pvr://channels)</visible>
-                <visible>!String.IsEqual(ListItem.Path,pvr://channels/tv/)</visible>
-                <visible>Integer.IsGreater(ListItem.Progress,1) + !Integer.IsGreater(ListItem.Progress,99)</visible>
-            </control>
-            <control type="progress">
-                <left>20</left>
-                <right>20</right>
-                <height>8</height>
-                <include content="Def_Bottom" condition="$PARAM[small]">
-                   <param name="bottom" value="110" />
-                </include>
-                <bottom>20</bottom>
-                <info>ListItem.Progress</info>
-                <texturebg colordiffuse="Black12" border="8,0,8,0">progress/progress-nib.png</texturebg>
-                <visible>String.StartsWith(ListItem.Path,pvr://channels)</visible>
-                <visible>!String.IsEqual(ListItem.Path,pvr://channels/tv/)</visible>
-                <visible>Integer.IsGreater(ListItem.Progress,1) + !Integer.IsGreater(ListItem.Progress,99)</visible>
-            </control>
-
-            <!-- LABEL - 1st LINE -->
-
-            <control type="label">
-                <bottom>40</bottom>
-                <left>35</left>
-                <right>35</right>
-                <align>center</align>
-                <font>InfoNetflix</font>
-                <textcolor>Dark1</textcolor>
-                <selectedcolor>Dark1</selectedcolor>
-                <label>$VAR[Label_Widget_Lign_1]</label>
+            <control type="group">
                 <visible>$PARAM[small]</visible>
-            </control>
 
-            <!-- LABEL - 2nd LINE -->
+                <!-- LABEL - 1st LINE -->
 
-            <control type="label">
-                <bottom>10</bottom>
-                <left>35</left>
-                <right>35</right>
-                <align>center</align>
-                <font>Tiny</font>
-                <textcolor>PanelWhite70</textcolor>
-                <selectedcolor>PanelWhite70</selectedcolor>
-                <label>$VAR[Label_Widget_Lign_2]</label>
-                <visible>$PARAM[small]</visible>
+                <control type="label">
+                    <bottom>40</bottom>
+                    <left>35</left>
+                    <right>35</right>
+                    <align>center</align>
+                    <font>InfoNetflix</font>
+                    <textcolor>Dark1</textcolor>
+                    <selectedcolor>Dark1</selectedcolor>
+                    <label>$VAR[Label_Widget_Lign_1]</label>
+                </control>
+
+                <!-- LABEL - 2nd LINE -->
+
+                <control type="label">
+                    <bottom>10</bottom>
+                    <left>35</left>
+                    <right>35</right>
+                    <align>center</align>
+                    <font>Tiny</font>
+                    <textcolor>PanelWhite70</textcolor>
+                    <selectedcolor>PanelWhite70</selectedcolor>
+                    <label>$VAR[Label_Widget_Lign_2]</label>
+                </control>
             </control>
 
             <!-- TEXTBOX -->
@@ -1949,18 +1910,9 @@
                 <param name="bottom_small" value="82" />
             </include>
 
-            <!-- RATING -->
+            <!-- POSTER - FLAG - RATING - TYPE -->
 
-            <include content="Layout_Poster_Rating_Set_Version_Info" condition="Skin.HasSetting(show.furniture.video.rating.num.set.version)">
-                <param name="left" value="5" />
-                <param name="bottom" value="-10" />
-                <param name="small" value="$PARAM[small]" />
-                <param name="bottom_small" value="82" />
-            </include>
-
-            <!-- TMDB - DBID -->
-
-            <include content="Layout_Poster_TMDb_Status" condition="!Skin.HasSetting(show.furniture.video.rating.num.set.version)">
+            <include content="Layout_Poster_Flag_Rating_Type" >
                 <param name="left" value="5" />
                 <param name="bottom" value="-10" />
                 <param name="small" value="$PARAM[small]" />
@@ -1969,8 +1921,23 @@
 
             <!-- WATCHED STATUS -->
 
-            <include condition="!Skin.HasSetting(hide.markers) + !Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Icon</include>
-            <include condition="!Skin.HasSetting(hide.markers) + Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Banner</include>
+            <include>Layout_Poster_Indicator_Status</include>
+
+            <!-- PLAYED - PROGRESS BAR -->
+
+            <include content="Layout_Poster_Progress_Bar_PercentPlayed" >
+                <param name="bottom" value="20" />
+                <param name="small" value="$PARAM[small]" />
+                <param name="bottom_small" value="110" />
+            </include>
+
+            <!-- PVR - PROGRESS BAR -->
+
+            <include content="Layout_Poster_Progress_Bar_PVR" >
+                <param name="bottom" value="20" />
+                <param name="small" value="$PARAM[small]" />
+                <param name="bottom_small" value="110" />
+            </include>
 
             <!-- WIDGET "MORE" -->
 
@@ -2088,24 +2055,22 @@
                 <param name="bottom" value="-10" />
             </include>
 
-            <!-- RATING -->
+            <!-- POSTER - FLAG - RATING - TYPE -->
 
-            <include content="Layout_Poster_Rating_Set_Version_Info" condition="Skin.HasSetting(show.furniture.video.rating.num.set.version)">
-                <param name="left" value="5" />
-                <param name="bottom" value="-10" />
-            </include>
-
-            <!-- TMDB - DBID -->
-
-            <include content="Layout_Poster_TMDb_Status" condition="!Skin.HasSetting(show.furniture.video.rating.num.set.version)">
+            <include content="Layout_Poster_Flag_Rating_Type" >
                 <param name="left" value="5" />
                 <param name="bottom" value="-10" />
             </include>
 
             <!-- WATCHED STATUS -->
 
-            <include condition="!Skin.HasSetting(hide.markers) + !Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Icon</include>
-            <include condition="!Skin.HasSetting(hide.markers) + Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Banner</include>
+            <include>Layout_Poster_Indicator_Status</include>
+
+            <!-- PLAYED - PROGRESS BAR -->
+
+            <include content="Layout_Poster_Progress_Bar_PercentPlayed" >
+                <param name="bottom" value="20" />
+            </include>
         </definition>
     </include>
 
@@ -2151,24 +2116,16 @@
                 <param name="bottom" value="-10" />
             </include>
 
-            <!-- RATING -->
+            <!-- POSTER - FLAG - RATING - TYPE -->
 
-            <include content="Layout_Poster_Rating_Set_Version_Info" condition="Skin.HasSetting(show.furniture.video.rating.num.set.version)">
-                <param name="left" value="5" />
-                <param name="bottom" value="-10" />
-            </include>
-
-            <!-- TMDB - DBID -->
-
-            <include content="Layout_Poster_TMDb_Status" condition="!Skin.HasSetting(show.furniture.video.rating.num.set.version)">
+            <include content="Layout_Poster_Flag_Rating_Type" >
                 <param name="left" value="5" />
                 <param name="bottom" value="-10" />
             </include>
 
             <!-- WATCHED STATUS -->
 
-            <include condition="!Skin.HasSetting(hide.markers) + !Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Icon</include>
-            <include condition="!Skin.HasSetting(hide.markers) + Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Banner</include>
+            <include>Layout_Poster_Indicator_Status</include>
 
             <!-- WIDGET "MORE" -->
 
@@ -2759,7 +2716,7 @@
 
     <include name="Layout_Widget_Fanart">
         <param name="visible_background_b12" value="$PARAM[visible_background_b12]" default="false" />
-        <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" default="$VAR[Color_Border_Widget]" />
+        <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" default="$VAR[Color_Widget_Border]" />
         <param name="colordiffuse_shadow" value="$PARAM[colordiffuse_shadow]" default="$VAR[Color_Shadow]" />
         <param name="texture" value="$PARAM[texture]" default="$VAR[Image_Fanart]" />
         <param name="texture_diffuse" value="$PARAM[texture_diffuse]" />
@@ -2789,7 +2746,7 @@
     </include>
     <include name="Layout_Widget_Fanart_Focus">
         <param name="visible_background_b12" value="$PARAM[visible_background_b12]" default="false" />
-        <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" default="$VAR[Color_Border_Widget]" />
+        <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" default="$VAR[Color_Widget_Border]" />
         <param name="colordiffuse_shadow" value="$PARAM[colordiffuse_shadow]" default="$VAR[Color_Shadow]" />
         <param name="texture" value="$PARAM[texture]" default="$VAR[Image_Fanart]" />
         <param name="texture_diffuse" value="$PARAM[texture_diffuse]" />

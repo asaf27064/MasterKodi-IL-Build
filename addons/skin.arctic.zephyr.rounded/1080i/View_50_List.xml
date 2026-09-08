@@ -13,6 +13,8 @@
         <param name="width" value="$PARAM[width]" default="PosterW" />
         <param name="height" value="$PARAM[height]" default="PosterH" />
         <param name="texture" value="$PARAM[texture]"  default="$VAR[Image_Poster]" />
+        <param name="colordiffuse" value="$PARAM[colordiffuse]" default="Fallback" />
+        <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" default="$VAR[Color_Border]" />
         <param name="condition_fadetime" value="$PARAM[condition_fadetime]"  default="true" />
 
         <definition>
@@ -25,7 +27,8 @@
                 <height>$PARAM[height]</height>
 
                 <include content="Def_Art_Full_Background_b24">
-                    <param name="colordiffuse" value="Fallback" />
+                    <param name="colordiffuse" value="$PARAM[colordiffuse]" />
+                    <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" />
                 </include>
 
                 <!-- ALL OTHERS -->
@@ -35,7 +38,17 @@
                     <param name="texture" value="$PARAM[texture]" />
                     <param name="texture_diffuse" value="poster_w428_h640_b24" />
                     <param name="condition_fadetime" value="$PARAM[condition_fadetime]" />
-                    <param name="visible" value="!$EXP[IsYoutubeItem] + !String.IsEqual(ListItem.DBType,musicvideo)" />
+                    <param name="visible" value="!$EXP[IsYoutubeItem] + !String.IsEqual(ListItem.DBType,musicvideo) + !Container.Content(studios)" />
+                </include>
+
+                <!-- STUDIOS -->
+
+                <include content="Def_Art_Icon_Image">
+                    <param name="aspectratio" value="keep" />
+                    <param name="texture" value="$PARAM[texture]" />
+                    <param name="texture_diffuse" value="square_w640_h640_b24" />
+                    <param name="condition_fadetime" value="$PARAM[condition_fadetime]" />
+                    <param name="visible" value="Container.Content(studios)" />
                 </include>
 
                 <!-- YOUTUBE -->
@@ -61,6 +74,8 @@
         <param name="width" value="$PARAM[width]" default="PosterH" />
         <param name="height" value="$PARAM[height]" default="PosterH" />
         <param name="texture" value="$PARAM[texture]"  default="$VAR[Image_Square_50_List]" />
+        <param name="colordiffuse" value="$PARAM[colordiffuse]" default="Fallback" />
+        <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" default="$VAR[Color_Border]" />
         <param name="condition_fadetime" value="$PARAM[condition_fadetime]"  default="true" />
 
         <definition>
@@ -73,7 +88,8 @@
                 <height>$PARAM[height]</height>
 
                 <include content="Def_Art_Full_Background_b24">
-                    <param name="colordiffuse" value="Fallback" />
+                    <param name="colordiffuse" value="$PARAM[colordiffuse]" />
+                    <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" />
                 </include>
 
                 <!-- ALL OTHERS -->
@@ -83,7 +99,7 @@
                     <param name="texture" value="$PARAM[texture]" />
                     <param name="texture_diffuse" value="square_w640_h640_b24" />
                     <param name="condition_fadetime" value="$PARAM[condition_fadetime]" />
-                    <param name="visible" value="![Container.Content(images) | Container.Content(favourites) | $EXP[IsYoutubeItem]]" />
+                    <param name="visible" value="![Container.Content(images) | Container.Content(favourites) | $EXP[IsYoutubeItem] | Container.Content(studios)]" />
                 </include>
 
                 <!-- FAVOURITES -->
@@ -94,6 +110,16 @@
                     <param name="texture_diffuse" value="square_w640_h640_b24" />
                     <param name="condition_fadetime" value="$PARAM[condition_fadetime]" />
                     <param name="visible" value="Container.Content(favourites)" />
+                </include>
+
+                <!-- STUDIOS -->
+
+                <include content="Def_Art_Icon_Image">
+                    <param name="aspectratio" value="keep" />
+                    <param name="texture" value="$PARAM[texture]" />
+                    <param name="texture_diffuse" value="square_w640_h640_b24" />
+                    <param name="condition_fadetime" value="$PARAM[condition_fadetime]" />
+                    <param name="visible" value="Container.Content(studios)" />
                 </include>
 
                 <!-- PICS -->
@@ -1072,7 +1098,7 @@
             <animation effect="slide" start="0" end="60" time="0" condition="[Container.Content(Seasons) + !Control.IsVisible(5161)] | Skin.HasSetting(hide.markers)">Conditional</animation>
             <animation effect="slide" start="0" end="66" time="0" condition="[!Container.Content(Seasons) | [Container.Content(Seasons) + Control.IsVisible(5161)]] + Skin.HasSetting(hide.video.ratings)">Conditional</animation>
             <animation effect="slide" start="0" end="66" time="0" condition="$EXP[IsAnPlugin] + !$EXP[IsTMDbHelper] + !$EXP[IsPluginJLOM] + !Skin.HasSetting(hide.video.ratings)">Conditional</animation>
-            <top>-5</top>
+            <top>-6</top>
             <align>right</align>
             <aligny>center</aligny>
             <width>64</width>
@@ -1251,7 +1277,7 @@
             <animation effect="slide" start="0" end="60" time="0" condition="[Container.Content(Seasons) + !Control.IsVisible(5161)] | Skin.HasSetting(hide.markers)">Conditional</animation>
             <animation effect="slide" start="0" end="66" time="0" condition="[!Container.Content(Seasons) | [Container.Content(Seasons) + Control.IsVisible(5161)]] + Skin.HasSetting(hide.video.ratings)">Conditional</animation>
             <animation effect="slide" start="0" end="66" time="0" condition="$EXP[IsAnPlugin] + !$EXP[IsTMDbHelper] + !$EXP[IsPluginJLOM] + !Skin.HasSetting(hide.video.ratings)">Conditional</animation>
-            <top>-5</top>
+            <top>-6</top>
             <align>right</align>
             <aligny>center</aligny>
             <width>64</width>
@@ -1369,7 +1395,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_play.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Play_NoFocus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>!Player.Paused</visible>
         </control>
@@ -1379,7 +1405,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_pause.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Pause_NoFocus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>Player.Paused</visible>
         </control>
@@ -1390,8 +1416,8 @@
             <height>64</height>
             <font>InfoNetflix</font>
             <label>$VAR[label_music_list_isplaying]</label>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
+            <textcolor>Dark1</textcolor>
+            <selectedcolor>Dark1s</selectedcolor>
             <visible>ListItem.IsPlaying</visible>
         </control>
 
@@ -1411,23 +1437,6 @@
             <selectedcolor>Dark1</selectedcolor>
             <label>$VAR[Label_View_List_Right]</label>
             <visible>Container.Content(songs) | Container.Content(albums)</visible>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <animation effect="slide" start="0" end="60" time="0" condition="$EXP[View_List_Music_Hide_Status]">Conditional</animation>
-            <animation effect="slide" start="0" end="66" time="0" condition="Skin.HasSetting(hide.music.ratings) + !String.IsEqual(Container.SortMethod,$LOCALIZE[38018])">Conditional</animation>
-            <animation effect="slide" start="0" end="-66" time="0" condition="String.IsEqual(Container.SortMethod,$LOCALIZE[38018])">Conditional</animation>
-            <right>154</right>
-            <width>500</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <align>right</align>
-            <font>SmallNavi</font>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <label>$VAR[Label_View_List_Right]</label>
-            <visible>Container.Content(songs) | Container.Content(albums)</visible>
-            <visible>ListItem.IsPlaying</visible>
         </control>
 
         <!-- WATCHED STATUS -->
@@ -1463,22 +1472,6 @@
             <visible>Container.Content(songs) | Container.Content(albums)</visible>
             <visible>!Skin.HasSetting(hide.music.ratings)</visible>
             <visible>!String.IsEqual(Container.SortMethod,$LOCALIZE[38018])</visible>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <right>30</right>
-            <width>500</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <align>right</align>
-            <font>SmallNavi</font>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <label>$VAR[Label_View_List_Rating]</label>
-            <visible>Container.Content(songs) | Container.Content(albums)</visible>
-            <visible>!String.IsEqual(Container.SortMethod,$LOCALIZE[38018])</visible>
-            <visible>!Skin.HasSetting(hide.music.ratings)</visible>
-            <visible>ListItem.IsPlaying</visible>
         </control>
 
         <!-- "#38018" -->
@@ -1504,20 +1497,6 @@
             <selectedcolor>Dark1</selectedcolor>
             <label fallback=" -- ">$INFO[ListItem.UserRating,,.0]</label>
             <visible>!ListItem.IsParentFolder + String.IsEqual(Container.SortMethod,$LOCALIZE[38018])</visible>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <right>30</right>
-            <width>500</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <align>right</align>
-            <font>SmallNavi</font>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <label fallback=" -- ">$INFO[ListItem.UserRating,,.0]</label>
-            <visible>!ListItem.IsParentFolder + String.IsEqual(Container.SortMethod,$LOCALIZE[38018])</visible>
-            <visible>ListItem.IsPlaying</visible>
         </control>
     </include>
 
@@ -1555,7 +1534,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_play.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Play_Focus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>!Player.Paused</visible>
         </control>
@@ -1565,7 +1544,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_pause.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Pause_Focus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>Player.Paused</visible>
         </control>
@@ -1696,7 +1675,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_play.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Play_NoFocus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>!Player.Paused</visible>
         </control>
@@ -1706,7 +1685,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_pause.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Pause_NoFocus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>Player.Paused</visible>
         </control>
@@ -1718,8 +1697,8 @@
             <height>64</height>
             <font>InfoNetflix</font>
             <label>$VAR[label_music_list_isplaying]</label>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
+            <textcolor>Dark1</textcolor>
+            <selectedcolor>Dark1</selectedcolor>
             <visible>ListItem.IsPlaying</visible>
         </control>
 
@@ -1740,24 +1719,6 @@
             <selectedcolor>Dark1</selectedcolor>
             <label>$VAR[Label_View_List_Right]</label>
             <visible>Container.Content(songs) | Container.Content(albums)</visible>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <animation effect="slide" start="0" end="60" time="0" condition="$EXP[View_List_Music_Hide_Status]">Conditional</animation>
-            <animation effect="slide" start="0" end="66" time="0" condition="Skin.HasSetting(hide.music.ratings) + !String.IsEqual(Container.SortMethod,$LOCALIZE[38018])">Conditional</animation>
-            <animation effect="slide" start="0" end="-66" time="0" condition="String.IsEqual(Container.SortMethod,$LOCALIZE[38018])">Conditional</animation>
-            <top>-5</top>
-            <right>154</right>
-            <width>500</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <align>right</align>
-            <font>SmallNavi</font>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <label>$VAR[Label_View_List_Right]</label>
-            <visible>Container.Content(songs) | Container.Content(albums)</visible>
-            <visible>ListItem.IsPlaying</visible>
         </control>
 
         <!-- WATCHED STATUS -->
@@ -1766,7 +1727,7 @@
             <animation effect="slide" start="0" end="60" time="0" condition="$EXP[View_List_Music_Hide_Status]">Conditional</animation>
             <animation effect="slide" start="0" end="66" time="0" condition="Skin.HasSetting(hide.music.ratings) + !String.IsEqual(Container.SortMethod,$LOCALIZE[38018])">Conditional</animation>
             <animation effect="slide" start="0" end="-66" time="0" condition="String.IsEqual(Container.SortMethod,$LOCALIZE[38018])">Conditional</animation>
-            <top>-5</top>
+            <top>-6</top>
             <align>right</align>
             <aligny>center</aligny>
             <width>64</width>
@@ -1795,23 +1756,6 @@
             <visible>Container.Content(songs) | Container.Content(albums)</visible>
             <visible>!Skin.HasSetting(hide.music.ratings)</visible>
             <visible>!String.IsEqual(Container.SortMethod,$LOCALIZE[38018])</visible>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <top>-5</top>
-            <right>30</right>
-            <width>500</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <align>right</align>
-            <font>SmallNavi</font>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <label>$VAR[Label_View_List_Rating]</label>
-            <visible>Container.Content(songs) | Container.Content(albums)</visible>
-            <visible>!String.IsEqual(Container.SortMethod,$LOCALIZE[38018])</visible>
-            <visible>!Skin.HasSetting(hide.music.ratings)</visible>
-            <visible>ListItem.IsPlaying</visible>
         </control>
 
         <!-- "#38018" -->
@@ -1838,21 +1782,6 @@
             <selectedcolor>Dark1</selectedcolor>
             <label fallback=" -- ">$INFO[ListItem.UserRating,,.0]</label>
             <visible>!ListItem.IsParentFolder + String.IsEqual(Container.SortMethod,$LOCALIZE[38018])</visible>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <top>-5</top>
-            <right>30</right>
-            <width>500</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <align>right</align>
-            <font>SmallNavi</font>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <label fallback=" -- ">$INFO[ListItem.UserRating,,.0]</label>
-            <visible>!ListItem.IsParentFolder + String.IsEqual(Container.SortMethod,$LOCALIZE[38018])</visible>
-            <visible>ListItem.IsPlaying</visible>
         </control>
 
         <!-- SECOND LINE - LABEL -->
@@ -1867,19 +1796,6 @@
             <label>$VAR[Label_List_Extended_Music]</label>
             <textcolor>Dark2</textcolor>
             <selectedcolor>Dark2</selectedcolor>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <top>28</top>
-            <left>120</left>
-            <width max="700">auto</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <font>Small24</font>
-            <label>$VAR[Label_List_Extended_Music]</label>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <visible>ListItem.IsPlaying</visible>
         </control>
     </include>
 
@@ -1919,7 +1835,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_play.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Play_Focus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>!Player.Paused</visible>
         </control>
@@ -1929,7 +1845,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_pause.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Pause_Focus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>Player.Paused</visible>
         </control>
@@ -1971,7 +1887,7 @@
             <animation effect="slide" start="0" end="60" time="0" condition="$EXP[View_List_Music_Hide_Status]">Conditional</animation>
             <animation effect="slide" start="0" end="66" time="0" condition="Skin.HasSetting(hide.music.ratings) + !String.IsEqual(Container.SortMethod,$LOCALIZE[38018])">Conditional</animation>
             <animation effect="slide" start="0" end="-66" time="0" condition="String.IsEqual(Container.SortMethod,$LOCALIZE[38018])">Conditional</animation>
-            <top>-5</top>
+            <top>-6</top>
             <align>right</align>
             <aligny>center</aligny>
             <width>64</width>
@@ -2080,7 +1996,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_play.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Play_NoFocus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>!Player.Paused</visible>
         </control>
@@ -2090,7 +2006,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_pause.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Pause_NoFocus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>Player.Paused</visible>
         </control>
@@ -2101,8 +2017,8 @@
             <height>64</height>
             <font>InfoNetflix</font>
             <label>$VAR[label_music_list_isplaying]</label>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
+            <textcolor>Dark1</textcolor>
+            <selectedcolor>Dark1</selectedcolor>
             <visible>ListItem.IsPlaying</visible>
         </control>
 
@@ -2121,22 +2037,6 @@
             <textcolor>Dark1</textcolor>
             <selectedcolor>Dark1</selectedcolor>
             <label>$VAR[Label_View_List_Right]</label>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <animation effect="slide" start="0" end="60" time="0" condition="Container.Content(Seasons) | Skin.HasSetting(hide.markers)">Conditional</animation>
-            <animation effect="slide" start="0" end="66" time="0" condition="!Container.Content(Seasons) + Skin.HasSetting(hide.playlist.ratings)">Conditional</animation>
-            <animation effect="slide" start="0" end="66" time="0" condition="$EXP[IsAnPlugin] + !$EXP[IsTMDbHelper] + !$EXP[IsPluginJLOM] + !Skin.HasSetting(hide.playlist.ratings)">Conditional</animation>
-            <right>154</right>
-            <width>500</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <align>right</align>
-            <font>SmallNavi</font>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <label>$VAR[Label_View_List_Right]</label>
-            <visible>ListItem.IsPlaying</visible>
         </control>
 
         <!-- WATCHED STATUS -->
@@ -2169,22 +2069,6 @@
             <visible>Container.Content(movies) | Container.Content(tvshows) | Container.Content(episodes) | Container.Content(songs) | Container.Content(albums) | Container.Content(videos) | $EXP[IsAnVideoInPlaylist]</visible>
             <visible>!Container.Content(seasons) | String.IsEqual(Container.SortMethod,$LOCALIZE[553]) | String.IsEqual(Container.SortMethod,$LOCALIZE[561])</visible>
             <visible>!Skin.HasSetting(hide.playlist.ratings) | String.IsEqual(Container.SortMethod,$LOCALIZE[553]) | String.IsEqual(Container.SortMethod,$LOCALIZE[561])</visible>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <right>30</right>
-            <width>500</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <align>right</align>
-            <font>SmallNavi</font>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <label>$VAR[Label_View_List_Rating]</label>
-            <visible>Container.Content(movies) | Container.Content(tvshows) | Container.Content(episodes) | Container.Content(songs) | Container.Content(albums) | Container.Content(videos) | $EXP[IsAnVideoInPlaylist]</visible>
-            <visible>!Container.Content(seasons) | String.IsEqual(Container.SortMethod,$LOCALIZE[553]) | String.IsEqual(Container.SortMethod,$LOCALIZE[561])</visible>
-            <visible>!Skin.HasSetting(hide.playlist.ratings) | String.IsEqual(Container.SortMethod,$LOCALIZE[553]) | String.IsEqual(Container.SortMethod,$LOCALIZE[561])</visible>
-            <visible>ListItem.IsPlaying</visible>
         </control>
     </include>
 
@@ -2223,7 +2107,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_play.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Play_Focus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>!Player.Paused</visible>
         </control>
@@ -2233,7 +2117,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_pause.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Pause_Focus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>Player.Paused</visible>
         </control>
@@ -2336,7 +2220,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_play.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Play_NoFocus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>!Player.Paused</visible>
         </control>
@@ -2346,7 +2230,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_pause.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Pause_NoFocus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>Player.Paused</visible>
         </control>
@@ -2358,8 +2242,8 @@
             <height>64</height>
             <font>InfoNetflix</font>
             <label>$VAR[label_music_list_isplaying]</label>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
+            <textcolor>Dark1</textcolor>
+            <selectedcolor>Dark1</selectedcolor>
             <visible>ListItem.IsPlaying</visible>
         </control>
 
@@ -2379,23 +2263,6 @@
             <textcolor>Dark1</textcolor>
             <selectedcolor>Dark1</selectedcolor>
             <label>$VAR[Label_View_List_Right]</label>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <animation effect="slide" start="0" end="60" time="0" condition="Container.Content(Seasons) | Skin.HasSetting(hide.markers)">Conditional</animation>
-            <animation effect="slide" start="0" end="66" time="0" condition="!Container.Content(Seasons) + Skin.HasSetting(hide.playlist.ratings)">Conditional</animation>
-            <animation effect="slide" start="0" end="66" time="0" condition="$EXP[IsAnPlugin] + !$EXP[IsTMDbHelper] + !$EXP[IsPluginJLOM] + !Skin.HasSetting(hide.playlist.ratings)">Conditional</animation>
-            <top>-5</top>
-            <right>154</right>
-            <width>500</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <align>right</align>
-            <font>SmallNavi</font>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <label>$VAR[Label_View_List_Right]</label>
-            <visible>ListItem.IsPlaying</visible>
         </control>
 
         <!-- WATCHED STATUS -->
@@ -2403,7 +2270,7 @@
         <control type="label">
             <animation effect="slide" start="0" end="60" time="0" condition="Skin.HasSetting(hide.markers)">Conditional</animation>
             <animation effect="slide" start="0" end="66" time="0" condition="Skin.HasSetting(hide.playlist.ratings)">Conditional</animation>
-            <top>-5</top>
+            <top>-6</top>
             <align>right</align>
             <aligny>center</aligny>
             <width>64</width>
@@ -2430,23 +2297,6 @@
             <visible>Container.Content(movies) | Container.Content(tvshows) | Container.Content(episodes) | Container.Content(songs) | Container.Content(albums) | Container.Content(videos) | $EXP[IsAnVideoInPlaylist]</visible>
             <visible>!Container.Content(seasons) | String.IsEqual(Container.SortMethod,$LOCALIZE[553]) | String.IsEqual(Container.SortMethod,$LOCALIZE[561])</visible>
             <visible>!Skin.HasSetting(hide.playlist.ratings) | String.IsEqual(Container.SortMethod,$LOCALIZE[553]) | String.IsEqual(Container.SortMethod,$LOCALIZE[561])</visible>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <top>-5</top>
-            <right>30</right>
-            <width>500</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <align>right</align>
-            <font>SmallNavi</font>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <label>$VAR[Label_View_List_Rating]</label>
-            <visible>Container.Content(movies) | Container.Content(tvshows) | Container.Content(episodes) | Container.Content(songs) | Container.Content(albums) | Container.Content(videos) | $EXP[IsAnVideoInPlaylist]</visible>
-            <visible>!Container.Content(seasons) | String.IsEqual(Container.SortMethod,$LOCALIZE[553]) | String.IsEqual(Container.SortMethod,$LOCALIZE[561])</visible>
-            <visible>!Skin.HasSetting(hide.playlist.ratings) | String.IsEqual(Container.SortMethod,$LOCALIZE[553]) | String.IsEqual(Container.SortMethod,$LOCALIZE[561])</visible>
-            <visible>ListItem.IsPlaying</visible>
         </control>
 
         <!-- SECOND LINE - LABEL -->
@@ -2463,21 +2313,6 @@
             <textcolor>Dark2</textcolor>
             <selectedcolor>Dark2</selectedcolor>
             <label>$VAR[Label_List_Extended_Playlist]</label>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <visible>!Skin.HasSetting(list.show.filename)</visible>
-            <top>28</top>
-            <left>120</left>
-            <width max="700">auto</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <align>left</align>
-            <font>Small24</font>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <label>$VAR[Label_List_Extended_Playlist]</label>
-            <visible>ListItem.IsPlaying</visible>
         </control>
 
         <!-- SECOND LINE - FILE PATH -->
@@ -2494,21 +2329,6 @@
             <textcolor>Dark2</textcolor>
             <selectedcolor>Dark2</selectedcolor>
             <label>$VAR[Label_View_List_FolderPath_File]</label>
-            <visible>!ListItem.IsPlaying</visible>
-        </control>
-        <control type="label">
-            <visible>Skin.HasSetting(list.show.filename) + !ListItem.IsParentFolder</visible>
-            <top>28</top>
-            <left>120</left>
-            <width max="700">auto</width>
-            <aligny>center</aligny>
-            <height>64</height>
-            <align>left</align>
-            <font>Small24</font>
-            <textcolor>Selected</textcolor>
-            <selectedcolor>Selected</selectedcolor>
-            <label>$VAR[Label_View_List_FolderPath_File]</label>
-            <visible>ListItem.IsPlaying</visible>
         </control>
     </include>
 
@@ -2548,7 +2368,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_play.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Play_Focus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>!Player.Paused</visible>
         </control>
@@ -2558,7 +2378,7 @@
             <width>32</width>
             <height>32</height>
             <aspectratio aligny="top">keep</aspectratio>
-            <texture colordiffuse="Selected">dialog/indicator/playlist_pause.png</texture>
+            <include>Texture_Layout_Item_IsPlaying_Pause_Focus</include>
             <visible>ListItem.IsPlaying</visible>
             <visible>Player.Paused</visible>
         </control>
@@ -2599,7 +2419,7 @@
             <animation effect="slide" start="0" end="60" time="0" condition="Skin.HasSetting(hide.markers)">Conditional</animation>
             <animation effect="slide" start="0" end="66" time="0" condition="!Container.Content(Seasons) + Skin.HasSetting(hide.playlist.ratings)">Conditional</animation>
             <animation effect="slide" start="0" end="66" time="0" condition="$EXP[IsAnPlugin] + !$EXP[IsTMDbHelper] + !$EXP[IsPluginJLOM] + !Skin.HasSetting(hide.playlist.ratings)">Conditional</animation>
-            <top>-5</top>
+            <top>-6</top>
             <align>right</align>
             <aligny>center</aligny>
             <width>64</width>
@@ -2892,7 +2712,7 @@
                     <width>32</width>
                     <height>32</height>
                     <aspectratio aligny="top">keep</aspectratio>
-                    <texture colordiffuse="$VAR[Color_Indicator_Version]">$VAR[Image_Addons_AutoUpdateable_Icon]</texture>
+                    <texture colordiffuse="$VAR[Color_Addon_Autoupdate]">$VAR[Image_Addons_AutoUpdateable_Icon]</texture>
                     <animation effect="slide" start="0" end="57" time="0" condition="Window.IsVisible(MyPrograms.xml)">Conditional</animation>
                     <visible>!ListItem.IsFolder + Container.Content(addons)</visible>
                     <visible>!ListItem.IsAutoUpdateable</visible>

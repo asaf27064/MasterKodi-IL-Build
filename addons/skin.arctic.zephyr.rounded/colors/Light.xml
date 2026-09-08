@@ -29,13 +29,13 @@
 
     <color name="Background">FFF0F0F0</color>
     <color name="BackgroundNew">DEF0F0F0</color>
-    <color name="BackgroundFlag">FFCCCCCC</color>
+    <color name="BackgroundFlag">CCB0B0B0</color>
     <color name="BackgroundOverlay">FF808080</color>
 
     <color name="FanartFade">FFFFFFFF</color>
     <color name="FanartFadeBlur">FFFFFFFF</color>
-    <color name="FloorFade">EED8D8D8</color>
-    <color name="FloorFade2">BBF0F0F0</color>
+    <color name="FloorFade">FFD4D4D4</color>
+    <color name="FloorFade2">AAD8D8D8</color>
     <color name="FloorFadeBlur">BBF0F0F0</color>
 
     <!-- MENU SETTING - COLOR LABEL TITLE FOCUS -->
@@ -45,7 +45,6 @@
     <!-- MENU SKINSETTING - TEXTE NON SÉLÉCTIONNÉ - TITRE -->
 
     <color name="PanelWhite100">B3141414</color>
-
 
     <color name="PanelWhite90">E6DDDDDD</color>
 
@@ -73,7 +72,7 @@
     <color name="BoxShadow">FF606060</color>
     <color name="DialogShadow">FF393939</color>
 
-    <color name="UnWatchedIcons">E600BCD4</color>
+    <color name="UnWatchedIcons">E62980B9</color>
 
     <color name="Fallback">FFD4D4D4</color>
 

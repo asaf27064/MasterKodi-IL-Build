@@ -188,7 +188,13 @@
             <onleft condition="!String.IsEmpty(Container(300).ListItemNoWrap(-1).Label)">SetProperty(AnimationDirection,Left,Home)</onleft>
             <onleft condition="!String.IsEmpty(Container(300).ListItemNoWrap(-1).Label)">Control.Move(300,-1)</onleft>
 
-            <onleft condition="String.IsEmpty(Container(300).ListItemNoWrap(-1).Label)">9099</onleft>
+            <onleft condition="String.IsEmpty(Container(300).ListItemNoWrap(-1).Label) + !String.IsEqual(Skin.String(home_search_state),2)">9099</onleft>
+
+            <!-- SEARCH DISABLE -->
+
+            <onleft condition="String.IsEmpty(Container(300).ListItemNoWrap(-1).Label) + String.IsEqual(Skin.String(home_search_state),2)">SetProperty(AnimationDirection,Left,Home)</onleft>
+            <onleft condition="String.IsEmpty(Container(300).ListItemNoWrap(-1).Label) + String.IsEqual(Skin.String(home_search_state),2)">SetFocus(300,$INFO[Container(300).NumItems])</onleft>
+            <onleft condition="String.IsEmpty(Container(300).ListItemNoWrap(-1).Label) + String.IsEqual(Skin.String(home_search_state),2)">SetProperty(end_menu,1,Home)</onleft>
 
             <!-- MAIN MENU - ON RIGHT -->
 
@@ -819,7 +825,14 @@
 
             <onup condition="String.IsEmpty(Container(300).ListItemNoWrap(-1).Label)">ClearProperty(first_menu,1,Home)</onup>
             <onup condition="String.IsEmpty(Container(300).ListItemNoWrap(-1).Label)">ClearProperty(end_menu,1,Home)</onup>
-            <onup condition="String.IsEmpty(Container(300).ListItemNoWrap(-1).Label)">9099</onup>
+
+            <onup condition="String.IsEmpty(Container(300).ListItemNoWrap(-1).Label) + !String.IsEqual(Skin.String(home_search_state),2)">9099</onup>
+
+            <!-- SEARCH DISABLE -->
+
+            <onup condition="String.IsEmpty(Container(300).ListItemNoWrap(-1).Label) + String.IsEqual(Skin.String(home_search_state),2)">SetProperty(AnimationDirection,Up,Home)</onup>
+            <onup condition="String.IsEmpty(Container(300).ListItemNoWrap(-1).Label) + String.IsEqual(Skin.String(home_search_state),2)">SetFocus(300,$INFO[Container(300).NumItems])</onup>
+            <onup condition="String.IsEmpty(Container(300).ListItemNoWrap(-1).Label) + String.IsEqual(Skin.String(home_search_state),2)">SetProperty(end_menu,1,Home)</onup>
 
             <!-- MAIN MENU - ON DOWN -->
 
@@ -1162,16 +1175,16 @@
 
             <!-- ARTISTS -->
 
-            <!-- <control type="grouplist"> -->
-                <!-- <visible>String.IsEqual(Container($PARAM[id]).ListItem.DBType,artist)</visible> -->
+            <control type="grouplist">
+                <visible>String.IsEqual(Container($PARAM[id]).ListItem.DBType,artist)</visible>
 
-                <!-- <itemgap>0</itemgap> -->
-                <!-- <orientation>horizontal</orientation> -->
-                <!-- <usecontrolcoords>true</usecontrolcoords> -->
+                <itemgap>0</itemgap>
+                <orientation>horizontal</orientation>
+                <usecontrolcoords>true</usecontrolcoords>
 
-                <!-- <include content="Def_Home_Label_Widget_Sub_Title_TotalAlbum"><param name="id" value="$PARAM[id]" /></include> -->
-                <!-- <include content="Def_Home_Label_Widget_Sub_Title_ArtistStyle"><param name="id" value="$PARAM[id]" /></include> -->
-            <!-- </control> -->
+                <include content="Def_Home_Label_Widget_Sub_Title_TotalAlbum"><param name="id" value="$PARAM[id]" /></include>
+                <include content="Def_Home_Label_Widget_Sub_Title_ArtistStyle"><param name="id" value="$PARAM[id]" /></include>
+            </control>
 
             <!-- SONGS -->
 
@@ -1284,25 +1297,25 @@
 
             <!-- OTHERS / PLUGING -->
 
-            <!-- <control type="grouplist"> -->
-                <!-- <visible>String.IsEmpty(Container($PARAM[id]).ListItem.DBType) | String.IsEqual(Container($PARAM[id]).ListItem.DBType,video)</visible> -->
-                <!-- <visible>!String.StartsWith(Container($PARAM[id]).ListItem.FolderPath,pvr://) + !String.StartsWith(Container($PARAM[id]).ListItem.FolderPath,plugin://plugin.video.youtube) + !String.StartsWith(Container($PARAM[id]).ListItem.FolderPath,plugin://plugin.audio.apple.podcasts)</visible> -->
-                <!-- <visible>!$EXP[Home_More_Item]</visible> -->
+            <control type="grouplist">
+                <visible>String.IsEmpty(Container($PARAM[id]).ListItem.DBType) | String.IsEqual(Container($PARAM[id]).ListItem.DBType,video)</visible>
+                <visible>!String.StartsWith(Container($PARAM[id]).ListItem.FolderPath,pvr://) + !String.StartsWith(Container($PARAM[id]).ListItem.FolderPath,plugin://plugin.video.youtube) + !String.StartsWith(Container($PARAM[id]).ListItem.FolderPath,plugin://plugin.audio.apple.podcasts)</visible>
+                <visible>!$EXP[Home_More_Item]</visible>
 
-                <!-- <itemgap>0</itemgap> -->
-                <!-- <orientation>horizontal</orientation> -->
-                <!-- <usecontrolcoords>true</usecontrolcoords> -->
+                <itemgap>0</itemgap>
+                <orientation>horizontal</orientation>
+                <usecontrolcoords>true</usecontrolcoords>
 
-                <!-- <include content="Def_Home_Label_Widget_Sub_Title_Year"><param name="id" value="$PARAM[id]" /></include> -->
-                <!-- <include content="Def_Home_Label_Widget_Sub_Title_DateAdded"><param name="id" value="$PARAM[id]" /></include> -->
-                <!-- <include content="Def_Home_Label_Widget_Sub_Title_Genre"><param name="id" value="$PARAM[id]" /></include> -->
-                <!-- <include content="Def_Home_Label_Widget_Sub_Title_Duration"><param name="id" value="$PARAM[id]" /></include> -->
-                <!-- <include content="Def_Home_Label_Widget_Sub_Title_Tagline"><param name="id" value="$PARAM[id]" /></include> -->
+                <include content="Def_Home_Label_Widget_Sub_Title_Year"><param name="id" value="$PARAM[id]" /></include>
+                <include content="Def_Home_Label_Widget_Sub_Title_DateAdded"><param name="id" value="$PARAM[id]" /></include>
+                <include content="Def_Home_Label_Widget_Sub_Title_Genre"><param name="id" value="$PARAM[id]" /></include>
+                <include content="Def_Home_Label_Widget_Sub_Title_Duration"><param name="id" value="$PARAM[id]" /></include>
+                <include content="Def_Home_Label_Widget_Sub_Title_Tagline"><param name="id" value="$PARAM[id]" /></include>
 
-                <!-- <include content="Home_Clean_Movies_Indicator" condition="!Skin.HasSetting(hide.markers) + Skin.HasSetting(home.style.horizontal.clean)"> -->
-                    <!-- <param name="id" value="$PARAM[id]" /> -->
-                <!-- </include> -->
-            <!-- </control> -->
+                <include content="Home_Clean_Movies_Indicator" condition="!Skin.HasSetting(hide.markers) + Skin.HasSetting(home.style.horizontal.clean)">
+                    <param name="id" value="$PARAM[id]" />
+                </include>
+            </control>
         </control>
     </include>
 
@@ -2845,35 +2858,35 @@
             <!-- Resumable -->
             <control type="label">
                 <include>Def_Watched_Indicators_Clean</include>
-                <label>[COLOR=$VAR[Color_Indicator_Background_In_Progress]]&#62596;[/COLOR]</label>
+                <label>[COLOR=$VAR[Color_Indicator_In_Progress_View_List]]&#61995;[/COLOR]</label>
                 <visible>!Container($PARAM[id]).ListItem.IsPlaying + Container($PARAM[id]).ListItem.IsResumable</visible>
             </control>
 
             <!-- Watched -->
             <control type="label">
                 <include>Def_Watched_Indicators_Clean</include>
-                <label>[COLOR=$VAR[Color_Indicator_Background_Watched]]&#10003;[/COLOR]</label>
+                <label>[COLOR=$VAR[Color_Indicator_Watched_View_List]]&#10003;[/COLOR]</label>
                 <visible>!Container($PARAM[id]).ListItem.IsPlaying + String.IsEqual(Container($PARAM[id]).ListItem.Overlay,OverlayWatched.png) + !Container($PARAM[id]).ListItem.IsResumable + !Skin.HasSetting(hide.markers.watched)</visible>
             </control>
 
-            <!-- IS PLAYING -->
+            <!-- Is Playing -->
             <control type="label">
                 <include>Def_Watched_Indicators_Clean</include>
-                <label>[COLOR=$VAR[Color_Indicator_Background_Is_Playing]]&#62811;[/COLOR]</label>
+                <label>[COLOR=$VAR[Color_Indicator_Is_Playing_View_List]]&#62811;[/COLOR]</label>
                 <visible>Container($PARAM[id]).ListItem.IsPlaying + !Skin.HasSetting(hide.markers.isplaying) + !Player.Paused</visible>
             </control>
 
             <!-- Is Playing Paused -->
             <control type="label">
                 <include>Def_Watched_Indicators_Clean</include>
-                <label>[COLOR=$VAR[Color_Indicator_Background_Is_Playing]]&#62813;[/COLOR]</label>
+                <label>[COLOR=$VAR[Color_Indicator_Is_Playing_View_List]]&#62813;[/COLOR]</label>
                 <visible>Container($PARAM[id]).ListItem.IsPlaying + !Skin.HasSetting(hide.markers.isplaying) + Player.Paused</visible>
             </control>
 
             <!-- New -->
             <control type="label">
                 <include>Def_Watched_Indicators_Clean</include>
-                <label>[COLOR=$VAR[Color_Indicator_Background_New]]&#62079;[/COLOR]</label>
+                <label>[COLOR=$VAR[Color_Indicator_New_View_List]]&#62079;[/COLOR]</label>
                 <visible>!Container($PARAM[id]).ListItem.IsPlaying + String.IsEqual(Container($PARAM[id]).ListItem.Overlay,OverlayUnwatched.png) + !Container($PARAM[id]).ListItem.IsResumable + !Skin.HasSetting(hide.markers.newcontent) + [
                     [
                         String.IsEqual(Window(Home).Property(LatestMovie.1.Title),Container($PARAM[id]).ListItem.Label)
@@ -2932,21 +2945,21 @@
             <!-- Resumable -->
             <control type="label">
                 <include>Def_Watched_Indicators_Clean</include>
-                <label>[COLOR=$VAR[Color_Indicator_Background_In_Progress]]&#62596;[/COLOR]</label>
+                <label>[COLOR=$VAR[Color_Indicator_In_Progress_View_List]]&#61995;[/COLOR]</label>
                 <visible>Container($PARAM[id]).ListItem.IsResumable</visible>
             </control>
 
             <!-- Watched -->
             <control type="label">
                 <include>Def_Watched_Indicators_Clean</include>
-                <label>[COLOR=$VAR[Color_Indicator_Background_Watched]]&#10003;[/COLOR]</label>
+                <label>[COLOR=$VAR[Color_Indicator_Watched_View_List]]&#10003;[/COLOR]</label>
                 <visible>String.IsEqual(Container($PARAM[id]).ListItem.Overlay,OverlayWatched.png) + !Container($PARAM[id]).ListItem.IsResumable + !Skin.HasSetting(hide.markers.watched)</visible>
             </control>
 
             <!-- New -->
             <control type="label">
                 <include>Def_Watched_Indicators_Clean</include>
-                <label>[COLOR=$VAR[Color_Indicator_Background_New]]&#62079;[/COLOR]</label>
+                <label>[COLOR=$VAR[Color_Indicator_New_View_List]]&#62079;[/COLOR]</label>
                 <visible>String.IsEqual(Container($PARAM[id]).ListItem.Overlay,OverlayUnwatched.png) + !Container($PARAM[id]).ListItem.IsResumable + !Skin.HasSetting(hide.markers.newcontent) +
                 [
                     String.IsEqual(Window(Home).Property(LatestEpisode.1.ShowTitle),Container($PARAM[id]).ListItem.TvShowTitle)

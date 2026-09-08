@@ -477,6 +477,7 @@
         <value condition="!String.IsEmpty(Listitem.Art(poster))">$INFO[Listitem.Art(poster)]</value>
         <value condition="String.IsEqual(ListItem.DBType,episode) + !String.IsEmpty(Listitem.Art(tvshow.poster))">$INFO[Listitem.Art(tvshow.poster)]</value>
         <value condition="String.IsEqual(ListItem.DBType,country)">$VAR[Image_Thumb_Countries]</value>
+        <value condition="String.IsEqual(ListItem.DBType,studio)">$VAR[Image_Thumb_Studios]</value>
         <value condition="String.IsEqual(ListItem.DBType,genre) | String.EndsWith(Container.FolderPath,Genres)">$VAR[Image_Thumb_Genres]</value>
         <value condition="!String.IsEmpty(ListItem.Art(season.poster)) + !Window.IsVisible(Home) + !Container.Content(files)">$INFO[ListItem.Art(season.poster)]</value>
         <value condition="Container.Content(seasons) + String.IsEqual(ListItem.Label,$LOCALIZE[20366]) + !String.IsEmpty(ListItem.Art(tvshow.poster))">$INFO[ListItem.Art(tvshow.poster)]</value>
@@ -894,6 +895,28 @@
         <value condition="Container(9500).ListItem.IsResumable">dialog/indicator/inprogress.png</value>
         <value condition="String.IsEqual(Container(9500).ListItem.Overlay,OverlayWatched.png)">dialog/indicator/checkmark.png</value>
         <value condition="String.IsEqual(Container(9500).ListItem.Overlay,OverlayUnwatched.png)">dialog/indicator/unwatched.png</value>
+    </variable>
+
+    <variable name="Image_Indicator_Icon_Background">
+        <value condition="Skin.HasSetting(hide.markers)"></value>
+        <value condition="ListItem.IsPlaying + !Skin.HasSetting(hide.markers.isplaying)">diffuse/circle_64.png</value>
+        <value condition="[ListItem.IsResumable | $EXP[IsTVShowInProgress]] + Skin.HasSetting(hide.markers.inprogress)"></value>
+        <value condition="ListItem.IsResumable | $EXP[IsTVShowInProgress]">diffuse/circle_64.png</value>
+        <value condition="Integer.IsGreater(ListItem.Playcount,0) + Skin.HasSetting(hide.markers.watched)"></value>
+        <value condition="Integer.IsGreater(ListItem.Playcount,0) + $EXP[Exp_View_Flag_Watched_Album_Song]">diffuse/circle_64.png</value>
+        <value condition="Integer.IsEqual(ListItem.Playcount,0) + [$EXP[IsNewMovie] | $EXP[IsNewTVShow] | $EXP[IsNewEpisode]] + !Skin.HasSetting(hide.markers.newcontent)">diffuse/circle_64.png</value>
+        <value condition="Integer.IsEqual(ListItem.Playcount,0) + !$EXP[IsNewMovie] + !$EXP[IsNewTVShow] + !$EXP[IsNewEpisode] + !Skin.HasSetting(hide.markers.unwatched) + !$EXP[Home_More_Item]">diffuse/circle_64.png</value>
+    </variable>
+
+    <variable name="Image_Indicator_Icon_Circle">
+        <value condition="Skin.HasSetting(hide.markers)"></value>
+        <value condition="ListItem.IsPlaying + !Skin.HasSetting(hide.markers.isplaying)">common/border_circle_64.png</value>
+        <value condition="[ListItem.IsResumable | $EXP[IsTVShowInProgress]] + Skin.HasSetting(hide.markers.inprogress)"></value>
+        <value condition="ListItem.IsResumable | $EXP[IsTVShowInProgress]">common/border_circle_64.png</value>
+        <value condition="Integer.IsGreater(ListItem.Playcount,0) + Skin.HasSetting(hide.markers.watched)"></value>
+        <value condition="Integer.IsGreater(ListItem.Playcount,0) + $EXP[Exp_View_Flag_Watched_Album_Song]">common/border_circle_64.png</value>
+        <value condition="Integer.IsEqual(ListItem.Playcount,0) + [$EXP[IsNewMovie] | $EXP[IsNewTVShow] | $EXP[IsNewEpisode]] + !Skin.HasSetting(hide.markers.newcontent)">common/border_circle_64.png</value>
+        <value condition="Integer.IsEqual(ListItem.Playcount,0) + !$EXP[IsNewMovie] + !$EXP[IsNewTVShow] + !$EXP[IsNewEpisode] + !Skin.HasSetting(hide.markers.unwatched) + !$EXP[Home_More_Item]">common/border_circle_64.png</value>
     </variable>
 
     <!-- IMAGE - MEDIA FLAG -->

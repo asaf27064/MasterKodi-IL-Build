@@ -12,7 +12,7 @@
         <value>BoxBorder</value>
     </variable>
 
-    <variable name="Color_Border_Widget">
+    <variable name="Color_Widget_Border">
         <value>BoxBorderWidget</value>
     </variable>
 
@@ -22,6 +22,20 @@
 
     <variable name="Color_Dialog_Shadow">
         <value>DialogShadow</value>
+    </variable>
+
+    <!-- DEF COLOR - PROGRESS BAR - DIALOG - WIDGET -->
+
+    <variable name="Color_Widget_Progress_Bar_Background">
+        <value>8FBBBBBB</value>
+    </variable>
+
+    <variable name="Color_Dialog_Progress_Bar_Background">
+        <value>Black12</value>
+    </variable>
+
+    <variable name="Color_Background_Widget_Progress_Bar">
+        <value>4F050505</value>
     </variable>
 
     <!-- DEF SKIN COLOR -->
@@ -68,73 +82,6 @@
 
     <variable name="Color_Loading_Spinner">
         <value>$VAR[Color_Focus]</value>
-    </variable>
-
-    <!-- DEF COLOR -->
-
-    <variable name="Value_Color_Watched_Poster">
-        <value>UnWatchedIcons</value>
-    </variable>
-
-    <variable name="Color_Empty_DBID">
-        <value>orange</value>
-    </variable>
-
-    <variable name="Color_Indicator_Set">
-        <value>FF9F42C6</value>
-    </variable>
-
-    <variable name="Color_Indicator_Version">
-        <value>FF9F42C6</value>
-    </variable>
-
-    <variable name="Color_Indicator_DBType">
-        <!-- <value contdition="String.IsEqual(Container(6).ListItem.DBType,set)">FF9F42C6</value> -->
-        <!-- <value contdition="String.IsEqual(Container(6).ListItem.DBType,version)">FF9F42C6</value> -->
-        <!-- <value contdition="String.IsEqual(Container(6).ListItem.DBType,movie)">FF9F42C6</value> -->
-        <!-- <value contdition="String.IsEqual(Container(6).ListItem.DBType,tvshow)">FF9F42C6</value> -->
-        <!-- <value contdition="String.IsEqual(Container(6).ListItem.DBType,season)">FF9F42C6</value> -->
-        <!-- <value contdition="String.IsEqual(Container(6).ListItem.DBType,episode)">FF9F42C6</value> -->
-        <!-- <value contdition="String.IsEqual(Container(6).ListItem.DBType,album)">FF3498DB</value> -->
-        <!-- <value contdition="String.IsEqual(Container(6).ListItem.DBType,musicvideo)">FF3498DB</value> -->
-
-        <value contdition="String.IsEqual(ListItem.DBType,album)">FF3498DB</value>
-        <value contdition="String.IsEqual(ListItem.DBType,musicvideo)">FF3498DB</value>
-
-        <value contdition="String.IsEqual(ListItem.DBType,set)">FF9F42C6</value>
-        <value contdition="String.IsEqual(ListItem.DBType,version)">FF9F42C6</value>
-        <value contdition="String.IsEqual(ListItem.DBType,movie)">FF9F42C6</value>
-        <value contdition="String.IsEqual(ListItem.DBType,tvshow)">FF9F42C6</value>
-        <value contdition="String.IsEqual(ListItem.DBType,season)">FF9F42C6</value>
-        <value contdition="String.IsEqual(ListItem.DBType,episode)">FF9F42C6</value>
-    </variable>
-
-    <variable name="Color_Indicator_JLOM">
-        <value>FF9F42C6</value>
-    </variable>
-
-    <variable name="Color_Background_IMDb">
-        <value>FFF1C40F</value>
-    </variable>
-
-    <variable name="Color_Background_Kodi">
-        <value>FF222F3E</value>
-    </variable>
-
-    <variable name="Color_Label_Kodi">
-        <value>FF0ABDE3</value>
-    </variable>
-
-    <variable name="Color_Background_TMDb">
-        <value>FF48DBFB</value>
-    </variable>
-
-    <variable name="Color_Background_Others">
-        <value>FF081C24</value>
-    </variable>
-
-    <variable name="Color_Background_Flag">
-        <value>BackgroundFlag</value>
     </variable>
 
     <!-- HIGHLIGHT COLOR -->
@@ -347,14 +294,6 @@
         <value>FF808080</value>
     </variable>
 
-    <variable name="Color_Widget_Progress_Bar_Background_light">
-        <value>1F000000</value>
-    </variable>
-
-    <variable name="Color_Widget_Progress_Bar_Background_darkest">
-        <value>6FBBBBBB</value>
-    </variable>
-
     <variable name="Color_OSD_Progress_Bar_Background">
         <value>1FBBBBBB</value>
     </variable>
@@ -473,6 +412,10 @@
         <value>FFD6AD05</value>
     </variable>
 
+    <variable name="Color_OSD_Info_Tips">
+        <value>44ffffff</value>
+    </variable>
+
     <!-- MEDIA FLAG - COLOR -->
 
     <variable name="Color_Flag_Episode">
@@ -488,7 +431,7 @@
     </variable>
 
     <variable name="Color_Flag_Set">
-		<value condition="Skin.HasSetting(enable.furniture.flags.colored)">FF9F42C6</value>
+		<value condition="Skin.HasSetting(enable.furniture.flags.colored)">FF8E44AD</value>
 		<value>Dark1</value>
     </variable>
 
@@ -507,7 +450,156 @@
 		<value>Dark1</value>
     </variable>
 
+    <!-- Number disc, etc... -->
+    <variable name="Color_Flag_Background">
+        <value>BackgroundFlag</value>
+    </variable>
+
+    <!-- COLOR - VIEWS LIST - INDICATOR -->
+
+    <variable name="Color_Indicator_Empty_DBID_View_List">
+        <value condition="!Skin.HasSetting(enable.furniture.markers.view.list.monochrome)">orange</value>
+        <value>$VAR[Color_Indicator_Monochrome_View_List]</value>
+    </variable>
+
+    <variable name="Color_Indicator_Set_View_List">
+        <value condition="!Skin.HasSetting(enable.furniture.markers.view.list.monochrome)">FF8E44AD</value>
+        <value>$VAR[Color_Indicator_Monochrome_View_List]</value>
+    </variable>
+
+    <variable name="Color_Indicator_Version_View_List">
+        <value condition="!Skin.HasSetting(enable.furniture.markers.view.list.monochrome)">FF8E44AD</value>
+        <value>$VAR[Color_Indicator_Monochrome_View_List]</value>
+    </variable>
+
+    <variable name="Color_Indicator_In_Progress_View_List">
+        <value condition="!Skin.HasSetting(enable.furniture.markers.view.list.monochrome)">$VAR[Color_Indicator_Background_In_Progress]</value>
+        <value>$VAR[Color_Indicator_Monochrome_View_List]</value>
+    </variable>
+
+    <variable name="Color_Indicator_Watched_View_List">
+        <value condition="!Skin.HasSetting(enable.furniture.markers.view.list.monochrome)">$VAR[Color_Indicator_Background_Watched]</value>
+        <value>$VAR[Color_Indicator_Monochrome_View_List]</value>
+    </variable>
+
+    <variable name="Color_Indicator_UnWatched_View_List">
+        <value condition="!Skin.HasSetting(enable.furniture.markers.view.list.monochrome)">$VAR[Color_Indicator_Background_UnWatched]</value>
+        <value>$VAR[Color_Indicator_Monochrome_View_List]</value>
+    </variable>
+
+    <variable name="Color_Indicator_New_View_List">
+        <value condition="!Skin.HasSetting(enable.furniture.markers.view.list.monochrome)">$VAR[Color_Indicator_Background_New]</value>
+        <value>$VAR[Color_Indicator_Monochrome_View_List]</value>
+    </variable>
+
+    <variable name="Color_Indicator_Is_Playing_View_List">
+        <value condition="!Skin.HasSetting(enable.furniture.markers.view.list.monochrome)">$VAR[Color_Indicator_Background_Is_Playing]</value>
+        <value>$VAR[Color_Indicator_Monochrome_View_List]</value>
+    </variable>
+
+    <variable name="Color_Indicator_Monochrome_View_List">
+        <value>Dark2</value>
+    </variable>
+
+    <variable name="Color_IsPlaying_NoFocus_Item_View_List">
+        <value condition="String.IsEqual(Skin.CurrentColourTheme,Light)">2d141414</value>
+        <value>4DC5C5C5</value>
+    </variable>
+
+    <!-- COLOR - POSTER - HEADER - STATUS -->
+
+    <variable name="Color_Indicator_Status_Poster">
+        <value>FFEDEDED</value>
+    </variable>
+
+    <variable name="Color_Background_Status_Poster">
+        <!-- <value condition="Skin.HasSetting(hide.markers)"></value> -->
+        <value condition="ListItem.IsPlaying + !Skin.HasSetting(hide.markers.isplaying)">$VAR[Color_Indicator_Background_Is_Playing]</value>
+        <!-- <value condition="[ListItem.IsResumable | $EXP[IsTVShowInProgress]] + Skin.HasSetting(hide.markers.inprogress)"></value> -->
+        <value condition="ListItem.IsResumable | $EXP[IsTVShowInProgress]">$VAR[Color_Indicator_Background_In_Progress]</value>
+        <!-- <value condition="Integer.IsGreater(ListItem.Playcount,0) + Skin.HasSetting(hide.markers.watched)"></value> -->
+        <value condition="Integer.IsGreater(ListItem.Playcount,0) + $EXP[Exp_View_Flag_Watched_Album_Song]">$VAR[Color_Indicator_Background_Watched]</value>
+        <value condition="Integer.IsEqual(ListItem.Playcount,0) + [$EXP[IsNewMovie] | $EXP[IsNewTVShow] | $EXP[IsNewEpisode]] + !Skin.HasSetting(hide.markers.newcontent)">$VAR[Color_Indicator_Background_New]</value>
+        <value condition="Integer.IsEqual(ListItem.Playcount,0) + !$EXP[IsNewMovie] + !$EXP[IsNewTVShow] + !$EXP[IsNewEpisode] + !Skin.HasSetting(hide.markers.unwatched) + !$EXP[Home_More_Item]">$VAR[Color_Indicator_Background_UnWatched]</value>
+    </variable>
+
+    <!-- COLOR - POSTER - FOOTER - INDICATOR -->
+
+    <variable name="Color_Indicator_Empty_DBID">
+        <value>FFEDEDED</value>
+    </variable>
+
+    <variable name="Color_Indicator_Set_Poster">
+        <value>FFEDEDED</value>
+    </variable>
+
+    <variable name="Color_Indicator_Version_Poster">
+        <value>FFEDEDED</value>
+    </variable>
+
+    <variable name="Color_Indicator_DBType">
+        <value>FFEDEDED</value>
+    </variable>
+
+    <variable name="Color_Indicator_JLOM">
+        <value>FFEDEDED</value>
+    </variable>
+
+    <variable name="Color_Label_Kodi">
+        <value>FF0ABDE3</value>
+    </variable>
+
+    <variable name="Color_Label_TMDb">
+        <value>FFEDEDED</value>
+    </variable>
+
+    <!-- COLOR - POSTER - FOOTER - BACKGROUND -->
+
+    <variable name="Color_Background_Circle_Type">
+        <value>FFC5C5C5</value>
+    </variable>
+
+    <variable name="Color_Background_Circle_Rating_IMDb">
+        <value>FFC5C5C5</value>
+    </variable>
+
+    <variable name="Color_Background_Circle_Rating_TMDb">
+        <value>FF050505</value>
+    </variable>
+
+    <variable name="Color_Background_DBID">
+        <value>FF050505</value>
+    </variable>
+
+    <variable name="Color_Background_IMDb">
+        <value>FFF1C40F</value>
+    </variable>
+
+    <variable name="Color_Background_Kodi">
+        <value>FF222F3E</value>
+    </variable>
+
+    <variable name="Color_Background_TMDb">
+        <value>FF4B98B4</value>
+    </variable>
+
+    <variable name="Color_Background_Others">
+        <value>FF050505</value>
+    </variable>
+
+    <variable name="Color_Background_ItemType">
+        <value condition="String.IsEqual(Skin.String(flag_poster_itemtype),1)">FF2980B9</value>
+        <value condition="String.IsEqual(Skin.String(flag_poster_itemtype),2)">FF9F42C6</value>
+        <value condition="String.IsEqual(Skin.String(flag_poster_itemtype),3)">FF689F38</value>
+        <value condition="String.IsEqual(Skin.String(flag_poster_itemtype),4)">FFF0932B</value>
+        <value>FF050505</value>
+    </variable>
+
     <!-- OTHERS -->
+
+    <variable name="Color_Addon_Autoupdate">
+        <value>FF9F42C6</value>
+    </variable>
 
     <variable name="Color_Icon_Light">
 		<value>FFD6AD05</value>

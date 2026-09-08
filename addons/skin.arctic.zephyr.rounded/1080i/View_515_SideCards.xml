@@ -59,9 +59,15 @@
 
                         <!-- WATCHED STATUS -->
 
-                        <include condition="!Skin.HasSetting(hide.markers) + !Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Icon</include>
-                        <include condition="!Skin.HasSetting(hide.markers) + Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Banner</include>
+                        <include>Layout_Poster_Indicator_Status</include>
 
+                        <!-- PLAYED - PROGRESS BAR -->
+
+                        <include content="Layout_Poster_Progress_Bar_PercentPlayed" >
+                            <param name="bottom" value="422" />
+                            <param name="left" value="25" />
+                            <param name="right" value="25" />
+                        </include>
 
                         <control type="label">
                             <left>40</left>
@@ -135,8 +141,15 @@
 
                         <!-- WATCHED STATUS -->
 
-                        <include condition="!Skin.HasSetting(hide.markers) + !Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Icon</include>
-                        <include condition="!Skin.HasSetting(hide.markers) + Skin.HasSetting(furniture.markers.alternative)">Layout_Poster_Indicator_Status_Banner</include>
+                        <include>Layout_Poster_Indicator_Status</include>
+
+                        <!-- PLAYED - PROGRESS BAR -->
+
+                        <include content="Layout_Poster_Progress_Bar_PercentPlayed" >
+                            <param name="bottom" value="422" />
+                            <param name="left" value="25" />
+                            <param name="right" value="25" />
+                        </include>
 
                         <control type="label">
                             <left>40</left>

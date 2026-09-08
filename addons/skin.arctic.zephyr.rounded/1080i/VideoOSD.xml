@@ -15,9 +15,9 @@
 
     <onunload>ClearProperty(OSDVideo_Show_SCROLLBAR_FOCUS_PLOT,Home)</onunload>
 
-    <onload condition="Skin.HasSetting(osd.open.auto.pause) + !VideoPlayer.Content(musicvideos) + Player.HasMedia + Player.HasVideo + !Player.Paused + !String.IsEmpty(VideoPlayer.DBID) + String.IsEmpty(Window(Home).Property(wikipedia)">PlayerControl(Play)</onload>
+    <onload condition="Skin.HasSetting(osd.open.auto.pause) + !VideoPlayer.Content(musicvideos) + Player.HasMedia + Player.HasVideo + !Player.Paused + !String.IsEmpty(VideoPlayer.DBID) + String.IsEmpty(Window(Home).Property(wikipedia))">PlayerControl(Play)</onload>
 
-    <onunload condition="Skin.HasSetting(osd.open.auto.pause) + !VideoPlayer.Content(musicvideos) + Player.HasMedia + Player.HasVideo + Player.Paused + String.IsEmpty(Window(Home).Property(OSDVideo_DIALOG_VIDEO_INFO) + String.IsEmpty(Window(Home).Property(wikipedia)">PlayerControl(Play)</onunload>
+    <onunload condition="Skin.HasSetting(osd.open.auto.pause) + !VideoPlayer.Content(musicvideos) + Player.HasMedia + Player.HasVideo + Player.Paused + string.isempty(window(home).property(osdvideo_dialog_video_info)) + String.IsEmpty(Window(Home).Property(wikipedia))">PlayerControl(Play)</onunload>
 
     <controls>
 
@@ -28,14 +28,19 @@
         <!-- PLOT - VIDEO - WITH VIDEO OSD - MANUAL -->
 
         <include content="Object_OSD_Player_Plot">
-            <param name="visible" value="[!String.IsEmpty(Window(Home).Property(OSDVideo_Show_PLOT)) + !Window.IsVisible(DialogFullScreenInfo.xml) + String.IsEmpty(Window(Home).Property(OSDVideo_DIALOG_VIDEO_INFO))]" />
+            <param name="visible" value="[$EXP[OSD_Video_Show_Plot_Poster] + !Window.IsVisible(DialogFullScreenInfo.xml) + String.IsEmpty(Window(Home).Property(OSDVideo_DIALOG_VIDEO_INFO))]" />
             <param name="onleft" value="SetFocus(556)" />
             <param name="onright" value="SetFocus(556)" />
             <param name="onback" value="SetFocus(556)" />
-            <param name="left" value="580" />
-            <param name="scroll_centerright" value="1240" />
+            <param name="left" value="530" />
+            <param name="scroll_centerright" value="1340" />
             <param name="scrollid" value="9805" />
         </include>
+
+        <control type="button" id="558">
+            <include>Def_Hidden_Button</include>
+            <include content="Object_OnDirection_Action"><param name="ondirection" value="556" /></include>
+        </control>
 
         <control type="button" id="556">
             <include>Def_Hidden_Button</include>
@@ -51,7 +56,8 @@
             <onfocus>SetProperty(OSDVideo_Show_INFO,1,Home)</onfocus>
             <onfocus>SetProperty(OSDVideo_Show_PLOT,1,Home)</onfocus>
 
-            <onfocus condition="Control.IsVisible(9805)">AlarmClock(delay_focus_scrollbar,SetFocus(9805),00:01,silent)</onfocus>
+            <onfocus condition="Control.IsVisible(9805) + !Skin.HasSetting(hide.osd.info.plot.poster)">AlarmClock(delay_focus_scrollbar,SetFocus(9805),00:01,silent)</onfocus>
+            <onfocus condition="Skin.HasSetting(hide.osd.info.plot.poster)">AlarmClock(delay_focus_scrollbar,SetFocus(558),00:00,silent)</onfocus>
             <!-- <onup>SetFocus(9805)</onup> -->
 
             <onleft>ClearProperty(OSDVideo_Show_INFO,Home)</onleft>
@@ -81,15 +87,23 @@
             <onfocus>SetProperty(OSDVideo_Show_LiveTV_PLOT,1,Home)</onfocus>
             <onfocus condition="!Player.ShowInfo">Action(Info)</onfocus>
 
+            <onup>ClearProperty(OSDVideo_Show_INFO,Home)</onup>
+            <onup>ClearProperty(OSDVideo_Show_LiveTV_PLOT,Home)</onup>
+            <onup condition="Player.ShowInfo">Action(Info)</onup>
+            <onup condition="Player.PauseEnabled">SetFocus(14)</onup>
+            <onup condition="!Player.PauseEnabled">SetFocus(15)</onup>
+
             <onleft>ClearProperty(OSDVideo_Show_INFO,Home)</onleft>
             <onleft>ClearProperty(OSDVideo_Show_LiveTV_PLOT,Home)</onleft>
             <onleft condition="Player.ShowInfo">Action(Info)</onleft>
-            <onleft>SetFocus(14)</onleft>
+            <onleft condition="Player.PauseEnabled">SetFocus(14)</onleft>
+            <onleft condition="!Player.PauseEnabled">SetFocus(15)</onleft>
 
             <onright>ClearProperty(OSDVideo_Show_INFO,Home)</onright>
             <onright>ClearProperty(OSDVideo_Show_LiveTV_PLOT,Home)</onright>
             <onright condition="Player.ShowInfo">Action(Info)</onright>
-            <onright>SetFocus(14)</onright>
+            <onright condition="Player.PauseEnabled">SetFocus(14)</onright>
+            <onright condition="!Player.PauseEnabled">SetFocus(15)</onright>
 
             <ondown>ClearProperty(OSDVideo_Show_INFO,Home)</ondown>
             <ondown>ClearProperty(OSDVideo_Show_LiveTV_PLOT,Home)</ondown>
@@ -119,6 +133,8 @@
 
         <control type="group" id="600">
             <visible>Control.HasFocus(8207) + !Window.IsVisible(VideoOSDBookmarks.xml)</visible>
+            <animation effect="slide" start="0" end="0,-39" time="150" condition="[VideoPlayer.Content(livetv) | VideoPlayer.Content(files)] + Skin.HasSetting(pvr.showtechnicalinfo)">Conditional</animation>
+
             <left>130</left>
             <right>130</right>
             <bottom>184</bottom>
@@ -128,7 +144,7 @@
                 <animation effect="fade" start="100" end="0" condition="Player.Seeking" reversible="false" delay="300" time="0">Conditional</animation>
                 <animation effect="fade" start="0" end="100" condition="!Player.Seeking" reversible="false" time="0">Conditional</animation>
                 <width>100%</width>
-                <bottom>-18</bottom>
+                <bottom>-58</bottom>
                 <height>64</height>
                 <info>Player.Progress</info>
                 <action>seek</action>
@@ -141,7 +157,7 @@
                 <animation effect="fade" start="100" end="0" condition="Player.Seeking" reversible="false" delay="300" time="0">Conditional</animation>
                 <animation effect="fade" start="0" end="100" condition="!Player.Seeking" reversible="false" time="0">Conditional</animation>
                 <width>100%</width>
-                <bottom>-18</bottom>
+                <bottom>-58</bottom>
                 <height>64</height>
                 <info>PVR.TimeshiftProgressPlayPos</info>
                 <action>pvr.seek</action>

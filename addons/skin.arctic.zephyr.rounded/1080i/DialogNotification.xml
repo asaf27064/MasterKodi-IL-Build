@@ -11,7 +11,7 @@
             <include>Animation_Home_Dialog_Notification_Slide_Up</include>
 
             <include content="Def_Right" condition="VideoPlayer.IsFullscreen | Window.IsVisible(MusicVisualisation.xml)">
-                <param name="right" value="90" />
+                <param name="right" value="40" />
             </include>
 
             <top>40</top>
@@ -40,7 +40,7 @@
                     <param name="colordiffuse" value="0" />
                     <param name="aspectratio" value="center" />
                     <param name="texture" value="$VAR[Image_OSD_Flag_Lang]" />
-                    <param name="visible" value="[VideoPlayer.IsFullscreen | Window.IsVisible(MusicVisualisation.xml)] + String.StartsWith(Control.GetLabel(401),$LOCALIZE[459])" />
+                    <param name="visible" value="[VideoPlayer.IsFullscreen | Window.IsVisible(MusicVisualisation.xml)] + String.StartsWith(Control.GetLabel(401),$LOCALIZE[287])" />
                 </include>
 
                 <!-- OSD - TOGGLE AUDIO -->

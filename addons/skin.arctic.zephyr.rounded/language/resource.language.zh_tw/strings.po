@@ -2572,3 +2572,15 @@ msgstr ""
 msgctxt "#31638"
 msgid "Edit Action"
 msgstr ""
+
+msgctxt "#31639"
+msgid "Darkest"
+msgstr ""
+
+msgctxt "#31640"
+msgid "User Preference"
+msgstr ""
+
+msgctxt "#31641"
+msgid "Show"
+msgstr "顯示"

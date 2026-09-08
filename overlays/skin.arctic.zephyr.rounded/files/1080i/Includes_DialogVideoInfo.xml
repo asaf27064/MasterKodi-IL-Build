@@ -343,7 +343,7 @@
                     </control>
                     <control type="image">
                         <include content="Def_Padding"><param name="pad" value="-9" /></include>
-                        <texture border="32" colordiffuse="$VAR[Color_Border_Widget]" infill="false">$VAR[border24]</texture>
+                        <texture border="32" colordiffuse="$VAR[Color_Widget_Border]" infill="false">$VAR[border24]</texture>
                         <visible>Skin.HasSetting(hide.global.shadows)</visible>
                     </control>
                     <control type="image">
@@ -1212,9 +1212,11 @@
                             <aligny>center</aligny>
                             <align>left</align>
                         </control>
-                        <!-- MUSIC VIDEO - ALBUM -->
+
+                        <!-- MUSIC VIDEO - TAG -->
 
                         <control type="label">
+                            <visible>String.IsEqual(ListItem.DBType,musicvideo)</visible>
                             <visible>!String.IsEmpty(ListItem.Tag)</visible>
                             <font>Tiny</font>
                             <textcolor>Dark1</textcolor>
@@ -1420,9 +1422,10 @@
                             <aligny>center</aligny>
                         </control>
 
-                        <!-- MUSIC VIDEO - ALBUM -->
+                        <!-- MUSIC VIDEO - TAG -->
 
                         <control type="label">
+                            <visible>String.IsEqual(ListItem.DBType,musicvideo)</visible>
                             <visible>!String.IsEmpty(ListItem.Tag)</visible>
                             <font>Tiny</font>
                             <aligny>center</aligny>

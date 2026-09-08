@@ -330,7 +330,7 @@
         <param name="pad_border" value="$PARAM[pad_border]" default="-9" />
         <param name="border_border" value="$PARAM[border_border]" default="20" />
         <param name="texture_border" value="$PARAM[texture_border]" default="$VAR[border12]" />
-        <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" default="$VAR[Color_Border_Widget]" />
+        <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" default="$VAR[Color_Widget_Border]" />
         <param name="visible_border" value="$PARAM[visible_border]" default="true" />
 
         <param name="pad_image" value="$PARAM[pad_image]" default="0" />
@@ -373,7 +373,7 @@
         <param name="pad_border" value="$PARAM[pad_border]" default="-9" />
         <param name="border_border" value="$PARAM[border_border]" default="32" />
         <param name="texture_border" value="$PARAM[texture_border]" default="$VAR[border24]" />
-        <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" default="$VAR[Color_Border_Widget]" />
+        <param name="colordiffuse_border" value="$PARAM[colordiffuse_border]" default="$VAR[Color_Widget_Border]" />
         <param name="visible_border" value="$PARAM[visible_border]" default="true" />
 
         <param name="pad_image" value="$PARAM[pad_image]" default="0" />
@@ -2145,24 +2145,22 @@
 
     <!-- DEF - MEDIA STATUS - LABEL -->
 
-    <include name="Def_Media_Status_Icon_Background">
-       <top>8</top>
-       <right>8</right>
-       <width>50</width>
-       <height>50</height>
-       <align>center</align>
-       <aligny>center</aligny>
-       <textcolor>$VAR[Color_Indicator_Status_Background_Icon]</textcolor>
-       <font>SymbolPosterBackground</font>
+    <include name="Def_Background_Media_Status_Icon_Top_Right">
+        <top>14</top>
+        <right>14</right>
+        <align>right</align>
+        <aligny>center</aligny>
+        <width>38</width>
+        <height>38</height>
     </include>
 
     <include name="Def_Media_Status_Icon_Symbol">
-        <top>9</top>
-        <right>8</right>
-        <width>50</width>
-        <height>50</height>
-        <align>center</align>
+        <top>13</top>
+        <right>23</right>
+        <align>right</align>
         <aligny>center</aligny>
+        <width>38</width>
+        <height>38</height>
         <font>SymbolPoster</font>
     </include>
 
@@ -2174,8 +2172,9 @@
     </include>
 
     <include name="Def_Media_Status_Banner_Label">
-        <right>-9</right>
-        <top>8</top>
+        <right>-4</right>
+        <top>10</top>
+        <width>90</width>
         <align>center</align>
         <width>100</width>
         <font>WatchedStates</font>
@@ -2194,60 +2193,56 @@
         <selectedcolor>$VAR[Color_Indicator_Background_Is_Playing_Icon]</selectedcolor>
     </include>
 
-    <!-- DEF - POSTER - TMDB - DB LOCAL STATUS -->
+    <!-- DEF - POSTER - RATING - BOTTOM - LEFT -->
 
-    <include name="Def_Label_Poster_TMDb_DBID_status">
+    <include name="Def_Background_Poster_Rating_Info_Left">
+        <left>10</left>
         <align>left</align>
         <aligny>center</aligny>
-        <width>80</width>
-        <left>19</left>
-        <bottom>24</bottom>
-        <height>40</height>
-        <font>SymbolList</font>
-        <textcolor>$VAR[Color_Empty_DBID]</textcolor>
+        <bottom>25</bottom>
+        <width>38</width>
+        <height>38</height>
     </include>
 
-    <!-- DEF - POSTER - RATING - LEFT -->
-
     <include name="Def_Image_Poster_Rating_Info_Left">
+        <left>15</left>
         <align>left</align>
         <aligny>center</aligny>
-        <width>40</width>
-        <left>10</left>
-        <bottom>24</bottom>
-        <height>40</height>
+        <bottom>30</bottom>
+        <width>28</width>
+        <height>28</height>
     </include>
 
     <include name="Def_Label_Poster_Rating_Left">
+        <left>15</left>
         <align>left</align>
         <aligny>center</aligny>
-        <width>80</width>
-        <left>14</left>
         <bottom>26</bottom>
-        <height>40</height>
+        <height>38</height>
+        <width>38</width>
         <font>Rating</font>
         <textcolor>black</textcolor>
         <selectedcolor>black</selectedcolor>
     </include>
 
-    <!-- DEF - POSTER - SET - VERSION - RIGHT -->
+    <!-- DEF - POSTER - SET - VERSION - BOTTOM - RIGHT -->
 
     <include name="Def_Background_Poster_Rating_Info_Right">
+        <right>10</right>
         <align>right</align>
         <aligny>center</aligny>
-        <width>40</width>
-        <height>40</height>
-        <right>10</right>
-        <bottom>24</bottom>
+        <bottom>25</bottom>
+        <width>38</width>
+        <height>38</height>
     </include>
 
     <include name="Def_Image_Poster_Rating_Info_Right">
+        <right>15</right>
         <align>right</align>
         <aligny>center</aligny>
-        <width>32</width>
-        <height>32</height>
-        <right>14</right>
-        <bottom>28</bottom>
+        <bottom>30</bottom>
+        <width>28</width>
+        <height>28</height>
     </include>
 
     <include name="Def_ArtworkSelection_Is_Current">
@@ -2255,10 +2250,10 @@
             <visible>String.IsEqual(ListItem.Property(is_current),true)</visible>
             <align>right</align>
             <aligny>center</aligny>
-            <width>40</width>
-            <height>40</height>
             <right>18</right>
             <bottom>18</bottom>
+            <width>38</width>
+            <height>38</height>
             <texture background="true" colordiffuse="FF00CC00">common/check_circle.png</texture>
         </control>
     </include>
@@ -3116,7 +3111,8 @@
 
         <!-- VIEWS - ALL -->
 
-        <onclick>Skin.Reset(show.furniture.video.rating.num.set.version)</onclick>
+        <onclick>Skin.Reset(show.furniture.video.poster.rating)</onclick>
+        <onclick>Skin.SetBool(show.furniture.video.poster.itemtype)</onclick>
         <!-- <onclick>Skin.Reset(show.furniture.footer)</onclick> -->
         <onclick>Skin.SetBool(hide.furniture.flags)</onclick>
         <!-- <onclick>Skin.SetBool(hide.global.shadows)</onclick> -->
@@ -3290,6 +3286,7 @@
         <onclick>Skin.SetBool(furniture.markers.alternative)</onclick>
         <onclick>Skin.SetBool(markers.inprogress.percentage)</onclick>
         <onclick>Skin.SetBool(show.markers.watched.music)</onclick>
+        <onclick>Skin.SetBool(hide.markers.unwatched)</onclick>
 
         <!-- RESSOURCE IMAGES -->
 
@@ -3394,7 +3391,8 @@
 
         <!-- VIEWS ALL -->
 
-        <onclick>Skin.Reset(show.furniture.video.rating.num.set.version)</onclick>
+        <onclick>Skin.Reset(show.furniture.video.poster.rating)</onclick>
+        <onclick>Skin.SetBool(show.furniture.video.poster.itemtype)</onclick>
         <onclick>Skin.SetBool(enable.view.5x.51x.extended.list)</onclick>
         <onclick>Skin.SetBool(5x.list.control.list)</onclick>
         <onclick>Skin.Reset(disable.view.50.extended.list.music)</onclick>
@@ -3457,8 +3455,10 @@
         <onclick>Skin.SetBool(home.show.menu.icons)</onclick>
         <onclick>Skin.SetBool(home.show.menu.label.onfocus.icon)</onclick>
 
-        <onclick>Skin.SetBool(show.furniture.video.rating.num.set.version)</onclick>
+        <onclick>Skin.SetBool(show.furniture.video.poster.rating)</onclick>
+        <onclick>Skin.SetBool(show.furniture.video.poster.itemtype)</onclick>
         <onclick>Skin.SetBool(hide.global.shadows)</onclick>
+        <onclick>Skin.SetBool(hide.markers.unwatched)</onclick>
 
         <onclick>Skin.SetBool(hide.osd.video.on.pause)</onclick>
         <onclick>Skin.Reset(show.osd.info.on.pause)</onclick>
@@ -3480,7 +3480,8 @@
     </include>
 
     <include name="Def_Settings_Quality_Value">
-        <onclick>Skin.SetBool(show.furniture.video.rating.num.set.version)</onclick>
+        <onclick>Skin.SetBool(show.furniture.video.poster.rating)</onclick>
+        <onclick>Skin.SetBool(show.furniture.video.poster.itemtype)</onclick>
     </include>
 
     <include name="Def_Settings_Startup_Init">
@@ -3508,7 +3509,7 @@
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(UserRatingStarColor.name,FFAB47BC)</onload>
         <!-- <onload condition="!Skin.HasSetting(startup.init)">Skin.Reset(MpaaCertifColor.name)</onload> -->
 
-        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(IndicatorColorBackgroundNew.name,E6E6002E)</onload>
+        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(IndicatorColorBackgroundNew.name,E6CD2828)</onload>
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(IndicatorColorBackgroundInProgress.name,E6A8287B)</onload>
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(IndicatorColorBackgroundWatched.name,E6689F38)</onload>
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(IndicatorColorBackgroundIsPlaying.name,E60097A7)</onload>
@@ -3648,6 +3649,7 @@
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(furniture.markers.alternative)</onload>
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(markers.inprogress.percentage)</onload>
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(show.markers.watched.music)</onload>
+        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(hide.markers.unwatched)</onload>
 
         <!-- RESSOURCE IMAGES -->
 
@@ -3775,7 +3777,8 @@
 
         <!-- VIEWS ALL -->
 
-        <!-- <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(show.furniture.video.rating.num.set.version)</onload> -->
+        <!-- <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(show.furniture.video.poster.rating)</onload> -->
+        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(show.furniture.video.poster.itemtype)</onload>
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(show.furniture.footer)</onload>
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(enable.view.5x.51x.extended.list)</onload>
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(5x.list.control.list)</onload>
@@ -4081,14 +4084,14 @@
     </include>
 
     <include name="Def_Views_PVR_Progress_Item">
-        <texturebg colordiffuse="Black12" border="4">progress/progress-bg.png</texturebg>
+        <texturebg colordiffuse="$VAR[Color_Dialog_Progress_Bar_Background]" border="4">progress/progress-bg.png</texturebg>
         <lefttexture colordiffuse="$VAR[Color_Focus]" border="4">progress/progress-left.png</lefttexture>
         <midtexture colordiffuse="$VAR[Color_Focus]" border="4">progress/progress-end.png</midtexture>
         <righttexture colordiffuse="$VAR[Color_Focus]" border="4">progress/progress-right.png</righttexture>
     </include>
 
     <include name="Def_Views_PVR_Progress_Focus_Item">
-        <texturebg colordiffuse="Black12" border="4">progress/progress-bg.png</texturebg>
+        <texturebg colordiffuse="$VAR[Color_Dialog_Progress_Bar_Background]" border="4">progress/progress-bg.png</texturebg>
         <lefttexture colordiffuse="Selected" border="4">progress/progress-left.png</lefttexture>
         <midtexture colordiffuse="Selected" border="4">progress/progress-end.png</midtexture>
         <righttexture colordiffuse="Selected" border="4">progress/progress-right.png</righttexture>

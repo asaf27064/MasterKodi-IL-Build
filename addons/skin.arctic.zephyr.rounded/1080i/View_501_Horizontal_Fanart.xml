@@ -174,7 +174,7 @@
                                 <width>450</width>
                                 <font>Small333</font>
                                 <textcolor>Dark2</textcolor>
-                                <label>$VAR[Label_Rating_IMDb_Votes_Top250]</label>
+                                <label>$VAR[Label_View_501_Rating_IMDb_Votes]</label>
                                 <selectedcolor>Dark2</selectedcolor>
                             </control>
                         </control>
@@ -190,11 +190,7 @@
 
                 <!-- WATCHED STATUS -->
 
-                <include content="Layout_Poster_Indicator_Status_Icon" condition="!Skin.HasSetting(hide.markers) + !Skin.HasSetting(furniture.markers.alternative)">
-                    <param name="right" value="72" />
-                    <param name="top" value="207" />
-                </include>
-                <include content="Layout_Poster_Indicator_Status_Banner" condition="!Skin.HasSetting(hide.markers) + Skin.HasSetting(furniture.markers.alternative)">
+                <include content="Layout_Poster_Indicator_Status">
                     <param name="right" value="72" />
                     <param name="top" value="207" />
                 </include>
