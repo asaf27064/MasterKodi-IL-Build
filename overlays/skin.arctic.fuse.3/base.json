@@ -1,12 +1,12 @@
 {
   "addon_id": "skin.arctic.fuse.3",
-  "base_version": "3.2.14",
+  "base_version": "3.2.19",
   "base_zip_url": "https://github.com/jurialmunkey/skin.arctic.fuse.3/archive/refs/tags/v{version}.zip",
   "upstream_zip_url": "https://github.com/jurialmunkey/skin.arctic.fuse.3/archive/refs/tags/v{version}.zip",
   "upstream_releases_api": "https://api.github.com/repos/jurialmunkey/skin.arctic.fuse.3/releases/latest",
   "raw_top_folder": "skin.arctic.fuse.3-{version}",
-  "overlay_version": "3.2.13",
+  "overlay_version": "3.2.18",
   "note": "GitHub source archives are permanent per tag, so no committed base is needed; CI fetches base_zip_url at build time.",
-  "changelog": "Hebrew skin overlay: Rubik/NotoSansHebrew fonts, gearsai subtitle OSD button (Custom_1147), Hebrew info labels.",
+  "changelog": "3.2.18 - Re-base onto upstream 3.2.19. Upstream changed 44 files; only\n1080i/Includes_Info.xml is one we overlay. 3-way merged.\nThe first attempt reported a conflict that was PHANTOM: our overlay copy was\nCRLF while both upstream sides are LF, so the whole file looked rewritten.\nNormalising all three sides first gave 0 conflicts and a real surface of 7\nupstream lines and 5 of ours. The file is now written back as LF, matching\nupstream, so this trap does not recur on the next re-base -- that is why this\ncommit shows the file as fully rewritten.\nKept: our KODIRDIL 18px gap so a long Hebrew plot never touches the ratings\nrow. Gained: upstream's new MyAnimeList rating block. Both verified present\nin the merged file, which parses.\n\nHebrew skin overlay: Rubik/NotoSansHebrew fonts, gearsai subtitle OSD button (Custom_1147), Hebrew info labels.",
   "auto_build_suffix": true
 }
