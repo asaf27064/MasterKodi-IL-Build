@@ -18,7 +18,8 @@ def _kodirdil_log(msg):
 # (rd/ad/pm/oc/tb), query its account info and show a Hebrew toast with days
 # remaining + expiration date. Ported from the Gears overlay; adapted to POV:
 # plain setting ids (no addon prefix), api modules under indexers.* (they moved
-# there from debrids/ in 6.08.14), and no EasyDebrid (POV has EasyNews instead,
+# there from debrids/ in 6.08.14; real_debrid_api was renamed to
+# realdebrid_api in 6.09.02), and no EasyDebrid (POV has EasyNews instead,
 # which has no subscription expiry).
 # Silent no-ops on: service disabled, empty token, network error, missing
 # field, or any exception. A startup banner must never break boot.
@@ -29,7 +30,7 @@ DEBRID_SUBS = (
 	# own days_remaining(), which reads 'premium_expires_at' flat). The Gears
 	# overlay's 'data.'-prefixed paths dug into a key that no longer exists, so
 	# _dig returned None and the banner silently never showed (Asaf, 2026-08-01).
-	('Real Debrid', 'rd.enabled', 'rd.token', 'indexers.real_debrid_api', 'RealDebridAPI', 'expiration',         'iso'),
+	('Real Debrid', 'rd.enabled', 'rd.token', 'indexers.realdebrid_api', 'RealDebridAPI', 'expiration',         'iso'),
 	('AllDebrid',   'ad.enabled', 'ad.token', 'indexers.alldebrid_api',   'AllDebridAPI',  'user.premiumUntil',  'unix_s'),
 	('Premiumize',  'pm.enabled', 'pm.token', 'indexers.premiumize_api',  'PremiumizeAPI', 'premium_until',      'unix_s'),
 	('Offcloud',    'oc.enabled', 'oc.token', 'indexers.offcloud_api',    'OffcloudAPI',   'expirationDate',     'unix_ms'),

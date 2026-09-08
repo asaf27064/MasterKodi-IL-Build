@@ -152,10 +152,9 @@ class TorBoxAPI:
 			dbcon.close()
 			# HASH CACHED STATUS
 			try:
-				DebridCache().clear_debrid_results('tb')
+				DebridCache().delete_cache_single('tb')
 				hash_cache_status_success = True
 			except: hash_cache_status_success = False
 		except: return False
-		if False in (user_cloud_success, hash_cache_status_success): return False
-		return True
+		return all((user_cloud_success, hash_cache_status_success))
 

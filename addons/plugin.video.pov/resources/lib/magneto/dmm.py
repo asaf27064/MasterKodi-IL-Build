@@ -3,7 +3,6 @@
 	Fenomscrapers Project
 """
 
-import ctypes, random, time
 from json import loads as jsloads
 import queue
 from magneto.modules import client
@@ -45,9 +44,12 @@ class source:
 				url = '%s%s' % (self.base_link, self.movieSearch_link % imdb)
 			# log_utils.log('url = %s' % url)
 			if 'timeout' in data: self.timeout = int(data['timeout'])
+			headers = {'Referer': '%s/%s/%s' % (self.base_link, 'show' if 'tvshowtitle' in data else 'movie', imdb)}
 			try:
-				url += '&dmmProblemKey=%s&solution=%s' % get_secret()
-				results = client.request(url, timeout=self.timeout)
+				results = client.request('%s/api/challenge' % self.base_link, headers=headers, timeout=3.05)
+				get_secret = jsloads(results)
+				url += '&dmmProblemKey=%s&solution=%s' % (get_secret['token'], get_secret['hash'])
+				results = client.request(url, headers=headers, timeout=self.timeout)
 				files = jsloads(results)['results']
 			except:
 				files = []
@@ -155,45 +157,4 @@ class source:
 			except:
 				source_utils.scraper_error('DMM')
 		return sources
-
-
-def get_secret():
-	def calc_value_alg(t, n, const):
-		temp = t ^ n
-		t = ctypes.c_long((temp * const)).value
-		t4 = ctypes.c_long(t << 5).value
-		t5 = ctypes.c_long((t & 0xFFFFFFFF) >> 27).value
-		return t4 | t5
-
-	def slice_hash(s, n):
-		half = int(len(s) // 2)
-		left_s, right_s = s[:half], s[half:]
-		left_n, right_n = n[:half], n[half:]
-		l = ''.join(ls + ln for ls, ln in zip(left_s, left_n))
-		return l + right_n[::-1] + right_s[::-1]
-
-	def generate_hash(e):
-		t = ctypes.c_long(0xDEADBEEF ^ len(e)).value
-		a = 1103547991 ^ len(e)
-		for ch in e:
-			n = ord(ch)
-			t = calc_value_alg(t, n, 2654435761)
-			a = calc_value_alg(a, n, 1597334677)
-		t = ctypes.c_long(t + ctypes.c_long(a * 1566083941).value).value
-		a = ctypes.c_long(a + ctypes.c_long(t * 2024237689).value).value
-		return (ctypes.c_long(t ^ a).value & 0xFFFFFFFF)
-
-	ran = random.randrange(10 ** 80)
-	hex_str = f"{ran:064x}"[:8]
-	timestamp = int(time.time())
-	dmmProblemKey = f"{hex_str}-{timestamp}"
-
-	s = generate_hash(dmmProblemKey)
-	s = f"{s:x}"
-
-	n = generate_hash("debridmediamanager.com%%fe7#td00rA3vHz%VmI-" + hex_str)
-	n = f"{n:x}"
-
-	solution = slice_hash(s, n)
-	return dmmProblemKey, solution
 

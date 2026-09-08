@@ -27,35 +27,15 @@ def get_trakt_trending_popular_lists(params):
 def build_trakt_list(params):
 	return TraktListBuilder(params).build()
 
-def integrity_check():
-	try:
-		trakt_db = kodi_utils.translate_path(kodi_utils.trakt_db)
-		with kodi_utils.database.connect(trakt_db) as dbcon:
-			dbcur = dbcon.cursor()
-			dbcur.execute("""PRAGMA integrity_check""")
-			result = dbcur.fetchone()
-			if 'ok' in result: status = 'passed'
-			else: raise kodi_utils.database.Error(result)
-			dbcur.execute("""VACUUM""")
-		return status
-	except kodi_utils.database.Error as e: status = str(e)
-	try:
-		with open(trakt_db, 'w') as _: pass
-		from modules.cache import check_databases, clear_cache
-		check_databases()
-		clear_cache('trakt', silent=True)
-		status = 'repaired'
-	except Exception as e: kodi_utils.logger('trakt integrity error', '\n%s\n%s' % (status, e))
-	return status
-
 def trakt_account_info():
 	from datetime import timedelta
+	from caches.trakt_cache import integrity_check
 	from modules.utils import jsondate_to_datetime
 	try:
 		kodi_utils.show_busy_dialog()
 		db_status = integrity_check()
-		account_info = trakt_api.call_trakt('users/settings', with_auth=True)
-		stats = trakt_api.call_trakt('users/%s/stats' % account_info['user']['ids']['slug'], with_auth=True)
+		account_info = trakt_api.call_trakt('users/settings')
+		stats = trakt_api.call_trakt('users/%s/stats' % account_info['user']['ids']['slug'])
 		username = account_info['user']['username']
 		timezone = account_info['account']['timezone']
 		joined = jsondate_to_datetime(account_info['user']['joined_at']).astimezone()
