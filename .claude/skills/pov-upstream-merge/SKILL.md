@@ -153,6 +153,35 @@ and 22 fleets get the same overlay (POV is version-agnostic).
   sort.watchlist_movies/_shows (0.1.11). Grep the whole repo -- including
   `config/` and `config-variants/*/pov/settings.xml` -- for every renamed
   identifier, not just the addon tree.
+- **The files upstream did NOT change are the dangerous ones.** Step 3 only
+  merges overlaid files that appear in the changed list, so an overlaid file
+  upstream left alone is never looked at again -- and it can still be broken by
+  a rename somewhere else in the tree. 6.09.02 renamed
+  `indexers/real_debrid_api.py` -> `indexers/realdebrid_api.py`: the merge fixed
+  `modules/debrid.py` by itself (upstream had touched that import line), but
+  `service.py` names the module as a STRING for importlib, upstream never
+  touched `service.py`, and the debrid banner no-ops silently on exception --
+  so it would have died with nothing in the log. Static imports are caught by
+  pyflakes; dotted module STRINGS are not. After every merge, resolve every
+  `'(indexers|modules|debrids|apis|menus|windows|caches).<dotted>'` literal in
+  the WHOLE overlay against the clean new tree, and diff the new tree's file
+  list against the old one for adds/removes (that is what surfaces a rename in
+  the first place).
+- **Check whether upstream fixed the bug your overlay exists for.** Before
+  keeping a patch, read the closed issues and the code: 6.09.02's #136 fix was
+  a size-descending sort, and upstream STILL runs the extras filter for movies
+  only, so our episode-side guard stayed load-bearing. 6.08.14 was the opposite
+  -- upstream adopted our size sort and our copy became a duplicate.
+- **An APPENDED enum value is safe; an inserted one is not.** 6.09.02 added a
+  third `results.xml_style` value ("InfoList Default"), so index 1 still meant
+  WideList Default and the ten variants needed no migration. Always confirm the
+  direction: our configs store the INDEX, so an insert silently changes what
+  every variant selects.
+- **Renumbered string ids merge clean and render wrong.** 6.09.02 renumbered 27
+  localized ids (e.g. "No Results" 32760 -> 32573). The merge took upstream's
+  own rewritten lines, but verify by resolving every `ls(NNNNN)` in the merged
+  files against the NEW `strings.po` -- an id we call that no longer exists
+  renders blank, with no error.
 - **Upstream ships junk.** Gears 2.4.0 included `_tmp_tango.py`, a maintainer's
   personal sqlite debug script. Add such files to `PER_ADDON_EXCLUDES` in
   tools/common.py (honoured by apply_overlay AND the zip builder); never edit
