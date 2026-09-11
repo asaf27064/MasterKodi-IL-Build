@@ -4,16 +4,16 @@
 
 from threading import Thread
 import traceback
-from urllib.parse import parse_qsl
+from urllib.parse import urlparse, parse_qsl
 import xbmc
 from magneto.modules import control, log_utils
 
-window = control.homeWindow
 LOGINFO = 1  # (LOGNOTICE(2) deprecated in 19, use LOGINFO(1))
 
 
-def routing(sys):
-	params = dict(parse_qsl(sys.argv[2].replace('?', '')))
+def routing():
+	query = urlparse(__import__('sys').argv[2]).query
+	params = dict(parse_qsl(query))
 	action = params.get('action')
 	name = params.get('name')
 
@@ -141,32 +141,21 @@ def routing(sys):
 
 
 class SettingsServiceMonitor(control.monitor_class):
-	def __enter__(self):
-		xbmc.log('[ script.module.magneto ]  Service Started (%s)' % self.ver(), LOGINFO)
-		self._check_settings_file()
-		window.setProperty('magneto.debug.reversed', control.setting('debug.reversed'))
-		xbmc.log('[ script.module.magneto ]  Settings Monitor Service Starting...', LOGINFO)
-		return self
-
-	def __exit__(self, exc_type, exc_value, tb):
-		if exc_type: traceback.print_exception(exc_type, exc_value, tb)
-		xbmc.log('[ script.module.magneto ]  Service Stopped', LOGINFO)
-		return True # Suppress exceptions during teardown to prevent crashes
-
-	def run(self):
-		with self:
-			self._check_version_update()
-			Thread(target=self._check_undesirables_database).start()
-			self.waitForAbort()
-
-	def ver(*args):
-		return f"{control.addonInfo('id')}-{control.addonInfo('version')}"
-
 	def onSettingsChanged(self):
-		window.clearProperty('magneto_settings')
+		control.homeWindow.clearProperty('magneto_settings')
 		control.sleep(50)
 		control.make_settings_dict()
 		control.refresh_debugReversed()
+
+	def __call__(self):
+		ver = '%s-%s' % (control.addonInfo('id'), control.addonInfo('version'))
+		xbmc.log('[ script.module.magneto ]  Service Started (%s)' % ver, LOGINFO)
+		self._check_settings_file()
+		control.homeWindow.setProperty('magneto.debug.reversed', control.setting('debug.reversed'))
+		self._check_version_update()
+		Thread(target=self._check_undesirables_database).start()
+		self.waitForAbort()
+		xbmc.log('[ script.module.magneto ]  Service Stopped', LOGINFO)
 
 	def _check_settings_file(self):
 		xbmc.log('[ script.module.magneto ]  CheckSettingsFile Service Starting...', LOGINFO)
@@ -181,7 +170,7 @@ class SettingsServiceMonitor(control.monitor_class):
 				control.setSetting('module.provider', 'Magneto')
 				log_utils.log(f"{settings_xml} : created successfully", LOGINFO)
 			else: log_utils.log(f"{settings_xml} : already exists", LOGINFO)
-			window.clearProperty('magneto_settings')
+			control.homeWindow.clearProperty('magneto_settings')
 			control.make_settings_dict()
 			xbmc.log('[ script.module.magneto ]  CheckSettingsFile Service Finished', LOGINFO)
 		except Exception:
