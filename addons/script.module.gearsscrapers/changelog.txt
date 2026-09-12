@@ -1,12 +1,15 @@
-[COLORcyan] VERSION 1.5.9[/COLOR]
+[COLORcyan] VERSION 1.6.0[/COLOR]
 
 
 
  Fixed/Updated
 
-• TORZ — Fixed scraper issues and restored functionality.
-• MediaFusion — Fixed scraper integration and improved reliability.
-• Meteor — Fixed scraper issues and restored functionality.
+• EXT.TO Fixed scraper integration and improved reliability.
+• REDETORRENT Fixed scraper issues and restored functionality.
+• TOREENTGALAXY scraper issues and restored functionality.
+• TORZ Fixed scraper issues and restored functionality.
+• MediaFusion Fixed scraper integration and improved reliability.
+• Meteor Fixed scraper issues and restored functionality.
 
  Improvements
 
