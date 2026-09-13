@@ -1,6 +1,19 @@
-[COLORcyan] VERSION 1.6.0[/COLOR]
+[COLORcyan] VERSION 1.6.1[/COLOR]
 
+• A new Telegram Account option has been added to the Gears Addon Settings.
 
+• This allows you to configure your Telegram account for use with Telegram Torrent Bot Scrapers.
+
+ NEW SCRAPERS & UPDATES
+
+• Prefix Scraper
+• Zoogle Mirrors Scrapers
+• Torrent9 Scraper
+• Telegram Torrent Bot
+
+• More scraper options
+• Improved content sourcing
+• More flexibility for finding links
 
  Fixed/Updated
 
