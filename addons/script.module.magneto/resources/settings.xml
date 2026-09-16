@@ -16,7 +16,7 @@
     <setting id="provider.eztv" type="bool" label="EZTV (Pack capable/Shows only)" default="false" />
     <setting id="provider.kickass2" type="bool" label="KICKASS2 (Pack capable)" default="false" />
     <setting id="provider.knaben" type="bool" label="KNABEN" default="false" />
-    <setting id="provider.nyaa" type="bool" label="NYAA" default="false" />
+    <setting id="provider.nyaa" type="bool" label="NYAA (Pack capable)" default="false" />
     <setting id="provider.piratebay" type="bool" label="PIRATEBAY (Pack capable)" default="true" />
     <setting id="provider.rutor" type="bool" label="RUTOR (Pack capable)" default="false" />
     <setting id="provider.torlock" type="bool" label="TORLOCK" default="false" />

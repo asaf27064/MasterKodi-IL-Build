@@ -1,4 +1,3 @@
 
 if __name__ == '__main__':
-	from entry import routing
-	routing()
+	__import__('entry').routing()
