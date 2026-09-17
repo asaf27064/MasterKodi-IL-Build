@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-09-08T11:38:18Z",
+  "generated_utc": "2026-09-17T09:42:38Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -54,12 +54,12 @@
     },
     {
       "id": "plugin.video.gears",
-      "version": "2.4.2",
+      "version": "2.4.3",
       "channel": "core",
-      "zip": "plugin.video.gears-2.4.2.zip",
-      "sha256": "3bfbe33c7ed7e764c0b7cd3a82f9b8e4841f20e37d984db9968d574d75187ffd",
-      "size": 8782608,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.gears-2.4.2.zip",
+      "zip": "plugin.video.gears-2.4.3.zip",
+      "sha256": "c1b48accb69df45b62ca2ce3a0c399273553dae47d937a754d9625730c595b77",
+      "size": 8782646,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.gears-2.4.3.zip",
       "content": "gears"
     },
     {
@@ -74,12 +74,12 @@
     },
     {
       "id": "plugin.video.themoviedb.helper",
-      "version": "6.17.1",
+      "version": "6.17.3",
       "channel": "optional",
-      "zip": "plugin.video.themoviedb.helper-6.17.1.zip",
-      "sha256": "a4c4312fcb24f9c3e520b6d4879ddc338b5a3329bc60ab12b041c2eaca093b3f",
-      "size": 4305444,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.17.1.zip"
+      "zip": "plugin.video.themoviedb.helper-6.17.3.zip",
+      "sha256": "66c32d217b4c0a4bb9f6d5f55b1dd16951fa87d75c4bd46474448872282f0972",
+      "size": 4306176,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.17.3.zip"
     },
     {
       "id": "plugin.video.tmdb.bingie.helper",
@@ -392,12 +392,12 @@
     },
     {
       "id": "script.module.gearsscrapers",
-      "version": "1.5.9",
+      "version": "1.6.1",
       "channel": "core",
-      "zip": "script.module.gearsscrapers-1.5.9.zip",
-      "sha256": "e07d1b32346020cb829e188bf39d336a4c2f8dd113ab57ff96573eb2cd406e4b",
-      "size": 1110643,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.gearsscrapers-1.5.9.zip",
+      "zip": "script.module.gearsscrapers-1.6.1.zip",
+      "sha256": "8e422da9416370a57f851c9f7036b591d6495b9b0343ebc385dd11058c8cb17f",
+      "size": 2123536,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.gearsscrapers-1.6.1.zip",
       "content": "gears"
     },
     {
@@ -429,12 +429,12 @@
     },
     {
       "id": "script.module.magneto",
-      "version": "6.09.02",
+      "version": "6.09.04",
       "channel": "core",
-      "zip": "script.module.magneto-6.09.02.zip",
-      "sha256": "fe3b25c050430cbe4cbba493a72ffde9b2fcfa5e9ed1113d39ae8abb62a4827e",
-      "size": 478911,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.magneto-6.09.02.zip",
+      "zip": "script.module.magneto-6.09.04.zip",
+      "sha256": "71615d48541c99925dd9c4ef32e0085eccd3d0a8c852c8d84514787075a58a37",
+      "size": 479244,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.magneto-6.09.04.zip",
       "content": "gears"
     },
     {
@@ -565,12 +565,12 @@
     },
     {
       "id": "script.skinvariables",
-      "version": "2.2.2",
+      "version": "2.2.4",
       "channel": "optional",
-      "zip": "script.skinvariables-2.2.2.zip",
-      "sha256": "92578e8aae06e53b580074f382092d27c1f1fe02d27842b0b2b4e7a712b38722",
-      "size": 231198,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.skinvariables-2.2.2.zip"
+      "zip": "script.skinvariables-2.2.4.zip",
+      "sha256": "eba9280f27348079f2aaac080771e74597ab1ba715936909851a1d3c0ced95d5",
+      "size": 231806,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.skinvariables-2.2.4.zip"
     },
     {
       "id": "script.texturemaker",
@@ -646,12 +646,12 @@
     },
     {
       "id": "skin.arctic.fuse.3",
-      "version": "3.2.19.107",
+      "version": "3.3.0.108",
       "channel": "optional",
-      "zip": "skin.arctic.fuse.3-3.2.19.107.zip",
-      "sha256": "5dcfb8f79d8a34f77ec273575e632734b26826894127e983b7f3c5fb4ffa00fd",
-      "size": 54652982,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.fuse.3-3.2.19.107.zip"
+      "zip": "skin.arctic.fuse.3-3.3.0.108.zip",
+      "sha256": "ea67804317868129a05b01d4ee54389e82c69176e4168b3cab956c64f047dd25",
+      "size": 54653351,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.fuse.3-3.3.0.108.zip"
     },
     {
       "id": "skin.arctic.zephyr.2.resurrection.mod",
@@ -664,12 +664,12 @@
     },
     {
       "id": "skin.arctic.zephyr.rounded",
-      "version": "1.3.4",
+      "version": "1.3.5",
       "channel": "optional",
-      "zip": "skin.arctic.zephyr.rounded-1.3.4.zip",
-      "sha256": "ff066a8792757ee97cebb443cbef18dabdc4eaa0f39834fbd45e6002a1ce4a58",
-      "size": 76242901,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.zephyr.rounded-1.3.4.zip"
+      "zip": "skin.arctic.zephyr.rounded-1.3.5.zip",
+      "sha256": "4f0b57428340d2d9dc8537fda4a1914a4cc141d73a7e6ea2291a163fe3bc8daa",
+      "size": 76242932,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/skin.arctic.zephyr.rounded-1.3.5.zip"
     },
     {
       "id": "skin.bingie",
