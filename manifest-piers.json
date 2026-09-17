@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-09-17T09:48:21Z",
+  "generated_utc": "2026-09-17T09:53:00Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -619,12 +619,12 @@
     },
     {
       "id": "service.subtitles.gearsai",
-      "version": "1.0.50",
+      "version": "1.0.51",
       "channel": "core",
-      "zip": "service.subtitles.gearsai-1.0.50.zip",
-      "sha256": "5a997d607c5797d9c6725bb610da9ddfaa00373cd79a2f37aa45a634dcae5c2d",
-      "size": 4035920,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/service.subtitles.gearsai-1.0.50.zip"
+      "zip": "service.subtitles.gearsai-1.0.51.zip",
+      "sha256": "a0f52d42c8e38f55575067b12868fba67ec102002ca11ab8ae1ac9ef8e19effe",
+      "size": 4036432,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/service.subtitles.gearsai-1.0.51.zip"
     },
     {
       "id": "service.subtitles.localsubtitle",
