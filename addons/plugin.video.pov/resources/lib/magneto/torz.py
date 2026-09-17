@@ -3,9 +3,7 @@
 	Fenomscrapers Project
 """
 
-from json import loads as jsloads
-import queue
-from magneto.modules import client
+import queue, requests
 from magneto.modules import source_utils
 from magneto.modules.control import setting as getSetting
 
@@ -24,8 +22,8 @@ class source:
 			"https://stremthru.stremio.ru",
 			"https://stremthrufortheweebs.midnightignite.me"
 		)[int(getSetting('torz.url', '0'))]
-		self.movieSearch_link = '/v0/torrents?sid=%s'
-		self.tvSearch_link = '/v0/torrents?sid=%s:%s:%s'
+		self.movieSearch_link = '/v0/torrents'
+		self.tvSearch_link = '/v0/torrents'
 		self.min_seeders = 0
 
 	def sources(self, data, hostDict):
@@ -33,9 +31,9 @@ class source:
 		if not data: return sources
 		sources_append = sources.append
 		try:
+			aliases = source_utils.aliases_to_array(data['aliases'])
 			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
 			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
-			aliases = source_utils.aliases_to_array(data['aliases'])
 			episode_title = data['title'] if 'tvshowtitle' in data else None
 			year = data['year']
 			imdb = data['imdb']
@@ -43,15 +41,17 @@ class source:
 				season = data['season']
 				episode = data['episode']
 				hdlr = 'S%02dE%02d' % (int(season), int(episode))
-				url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, episode))
+				url = self.base_link + self.tvSearch_link
+				params = {'sid': '%s:%s:%s' % (imdb, season, episode)}
 			else:
 				hdlr = year
-				url = '%s%s' % (self.base_link, self.movieSearch_link % imdb)
+				url = self.base_link + self.movieSearch_link
+				params = {'sid': '%s' % imdb}
 			# log_utils.log('url = %s' % url)
 			if 'timeout' in data: self.timeout = int(data['timeout'])
 			try:
-				results = client.request(url, timeout=self.timeout)
-				files = jsloads(results)['data']['items']
+				results = requests.get(url, params=params, timeout=self.timeout)
+				files = results.json()['data']['items']
 			except:
 				files = []
 				raise
@@ -105,12 +105,13 @@ class source:
 		if not data: return sources
 		sources_append = sources.append
 		try:
-			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
 			aliases = source_utils.aliases_to_array(data['aliases'])
+			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
 			imdb = data['imdb']
 			year = data['year']
 			season = data['season']
-			url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, data['episode']))
+			url = self.base_link + self.tvSearch_link
+			params = {'sid': '%s:%s:%s' % (imdb, season, data['episode'])}
 			if 'timeout' in data: self.timeout = int(data['timeout'])
 			files = self._queue.get(timeout=self.timeout + 1)
 			undesirables = source_utils.get_undesirables()

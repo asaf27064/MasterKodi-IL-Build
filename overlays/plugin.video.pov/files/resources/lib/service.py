@@ -163,9 +163,11 @@ def _start_debrid_banner_thread():
 #############################################################
 
 if __name__ == '__main__':
-	from entry import POVMonitor
 	########### KODIRDIL - fire the debrid banner (non-blocking) ###########
+	# 6.09.04 replaced POVMonitor().run() with SettingsMonitor()() and dropped
+	# the module-level entry import; the banner needs neither (it imports
+	# lazily), so it simply starts ahead of upstream's blocking monitor.
 	_start_debrid_banner_thread()
 	#########################################################################
-	POVMonitor().run()
+	__import__('entry').SettingsMonitor()()
 
