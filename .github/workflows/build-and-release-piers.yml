@@ -27,7 +27,14 @@ permissions:
   contents: write
 
 concurrency:
-  group: fleet-release
+  # One group PER FLEET. A shared group (c4a6d31) kept only ONE pending run
+  # across both workflows, so pushes landing close together silently dropped
+  # the other fleet's build -- GearsAI 1.0.51 never reached the Omega manifest
+  # on 2026-09-17. The race that group guarded against is handled by the
+  # manifest step itself (hard-sync to origin/main + retry), and the two
+  # fleets write disjoint releases and manifests. Within one fleet, GitHub
+  # still cancels intermediate queued runs; the survivor builds HEAD.
+  group: fleet-release-piers
   cancel-in-progress: false
 
 jobs:
