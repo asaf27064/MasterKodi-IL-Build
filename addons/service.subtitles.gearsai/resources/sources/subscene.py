@@ -121,8 +121,35 @@ class TLSAdapter(requests.adapters.HTTPAdapter):
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
+# Cloudflare challenge circuit breaker. sub-scene.com moved /search behind a
+# JS challenge ("Just a moment...") that no Kodi client can pass. The retry loop
+# below then burned 7 requests plus sleeps on EVERY search -- 38 of them for one
+# Slow Horses episode on Asaf's Shield (2026-09-17) -- for a result that can
+# never arrive. Now: a challenge page ends the attempt immediately, and the
+# provider is skipped for _CF_COOLDOWN seconds before it is tried again.
+_CF_COOLDOWN = 1800
+_cf_blocked_at = [0.0]
+
+
+def _is_cf_challenge(response):
+    if getattr(response, 'status_code', 0) not in (403, 503):
+        return False
+    try:
+        head = (response.text or '')[:4000]
+    except Exception:
+        return False
+    return ('Just a moment' in head or 'challenge-platform' in head
+            or 'cf-chl' in head or response.headers.get('cf-mitigated') == 'challenge')
+
+
 def __retry(request, response, next, retry=0):
     if retry > 6:
+        return None
+
+    if _is_cf_challenge(response):
+        import time
+        _cf_blocked_at[0] = time.time()
+        log.warning('DEBUG | [Subscene] | Cloudflare challenge -- skipping Subscene for %d min' % (_CF_COOLDOWN // 60))
         return None
 
     if response.status_code in [503, 429, 409, 403]:
@@ -142,7 +169,10 @@ def __retry(request, response, next, retry=0):
         return request
 
 def execute_request(request, session=None):
-     
+    import time
+    if time.time() - _cf_blocked_at[0] < _CF_COOLDOWN:
+        return None
+
     request.setdefault('timeout', DEFAULT_REQUEST_TIMEOUT)
 
     next = request.pop('next', None)
