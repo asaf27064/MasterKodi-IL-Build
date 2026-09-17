@@ -4,8 +4,9 @@
   "base_zip_url": "https://github.com/DenDyGH/skin.arctic.zephyr.2.resurrection.mod/releases/download/v{version}/skin.arctic.zephyr.2.resurrection.mod-Omega.zip",
   "upstream_releases_api": "https://api.github.com/repos/DenDyGH/skin.arctic.zephyr.2.resurrection.mod/releases/latest",
   "raw_top_folder": "skin.arctic.zephyr.2.resurrection.mod",
-  "overlay_version": "1.0.51.28",
+  "overlay_version": "1.0.51.29",
   "notes": "Omega (Kodi 21) 1.0.51 bundled in tag v1.1.9. Overlay = he_il + Hebrew fontset + Rubik/Noto fonts + power-menu items + GearsAI OSD button + Gears home/search/power shortcuts + hero Label fix. | upstream_tag tracks the RELEASE TAG (v1.1.9) which differs from base_version (1.0.51, the bundled Omega addon); the watcher compares tags. When adopting a new upstream tag, update BOTH base_zip_url (pin the new tag) and upstream_tag. | 1.0.51.28: emptied Includes_Views_Fallbacks.xml (it re-defined every Exp_View_* and collided with the generated viewtypes -> configured gears views never persisted/showed as list).",
   "upstream_tag": "1.1.10",
-  "auto_build_suffix": true
+  "auto_build_suffix": true,
+  "changelog": "1.0.51.29 - Define Exp_RipSource. Includes_Object.xml uses $EXP[Exp_RipSource] on the rip source badge but upstream never defines the expression (confirmed in clean 1.0.52), so every Home and video view load logged 'Misplaced ]' + 'Error parsing boolean expression [!skin.hassetting(textcodecs)] + []' (seen on Asaf's Shield, 2026-09-17) and the badge could never appear. Defined as a pure boolean from the exact conditions Image_RipSource resolves on (its filename tokens, or a non-empty FallbackSourceFlag), in the style of the skin's own expressions -- deliberately NOT String.IsEmpty($VAR[...]), which no skin we ship uses.\n"
 }
