@@ -50,6 +50,29 @@ def _get(url, is_json=False, headers=None):
     return json.loads(data) if is_json else data
 
 
+def fetch_base(base, version=None):
+    """Clean base zip bytes for `version` (default: base_version).
+
+    Tries base_zip_url first, then base_zip_mirror_url. Some upstreams keep only
+    their LATEST zip -- Nanomani deleted Rounded 1.3.00 and then 1.3.4, and each
+    time every build 404'd until someone re-based by hand. tools/mirror_bases.py
+    copies each base into our own 'overlay-bases' release while upstream still
+    serves it, so the mirror is what keeps a pruned version reachable.
+    """
+    v = url_version(base, version)
+    urls = [base['base_zip_url'].format(version=v)]
+    if base.get('base_zip_mirror_url'):
+        urls.append(base['base_zip_mirror_url'].format(version=version or base['base_version']))
+    last = None
+    for u in urls:
+        try:
+            return _get(u)
+        except Exception as e:
+            last = e
+            print('[check_upstream] base fetch failed, trying next source: %s (%s)' % (u, e))
+    raise last
+
+
 def _semver(v):
     return tuple(int(x) for x in re.findall(r'\d+', v)[:4] or [0])
 
@@ -195,9 +218,9 @@ def check_one(overlay_dir, target=None):
     if local:
         lp = os.path.join(overlay_dir, local)
         old_bytes = (open(lp, 'rb').read() if os.path.isfile(lp)
-                     else _get(base['base_zip_url'].format(version=url_version(base, cur))))
+                     else fetch_base(base, cur))
     else:
-        old_bytes = _get(base['base_zip_url'].format(version=url_version(base, cur)))
+        old_bytes = fetch_base(base, cur)
     old_map = _clean_base_map(old_bytes, base, cur)
     new_bytes = _get(up_fmt.format(version=url_version(base, latest)))
     new_map = _clean_base_map(new_bytes, base, latest)

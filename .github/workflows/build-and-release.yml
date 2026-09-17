@@ -42,6 +42,15 @@ jobs:
       - name: Install build deps
         run: pip install requests
 
+      - name: Mirror overlay bases (upstreams that prune old versions)
+        # Nanomani keeps only the latest Rounded zip; twice a deleted base 404'd
+        # every build. Copy the current base into our overlay-bases release while
+        # upstream still serves it -- apply_overlay falls back to it. Never blocks.
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python tools/mirror_bases.py overlays
+
       - name: Reconstruct Hebrew addons (clean upstream + overlay)
         # The Hebrew-modified addons are NOT committed as merged trees -- only
         # our overlay (overlays/<id>/) is. CI downloads clean upstream, strips

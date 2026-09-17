@@ -176,6 +176,15 @@ jobs:
             gh workflow run build-and-release-piers.yml
           fi
 
+      - name: Mirror overlay bases (upstreams that prune old versions)
+        # Nanomani keeps only the latest Rounded zip; twice a deleted base 404'd
+        # every build. Copy the current base into our overlay-bases release while
+        # upstream still serves it -- apply_overlay falls back to it. Never blocks.
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python tools/mirror_bases.py overlays overlays-piers
+
       # Surface adopt failures AFTER the commit above, never before: failing the
       # adopt step itself would skip the commit and throw away the adoptions that
       # DID succeed -- which is precisely how the Piers AF3 404 discarded a good

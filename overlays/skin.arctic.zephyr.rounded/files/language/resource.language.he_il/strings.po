@@ -2578,8 +2578,8 @@ msgid "Darkest"
 msgstr ""
 
 msgctxt "#31640"
-msgid "User Preference"
-msgstr ""
+msgid "Prevent reload"
+msgstr "מנע טעינה מחדש"
 
 msgctxt "#31641"
 msgid "Show"
