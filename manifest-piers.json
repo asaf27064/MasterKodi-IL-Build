@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-09-17T09:54:23Z",
+  "generated_utc": "2026-09-18T04:14:05Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -27,12 +27,12 @@
     },
     {
       "id": "metadata.tvshows.themoviedb.org.python",
-      "version": "1.7.9",
+      "version": "1.7.13",
       "channel": "core",
-      "zip": "metadata.tvshows.themoviedb.org.python-1.7.9.zip",
-      "sha256": "3f68f65aae3fe790c9dd8d04af617bd509f9db6fd10d49ea3bd052fb291fdedc",
-      "size": 183331,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/metadata.tvshows.themoviedb.org.python-1.7.9.zip"
+      "zip": "metadata.tvshows.themoviedb.org.python-1.7.13.zip",
+      "sha256": "f39b113528403d4725efd4148f22b57632adfb07c31844a58c69da7d22cfe1ef",
+      "size": 183402,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/metadata.tvshows.themoviedb.org.python-1.7.13.zip"
     },
     {
       "id": "plugin.program.autocompletion",
