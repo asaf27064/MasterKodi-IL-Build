@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-09-18T04:13:57Z",
+  "generated_utc": "2026-09-20T15:51:50Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -238,12 +238,12 @@
     },
     {
       "id": "resource.language.he_il",
-      "version": "11.0.79",
+      "version": "11.0.80",
       "channel": "core",
-      "zip": "resource.language.he_il-11.0.79.zip",
-      "sha256": "68cf7e08b9c25c9d74e886eed0059e2b9cb84010efa20a5540a71250402fb4b9",
-      "size": 149987,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.language.he_il-11.0.79.zip"
+      "zip": "resource.language.he_il-11.0.80.zip",
+      "sha256": "a39005bc4aad5fcbd155e78c49fb34a99ed0f0961cb86f01d36129821ae0ca36",
+      "size": 154883,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.language.he_il-11.0.80.zip"
     },
     {
       "id": "script.artistslideshow",
