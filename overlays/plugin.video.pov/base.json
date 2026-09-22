@@ -1,7 +1,7 @@
 {
   "addon_id": "plugin.video.pov",
-  "base_version": "6.09.04",
-  "base_zip_local": "base/plugin.video.pov-6.09.04.zip",
+  "base_version": "6.09.05",
+  "base_zip_local": "base/plugin.video.pov-6.09.05.zip",
   "base_zip_url": "https://kodiyashimaru.github.io/repo/plugin.video.pov/plugin.video.pov-{version}.zip",
   "upstream_zip_url": "https://kodiyashimaru.github.io/repo/plugin.video.pov/plugin.video.pov-{version}.zip",
   "upstream_addons_xml": "https://kodiyashimaru.github.io/repo/packages/addons.xml",
