@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-09-22T21:09:37Z",
+  "generated_utc": "2026-09-25T17:00:02Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -392,12 +392,12 @@
     },
     {
       "id": "script.module.gearsscrapers",
-      "version": "1.6.1",
+      "version": "1.6.2",
       "channel": "core",
-      "zip": "script.module.gearsscrapers-1.6.1.zip",
-      "sha256": "8e422da9416370a57f851c9f7036b591d6495b9b0343ebc385dd11058c8cb17f",
-      "size": 2123536,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.gearsscrapers-1.6.1.zip",
+      "zip": "script.module.gearsscrapers-1.6.2.zip",
+      "sha256": "68c302bd9ee76c25c8f57f56cb3a2acea97c46ea917a955283b4ab5233723682",
+      "size": 2124260,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.gearsscrapers-1.6.2.zip",
       "content": "gears"
     },
     {
