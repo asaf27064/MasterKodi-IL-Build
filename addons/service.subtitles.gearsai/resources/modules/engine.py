@@ -502,6 +502,28 @@ def fix_sub_punctuation_and_write(sub_file):
         return None
 
 #################### HEARING IMPAIRED TAGS REMOVE ###########################################################
+def _srt_has_hi_tags(sub_file):
+    """True when sub_file is an SRT whose cues carry HI tags, speaker labels,
+    notes or site ads. False on any doubt (not SRT, unreadable)."""
+    try:
+        if not str(sub_file).lower().endswith('.srt'):
+            return False
+        with open(sub_file, 'rb') as f:
+            raw = f.read()
+        text = None
+        for enc in ('utf-8-sig', 'cp1255', 'latin-1'):
+            try:
+                text = raw.decode(enc)
+                break
+            except Exception:
+                continue
+        from resources.aisubs import hi_clean, srt
+        return bool(text) and bool(srt.parse(text)) and hi_clean.has_hi_tags(text)
+    except Exception as e:
+        log.warning(f"_srt_has_hi_tags failed | {str(e)}")
+        return False
+
+
 def remove_hi_tags_and_write(sub_file):
     
     def remove_hi_subs(subtitle_content):
@@ -553,8 +575,15 @@ def remove_hi_tags_and_write(sub_file):
             # Join binary lines for specified number of lines
             text = f.read()
         
-        text = remove_hi_subs(text)
-        
+        # Per CUE, not per line (resources/aisubs/hi_clean.py): catches tags
+        # split over two lines, untranslated English lyrics, speaker labels and
+        # site ads, and drops + renumbers cues that end up empty. Kodi-visual
+        # order Hebrew dialogue dashes are handled there. Non-SRT text (ASS,
+        # SSA, SUB) is not parseable as SRT and keeps the old line cleaner.
+        from resources.aisubs import hi_clean
+        cleaned = hi_clean.clean_srt_text(text)
+        text = cleaned if cleaned is not None else remove_hi_subs(text)
+
         with open(sub_file, mode="w", encoding="utf8") as f:
                  f.write(text)
 
@@ -1116,10 +1145,16 @@ def download_sub(source,download_data,MySubFolder,language,filename):
             t.start()
         ##################################
             
-    # Remove HI (Hearing Impaired) subtitle tags for non-Hebrew subs.
+    # Remove HI (Hearing Impaired) subtitle tags.
+    # Not only when the row is FLAGGED hearing_imp: many files that carry tags
+    # are not flagged, so their "[GUNFIRE]" reached the screen. Clean whenever
+    # the setting is on and the content actually has tags. Unflagged files are
+    # only content-checked when they are SRT -- an ASS file's "[Script Info]"
+    # section headers look like tags to the old line cleaner.
     hearing_imp = download_data.get('hearing_imp', 'false')
-    if hearing_imp=='true' and Addon.getSetting("auto_remove_hi_tags")=='true':
-        if Addon.getSetting("enable_autosub_notifications")=='true':
+    if Addon.getSetting("auto_remove_hi_tags")=='true' and (
+            hearing_imp=='true' or _srt_has_hi_tags(sub_file)):
+        if hearing_imp=='true' and Addon.getSetting("enable_autosub_notifications")=='true':
             from resources.modules.general import notify
             notify("כתובית לכבדי שמיעה נבחרה, מנקה...")
         try:

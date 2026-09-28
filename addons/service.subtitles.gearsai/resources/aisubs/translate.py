@@ -14,6 +14,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from . import gemini
+from . import hi_clean
 from . import kodi_utils
 from . import prompt
 from . import srt
@@ -57,13 +58,20 @@ def _chunk(entries, size):
         yield entries[i:i + size]
 
 
+def _has_text(lines):
+    """A usable translation: at least one non-blank line. The JSON rescue turns
+    an empty string into [''], which used to count as translated and put a
+    BLANK cue on screen instead of the English fallback."""
+    return bool(lines) and any((ln or '').strip() for ln in lines)
+
+
 def _apply_translation(chunk_entries, translated_map):
     """Overlay translated_map (entry-number -> [lines]) onto the chunk's
     entries in place. Missing numbers keep their source text."""
     applied = 0
     for e in chunk_entries:
         new_lines = translated_map.get(e.index)
-        if new_lines:
+        if _has_text(new_lines):
             # Guard against the model collapsing/expanding line counts
             # wildly: accept whatever it gave (we preserved timecodes),
             # but never leave an entry empty.
@@ -130,6 +138,30 @@ def translate_srt(english_srt, source_lang='en', title='', year='',
     entries = srt.parse(english_srt)
     if not entries:
         raise gemini.GeminiError('Could not parse the English subtitle')
+
+    # Clean the English BEFORE the model sees it, one cue at a time (hi_clean).
+    # Told to drop "[GUNFIRE]" itself, the model often dropped the whole cue,
+    # and the missing entry then kept its English -- tag included, and any
+    # speech sharing that cue was lost too (S.W.A.T. Exiles S01E01: 71 English
+    # tag cues + 8 untranslated speech cues on screen, 2026-09-28).
+    # A cue left empty (a tag, a site ad) is not sent and not output. The
+    # cleaned cues are the working entries, numbered 1..M consecutively, so
+    # the model sees no gaps and the output needs no remapping.
+    # The gender guide (analysis.py) still gets the RAW text below: SDH speaker
+    # labels are exactly what makes it good, which is why SDH sources are
+    # preferred in the first place.
+    raw_count = len(entries)
+    work = []
+    for e in entries:
+        lines = hi_clean.clean_english(e.lines)
+        if lines:
+            work.append(srt.Entry(len(work) + 1, e.start, e.end, lines))
+    if not work:
+        raise gemini.GeminiError('Nothing to translate after removing hearing-impaired tags')
+    if len(work) != raw_count:
+        kodi_utils.log('hi-clean: {0} of {1} cues were tags/ads only; not sent'.format(
+            raw_count - len(work), raw_count))
+    entries = work
 
     total = len(entries)
     # Model fallback chain, shared across all worker threads: if the active
@@ -243,16 +275,32 @@ def translate_srt(english_srt, source_lang='en', title='', year='',
         reply = _generate_chunk(keys, models, state, lock, ptext, chunk_entries,
                                 pmeta, contexts[ci], thinking_budget, model_lines)
         mapped = srt.parse_model_blocks(reply) if reply else {}
-        # JSON RESCUE (#2, rescue-only -> zero impact on the normal path):
-        # if the SRT parse clearly failed (model didn't return clean blocks),
-        # retry THIS chunk in strict-JSON mode -- where the alternative is
-        # leaving English, so it can only help. Same gender/cast context.
-        if reply and len(mapped) < int(len(chunk_entries) * 0.8):
+        # JSON RESCUE (rescue-only -> zero impact on a complete reply): the
+        # alternative is leaving English on screen, so it can only help. Same
+        # gender/cast context.
+        #  * more than 20% missing: the SRT parse clearly failed -> retry the
+        #    WHOLE chunk in strict-JSON mode (as before);
+        #  * a few missing: the model skipped individual cues -> retry JUST
+        #    those. This used to be ignored below the 80% line, so a handful of
+        #    skipped cues per chunk stayed English for good.
+        # Whatever is still missing after that keeps its (cleaned) English.
+        missing = [e for e in chunk_entries if not _has_text(mapped.get(e.index))]
+        if reply and missing:
+            whole = len(missing) > len(chunk_entries) * 0.2
             try:
                 rescued = _json_rescue_chunk(keys, models, state, lock,
-                                             chunk_entries, pmeta, thinking_budget)
-                if rescued and len(rescued) > len(mapped):
-                    mapped = rescued
+                                             chunk_entries if whole else missing,
+                                             pmeta, thinking_budget)
+                if rescued:
+                    got = {k: v for k, v in rescued.items() if _has_text(v)}
+                    if whole:
+                        if len(got) > len(chunk_entries) - len(missing):
+                            mapped = got
+                    else:
+                        mapped.update(got)
+                still = sum(1 for e in chunk_entries if not _has_text(mapped.get(e.index)))
+                kodi_utils.log('json rescue ({0}): {1} missing -> {2}'.format(
+                    'whole chunk' if whole else 'missing cues', len(missing), still))
             except Exception as e:
                 kodi_utils.log('json rescue failed: {0}'.format(e))
         return mapped
