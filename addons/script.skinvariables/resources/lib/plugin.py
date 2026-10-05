@@ -71,12 +71,15 @@ class Plugin():
         'set_filter_dir': {
             'module_name': 'resources.lib.lists.filterdir',
             'import_attr': 'ListSetFilterDir'},
-        'get_panel_labels': {
-            'module_name': 'resources.lib.lists.filterdir',
-            'import_attr': 'ListGetPanelLabels'},
         'get_container_labels': {
             'module_name': 'resources.lib.lists.filterdir',
             'import_attr': 'ListGetContainerLabels'},
+        'get_panel_labels': {
+            'module_name': 'resources.lib.lists.padpanels',
+            'import_attr': 'ListGetPanelLabels'},
+        'get_quick_stats': {
+            'module_name': 'resources.lib.lists.quickstats',
+            'import_attr': 'ListGetQuickStats'},
         'get_shortcuts_node': {
             'module_name': 'resources.lib.shortcuts.node',
             'import_attr': 'ListGetShortcutsNode'},
