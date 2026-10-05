@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-10-04T12:09:37Z",
+  "generated_utc": "2026-10-05T14:16:04Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -565,12 +565,12 @@
     },
     {
       "id": "script.skinvariables",
-      "version": "2.2.7",
+      "version": "2.2.8",
       "channel": "optional",
-      "zip": "script.skinvariables-2.2.7.zip",
-      "sha256": "d71420f71bc486d3bd8ac1c17b77214a5f9093adf4f9a16e254752f43f22321e",
-      "size": 232008,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.skinvariables-2.2.7.zip"
+      "zip": "script.skinvariables-2.2.8.zip",
+      "sha256": "07aad9ccf8e89d3c4706d401a4219459d800b3f03b74ea8c9e20fdf51c28571d",
+      "size": 234863,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.skinvariables-2.2.8.zip"
     },
     {
       "id": "script.texturemaker",
