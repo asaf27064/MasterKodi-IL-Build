@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-10-05T14:16:04Z",
+  "generated_utc": "2026-10-08T13:13:23Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -74,12 +74,12 @@
     },
     {
       "id": "plugin.video.themoviedb.helper",
-      "version": "6.17.5",
+      "version": "6.17.6",
       "channel": "optional",
-      "zip": "plugin.video.themoviedb.helper-6.17.5.zip",
-      "sha256": "a90f89545b5d166a11396e3953fad9e5231797c671d2f376a407e432f91f1be7",
-      "size": 4307995,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.themoviedb.helper-6.17.5.zip"
+      "zip": "plugin.video.themoviedb.helper-6.17.6.zip",
+      "sha256": "5b781412db5aa5e98b1f2d89ea8b2e9c5b72b5375cc8e6c3651604bf7dd2ae90",
+      "size": 4311136,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.themoviedb.helper-6.17.6.zip"
     },
     {
       "id": "plugin.video.tmdb.bingie.helper",
@@ -556,12 +556,12 @@
     },
     {
       "id": "script.skinshortcuts",
-      "version": "3.0.3",
+      "version": "3.0.4",
       "channel": "optional",
-      "zip": "script.skinshortcuts-3.0.3.zip",
-      "sha256": "b17f01d7063153994d0531bd995a75026dd93d214c26d4f60fe955e1be3c38b1",
-      "size": 637437,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.skinshortcuts-3.0.3.zip"
+      "zip": "script.skinshortcuts-3.0.4.zip",
+      "sha256": "3a795fa1959d858303c51c9d04327bc688f3451cf405ef6491197e83f92208c7",
+      "size": 630757,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.skinshortcuts-3.0.4.zip"
     },
     {
       "id": "script.skinvariables",
