@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-10-10T12:16:56Z",
+  "generated_utc": "2026-10-11T12:32:17Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -74,12 +74,12 @@
     },
     {
       "id": "plugin.video.themoviedb.helper",
-      "version": "6.17.7",
+      "version": "6.17.9",
       "channel": "optional",
-      "zip": "plugin.video.themoviedb.helper-6.17.7.zip",
-      "sha256": "e64f32692417ce2675175a2434263b3861c8d5a2e5ed52afe758161bdbb33d65",
-      "size": 4321435,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.17.7.zip"
+      "zip": "plugin.video.themoviedb.helper-6.17.9.zip",
+      "sha256": "cd3e3cbc3b76d2bb29ceb5f88a3806dda0ee964b9bc29390b5f6922bb5495135",
+      "size": 4322239,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.17.9.zip"
     },
     {
       "id": "plugin.video.tmdb.bingie.helper",
@@ -565,12 +565,12 @@
     },
     {
       "id": "script.skinvariables",
-      "version": "2.2.8",
+      "version": "2.2.9",
       "channel": "optional",
-      "zip": "script.skinvariables-2.2.8.zip",
-      "sha256": "07aad9ccf8e89d3c4706d401a4219459d800b3f03b74ea8c9e20fdf51c28571d",
-      "size": 234863,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.skinvariables-2.2.8.zip"
+      "zip": "script.skinvariables-2.2.9.zip",
+      "sha256": "f8e89ad122ef87c64aa946d49df2b01d24fd238580abc18c1901a01107889792",
+      "size": 236686,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.skinvariables-2.2.9.zip"
     },
     {
       "id": "script.texturemaker",
