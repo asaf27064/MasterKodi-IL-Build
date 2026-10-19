@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-10-13T13:59:21Z",
+  "generated_utc": "2026-10-19T12:47:37Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -74,12 +74,12 @@
     },
     {
       "id": "plugin.video.themoviedb.helper",
-      "version": "6.17.9",
+      "version": "6.18.0",
       "channel": "optional",
-      "zip": "plugin.video.themoviedb.helper-6.17.9.zip",
-      "sha256": "cd3e3cbc3b76d2bb29ceb5f88a3806dda0ee964b9bc29390b5f6922bb5495135",
-      "size": 4322239,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.themoviedb.helper-6.17.9.zip"
+      "zip": "plugin.video.themoviedb.helper-6.18.0.zip",
+      "sha256": "8e434ea631f5563b6178eed1053113ed177511e759d91d75bd12fe6318b9a0eb",
+      "size": 4340292,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.themoviedb.helper-6.18.0.zip"
     },
     {
       "id": "plugin.video.tmdb.bingie.helper",
@@ -411,12 +411,12 @@
     },
     {
       "id": "script.module.infotagger",
-      "version": "0.0.9",
+      "version": "0.1.0",
       "channel": "optional",
-      "zip": "script.module.infotagger-0.0.9.zip",
-      "sha256": "cd8630f2e207fd6a78e40e74554ce10a53ff3c43102863ed6bfe6d265e8a2640",
-      "size": 23148,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.infotagger-0.0.9.zip"
+      "zip": "script.module.infotagger-0.1.0.zip",
+      "sha256": "ab0596fac44fc0bdcce5ae5586425ad3648fc698d6b41703ecbc789919d464b3",
+      "size": 23169,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.infotagger-0.1.0.zip"
     },
     {
       "id": "script.module.jurialmunkey",
