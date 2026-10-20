@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-# created by Venom for Fenomscrapers (updated 7-19-2022)
+# created by Venom for Fenomscrapers
 """
 	Fenomscrapers Project
 """
@@ -9,8 +8,6 @@ from urllib.parse import quote_plus, unquote_plus
 from cocoscrapers.modules import client
 from cocoscrapers.modules import source_utils
 from cocoscrapers.modules import workers
-from cocoscrapers.modules import log_utils
-from time import time
 _LINKS = re.compile(r'<a\s*href\s*=\s*["\'](.+?torrent.html)["\']', re.I)
 
 
@@ -23,7 +20,6 @@ class source:
 		self.language = ['en']
 		self.base_link = "https://torrentproject2.com"
 		self.search_link = '/?t=%s&orderby=seeders'
-		self.item_totals = {'4K': 0, '1080p': 0, '720p': 0, 'SD': 0, 'CAM': 0 }
 		self.min_seeders = 1
 
 	def sources(self, data, hostDict):
@@ -31,7 +27,6 @@ class source:
 		if not data: return self.sources
 		self.sources_append = self.sources.append
 		try:
-			startTime = time()
 			self.aliases = data['aliases']
 			self.year = data['year']
 			if 'tvshowtitle' in data:
@@ -42,32 +37,21 @@ class source:
 				self.title = data['title'].replace('&', 'and').replace('/', ' ').replace('$', 's')
 				self.episode_title = None
 				self.hdlr = self.year
+			self.undesirables = source_utils.get_undesirables()
+			self.check_foreign_audio = source_utils.check_foreign_audio()
+
 			query = '%s %s' % (re.sub(r'[^A-Za-z0-9\s\.-]+', '', self.title), self.hdlr)
 			url = '%s%s' % (self.base_link, self.search_link % quote_plus(query))
-			# log_utils.log('url = %s' % url)
+
 			results = client.request(url, timeout=5)
 			if not results: return self.sources
 			links = _LINKS.findall(results)
-			self.undesirables = source_utils.get_undesirables()
-			self.check_foreign_audio = source_utils.check_foreign_audio()
-			# from cocoscrapers.modules.Thread_pool import run_and_wait
-			# from functools import partial
-			# bound_get_sources = partial(self.get_sources)
-			# run_and_wait(bound_get_sources,links)
 			threads = []
 			append = threads.append
 			for link in links:
 				append(workers.Thread(self.get_sources, link))
 			[i.start() for i in threads]
 			[i.join() for i in threads]
-			logged = False
-			for quality in self.item_totals:
-				if self.item_totals[quality] > 0:
-					log_utils.log('#STATS - TORRENTPROJECT2 found %s %s' % (self.item_totals[quality], quality))
-					logged = True
-			if not logged: log_utils.log('#STATS TORRENTPROJECT2 nothing found')
-			endTime = time()
-			log_utils.log('#STATS - TORRENTPROJECT2 took %s' % (endTime - startTime))
 			return self.sources
 		except:
 			source_utils.scraper_error('TORRENTPROJECT2')
@@ -108,7 +92,6 @@ class source:
 
 			self.sources_append({'provider': 'torrentproject2', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info,
 											'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
-			self.item_totals[quality] += 1
 		except:
 			source_utils.scraper_error('TORRENTPROJECT2')
 
@@ -119,7 +102,6 @@ class source:
 		self.items = []
 		self.items_append = self.items.append
 		try:
-			startTime = time()
 			self.search_series = search_series
 			self.total_seasons = total_seasons
 			self.bypass_filter = bypass_filter
@@ -142,16 +124,6 @@ class source:
 				queries = [
 						self.search_link % quote_plus(query + ' S%s' % self.season_xx),
 						self.search_link % quote_plus(query + ' Season %s' % self.season_x)]
-			# from cocoscrapers.modules.Thread_pool import run_and_wait
-			# from functools import partial
-			# bound_get_pack_items = partial(self.get_pack_items)
-			# links = []
-			# for url in queries:
-			# 	links.append('%s%s' % (self.base_link, url))
-			# run_and_wait(bound_get_pack_items, links)
-
-			# bound_get_pack_sources = partial(self.get_pack_sources)
-			# run_and_wait(bound_get_pack_sources, self.items)
 			threads = []
 			append = threads.append
 			for url in queries:
@@ -166,14 +138,6 @@ class source:
 				append2(workers.Thread(self.get_pack_sources, i))
 			[i.start() for i in threads2]
 			[i.join() for i in threads2]
-			logged = False
-			for quality in self.item_totals:
-				if self.item_totals[quality] > 0:
-					log_utils.log('#STATS - TORRENTPROJECT2(pack) found %s %s' % (self.item_totals[quality], quality))
-					logged = True
-			if not logged: log_utils.log('#STATS - TORRENTPROJECT2(pack) nothing found')
-			endTime = time()
-			log_utils.log('#STATS - TORRENTPROJECT2(pack) took %s' % (endTime - startTime))
 			return self.sources
 		except:
 			source_utils.scraper_error('TORRENTPROJECT2')
@@ -236,6 +200,5 @@ class source:
 			if self.search_series: item.update({'last_season': last_season})
 			elif episode_start: item.update({'episode_start': episode_start, 'episode_end': episode_end}) # for partial season packs
 			self.sources_append(item)
-			self.item_totals[quality] += 1
 		except:
 			source_utils.scraper_error('TORRENTPROJECT2')

@@ -1,38 +1,43 @@
-# created by Venom for Fenomscrapers (updated 3-02-2022)
+# created by kodifitzwell for Fenomscrapers
 """
-	Cocoscrapers Project
+	Fenomscrapers Project
 """
 
-from json import loads as jsloads, dumps as jsdumps
-import re, queue
-from cocoscrapers.modules import client
-from cocoscrapers.modules import source_utils
+import re
+from json import loads as jsloads
+from threading import Lock
+from cocoscrapers.modules import coco_client as client, coco_compat as source_utils
+from cocoscrapers.modules.control import setting as getSetting
 
-timeout = 10
 
-
-class source:
-	priority = 2
+class source(source_utils.SourceRegistry):
+	timeout = 7
+	priority = 1
 	pack_capable = True
 	hasMovies = True
 	hasEpisodes = True
-	_queue = queue.SimpleQueue()
+	_lock = Lock()
+	_cache = {}
 	def __init__(self):
-		params = '/eyJtYXhSZXN1bHRzUGVyUmVzb2x1dGlvbiI6MCwibWF4U2l6ZSI6MCwiY2FjaGVkT25seSI6ZmFsc2UsInJlbW92ZVRyYXNoIjp0cnVlLCJyZXN1bHRGb3JtYXQiOlsidGl0bGUiLCJtZXRhZGF0YSIsInNpemUiLCJsYW5ndWFnZXMiXSwiZGVicmlkU2VydmljZSI6InRvcnJlbnQiLCJkZWJyaWRBcGlLZXkiOiIiLCJkZWJyaWRTdHJlYW1Qcm94eVBhc3N3b3JkIjoiIiwibGFuZ3VhZ2VzIjp7InJlcXVpcmVkIjpbXSwiZXhjbHVkZSI6W10sInByZWZlcnJlZCI6W119LCJyZXNvbHV0aW9ucyI6e30sIm9wdGlvbnMiOnsicmVtb3ZlX3JhbmtzX3VuZGVyIjotMTAwMDAwMDAwMDAsImFsbG93X2VuZ2xpc2hfaW5fbGFuZ3VhZ2VzIjpmYWxzZSwicmVtb3ZlX3Vua25vd25fbGFuZ3VhZ2VzIjpmYWxzZX19'
 		self.language = ['en']
-		self.base_link = "https://comet.elfhosted.com"
-		self.movieSearch_link = f"{params}/stream/movie/%s.json"
-		self.tvSearch_link = f"{params}/stream/series/%s:%s:%s.json"
+		self.base_link = (
+			"https://comet.stremio.ru",
+			"https://comet.feels.legal",
+			"https://cometfortheweebs.midnightignite.me"
+		)[int(getSetting('comet.url', '0'))]
+		self.movieSearch_link = '/stream/movie/%s.json'
+		self.tvSearch_link = '/stream/series/%s:%s:%s.json'
 		self.min_seeders = 0
 
 	def sources(self, data, hostDict):
 		sources = []
 		if not data: return sources
-		append = sources.append
+		sources_append = sources.append
+		future = self.get_future(str(data))
 		try:
+			aliases = source_utils.aliases_to_array(data['aliases'])
 			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
-			aliases = data['aliases']
+			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
 			episode_title = data['title'] if 'tvshowtitle' in data else None
 			year = data['year']
 			imdb = data['imdb']
@@ -42,27 +47,26 @@ class source:
 				hdlr = 'S%02dE%02d' % (int(season), int(episode))
 				url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, episode))
 			else:
-				url = '%s%s' % (self.base_link, self.movieSearch_link % imdb)
 				hdlr = year
+				url = '%s%s' % (self.base_link, self.movieSearch_link % imdb)
 			# log_utils.log('url = %s' % url)
-			try:
-				results = client.request(url, timeout=10)
-				files = jsloads(results)['streams']
-			except: files = []
-			self._queue.put_nowait(files) # if seasons
-			self._queue.put_nowait(files) # if shows
+			if 'timeout' in data: self.timeout = int(data['timeout'])
+			results = client.session.request('get', url, timeout=self.timeout).text
+			files = jsloads(results)['streams']
+			if not future.done(): future.set_result(files)
 			_INFO = re.compile(r'💾.*')
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()
 		except:
+			if not future.done(): future.set_result([])
 			source_utils.scraper_error('COMET')
 			return sources
 
 		for file in files:
 			try:
 				hash = file['infoHash']
-				file_title = file['description'].split('\n')
-				file_info = [x for x in file_title if _INFO.match(x)][0]
+				file_title = (file.get('title') or file['description']).replace('┈➤', '\n').split('\n')
+				file_info = [x for x in file_title if _INFO.search(x)][0]
 
 				name = source_utils.clean_name(file_title[0])
 
@@ -71,10 +75,10 @@ class source:
 				if source_utils.remove_lang(name_info, check_foreign_audio): continue
 				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 
-				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name) 
+				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
 
 				try:
-					seeders = 0 # int(re.search(r'(\d+)', file_info).group(1))
+					seeders = int(re.search(r'👤\s*(\d+)', file_info).group(1))
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 
@@ -86,8 +90,11 @@ class source:
 				except: dsize = 0
 				info = ' | '.join(info)
 
-				append({'provider': 'comet', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
-							'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
+				sources_append({
+					'source': 'torrent', 'language': 'en', 'direct': False, 'debridonly': True,
+					'provider': 'comet', 'hash': hash, 'url': url, 'name': name, 'name_info': name_info,
+					'quality': quality, 'info': info, 'size': dsize, 'seeders': seeders
+				})
 			except:
 				source_utils.scraper_error('COMET')
 		return sources
@@ -97,14 +104,15 @@ class source:
 		if not data: return sources
 		sources_append = sources.append
 		try:
-			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
-			aliases = data['aliases']
+			aliases = source_utils.aliases_to_array(data['aliases'])
+			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
 			imdb = data['imdb']
 			year = data['year']
 			season = data['season']
 			url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, data['episode']))
-			files = self._queue.get(timeout=11)
-			_INFO = re.compile(r'💾.*') # _INFO = re.compile(r'👤.*')
+			if 'timeout' in data: self.timeout = int(data['timeout'])
+			files = self.get_future(str(data)).result(timeout=self.timeout + 1)
+			_INFO = re.compile(r'💾.*')
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()
 		except:
@@ -114,8 +122,8 @@ class source:
 		for file in files:
 			try:
 				hash = file['infoHash']
-				file_title = file['description'].split('\n')
-				file_info = [x for x in file_title if _INFO.match(x)][0]
+				file_title = (file.get('title') or file['description']).replace('┈➤', '\n').split('\n')
+				file_info = [x for x in file_title if _INFO.search(x)][0]
 
 				name = source_utils.clean_name(file_title[0])
 
@@ -139,7 +147,7 @@ class source:
 
 				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
 				try:
-					seeders = 0 # int(re.search(r'(\d+)', file_info).group(1))
+					seeders = int(re.search(r'👤\s*(\d+)', file_info).group(1))
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 
@@ -151,11 +159,15 @@ class source:
 				except: dsize = 0
 				info = ' | '.join(info)
 
-				item = {'provider': 'comet', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
-							'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize, 'package': package}
+				item = {
+					'source': 'torrent', 'language': 'en', 'direct': False, 'debridonly': True,
+					'provider': 'comet', 'hash': hash, 'url': url, 'name': name, 'name_info': name_info,
+					'quality': quality, 'info': info, 'size': dsize, 'seeders': seeders, 'package': package
+				}
 				if search_series: item.update({'last_season': last_season})
 				elif episode_start: item.update({'episode_start': episode_start, 'episode_end': episode_end}) # for partial season packs
 				sources_append(item)
 			except:
 				source_utils.scraper_error('COMET')
 		return sources
+

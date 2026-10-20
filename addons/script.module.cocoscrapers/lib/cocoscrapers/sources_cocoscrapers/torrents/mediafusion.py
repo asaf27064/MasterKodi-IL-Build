@@ -1,94 +1,74 @@
-# created by Venom for Fenomscrapers (updated 3-02-2022) modified by umbrella_dev 10-8-24
+# created by kodifitzwell for Fenomscrapers
 """
-	Cocoscrapers Project
+	Fenomscrapers Project
 """
 
-from time import time
-from json import dumps as jsdumps
-import re, requests, queue
-from cocoscrapers.modules import source_utils
-from cocoscrapers.modules import log_utils
-from cocoscrapers.modules import control
+import re
+from json import loads as jsloads
+from threading import Lock
+from cocoscrapers.modules.control import setting as getSetting
+from cocoscrapers.modules import coco_client as client, coco_compat as source_utils
 
-session = requests.Session()
 
-class source:
-	priority = 2
+class source(source_utils.SourceRegistry):
+	timeout = 7
+	priority = 1
 	pack_capable = True
 	hasMovies = True
 	hasEpisodes = True
-	_queue = queue.SimpleQueue()
+	_lock = Lock()
+	_cache = {}
 	def __init__(self):
 		self.language = ['en']
-		if control.setting('mediafusion.usecustomurl') == 'true': 
-			self.base_link = control.setting('mediafusion.customurl')
+		if getSetting('mediafusion.usecustomurl') == 'true' and getSetting('mediafusion.customurl'):
+			self.base_link = getSetting('mediafusion.customurl').rstrip('/')
 		else:
-			self.base_link = 'https://mediafusion.elfhosted.com'
-		if self.base_link == '':
-			self.base_link = 'https://mediafusion.elfhosted.com'
-		self.movieSearch_link = '/stream/movie/%s.json'
-		self.tvSearch_link = '/stream/series/%s:%s:%s.json'
-		self.item_totals = {
-			'4K': 0,
-			'1080p': 0,
-			'720p': 0,
-			'SD': 0,
-			'CAM': 0 
-			}
+			self.base_link = (
+				"https://mediafusion.stremio.ru",
+				"https://mediafusionfortheweebs.midnightignite.me"
+			)[int(getSetting('mediafusion.url', '0'))]
+		self.movieSearch_link = '/%s/stream/movie/%s.json'
+		self.tvSearch_link = '/%s/stream/series/%s:%s:%s.json'
 		self.min_seeders = 0
-# Currently supports BITSEARCH(+), EZTV(+), ThePirateBay(+), TheRARBG(+), YTS(+)
-
-	def _get_files(self, url):
-		if control.setting('mediafusion_user_data') == '':
-			headers = {
-				'encoded_user_data': 'eyJlbmFibGVfY2F0YWxvZ3MiOiBmYWxzZSwgIm1heF9zdHJlYW1zX3Blcl9yZXNvbHV0aW9uIjogOTksICJ0b3JyZW50X3NvcnRpbmdfcHJpb3JpdHkiOiBbXSwgImNlcnRpZmljYXRpb25fZmlsdGVyIjogWyJEaXNhYmxlIl0sICJudWRpdHlfZmlsdGVyIjogWyJEaXNhYmxlIl19'
-			}
-		else:
-			headers = {
-				'encoded_user_data': control.setting('mediafusion_user_data')
-			}
-		try:
-			results = session.get(url, headers=headers, timeout=10)
-			files = results.json()['streams']
-		except: files = []
-		return files
 
 	def sources(self, data, hostDict):
 		sources = []
-		if not data:
-			return sources
-		append = sources.append
+		if not data: return sources
+		sources_append = sources.append
+		future = self.get_future(str(data))
 		try:
-			startTime = time()
+			aliases = source_utils.aliases_to_array(data['aliases'])
 			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
-			aliases = data['aliases']
+			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
 			episode_title = data['title'] if 'tvshowtitle' in data else None
 			year = data['year']
 			imdb = data['imdb']
-			
 			if 'tvshowtitle' in data:
 				season = data['season']
 				episode = data['episode']
 				hdlr = 'S%02dE%02d' % (int(season), int(episode))
-				url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, episode))
+				url = '%s%s' % (self.base_link, self.tvSearch_link % (self._token(), imdb, season, episode))
 			else:
-				url = '%s%s' % (self.base_link, self.movieSearch_link % (imdb))
 				hdlr = year
-			files = self._get_files(url)
-			self._queue.put_nowait(files) # if seasons
-			self._queue.put_nowait(files) # if shows
+				url = '%s%s' % (self.base_link, self.movieSearch_link % (self._token(), imdb))
+			# log_utils.log('url = %s' % url)
+			if 'timeout' in data: self.timeout = int(data['timeout'])
+			results = client.session.request('get', url, timeout=self.timeout).text
+			files = jsloads(results)['streams']
+			if not future.done(): future.set_result(files)
 			_INFO = re.compile(r'💾.*')
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()
 		except:
+			if not future.done(): future.set_result([])
 			source_utils.scraper_error('MEDIAFUSION')
 			return sources
+
 		for file in files:
 			try:
 				hash = file['infoHash']
-				file_title = file['behaviorHints']['filename'].split('\n')
-				file_info = [x for x in file['description'].split('\n') if _INFO.match(x)][0]
+				file_title = (file.get('title') or file['description']).replace('┈➤', '\n').split('\n')
+				file_info = [x for x in file_title if _INFO.search(x)][0]
 
 				name = source_utils.clean_name(file_title[0])
 
@@ -97,10 +77,10 @@ class source:
 				if source_utils.remove_lang(name_info, check_foreign_audio): continue
 				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 
-				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name) 
+				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
 
 				try:
-					seeders = int(re.search(r'(\d+)', file_info).group(1))
+					seeders = int(re.search(r'👤\s*(\d+)', file_info).group(1))
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 
@@ -112,47 +92,40 @@ class source:
 				except: dsize = 0
 				info = ' | '.join(info)
 
-				append({'provider': 'mediafusion', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
-							'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
-				self.item_totals[quality] += 1
+				sources_append({
+					'source': 'torrent', 'language': 'en', 'direct': False, 'debridonly': True,
+					'provider': 'mediafusion', 'hash': hash, 'url': url, 'name': name, 'name_info': name_info,
+					'quality': quality, 'info': info, 'size': dsize, 'seeders': seeders
+				})
 			except:
 				source_utils.scraper_error('MEDIAFUSION')
-		logged = False
-		for quality in self.item_totals:
-			if self.item_totals[quality] > 0:
-				log_utils.log('#STATS - MEDIAFUSION found {0:2.0f} {1}'.format(self.item_totals[quality],quality) )
-				logged = True
-		endTime = time()
-		if not logged: log_utils.log('#STATS - MEDIASEARCH found nothing')
-		log_utils.log('#STATS - MEDIAFUSION took %.2f seconds' % (endTime - startTime))
 		return sources
 
 	def sources_packs(self, data, hostDict, search_series=False, total_seasons=None, bypass_filter=False):
 		sources = []
 		if not data: return sources
-		count, finished_single_scrape = 0, False
-		startTime = time()
 		sources_append = sources.append
 		try:
-			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ')
-			aliases = data['aliases']
+			aliases = source_utils.aliases_to_array(data['aliases'])
+			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
 			imdb = data['imdb']
 			year = data['year']
 			season = data['season']
-			url = '%s%s' % (self.base_link, self.tvSearch_link % (imdb, season, data['episode']))
-			files = self._queue.get(timeout=11)
+			url = '%s%s' % (self.base_link, self.tvSearch_link % (self._token(), imdb, season, data['episode']))
+			if 'timeout' in data: self.timeout = int(data['timeout'])
+			files = self.get_future(str(data)).result(timeout=self.timeout + 1)
 			_INFO = re.compile(r'💾.*')
 			undesirables = source_utils.get_undesirables()
 			check_foreign_audio = source_utils.check_foreign_audio()
 		except:
 			source_utils.scraper_error('MEDIAFUSION')
 			return sources
+
 		for file in files:
-			#log_utils.log('pack file: %s' % str(file),1)
 			try:
 				hash = file['infoHash']
-				file_title = file['description'].split('\n')
-				file_info = [x for x in file_title if _INFO.match(x)][0]
+				file_title = (file.get('title') or file['description']).replace('┈➤', '\n').split('\n')
+				file_info = [x for x in file_title if _INFO.search(x)][0]
 
 				name = source_utils.clean_name(file_title[0])
 
@@ -175,11 +148,12 @@ class source:
 				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 
 				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
-				quality, info = source_utils.get_release_quality(name_info, url)
 				try:
-					seeders = int(re.search(r'(\d+)', file_info).group(1))
+					seeders = int(re.search(r'👤\s*(\d+)', file_info).group(1))
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
+
+				quality, info = source_utils.get_release_quality(name_info, url)
 				try:
 					size = re.search(r'((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GB|GiB|Gb|MB|MiB|Mb))', file_info).group(0)
 					dsize, isize = source_utils._size(size)
@@ -187,21 +161,33 @@ class source:
 				except: dsize = 0
 				info = ' | '.join(info)
 
-				item = {'provider': 'mediafusion', 'source': 'torrent', 'seeders': 0, 'hash': hash, 'name': name, 'name_info': name_info, 'quality': quality,
-							'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize, 'package': package}
+				item = {
+					'source': 'torrent', 'language': 'en', 'direct': False, 'debridonly': True,
+					'provider': 'mediafusion', 'hash': hash, 'url': url, 'name': name, 'name_info': name_info,
+					'quality': quality, 'info': info, 'size': dsize, 'seeders': seeders, 'package': package
+				}
 				if search_series: item.update({'last_season': last_season})
 				elif episode_start: item.update({'episode_start': episode_start, 'episode_end': episode_end}) # for partial season packs
-				self.item_totals[quality] += 1
 				sources_append(item)
 			except:
 				source_utils.scraper_error('MEDIAFUSION')
-		logged = False
-		for quality in self.item_totals:
-			if self.item_totals[quality] > 0:
-				log_utils.log('#STATS - MEDIAFUSION(pack) found {0:2.0f} {1}'.format(self.item_totals[quality],quality) )
-				logged = True
-		endTime = time()
-		if not logged: log_utils.log('#STATS - MEDIAFUSION(pack) found nothing')
-		log_utils.log('#STATS - MEDIAFUSION(pack) took %.2f seconds' % (endTime - startTime))
 		return sources
 
+	def _token(self):
+		userdata = getSetting('mediafusion.userdata')
+		if userdata: return userdata
+		return (
+			'D-h5mpsX35oygOGFiHutl66dLAPiXzjQTODPXKQuKBaQOLjwNBbVkSPi7TJPr0gdykpCFREq8JOh'
+			'DHZcvoS_UNZsWpsbjscCAwzgqc9VvP0S3Wt9lz5blcPT8lU6fcHdAHYctp_yde6nWKtSQ1O9Tjeh'
+			'GNwajH9TjGZwn6rOybPFmoMpccXfTkB3Xwe9xRhT9O-bKzoYnGnlG8fCDxlNGdzrnlythePc3C7O'
+			'phF8b5GyhuSnvBhxD7dTfkI77Dbay8_k_wqS-me9euZQ-oyOJBNTOIsO8HiWQhLGCC8m9rYsqJT6'
+			'QF1Xhn-2bNzlukfbSYh_X1kOFdi6Y-YkBeEYokDlQHzzU45qmrj2b1Nz-GALcJHjNDJEMF3h9Eyx'
+			'7UcmGWT1qvTpv_tcXjAX37ceqrWH-e_EqwVkvQDjNnmpjOhBWhuUW2R-0KbvxKUn1s5d2jZjLBxC'
+			'bMotHIC-G2SrVCLgC_KV0OUainevUHKOKTe0CQmWz1HKV1ju52CFZFZYAWkOAX5cw55qzNnWl_nQ'
+			'RnLyngrW_P6aYqghbYyyrAvQ6hCrIbSnVj4GsMFIelcMETvGW4jIXdwZGZA1L8gCzmyCbI9vAqPv'
+			'dZxRWb7roc2EnB7gaSYdFtTP9gGoFKKkQ-9aircUEiPXjkP4QWO7lVI4GZri7KKCKjBM7-hWf4nm'
+			'ttY7lJS_4Te_H80BeR_qpqeYQ6V0gpVwihARA6cIsZFbWmQXtoYNO16jt1ZqeVztwR6L1IQQnAsH'
+			'ANyR5kF7ovGCOnhWlDDxO3nk8fhm3s0k7XewrMisZHy1zNsivTjvJW6KoVwghLn8-QCTf9PEPoPj'
+			's6tW5KjciaRvbMg5-mbhpAhYOmPisB4ZyW63vWY6TeU1OBJV0T_fkHtgbvgiTEX5RFoRVDLnhaof'
+			'-xHVw2oCc2AdXmBDVROmFjY8x9KEyZ91QfNjHnrTFmGetelcHE'
+		)

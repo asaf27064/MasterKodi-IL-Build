@@ -1,16 +1,18 @@
-# -*- coding: utf-8 -*-
-# created by Venom for Fenomscrapers (updated 7-19-2022)
+# created by Venom for Fenomscrapers
 """
 	Fenomscrapers Project
 """
 
 import re
-from urllib.parse import quote_plus, unquote_plus
+from html import unescape
+from urllib.parse import quote_plus, parse_qs, urlparse
 from cocoscrapers.modules import client
 from cocoscrapers.modules import source_utils
 from cocoscrapers.modules import workers
-from cocoscrapers.modules import log_utils
-from time import time
+
+
+flexible_classes = r'(?=.*bg-white)(?=.*rounded-lg).*'
+RE_MAGNET = re.compile(r'href\s*=\s*["\'](magnet:[^"\']+)["\']', re.I)
 
 
 class source:
@@ -20,120 +22,85 @@ class source:
 	hasEpisodes = True
 	def __init__(self):
 		self.language = ['en']
-		self.base_link = "https://bitsearch.to"
-		# self.search_link = '/search?q=%s&category=1&subcat=2&sort=seeders'
-# (1=other/video, 2=movies, 3=TV) but seem to produce bogus results, do not use
-		self.search_link = '/search?q=%s&sort=size'
-		self.item_totals = {
-			'4K': 0,
-			'1080p': 0,
-			'720p': 0,
-			'SD': 0,
-			'CAM': 0 
-			}
+		self.base_link = "https://bitsearch.eu"
+		self.search_link = '/search?limit=100&q=%s'
 		self.min_seeders = 0
 
 	def sources(self, data, hostDict):
-		self.sources = []
-		if not data: return self.sources
-		self.sources_append = self.sources.append
+		sources = []
+		if not data: return sources
+		sources_append = sources.append
 		try:
-			startTime = time()
-			self.aliases = data['aliases']
-			self.year = data['year']
-			if 'tvshowtitle' in data:
-				self.title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
-				self.episode_title = data['title']
-				self.hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode']))
-			else:
-				self.title = data['title'].replace('&', 'and').replace('/', ' ').replace('$', 's')
-				self.episode_title = None
-				self.hdlr = self.year
-			query = '%s %s' % (re.sub(r'[^A-Za-z0-9\s\.-]+', '', self.title), self.hdlr)
-			urls = []
-			url = '%s%s' % (self.base_link, self.search_link % quote_plus(query))
-			urls.append(url)
-			urls.append(url + '&page2')
-			# log_utils.log('urls = %s' % urls)
-			self.undesirables = source_utils.get_undesirables()
-			self.check_foreign_audio = source_utils.check_foreign_audio()
-			# from cocoscrapers.modules.Thread_pool import run_and_wait
-			# from functools import partial
-			# bound_get_sources = partial(self.get_sources)
-			# run_and_wait(bound_get_sources, urls)
-			threads = []
-			append = threads.append
-			for url in urls:
-				append(workers.Thread(self.get_sources, url))
-			[i.start() for i in threads]
-			[i.join() for i in threads]
-			logged = False
-			for quality in self.item_totals:
-				if self.item_totals[quality] > 0:
-					log_utils.log('#STATS - BITSEARCH found {0:2.0f} {1}'.format(self.item_totals[quality],quality) )
-					logged = True
-			if not logged: log_utils.log('#STATS - BITSEARCH found nothing')
-			endTime = time()
-			log_utils.log('#STATS - BITSEARCH took %.2f seconds' % (endTime - startTime))
-			return self.sources
-		except:
-			source_utils.scraper_error('BITSEARCH')
-			return self.sources
+			aliases = data['aliases']
+			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
+			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
+			episode_title = data['title'] if 'tvshowtitle' in data else None
+			year = data['year']
+			hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else year
 
-	def get_sources(self, url):
-		try:
+			query = '%s %s' % (title, hdlr)
+			query = re.sub(r'[^A-Za-z0-9\s\.-]+', '', query)
+			url = self.search_link % quote_plus(query)
+			url = '%s%s' % (self.base_link, url)
+
 			results = client.request(url, timeout=7)
-			if not results or 'card search-result my-2' not in results: return
-			rows = client.parseDOM(results, 'li', attrs={'class': 'card search-result my-2'})
+			if not results: return sources
+			rows = client.parseDOM(results, 'div', attrs={'class': flexible_classes})
+			undesirables = source_utils.get_undesirables()
+			check_foreign_audio = source_utils.check_foreign_audio()
 		except:
 			source_utils.scraper_error('BITSEARCH')
+			return sources
+
 		for row in rows:
 			try:
-				if 'magnet:' not in row: continue
-				columns = re.findall(r'<div.*?>(.*?)</div>', row, re.DOTALL)
-				magnet_index = len(columns)-1 # likes might be added so magnet is in last index
-				url = re.search(r'href\s*=\s*["\'](magnet:.+?)["\']', columns[magnet_index], re.I).group(1)
-				url = unquote_plus(url).replace('&amp;', '&').replace('&#x3D;', '=')
-				url = re.sub(r'(&tr=.+)&dn=', '&dn=', url).replace(' ', '.') # some links on bitsearch &tr= before &dn=
-				hash = re.search(r'btih:(.*?)&', url, re.I).group(1)
-				name = source_utils.clean_name(url.split('&dn=')[1])
-				if not source_utils.check_title(self.title, self.aliases, name, self.hdlr, self.year): continue
-				name_info = source_utils.info_from_name(name, self.title, self.year, self.hdlr, self.episode_title)
-				if source_utils.remove_lang(name_info, self.check_foreign_audio): continue
-				if self.undesirables and source_utils.remove_undesirables(name_info, self.undesirables): continue
+				magnet_match = RE_MAGNET.search(row)
+				if not magnet_match: continue
+				magnet_url = unescape(magnet_match.group(1))
+				parsed_query = parse_qs(urlparse(magnet_url).query)
+				xt_param = parsed_query.get('xt', [''])[-1]
+				if not xt_param: continue
+				hash = xt_param.split(':')[-1]
+				parsed_name = parsed_query.get('dn', ['Unknown'])[-1]
+				name = source_utils.clean_name(parsed_name)
 
-				if not self.episode_title: #filter for eps returned in movie query (rare but movie and show exists for Run in 2020)
+				if not source_utils.check_title(title, aliases, name, hdlr, year): continue
+				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
+				if source_utils.remove_lang(name_info, check_foreign_audio): continue
+				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
+
+				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
+
+				if not episode_title: #filter for eps returned in movie query (rare but movie and show exists for Run in 2020)
 					ep_strings = [r'[.-]s\d{2}e\d{2}([.-]?)', r'[.-]s\d{2}([.-]?)', r'[.-]season[.-]?\d{1,2}[.-]?']
 					name_lower = name.lower()
 					if any(re.search(item, name_lower) for item in ep_strings): continue
 
+				spans = client.parseDOM(row, 'span')
 				try:
-					seeders = re.search(r'>([0-9]+|[0-9]+,[0-9]+|[0-9]+\.[0-9]+K)<', columns[2], re.S | re.I).group(1)
-					if 'K' in seeders: seeders = float(seeders.rstrip('K')) * 1000
-					seeders = int(seeders)
+					seeders = int(spans[spans.index('seeders') - 1])
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 
 				quality, info = source_utils.get_release_quality(name_info, url)
 				try:
-					size = re.search(r'>(.*?)$', columns[1]).group(1).replace(',', '')
+					size = next((item for item in spans if item.endswith(('GB', 'MB'))), '')
 					dsize, isize = source_utils._size(size)
 					info.insert(0, isize)
 				except: dsize = 0
 				info = ' | '.join(info)
 
-				self.sources_append({'provider': 'bitsearch', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info,
+				sources_append({'provider': 'bitsearch', 'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'name_info': name_info,
 												'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
-				self.item_totals[quality]+=1
 			except:
 				source_utils.scraper_error('BITSEARCH')
+		return sources
 
 	def sources_packs(self, data, hostDict, search_series=False, total_seasons=None, bypass_filter=False):
 		self.sources = []
 		if not data: return self.sources
 		self.sources_append = self.sources.append
 		try:
-			startTime = time()
 			self.search_series = search_series
 			self.total_seasons = total_seasons
 			self.bypass_filter = bypass_filter
@@ -156,13 +123,6 @@ class source:
 				queries = [
 						self.search_link % quote_plus(query + ' S%s' % self.season_xx),
 						self.search_link % quote_plus(query + ' Season %s' % self.season_x)]
-			# from cocoscrapers.modules.Thread_pool import run_and_wait
-			# from functools import partial
-			# bound_get_sources_packs = partial(self.get_sources_packs)
-			# links = []
-			# for url in queries:
-			# 	links.append('%s%s' % (self.base_link, url))
-			# run_and_wait(bound_get_sources_packs, links)
 			threads = []
 			append = threads.append
 			for url in queries:
@@ -170,14 +130,6 @@ class source:
 				append(workers.Thread(self.get_sources_packs, link))
 			[i.start() for i in threads]
 			[i.join() for i in threads]
-			logged = False
-			for quality in self.item_totals:
-				if self.item_totals[quality] > 0:
-					log_utils.log('#STATS - BITSEARCH(pack) found {0:2.0f} {1}'.format(self.item_totals[quality],quality) )
-					logged = True
-			if not logged: log_utils.log('#STATS - BITSEARCH(pack) found nothing')
-			endTime = time()
-			log_utils.log('#STATS - BITSEARCH(pack) took %.2f seconds' % (endTime - startTime))
 			return self.sources
 		except:
 			source_utils.scraper_error('BITSEARCH')
@@ -186,20 +138,23 @@ class source:
 	def get_sources_packs(self, link):
 		try:
 			results = client.request(link, timeout=7)
-			if not results or 'card search-result my-2' not in results: return
-			rows = client.parseDOM(results, 'li', attrs={'class': 'card search-result my-2'})
+			if not results: return
+			rows = client.parseDOM(results, 'div', attrs={'class': flexible_classes})
 		except:
 			source_utils.scraper_error('BITSEARCH')
+			return
+
 		for row in rows:
 			try:
-				if 'magnet:' not in row: continue
-				columns = re.findall(r'<div.*?>(.*?)</div>', row, re.DOTALL)
-				magnet_index = len(columns)-1 # likes might be added so magnet is in last index
-				url = re.search(r'href\s*=\s*["\'](magnet:.+?)["\']', columns[magnet_index], re.I).group(1)
-				url = unquote_plus(url).replace('&amp;', '&').replace('&#x3D;', '=')
-				url = re.sub(r'(&tr=.+)&dn=', '&dn=', url).replace(' ', '.') # some links on bitsearch &tr= before &dn=
-				hash = re.search(r'btih:(.*?)&', url, re.I).group(1)
-				name = source_utils.clean_name(url.split('&dn=')[1])
+				magnet_match = RE_MAGNET.search(row)
+				if not magnet_match: continue
+				magnet_url = unescape(magnet_match.group(1))
+				parsed_query = parse_qs(urlparse(magnet_url).query)
+				xt_param = parsed_query.get('xt', [''])[-1]
+				if not xt_param: continue
+				hash = xt_param.split(':')[-1]
+				title = parsed_query.get('dn', ['Unknown'])[-1]
+				name = source_utils.clean_name(title)
 
 				episode_start, episode_end = 0, 0
 				if not self.search_series:
@@ -219,16 +174,16 @@ class source:
 				if source_utils.remove_lang(name_info, self.check_foreign_audio): continue
 				if self.undesirables and source_utils.remove_undesirables(name_info, self.undesirables): continue
 
+				url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
+				spans = client.parseDOM(row, 'span')
 				try:
-					seeders = re.search(r'>([0-9]+|[0-9]+,[0-9]+|[0-9]+\.[0-9]+K)<', columns[2], re.S | re.I).group(1)
-					if 'K' in seeders: seeders = float(seeders.rstrip('K')) * 1000
-					seeders = int(seeders)
+					seeders = int(spans[spans.index('seeders') - 1])
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 
 				quality, info = source_utils.get_release_quality(name_info, url)
 				try:
-					size = re.search(r'>(.*?)$', columns[1]).group(1).replace(',', '')
+					size = next((item for item in spans if item.endswith(('GB', 'MB'))), '')
 					dsize, isize = source_utils._size(size)
 					info.insert(0, isize)
 				except: dsize = 0
@@ -239,6 +194,5 @@ class source:
 				if self.search_series: item.update({'last_season': last_season})
 				elif episode_start: item.update({'episode_start': episode_start, 'episode_end': episode_end}) # for partial season packs
 				self.sources_append(item)
-				self.item_totals[quality]+=1
 			except:
 				source_utils.scraper_error('BITSEARCH')

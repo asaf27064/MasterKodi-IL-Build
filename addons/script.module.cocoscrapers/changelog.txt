@@ -1,9 +1,33 @@
+[COLOR red][B]Version 1.0.43[/B][/COLOR]
+- Update Torlock to Torznab XML, Knaben to JSON API, and Nyaa to RSS.
+- Update YTS API endpoint and Kickass search/result parsing.
+- Add standalone compatibility helpers; no POV runtime dependency.
+
+[COLOR red][B]Version 1.0.42[/B][/COLOR]
+- Update to BitSearch domain and format.
+- Update DMM to avoid rate-limiting.
+- Update to Kickass and Knaben.
+- Update Comet, Mediafusion, and Meteor for format changes.
+
+
+[COLOR red][B]Version 1.0.41[/B][/COLOR]
+- Update to Knaben url
+- Update to YTS url.
+- Removal of tbtorznab
+- Added additional public instances of aiostreams.
+
+[COLOR red][B]Version 1.0.40[/B][/COLOR]
+- Re-added use of element tree instead of MiniDom.
+- All torrent scrapers updated to match upstream provider code. Credit to kodifitzwell.
+- Added AIOStreams from Viper Scrapers.
+- Added health section in to test providers. Credit to kodifitzwell
+
 [COLOR red][B]Version 1.0.39[/B][/COLOR]
 - Removed Bitlord, isohunt, torrentquest, torrentfunk, and yourbitorrent.
 - Corrected limetorrents scraper.
 - Corrected error in code for eztv.
 - Change torrentgalaxy to use a clone and json instead of html parsing.
-- Added Prowlarr scraper from Magneto Scrapers. All credit to kodifitzwell.
+- Added Prowlarr scraper from upstream scrapers. All credit to kodifitzwell.
 
 [COLOR red][B]Version 1.0.38[/B][/COLOR]
 - ThreadPool code changed to avoid hang on exit.

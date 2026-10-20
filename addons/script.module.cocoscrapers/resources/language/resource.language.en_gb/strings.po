@@ -762,3 +762,127 @@ msgstr ""
 msgctxt "#32578"
 msgid "PROWLARR url"
 msgstr ""
+
+msgctxt "#32580"
+msgid "BITMAGNET (Pack Capable)"
+msgstr ""
+
+msgctxt "#32581"
+msgid "DEBRID MEDIA MANAGER (Pack Capable)"
+msgstr ""
+
+msgctxt "#32582"
+msgid "METEOR (Pack Capable)"
+msgstr ""
+
+msgctxt "#32583"
+msgid "RUTOR (Pack Capable, Movies Only)"
+msgstr ""
+
+msgctxt "#32584"
+msgid "TORBOX TORZNAB (Pack Capable)"
+msgstr ""
+
+msgctxt "#32585"
+msgid "TorBox API Token (leave blank to use Umbrella's)"
+msgstr ""
+
+msgctxt "#32586"
+msgid "TORLOCK"
+msgstr ""
+
+msgctxt "#32587"
+msgid "TORRENTSDB (Pack Capable)"
+msgstr ""
+
+msgctxt "#32588"
+msgid "TORRENTZ2 (Pack Capable)"
+msgstr ""
+
+msgctxt "#32589"
+msgid "TORZ (Pack Capable)"
+msgstr ""
+
+msgctxt "#32590"
+msgid "Torz Instance"
+msgstr ""
+
+msgctxt "#32591"
+msgid "ZILEAN (Pack Capable)"
+msgstr ""
+
+msgctxt "#32592"
+msgid "Zilean Instance"
+msgstr ""
+
+msgctxt "#32593"
+msgid "Comet Instance"
+msgstr ""
+
+msgctxt "#32594"
+msgid "MediaFusion Instance"
+msgstr ""
+
+msgctxt "#32595"
+msgid "Source Health Check"
+msgstr ""
+
+msgctxt "#32600"
+msgid "Health"
+msgstr ""
+
+msgctxt "#32601"
+msgid "AIOSTREAMS (Pack Capable)"
+msgstr ""
+
+msgctxt "#32602"
+msgid "AIOStreams Instance"
+msgstr ""
+
+msgctxt "#32603"
+msgid "stremio.ru"
+msgstr ""
+
+msgctxt "#32604"
+msgid "viren070.me"
+msgstr ""
+
+msgctxt "#32605"
+msgid "fortheweak.cloud"
+msgstr ""
+
+msgctxt "#32606"
+msgid "midnightignite.me (stable)"
+msgstr ""
+
+msgctxt "#32607"
+msgid "Custom"
+msgstr ""
+
+msgctxt "#32608"
+msgid "Custom URL"
+msgstr ""
+
+msgctxt "#32609"
+msgid "Username"
+msgstr ""
+
+msgctxt "#32610"
+msgid "Password"
+msgstr ""
+
+msgctxt "#32596"
+msgid "stremio.ru"
+msgstr ""
+
+msgctxt "#32597"
+msgid "feels.legal"
+msgstr ""
+
+msgctxt "#32598"
+msgid "midnightignite.me"
+msgstr ""
+
+msgctxt "#32599"
+msgid "13377001.xyz"
+msgstr ""

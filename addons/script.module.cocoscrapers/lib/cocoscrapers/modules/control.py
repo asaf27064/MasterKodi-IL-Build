@@ -9,8 +9,7 @@ import xbmc
 import xbmcaddon
 import xbmcgui
 import xbmcvfs
-from xml.dom.minidom import parse as mdParse
-#import xml.etree.ElementTree as ET #python 3.11 bug screws element tree. everything changed was left commented out.
+import xml.etree.ElementTree as ET
 
 addon = xbmcaddon.Addon
 addonObject = addon('script.module.cocoscrapers')
@@ -34,6 +33,7 @@ openFile = xbmcvfs.File
 makeFile = xbmcvfs.mkdir
 makeDirs = xbmcvfs.mkdirs
 renameFile = xbmcvfs.rename
+listDir = xbmcvfs.listdir
 transPath = xbmcvfs.translatePath
 joinPath = os.path.join
 
@@ -41,7 +41,6 @@ SETTINGS_PATH = transPath(joinPath(addonInfo('path'), 'resources', 'settings.xml
 dataPath = transPath(addonInfo('profile'))
 cacheFile = joinPath(dataPath, 'cache.db')
 undesirablescacheFile = joinPath(dataPath, 'undesirables.db')
-plexSharesFile = joinPath(dataPath, 'plexshares.db')
 settingsFile = joinPath(dataPath, 'settings.xml')
 
 def getKodiVersion(full=False):
@@ -65,22 +64,13 @@ def setSetting(id, value):
 
 def make_settings_dict(): # service runs upon a setting change
 	try:
-		#root = ET.parse(settingsFile).getroot()
-		root = mdParse(settingsFile) #minidom instead of element tree
-		curSettings = root.getElementsByTagName("setting") #minidom instead of element tree
+		root = ET.parse(settingsFile).getroot()
 		settings_dict = {}
-		for item in curSettings:
-			dict_item = {}
-			#setting_id = item.get('id')
-			setting_id = item.getAttribute('id') #minidom instead of element tree
-			#setting_value = item.text
-			try:
-				setting_value = item.firstChild.data #minidom instead of element tree
-			except:
-				setting_value = None
+		for item in root:
+			setting_id = item.get('id')
+			setting_value = item.text
 			if setting_value is None: setting_value = ''
-			dict_item = {setting_id: setting_value}
-			settings_dict.update(dict_item)
+			settings_dict[setting_id] = setting_value
 		homeWindow.setProperty('cocoscrapers_settings', jsdumps(settings_dict))
 		return settings_dict
 	except:
@@ -146,30 +136,18 @@ def clean_settings():
 		addon_dir = transPath(addon.getAddonInfo('path'))
 		profile_dir = transPath(addon.getAddonInfo('profile'))
 		active_settings_xml = joinPath(addon_dir, 'resources', 'settings.xml')
-		#root = ET.parse(active_settings_xml).getroot()
-		#for item in root.findall(r'./section/category/group/setting'):
-		root = mdParse(active_settings_xml) #minidom instead of element tree
-		root = root.getElementsByTagName("setting") #minidom instead of element tree
-		for item in root:
-			#setting_id = item.get('id')
-			setting_id = item.getAttribute('id') #minidom instead of element tree
+		root = ET.parse(active_settings_xml).getroot()
+		for item in root.iter('setting'):
+			setting_id = item.get('id')
 			if setting_id:
 				active_settings.append(setting_id)
 		settings_xml = joinPath(profile_dir, 'settings.xml')
-		#root = ET.parse(settings_xml).getroot()
-		root = mdParse(settings_xml) #minidom instead of element tree
-		root = root.getElementsByTagName("setting") #minidom instead of element tree 
+		root = ET.parse(settings_xml).getroot()
 		for item in root:
 			dict_item = {}
-			#setting_id = item.get('id')
-			#setting_default = item.get('default')
-			#setting_value = item.text
-			setting_id = item.getAttribute('id') #minidom instead of element tree
-			setting_default = item.getAttribute('default') #minidom instead of element tree
-			try:
-				setting_value = item.firstChild.data #minidom instead of element tree
-			except:
-				setting_value = None
+			setting_id = item.get('id')
+			setting_default = item.get('default')
+			setting_value = item.text
 			dict_item['id'] = setting_id
 			if setting_value:
 				dict_item['value'] = setting_value
@@ -227,11 +205,11 @@ def openSettings(query=None, id=addonInfo('id')):
 def getProviderDefaults():
 	provider_defaults = {}
 	try:
-		for item in mdParse(SETTINGS_PATH).getElementsByTagName("setting"): #holy shit look at that.
-			setting_id = item.getAttribute('id') #minidom instead of element tree
+		root = ET.parse(SETTINGS_PATH).getroot()
+		for item in root.iter('setting'):
+			setting_id = item.get('id', '')
 			if not setting_id.startswith('provider.'): continue
-			try: defaulttext = item.getElementsByTagName('default')[0].firstChild.data
-			except: defaulttext = 'false'
+			defaulttext = item.findtext('default', 'false')
 			provider_defaults[setting_id] = defaulttext or 'false'
 	except: pass
 	return provider_defaults

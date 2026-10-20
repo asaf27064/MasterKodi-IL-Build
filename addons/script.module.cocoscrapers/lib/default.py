@@ -135,3 +135,7 @@ elif action == 'mediafusionReset':
 	from cocoscrapers.modules.mediafusion import MediaFusion
 	mediafusion = MediaFusion()
 	mediafusion.clear()
+
+elif action in ('sourceTest', 'healthCheck'):
+	from cocoscrapers.modules.health import coco as source_test
+	source_test()

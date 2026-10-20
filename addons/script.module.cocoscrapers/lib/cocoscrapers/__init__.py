@@ -21,6 +21,7 @@ def sources(specified_folders=None, ret_all=False):
 				if ret_all or enabledCheck(module_name):
 					try:
 						module = loader.find_spec(module_name).loader.load_module(module_name)
+						if hasattr(module.source, "clear_all"): module.source.clear_all()
 						append((module_name, module.source))
 					except Exception as e:
 						if debug:
