@@ -165,6 +165,7 @@
 						<content>
 							<item><label>ניקוי מטמון Gears</label><onclick>RunPlugin(plugin://plugin.video.gears/?mode=clear_all_cache)</onclick><thumb>DefaultAddonService.png</thumb></item>
 							<item><label>ניקוי מטמון GearsAI</label><onclick>RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</onclick><thumb>DefaultAddonService.png</thumb></item>
+							<item><label>מה רואים הערב?</label><onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=whats_on)</onclick><thumb>special://home/addons/plugin.program.masterkodi.il.wizard/icon.png</thumb></item>
 							<item><label>שלח לוגים לתמיכה</label><onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)</onclick><thumb>DefaultAddonService.png</thumb></item>
 							<item><label>עדכון מהיר</label><onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=check_updates)</onclick><thumb>DefaultAddonService.png</thumb></item>
 						</content>

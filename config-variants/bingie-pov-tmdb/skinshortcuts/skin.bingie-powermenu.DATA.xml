@@ -32,6 +32,14 @@
 		<action>RunScript(special://home/addons/service.subtitles.gearsai/resources/modules/clean_cache_functions.py,clean_all_cache)</action>
 		</shortcut>
 	<shortcut>
+		<defaultID>mkil_whatson</defaultID>
+		<label>מה רואים הערב?</label>
+		<label2>Common Shortcut</label2>
+		<icon>common/settings1.png</icon>
+		<thumb>common/settings1.png</thumb>
+		<action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=whats_on)</action>
+		</shortcut>
+	<shortcut>
 		<defaultID />
 		<label>שלח לוגים לתמיכה</label>
 		<label2>Common Shortcut</label2>

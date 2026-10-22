@@ -843,6 +843,9 @@ if __name__ == '__main__':
     elif mode == 'send_logs':
         from resources.libs import logs
         logs.send_logs()
+    elif mode == 'whats_on':
+        from resources.libs import whats_on
+        whats_on.show()
     elif mode == 'status':
         build_status_menu()
     elif mode == 'skins':

@@ -678,6 +678,15 @@ def _precompile(mon, reason, only_if_due=False):
             perf.precompile_pass(mon, reason)
     except Exception as e:
         log(f"bytecode sweep error: {e}", xbmc.LOGWARNING)
+    # "מה רואים הערב?" builds its day's picks here, in idle time, so the
+    # screen opens instantly (whats_on.warm is a cheap cache check once the
+    # day's lanes exist). Never while a video plays.
+    try:
+        if not mon.abortRequested() and not xbmc.Player().isPlayingVideo():
+            from resources.libs import whats_on
+            whats_on.warm(mon)
+    except Exception as e:
+        log(f"whats-on warm error: {e}", xbmc.LOGWARNING)
 
 
 def _has_debrid():
@@ -836,6 +845,15 @@ class POVHebrewService(xbmc.Monitor):
         # loop and would otherwise never reach it. This is the boot the user is
         # looking at right after installing a skin.
         _run_pending_skin_setup_when_home(self)
+
+        # "מה חדש": one screen on the first boot after an update landed (keyed
+        # to the wizard version that ran last boot). The update toast stays;
+        # this is in addition to it. resources/libs/whats_new.py.
+        try:
+            from resources.libs import whats_new
+            whats_new.show_if_due(self)
+        except Exception as e:
+            log(f"whats-new error: {e}", xbmc.LOGWARNING)
 
         # Skip the check once right after a build install (the wizard sets this).
         if ADDON.getSetting('skip_update_check') == 'true':

@@ -16,6 +16,14 @@
 		<action>ActivateWindow(Videos,"plugin://plugin.video.themoviedb.helper/?info=dir_tv&amp;tmdb_type=None&amp;reload=%24INFO%5BWindow%28Home%29.Property%28TMDbHelper.Widgets.Reload%29%5D&amp;widget=true",return)</action>
 		</shortcut>
 	<shortcut>
+		<defaultID>mkil_whatson</defaultID>
+		<label>מה רואים הערב?</label>
+		<label2>פריטים מותאמים אישית</label2>
+		<icon>special://skin/extras/icons/star.png</icon>
+		<thumb>special://skin/extras/icons/star.png</thumb>
+		<action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=whats_on)</action>
+		</shortcut>
+	<shortcut>
 		<defaultID>search</defaultID>
 		<label>137</label>
 		<label2>Common Shortcut</label2>

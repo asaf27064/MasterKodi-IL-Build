@@ -2995,6 +2995,11 @@ def test_continue_watching_row():
                                       'resources', '**', '*'), recursive=True):
         if not os.path.isfile(p2):
             continue
+        # seeds are xml/json/db rows, never the wizard's own code: whats_on.py
+        # legitimately calls Gears' in-progress route (Gears has no merged
+        # continue-watching list), and that is not a POV menu row
+        if p2.endswith('.py'):
+            continue
         try:
             t2 = open(p2, encoding='utf-8', errors='replace').read()
         except Exception:

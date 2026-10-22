@@ -16,6 +16,14 @@
 		<action>ActivateWindow(Videos,"plugin://plugin.video.pov/?name=Trending&amp;mode=build_tvshow_list&amp;action=trakt_tv_trending&amp;random_support=true&amp;iconImage=trending",return)</action>
 		</shortcut>
 	<shortcut>
+		<defaultID>mkil_whatson</defaultID>
+		<label>מה רואים הערב?</label>
+		<label2>פריטים מותאמים אישית</label2>
+		<icon>special://skin/extras/icons/star.png</icon>
+		<thumb>special://skin/extras/icons/star.png</thumb>
+		<action>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=whats_on)</action>
+		</shortcut>
+	<shortcut>
 		<defaultID>search</defaultID>
 		<label>137</label>
 		<label2>Common Shortcut</label2>

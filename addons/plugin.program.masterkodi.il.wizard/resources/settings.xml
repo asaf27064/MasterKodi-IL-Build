@@ -28,5 +28,6 @@
         <setting id="skip_update_check" type="text" label="Skip next update check" default="false" visible="false" />
         <setting id="services_prompt_done" type="text" label="Services connect offered" default="false" visible="false" />
         <setting id="content_source" type="text" label="Content source (gears/pov)" default="gears" visible="false" />
+        <setting id="last_boot_version" type="text" label="Wizard version that ran last boot (whats_new)" default="" visible="false" />
     </category>
 </settings>

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- MasterKodi IL - "מה רואים הערב?" (resources/libs/whats_on.py).
+     Generic fonts + own white.png so it renders identically on any skin.
+     RTL: lanes and labels right-aligned; the poster list runs right-to-left.
+     Controls: 201-203 lanes, 100 poster list, 300 play/open, 301 hide, 302 more. -->
+<window type="dialog" id="3102">
+    <defaultcontrol always="true">100</defaultcontrol>
+    <controls>
+        <!-- focused pick's fanart, dimmed, behind everything -->
+        <control type="image">
+            <left>0</left><top>0</top><width>1920</width><height>1080</height>
+            <texture colordiffuse="FF000000">white.png</texture>
+        </control>
+        <control type="image">
+            <left>0</left><top>0</top><width>1920</width><height>1080</height>
+            <texture background="true" colordiffuse="55FFFFFF">$INFO[Container(100).ListItem.Art(fanart)]</texture>
+            <aspectratio>scale</aspectratio>
+            <fadetime>300</fadetime>
+        </control>
+        <control type="image">
+            <left>0</left><top>0</top><width>1920</width><height>1080</height>
+            <texture colordiffuse="B0000000">white.png</texture>
+        </control>
+        <!-- gold top accent bar (the build's signature) -->
+        <control type="image">
+            <left>0</left><top>0</top><width>1920</width><height>6</height>
+            <texture colordiffuse="FFFFD700">white.png</texture>
+        </control>
+
+        <!-- header -->
+        <control type="image">
+            <right>70</right><top>40</top><width>64</width><height>64</height>
+            <texture>logo.png</texture>
+            <aspectratio>keep</aspectratio>
+        </control>
+        <control type="label">
+            <left>400</left><top>42</top><width>1370</width><height>60</height>
+            <align>right</align><font>font14</font>
+            <textcolor>FFFFD700</textcolor>
+            <label>$INFO[Window.Property(heading)]</label>
+        </control>
+        <control type="label">
+            <left>400</left><top>100</top><width>1370</width><height>34</height>
+            <align>right</align><font>font12</font>
+            <textcolor>FF9AA3B0</textcolor>
+            <label>$INFO[Window.Property(summary)]</label>
+        </control>
+
+        <!-- lanes (right-aligned row of three) -->
+        <control type="group" id="200">
+            <left>0</left><top>150</top>
+            <control type="button" id="203">
+                <right>70</right><top>0</top><width>230</width><height>56</height>
+                <font>font13</font><align>center</align>
+                <textcolor>FFC9D2DE</textcolor><focusedcolor>FF101418</focusedcolor>
+                <texturenofocus colordiffuse="33FFFFFF" border="4">white.png</texturenofocus>
+                <texturefocus colordiffuse="FFFFD700" border="4">white.png</texturefocus>
+                <onleft>202</onleft><onright>203</onright><ondown>100</ondown><onup>203</onup>
+            </control>
+            <control type="button" id="202">
+                <right>316</right><top>0</top><width>230</width><height>56</height>
+                <font>font13</font><align>center</align>
+                <textcolor>FFC9D2DE</textcolor><focusedcolor>FF101418</focusedcolor>
+                <texturenofocus colordiffuse="33FFFFFF" border="4">white.png</texturenofocus>
+                <texturefocus colordiffuse="FFFFD700" border="4">white.png</texturefocus>
+                <onleft>201</onleft><onright>203</onright><ondown>100</ondown><onup>202</onup>
+            </control>
+            <control type="button" id="201">
+                <right>562</right><top>0</top><width>230</width><height>56</height>
+                <font>font13</font><align>center</align>
+                <textcolor>FFC9D2DE</textcolor><focusedcolor>FF101418</focusedcolor>
+                <texturenofocus colordiffuse="33FFFFFF" border="4">white.png</texturenofocus>
+                <texturefocus colordiffuse="FFFFD700" border="4">white.png</texturefocus>
+                <onleft>201</onleft><onright>202</onright><ondown>100</ondown><onup>201</onup>
+            </control>
+            <!-- active-lane underline -->
+            <control type="image">
+                <right>70</right><top>60</top><width>230</width><height>4</height>
+                <texture colordiffuse="FFFFD700">white.png</texture>
+                <visible>String.IsEqual(Window.Property(lane),hot)</visible>
+            </control>
+            <control type="image">
+                <right>316</right><top>60</top><width>230</width><height>4</height>
+                <texture colordiffuse="FFFFD700">white.png</texture>
+                <visible>String.IsEqual(Window.Property(lane),foryou)</visible>
+            </control>
+            <control type="image">
+                <right>562</right><top>60</top><width>230</width><height>4</height>
+                <texture colordiffuse="FFFFD700">white.png</texture>
+                <visible>String.IsEqual(Window.Property(lane),continue)</visible>
+            </control>
+        </control>
+        <control type="label">
+            <left>70</left><top>160</top><width>900</width><height>40</height>
+            <align>left</align><font>font12</font>
+            <textcolor>FF9AA3B0</textcolor>
+            <label>$INFO[Window.Property(status)]</label>
+        </control>
+
+        <!-- posters: horizontal, right-to-left -->
+        <control type="list" id="100">
+            <left>70</left><top>236</top><width>1780</width><height>420</height>
+            <orientation>horizontal</orientation>
+            <onup>202</onup><ondown>300</ondown>
+            <onleft>100</onleft><onright>100</onright>
+            <scrolltime tween="cubic" easing="out">220</scrolltime>
+            <itemlayout width="222" height="420">
+                <control type="image">
+                    <left>10</left><top>10</top><width>200</width><height>300</height>
+                    <texture colordiffuse="FF22262E">white.png</texture>
+                </control>
+                <control type="image">
+                    <left>10</left><top>10</top><width>200</width><height>300</height>
+                    <texture background="true" fallback="DefaultVideo.png">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>scale</aspectratio>
+                </control>
+                <control type="image">
+                    <left>10</left><top>10</top><width>200</width><height>300</height>
+                    <texture colordiffuse="66000000">white.png</texture>
+                </control>
+                <control type="image">
+                    <right>16</right><top>16</top><width>74</width><height>30</height>
+                    <texture colordiffuse="E627AE60">white.png</texture>
+                    <visible>String.IsEqual(ListItem.Property(subs),yes)</visible>
+                </control>
+                <control type="label">
+                    <right>16</right><top>16</top><width>74</width><height>30</height>
+                    <font>font10</font><align>center</align><aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>עברית</label>
+                    <visible>String.IsEqual(ListItem.Property(subs),yes)</visible>
+                </control>
+                <control type="label">
+                    <left>6</left><top>318</top><width>208</width><height>36</height>
+                    <font>font12</font><align>center</align>
+                    <textcolor>FFB8C1CC</textcolor>
+                    <label>$INFO[ListItem.Label]</label>
+                </control>
+            </itemlayout>
+            <focusedlayout width="222" height="420">
+                <control type="image">
+                    <left>4</left><top>4</top><width>212</width><height>312</height>
+                    <texture colordiffuse="FFFFD700" border="4">white.png</texture>
+                </control>
+                <control type="image">
+                    <left>10</left><top>10</top><width>200</width><height>300</height>
+                    <texture background="true" fallback="DefaultVideo.png">$INFO[ListItem.Art(poster)]</texture>
+                    <aspectratio>scale</aspectratio>
+                </control>
+                <control type="image">
+                    <right>16</right><top>16</top><width>74</width><height>30</height>
+                    <texture colordiffuse="E627AE60">white.png</texture>
+                    <visible>String.IsEqual(ListItem.Property(subs),yes)</visible>
+                </control>
+                <control type="label">
+                    <right>16</right><top>16</top><width>74</width><height>30</height>
+                    <font>font10</font><align>center</align><aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>עברית</label>
+                    <visible>String.IsEqual(ListItem.Property(subs),yes)</visible>
+                </control>
+                <control type="label">
+                    <left>6</left><top>318</top><width>208</width><height>36</height>
+                    <font>font12</font><align>center</align>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>$INFO[ListItem.Label]</label>
+                </control>
+            </focusedlayout>
+        </control>
+
+        <!-- detail panel for the focused pick -->
+        <control type="image">
+            <left>70</left><top>664</top><width>1780</width><height>300</height>
+            <texture colordiffuse="CC14161B">white.png</texture>
+        </control>
+        <control type="image">
+            <right>70</right><top>664</top><width>6</width><height>300</height>
+            <texture colordiffuse="FFFFD700">white.png</texture>
+        </control>
+        <control type="label">
+            <left>100</left><top>680</top><width>1200</width><height>50</height>
+            <align>right</align><font>font14</font>
+            <textcolor>FFFFFFFF</textcolor>
+            <label>$INFO[Container(100).ListItem.Label]</label>
+        </control>
+        <control type="label">
+            <left>100</left><top>732</top><width>1200</width><height>34</height>
+            <align>right</align><font>font12</font>
+            <textcolor>FF9AA3B0</textcolor>
+            <label>$INFO[Container(100).ListItem.Property(meta)]</label>
+        </control>
+        <control type="textbox">
+            <left>100</left><top>772</top><width>1200</width><height>112</height>
+            <align>right</align><font>font12</font>
+            <textcolor>FFD5DBE3</textcolor>
+            <autoscroll delay="4000" time="3000" repeat="8000">true</autoscroll>
+            <label>$INFO[Container(100).ListItem.Property(plot)]</label>
+        </control>
+        <!-- Hebrew subtitles badge -->
+        <control type="image">
+            <left>1340</left><top>684</top><width>420</width><height>44</height>
+            <texture colordiffuse="3327AE60" border="6">white.png</texture>
+            <visible>String.IsEqual(Container(100).ListItem.Property(subs),yes)</visible>
+        </control>
+        <control type="label">
+            <left>1340</left><top>684</top><width>420</width><height>44</height>
+            <align>center</align><aligny>center</aligny><font>font12</font>
+            <textcolor>FF6FDC8C</textcolor>
+            <label>יש כתוביות בעברית</label>
+            <visible>String.IsEqual(Container(100).ListItem.Property(subs),yes)</visible>
+        </control>
+        <control type="label">
+            <left>1340</left><top>684</top><width>420</width><height>44</height>
+            <align>center</align><aligny>center</aligny><font>font12</font>
+            <textcolor>FF7A838F</textcolor>
+            <label>כתוביות בעברית טרם נמצאו</label>
+            <visible>String.IsEqual(Container(100).ListItem.Property(subs),no)</visible>
+        </control>
+
+        <!-- actions -->
+        <control type="group">
+            <left>0</left><top>892</top>
+            <control type="button" id="300">
+                <left>1340</left><top>0</top><width>420</width><height>62</height>
+                <font>font13</font><align>center</align>
+                <textcolor>FF101418</textcolor><focusedcolor>FF101418</focusedcolor>
+                <texturenofocus colordiffuse="CCFFD700" border="4">white.png</texturenofocus>
+                <texturefocus colordiffuse="FFFFD700" border="4">white.png</texturefocus>
+                <label>צפייה</label>
+                <onup>100</onup><ondown>300</ondown><onleft>301</onleft><onright>300</onright>
+            </control>
+            <control type="button" id="301">
+                <left>1100</left><top>0</top><width>220</width><height>62</height>
+                <font>font13</font><align>center</align>
+                <textcolor>FFC9D2DE</textcolor><focusedcolor>FF101418</focusedcolor>
+                <texturenofocus colordiffuse="33FFFFFF" border="4">white.png</texturenofocus>
+                <texturefocus colordiffuse="FFFFD700" border="4">white.png</texturefocus>
+                <label>לא מעניין</label>
+                <onup>100</onup><ondown>301</ondown><onleft>302</onleft><onright>300</onright>
+            </control>
+            <control type="button" id="302">
+                <left>860</left><top>0</top><width>220</width><height>62</height>
+                <font>font13</font><align>center</align>
+                <textcolor>FFC9D2DE</textcolor><focusedcolor>FF101418</focusedcolor>
+                <texturenofocus colordiffuse="33FFFFFF" border="4">white.png</texturenofocus>
+                <texturefocus colordiffuse="FFFFD700" border="4">white.png</texturefocus>
+                <label>הצעות אחרות</label>
+                <onup>100</onup><ondown>302</ondown><onleft>302</onleft><onright>301</onright>
+            </control>
+        </control>
+
+        <!-- footer hint -->
+        <control type="label">
+            <left>70</left><bottom>30</bottom><width>1780</width><height>34</height>
+            <align>center</align><font>font10</font>
+            <textcolor>FF6B7380</textcolor>
+            <label>OK לצפייה  |  למעלה: החלפת מצב  |  Back ליציאה</label>
+        </control>
+    </controls>
+</window>
