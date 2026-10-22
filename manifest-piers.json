@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-10-22T18:54:04Z",
+  "generated_utc": "2026-10-22T21:59:55Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -36,40 +36,40 @@
     },
     {
       "id": "plugin.program.autocompletion",
-      "version": "2.1.3",
+      "version": "2.1.2",
       "channel": "core",
-      "zip": "plugin.program.autocompletion-2.1.3.zip",
-      "sha256": "16a53c155f65cbb8ca68baa563af1f54f5404e62301dc6c1665e53e9228ad9fc",
-      "size": 21389,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.autocompletion-2.1.3.zip"
+      "zip": "plugin.program.autocompletion-2.1.2.zip",
+      "sha256": "9385fe406191a1e22f66890fa12b440a39d61704a36fdb8518da71ab3381cf5d",
+      "size": 333351,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.autocompletion-2.1.2.zip"
     },
     {
       "id": "plugin.program.masterkodi.il.wizard",
-      "version": "2.4.190",
+      "version": "2.4.191",
       "channel": "core",
-      "zip": "plugin.program.masterkodi.il.wizard-2.4.190.zip",
-      "sha256": "665a1b14563d660c4ccb0a722912cacc13b6644e6d10e72d0f79a9c93609f152",
-      "size": 6244663,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.190.zip"
+      "zip": "plugin.program.masterkodi.il.wizard-2.4.191.zip",
+      "sha256": "f3e052292f65fdcdf3faf19cde0c0947e6bd8ed1c71cc38c8f951b6f05204daa",
+      "size": 6303100,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.191.zip"
     },
     {
       "id": "plugin.video.gears",
       "version": "2.4.3",
       "channel": "core",
       "zip": "plugin.video.gears-2.4.3.zip",
-      "sha256": "c1b48accb69df45b62ca2ce3a0c399273553dae47d937a754d9625730c595b77",
-      "size": 8782646,
+      "sha256": "3732953e3e348cc33e8db282fb037dd88b21a49bce83404bbfdc90ee24726da2",
+      "size": 8785129,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.gears-2.4.3.zip",
       "content": "gears"
     },
     {
       "id": "plugin.video.pov",
-      "version": "6.09.05",
+      "version": "6.10.21",
       "channel": "optional",
-      "zip": "plugin.video.pov-6.09.05.zip",
-      "sha256": "7bf7659c47b61c66a036172df472cde2fd4525798e3d01a323b632222d323823",
-      "size": 3539741,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.09.05.zip",
+      "zip": "plugin.video.pov-6.10.21.zip",
+      "sha256": "3a8f271b84c23077ab9b6e382890a0515619a3f4719e72badf749c8b2995722f",
+      "size": 3548233,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.10.21.zip",
       "content": "pov"
     },
     {
@@ -163,6 +163,24 @@
       "sha256": "4a1bfb10f1e078fb8a2c7b5099710e37cd943ebf630ccb57b91f62015f20f943",
       "size": 51599444,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/resource.font.robotocjksc-0.0.3.zip"
+    },
+    {
+      "id": "resource.images.arctic.splash",
+      "version": "1.0.7",
+      "channel": "optional",
+      "zip": "resource.images.arctic.splash-1.0.7.zip",
+      "sha256": "d7e972a6f9851e7038dd66456e72917d1706e52b60f57da657dac7c511b2ee44",
+      "size": 72337293,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/resource.images.arctic.splash-1.0.7.zip"
+    },
+    {
+      "id": "resource.images.arctic.weather",
+      "version": "1.0.4",
+      "channel": "optional",
+      "zip": "resource.images.arctic.weather-1.0.4.zip",
+      "sha256": "944e68018ac9759fa1570cf533559f781d7735f580958c160ddbba823285f017",
+      "size": 58989405,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/resource.images.arctic.weather-1.0.4.zip"
     },
     {
       "id": "resource.images.moviecountryicons.flags",
@@ -319,12 +337,12 @@
     },
     {
       "id": "script.module.autocompletion",
-      "version": "2.1.2",
+      "version": "2.1.1",
       "channel": "core",
-      "zip": "script.module.autocompletion-2.1.2.zip",
-      "sha256": "bc8b17354d4a6124d3f6e7b7fb9cb42923ad62542ad73e49af6ce8f2904f4b97",
-      "size": 175596,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.autocompletion-2.1.2.zip"
+      "zip": "script.module.autocompletion-2.1.1.zip",
+      "sha256": "a4cc7f4d32fac1136068e66d50b607f3468c7b09215d7ff24b65d3576c4a20d2",
+      "size": 175575,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.autocompletion-2.1.1.zip"
     },
     {
       "id": "script.module.beautifulsoup4",
@@ -646,30 +664,30 @@
     },
     {
       "id": "skin.arctic.fuse.3",
-      "version": "3.3.0.105",
+      "version": "3.4.6.106",
       "channel": "optional",
-      "zip": "skin.arctic.fuse.3-3.3.0.105.zip",
-      "sha256": "7dad3121c1d039e4a4ad333a844cdbf60e13dd9c1b5421991c497750917afe29",
-      "size": 54653352,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.fuse.3-3.3.0.105.zip"
+      "zip": "skin.arctic.fuse.3-3.4.6.106.zip",
+      "sha256": "438138c89a73a75be3fe07662c54ed978f7639ebd97cd09cd7e77a9e1f39c126",
+      "size": 62617182,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.fuse.3-3.4.6.106.zip"
     },
     {
       "id": "skin.arctic.zephyr.2.resurrection.mod",
-      "version": "1.1.10.114",
+      "version": "1.1.12.115",
       "channel": "optional",
-      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.1.10.114.zip",
-      "sha256": "f13b0b0d24679c31ae3a01e570860cf1e0c94910e85e88f2af3e865c6cc47c85",
-      "size": 18524508,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.2.resurrection.mod-1.1.10.114.zip"
+      "zip": "skin.arctic.zephyr.2.resurrection.mod-1.1.12.115.zip",
+      "sha256": "28205d476f9e75784b188d618dd848d560f9259d32e81693b4a707b07577d79c",
+      "size": 18131540,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.2.resurrection.mod-1.1.12.115.zip"
     },
     {
       "id": "skin.arctic.zephyr.rounded",
-      "version": "1.3.5",
+      "version": "1.3.17",
       "channel": "optional",
-      "zip": "skin.arctic.zephyr.rounded-1.3.5.zip",
-      "sha256": "4f0b57428340d2d9dc8537fda4a1914a4cc141d73a7e6ea2291a163fe3bc8daa",
-      "size": 76242932,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.rounded-1.3.5.zip"
+      "zip": "skin.arctic.zephyr.rounded-1.3.17.zip",
+      "sha256": "32532bfc9af53792aac240b65b96063884ec2ca272555021a89d0a0e184ce1cf",
+      "size": 76289372,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.arctic.zephyr.rounded-1.3.17.zip"
     },
     {
       "id": "skin.bingie",
@@ -694,19 +712,19 @@
       "version": "0.1.43.103",
       "channel": "optional",
       "zip": "skin.nimbus-0.1.43.103.zip",
-      "sha256": "ea9bbb7f18fe8bb3696dd49fbc0cb51024758ef2b04848c68d90b1b527bb3a23",
-      "size": 10587690,
+      "sha256": "c36c4cb1ed6431724758c0acb85f49821bf711dd2338426ff9b5ca84ffc54800",
+      "size": 10587744,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/skin.nimbus-0.1.43.103.zip"
     }
   ],
   "config": {
-    "version": "65",
-    "zip": "config-65.zip",
-    "sha256": "0526018ec661864d62f0a04ae9a455519f595e7b8eb9a735a7e4fb838ab1c502",
-    "size": 2698350,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-65.zip"
+    "version": "67",
+    "zip": "config-67.zip",
+    "sha256": "8e9138476d523d60480e9efad3768e69c11385445edcdcad5602b608fa2d7427",
+    "size": 2698570,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-67.zip"
   },
   "content_variants": {
-    "version": "f9d2689becca5d21"
+    "version": "cccc7e56039d4522"
   }
 }
