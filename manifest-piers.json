@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-10-22T22:09:04Z",
+  "generated_utc": "2026-10-22T22:28:29Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -48,8 +48,8 @@
       "version": "2.4.191",
       "channel": "core",
       "zip": "plugin.program.masterkodi.il.wizard-2.4.191.zip",
-      "sha256": "7d7a4808abb803fdf72330b023b0327e7fc8c2e5fa254027d6007a094b15973d",
-      "size": 6303836,
+      "sha256": "edbfe5b1ac11369efd98501e9e6fc7b40619322d3c969267f92e33d56ab0c39e",
+      "size": 6303961,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.program.masterkodi.il.wizard-2.4.191.zip"
     },
     {
@@ -65,12 +65,11 @@
     {
       "id": "plugin.video.pov",
       "version": "6.10.21",
-      "channel": "optional",
+      "channel": "core",
       "zip": "plugin.video.pov-6.10.21.zip",
       "sha256": "3a8f271b84c23077ab9b6e382890a0515619a3f4719e72badf749c8b2995722f",
       "size": 3548233,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.10.21.zip",
-      "content": "pov"
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/plugin.video.pov-6.10.21.zip"
     },
     {
       "id": "plugin.video.themoviedb.helper",
@@ -446,16 +445,6 @@
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.jurialmunkey-0.2.35.zip"
     },
     {
-      "id": "script.module.magneto",
-      "version": "6.09.04",
-      "channel": "core",
-      "zip": "script.module.magneto-6.09.04.zip",
-      "sha256": "71615d48541c99925dd9c4ef32e0085eccd3d0a8c852c8d84514787075a58a37",
-      "size": 479244,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.magneto-6.09.04.zip",
-      "content": "gears"
-    },
-    {
       "id": "script.module.pysubs2",
       "version": "1.5.0+matrix.1",
       "channel": "core",
@@ -718,11 +707,11 @@
     }
   ],
   "config": {
-    "version": "67",
-    "zip": "config-67.zip",
-    "sha256": "8e9138476d523d60480e9efad3768e69c11385445edcdcad5602b608fa2d7427",
-    "size": 2698570,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-67.zip"
+    "version": "68",
+    "zip": "config-68.zip",
+    "sha256": "7ddf8751b92f48ce3da84da9005a72ce249261af6acdac1f4fea60799e6aa50a",
+    "size": 2698393,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/config-68.zip"
   },
   "content_variants": {
     "version": "cccc7e56039d4522"
