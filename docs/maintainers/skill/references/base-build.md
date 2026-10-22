@@ -28,7 +28,7 @@ FenLight_Estuary/
 │   └── addon_data/
 │       ├── plugin.video.gears/       ← Settings, navigator, custom shortcut folders
 │       ├── script.module.cocoscrapers/
-│       ├── plugin.video.pov/         ← POV scraper config (Gears' external scraper since 2026-10-23; magneto retired)
+│       (script.module.magneto retired 2026-10-23: Gears scrapes with its own gearsscrapers)
 │       └── ...
 └── media/
     └── build_icons/                  ← PNGs referenced by favourites.xml thumbs
@@ -85,7 +85,7 @@ This is Gears's settings store. Schema: `settings(setting_id TEXT PK, setting_ty
 | `meta_language` | `he` | Hebrew synopses |
 | `mpaa_region` | `IL` | Israeli MPAA ratings |
 | `mpaa_region_display_name` | `Israel` | |
-| `external_scraper.module` | `plugin.video.pov` | Gears uses POV directly as the external scraper (magneto 6.10.16+ was only a wrapper around it; retired 2026-10-23) |
+| `external_scraper.module` | `empty_setting` | No external scraper: Gears uses its own gearsscrapers (magneto retired 2026-10-23; cocoscrapers stays installed as a switchable standby) |
 | `external_scraper.name` | `Magneto Module` | |
 | `provider.external` | `true` | Enable external scraper |
 | `external.cache_check` | `true` | Cache-only sources |

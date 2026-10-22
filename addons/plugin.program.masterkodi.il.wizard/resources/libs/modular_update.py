@@ -652,9 +652,9 @@ def _set_addon_enabled(aid, flag):
 # script.module.gearsscrapers is NOT here and never will be: it's a hard
 # <import> of plugin.video.gears -- disabling it kills Gears itself.
 STANDBY_SCRAPERS = ('script.module.cocoscrapers',)
-# plugin.video.pov is Gears' external scraper since 2026-10-23 (magneto 6.10.16+
-# is only a wrapper around POV's scraper package) and the alternative engine,
-# so it is core on every box and never neutralized here.
+# script.module.magneto retired 2026-10-23 (6.10.16+ is only a wrapper that
+# hard-requires plugin.video.pov). Gears scrapes with its own gearsscrapers;
+# the config enforces external_scraper.module=empty_setting on Gears boxes.
 
 
 def sync_scraper_stack():
@@ -694,8 +694,6 @@ def sync_scraper_stack():
         if state.get('__scraper_disabled__') != disabled:
             state['__scraper_disabled__'] = disabled
             _save_state(state)
-        if sel == 'plugin.video.pov' and _installed_version(sel) is not None and not _is_enabled(sel):
-            _set_addon_enabled(sel, True)
         log('scraper stack synced: selected=%s, neutralized=%s' % (sel or 'none', disabled))
     except Exception as e:
         log('sync_scraper_stack failed: %s' % e, xbmc.LOGWARNING)

@@ -5,7 +5,7 @@
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "manifest_schema": 1,
-  "config_version": 68,
+  "config_version": 69,
   "piers": {
     "release_tag": "addons-piers",
     "manifest": "manifest-piers.json",
@@ -19,6 +19,7 @@
   },
   "channels": {
     "optional": [
+      "plugin.video.pov",
       "plugin.video.themoviedb.helper",
       "plugin.video.tmdb.bingie.helper",
       "resource.font.robotocjksc",
@@ -71,16 +72,15 @@
       "repository.cocoscrapers",
       "repository.chainsrepo"
     ],
-    "pov_only": []
+    "pov_only": [
+      "plugin.video.pov"
+    ]
   },
   "notes": "channels.optional = addons that are NOT part of every install, so the client only updates them if the user already has them. This is the two skins + their bundled deps (Arctic Fuse pulls themoviedb.helper/skinvariables/jurialmunkey/six/qrcode/fonts/resources; Nimbus pulls script.nimbus.helper) + the bootstrap-only firstrun. Marking them core would make an Estuary/Nimbus user's 'check updates' list every AF3 dependency as missing. Everything else is core and auto-updates for everyone.",
   "bundles": {
     "FenLight_Estuary.zip": {
       "repack": true,
-      "state_seed": true,
-      "add": [
-        "plugin.video.pov"
-      ]
+      "state_seed": true
     },
     "Arctic_Fuse_Skin.zip": {
       "repack": true,
