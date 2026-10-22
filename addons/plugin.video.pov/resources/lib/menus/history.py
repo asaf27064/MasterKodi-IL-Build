@@ -59,7 +59,7 @@ def get_search_term(params):
 			string, url_params = 'movie_queries', {'mode': 'build_movie_list', 'action': 'tmdb_movies_search'}
 		else: string, url_params = 'tvshow_queries', {'mode': 'build_tvshow_list', 'action': 'tmdb_tv_search'}
 	else: string, url_params = query_dict[search_type]
-	query = params_query or kodi_utils.dialog.input('POV')
+	query = params_query or kodi_utils.dialog().input('POV')
 	if not query.strip(): return
 	query = unquote(query)
 	add_to_search_history(query, string)

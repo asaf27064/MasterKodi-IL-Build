@@ -1,14 +1,14 @@
 import json
 import concurrent.futures
 from datetime import datetime, timedelta
-from windows import BaseDialog, location, open_window, videoplayer
 from caches import watched_cache as ws
-from indexers import metadata, tmdb_api, imdb_api, trakt_api
-from menus import images, people, trakt, mdblist, tmdb
-from modules import settings, dialogs, downloader
+from indexers import imdb_api, metadata, tmdb_api, trakt_api
+from menus import images, mdblist, people, tmdb, trakt
+from modules import dialogs, downloader, settings
+from modules.kodi_utils import close_all_dialog, fetch_kodi_imagecache, hide_busy_dialog, local_string as ls, media_path, notify_error, ok_dialog
 from modules.meta_lists import networks as meta_networks
 from modules.utils import get_datetime
-from modules.kodi_utils import media_path, notify_error, close_all_dialog, hide_busy_dialog, ok_dialog, fetch_kodi_imagecache, local_string as ls
+from windows import BaseDialog, location, open_window, videoplayer
 # from modules.kodi_utils import logger
 
 fanart_empty = BaseDialog.fanart
@@ -481,18 +481,6 @@ class Extras(BaseDialog):
 		else: url_params = {'mode': 'build_season_list', 'tmdb_id': self.tmdb_id}
 		return url_params
 
-	def original_poster(self):
-		poster = self.meta.get(self.poster_main) or self.meta.get(self.poster_backup) or backup_thumbnail
-		self.current_poster = poster
-		if 'image.tmdb' in self.current_poster:
-			for res in ('w185', 'w342', 'w780'): poster = poster.replace(res, 'original')
-		elif 'fanart.tv' in poster and not self.check_poster_cached(poster):
-			self.current_poster = self.meta.get(self.poster_backup) or backup_thumbnail
-		return poster
-
-	def remove_current_tmdb_mediaitem(self, data):
-		return [i for i in data if int(i['id']) != self.tmdb_id]
-
 	def make_tmdb_listitems(self, list_id, data, prop_name):
 		if list_id not in self.enabled_lists or not data: return
 		name_key = 'title' if self.is_movie else 'name'
@@ -517,19 +505,28 @@ class Extras(BaseDialog):
 		self.item_action_dict[list_id] = 'tikiskins.extras.tmdb_id'
 		self.add_items(list_id, item_list)
 
+	def remove_current_tmdb_mediaitem(self, data):
+		return [i for i in data if int(i['id']) != self.tmdb_id]
+
 	def listitem_check(self):
 		return self.get_infolabel('ListItem.Title') == self.meta['title']
 
 	def add_items(self, _id, items):
 		self.getControl(_id).addItems(items)
 
+	def original_poster(self):
+		self.current_poster = self.meta.get(self.poster_main) or self.meta.get(self.poster_backup) or backup_thumbnail
+		poster = self.current_poster
+		if 'image.tmdb' in poster:
+			for res in ('w185', 'w342', 'w780'):
+				poster = poster.replace(res, 'original')
+		return poster
+
 	def set_poster(self):
 		if not self.current_poster: return self.setProperty('tikiskins.extras.active_poster', 'false')
 		self.getControl(200).setImage(self.current_poster)
 		self.getControl(201).setImage(self.poster)
-		for _ in range(200):
-			if self.check_poster_cached(self.poster): break
-			self.sleep(50)
+		_ = any(self.check_poster_cached(self.poster) or self.sleep(100) for i in range(50))
 		self.getControl(200).setImage(self.poster)
 
 	def check_poster_cached(self, poster):

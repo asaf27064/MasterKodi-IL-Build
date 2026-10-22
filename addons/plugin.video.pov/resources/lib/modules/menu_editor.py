@@ -186,7 +186,7 @@ class MenuEditor:
 		return [i for i in default_list_items if i not in list_items]
 
 	def _get_external_name_input(self, current_name):
-		new_name = kodi_utils.dialog.input('POV', defaultt=current_name)
+		new_name = kodi_utils.dialog().input('POV', defaultt=current_name)
 		if new_name == current_name: return None
 		return new_name
 
@@ -242,7 +242,7 @@ class MenuEditor:
 		self._db_execute('set', active_list, list_items, 'shortcut_folder', True)
 
 	def shortcut_folder_make(self):
-		list_name = kodi_utils.dialog.input('POV')
+		list_name = kodi_utils.dialog().input('POV')
 		if not list_name: return
 		self._db_execute('make_new_folder', list_name, list_type='shortcut_folder')
 

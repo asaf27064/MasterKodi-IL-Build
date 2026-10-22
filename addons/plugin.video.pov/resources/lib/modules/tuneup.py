@@ -1,15 +1,14 @@
 import sqlite3 as database
-from pathlib import Path
 from datetime import datetime, timedelta
+from pathlib import Path
 import xbmc, xbmcaddon, xbmcgui, xbmcvfs
 
-dialog = xbmcgui.Dialog()
-addon = xbmcaddon.Addon()
-
 def notification(line1, time=3000, sound=False):
-	dialog.notification(addon.getAddonInfo('name'), line1, addon.getAddonInfo('icon'), time, sound)
+	addon = xbmcaddon.Addon()
+	xbmcgui.Dialog().notification(addon.getAddonInfo('name'), line1, addon.getAddonInfo('icon'), time, sound)
 
 def clear_streams():
+	dialog = xbmcgui.Dialog()
 	dbfile = xbmcvfs.translatePath('special://database/')
 	dbfile = dialog.browse(1, 'MyVideos*.db', 'local', defaultt=dbfile)
 	dbfile = Path(dbfile)
@@ -28,8 +27,7 @@ def clear_streams():
 		dbcur.execute("""SELECT COUNT(*) FROM files""")
 		total = dbcur.fetchone()[0]
 		dbcur.execute("""
-			SELECT idFile, idPath FROM files
-			WHERE lastPlayed >= ? AND lastPlayed IS NOT NULL AND strFilename IS NOT NULL
+			SELECT idFile, idPath FROM files WHERE lastPlayed >= ? OR lastPlayed IS NULL
 		""", (str(back_date),))
 		result = dbcur.fetchall()
 		expired = total - len(result)
@@ -56,6 +54,7 @@ def clear_streams():
 		finally: progress_dialog.close()
 
 def clear_thumbnails():
+	dialog = xbmcgui.Dialog()
 	thumbs_path = Path(xbmcvfs.translatePath('special://thumbnails/'))
 	dbfile = xbmcvfs.translatePath('special://database/')
 	dbfile = dialog.browse(1, 'Textures*.db', 'local', defaultt=dbfile)

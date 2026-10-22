@@ -1,10 +1,10 @@
 from threading import Thread
 from caches import watched_cache as ws
-from indexers.metadata import tvshow_meta, season_episodes_meta, art_infodict, episode_infodict, info_tagger
 from indexers.mdblist_api import mdbl_get_my_calendar, mdblist_watchlist
-from indexers.trakt_api import trakt_fetch_collection_watchlist, trakt_get_my_calendar, trakt_get_my_anime_calendar, trakt_anime_calendar
+from indexers.metadata import art_infodict, episode_infodict, info_tagger, season_episodes_meta, tvshow_meta
+from indexers.trakt_api import trakt_anime_calendar, trakt_fetch_collection_watchlist, trakt_get_my_anime_calendar, trakt_get_my_calendar
 from modules import kodi_utils, settings
-from modules.utils import get_next_episode_pointer, adjust_premiered_date, make_day, get_datetime, title_key, date_difference, TaskPool
+from modules.utils import TaskPool, adjust_premiered_date, date_difference, get_datetime, get_next_episode_pointer, make_day, title_key
 # logger = kodi_utils.logger
 
 KODI_VERSION, make_cast_list = kodi_utils.get_kodi_version(), kodi_utils.make_cast_list
@@ -214,16 +214,16 @@ class Menu(Episodes):
 		}.items() if key in mode), None)
 		if callable(func): func(params_get)
 		if self.list: kodi_utils.add_items(__handle__, self.worker())
-		if self.list_type == 'trakt_calendar' and self.calendar_focus_today:
-			current_date = str(self.current_date)
-			labels = enumerate((i[1].getProperty('pov_first_aired') for i in self.items), 1)
-			index = next((i for i, x in labels if x in current_date), None)
-		else: index = False
 		kodi_utils.set_category(__handle__, category)
 		kodi_utils.set_sort_method(__handle__, sort_type)
 		kodi_utils.set_content(__handle__, content_type)
 		kodi_utils.end_directory(__handle__, False)
 		kodi_utils.set_view_mode(view_type, content_type, self.is_widget)
+		if self.list_type == 'trakt_calendar' and self.calendar_focus_today:
+			current_date = str(self.current_date)
+			labels = enumerate((i[1].getProperty('pov_first_aired') for i in self.items), 1)
+			index = next((i for i, x in labels if x in current_date), None)
+		else: index = False
 		if index: kodi_utils.focus_index(index)
 
 	def _setup_in_progress(self, params_get):

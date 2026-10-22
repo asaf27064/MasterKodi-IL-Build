@@ -1,9 +1,9 @@
 import json
-from windows import BaseDialog
 from modules.debrid import Source
-from modules.kodi_utils import media_path, hide_busy_dialog, dialog, select_dialog, ok_dialog, local_string as ls
+from modules.kodi_utils import dialog, hide_busy_dialog, local_string as ls, media_path, ok_dialog, select_dialog
 from modules.kodi_utils import get_setting, set_setting
 from modules.settings import get_art_provider, info_icons, provider_sort_ranks
+from windows import BaseDialog
 # from modules.kodi_utils import logger
 
 fanart_empty = BaseDialog.fanart
@@ -19,7 +19,7 @@ extra_info_choices, quality_choices, pack_check = (
 	('2 CHANNEL AUDIO', '2CH'), ('6 CHANNEL AUDIO', '6CH'), ('7 CHANNEL AUDIO', '7CH'), ('8 CHANNEL AUDIO', '8CH')
 ), ('4K', '1080P', '720P', 'SD', 'TELE', 'CAM', 'SCR'), ('true', 'show', 'season')
 extra_info_str, down_file_str, browse_pack_str, down_pack_str, cloud_str = ls(32151), ls(32747), ls(32746), ls(32745), ls(32744)
-filter_str, clr_filter_str, filters_ignored, start_full_scrape = ls(32152), ls(32153), ls(32686), ls(32529)
+filter_str, clr_filter_str, filters_ignored, start_full_scrape = ls(32152), ls(32153), ls(32686), ls(32137)
 filter_quality, filter_provider, filter_title, filter_extraInfo = ls(32154), ls(32157), ls(32170), ls(32169)
 run_plugin_str, ignored_str = 'RunPlugin(%s)', '[B][COLOR dodgerblue](%s)[/COLOR][/B]'
 en_seek_str, check_str = '[B]EN: PLAY (SEEK ENABLED)[/B]', '[B]CHECK CACHE STATUS[/B]'

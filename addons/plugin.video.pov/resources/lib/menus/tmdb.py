@@ -1,5 +1,5 @@
 import json
-from indexers import tmdb_api, list_helper
+from indexers import list_helper, tmdb_api
 from menus.movies import Movies
 from menus.tvshows import TVShows
 from modules import kodi_utils, settings
@@ -17,7 +17,7 @@ add2menu_str, add2folder_str = ls(32730), ls(32731)
 newlist_str, deletelist_str = ls(32780) % 'TMDbList', ls(32781)
 watchl_str, fav_str, coll_str = ls(32500), ls(32453), ls(32499)
 editprop_str, clearprop_str = '[B]Edit List Properties[/B]', '[B]Clear List Cache[/B]'
-tmdb_image_base = tmdb_api.tmdb_image_base
+tmdb_image_base, tmdblist_heading = tmdb_api.tmdb_image_base, 'TMDb Lists'
 
 def get_tmdb_lists(params):
 	return BaseTmdbList(params).build()
@@ -47,7 +47,7 @@ def artwork_choice_tmdb_list(key, list_id, list_title, resolution, icon):
 def edit_tmdb_list(params):
 	res = settings.get_resolution()
 	default_icon = media_path('tmdb.png')
-	heading = ls(tmdb_api.tmdblist_heading).replace('[B]', '').replace('[/B]', '')
+	heading = ls(tmdblist_heading).replace('[B]', '').replace('[/B]', '')
 
 	def get_icon(key, val):
 		if key in ('poster', 'fanart') and val not in ('clear', 'None'): return tmdb_image_base % (res[key], val)
@@ -63,7 +63,7 @@ def edit_tmdb_list(params):
 		choice = select_dialog([c[0] for c in choices], items=json.dumps(list_items), heading=heading)
 		if choice in ('cancel', None): return
 		if choice == 'name':
-			name = kodi_utils.dialog.input('New List Name', defaultt=params['name'])
+			name = kodi_utils.dialog().input('New List Name', defaultt=params['name'])
 			if name.strip(): params['name'] = name.strip()
 		elif choice == 'public':
 			text = 'Make %s Private?' % params['name']
@@ -90,8 +90,8 @@ def trakt_list_to_tmdb(params, api):
 	from indexers.trakt_api import get_trakt_list_contents
 	from modules.utils import chunks
 	send_str = 'Sending list to TMDb...'
-	progressBG = kodi_utils.progressDialogBG
-	progressBG.create(send_str, api.tmdblist_heading)
+	progressBG = kodi_utils.progressDialogBG()
+	progressBG.create(send_str, tmdblist_heading)
 	try:
 		list_id, user, slug = params['trakt_list_id'], params['user'], params['list_slug']
 		items = get_trakt_list_contents(params.get('list_type'), list_id, user, slug)
@@ -114,8 +114,8 @@ def mdbl_list_to_tmdb(params, api):
 	from indexers.mdblist_api import get_mdbl_list_contents
 	from modules.utils import chunks
 	send_str = 'Sending list to TMDb...'
-	progressBG = kodi_utils.progressDialogBG
-	progressBG.create(send_str, api.tmdblist_heading)
+	progressBG = kodi_utils.progressDialogBG()
+	progressBG.create(send_str, tmdblist_heading)
 	try:
 		items = get_mdbl_list_contents(params.get('list_type'), params['mdbl_list_id'])
 		len_items, wait = len(items), sum(1000 for i in chunks(items, 500))
@@ -187,7 +187,7 @@ class TmdbManager(list_helper.BaseListManager):
 	def __init__(self, params):
 		super().__init__(params)
 		self.mediatype = 'tv' if params.get('mediatype') == 'tvshow' else 'movie'
-		self.heading_id = self.api.tmdblist_heading
+		self.heading_id = tmdblist_heading
 
 	def _get_api(self):
 		return tmdb_api

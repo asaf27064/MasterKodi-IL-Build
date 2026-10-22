@@ -2,12 +2,13 @@
 
 ########### KODIRDIL - our own logger ###########
 # 6.08.14 dropped service.py's module-level `from entry import logger` and
+# 6.10 moved entry to modules/entry.py;
 # moved the import inside __main__, so the name our banner code logs through
 # no longer exists at module scope. Import it lazily rather than restoring a
 # top-level import upstream deliberately removed.
 def _kodirdil_log(msg):
 	try:
-		from entry import logger
+		from modules.entry import logger
 		logger('POV', msg)
 	except Exception:
 		pass
@@ -169,5 +170,6 @@ if __name__ == '__main__':
 	# lazily), so it simply starts ahead of upstream's blocking monitor.
 	_start_debrid_banner_thread()
 	#########################################################################
-	__import__('entry').SettingsMonitor()()
+	from modules.entry import SettingsMonitor
+	SettingsMonitor()()
 

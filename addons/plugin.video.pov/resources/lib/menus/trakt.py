@@ -1,4 +1,4 @@
-from indexers import trakt_api, list_helper
+from indexers import list_helper, trakt_api
 from menus.episodes import Episodes
 from menus.movies import Movies
 from menus.seasons import Seasons
@@ -34,8 +34,9 @@ def trakt_account_info():
 	try:
 		kodi_utils.show_busy_dialog()
 		db_status = integrity_check()
-		account_info = trakt_api.call_trakt('users/settings')
-		stats = trakt_api.call_trakt('users/%s/stats' % account_info['user']['ids']['slug'])
+		account_info = trakt_api.call_trakt('/users/settings')
+		stats = trakt_api.call_trakt('/users/%s/stats' % account_info['user']['ids']['slug'])
+		if not stats: stats = dummy_stats()
 		username = account_info['user']['username']
 		timezone = account_info['account']['timezone']
 		joined = jsondate_to_datetime(account_info['user']['joined_at']).astimezone()
@@ -74,6 +75,14 @@ def trakt_account_info():
 		return kodi_utils.show_text('Trakt'.upper(), '[CR]'.join(body), font_size='large')
 	except: kodi_utils.hide_busy_dialog()
 
+def dummy_stats():
+	return {
+		'movies'  : {'watched': 0, 'minutes': 0, 'collected': 0, 'ratings': 0},
+		'shows'   : {'watched': 0, 'collected': 0, 'ratings': 0},
+		'episodes': {'watched': 0, 'minutes': 0, 'collected': 0, 'ratings': 0},
+		'ratings' : {'total': 0}
+	}
+
 class BaseTraktList(list_helper.BaseList):
 	def process_results(self):
 		for item in self.lists:
@@ -110,7 +119,7 @@ class SearchTraktLists(BaseTraktList):
 		super().__init__(params)
 		self.page = params.get('new_page', '1')
 		self.pages = self.page
-		self.search_title = params.get('search_title') or kodi_utils.dialog.input('POV')
+		self.search_title = params.get('search_title') or kodi_utils.dialog().input('POV')
 		self.category_name = self.search_title
 
 	def fetch_results(self):

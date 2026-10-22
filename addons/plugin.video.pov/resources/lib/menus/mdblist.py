@@ -1,4 +1,4 @@
-from indexers import mdblist_api, list_helper
+from indexers import list_helper, mdblist_api
 from menus.episodes import Episodes
 from menus.movies import Movies
 from menus.seasons import Seasons
@@ -33,8 +33,9 @@ def mdbl_account_info():
 	try:
 		kodi_utils.show_busy_dialog()
 		db_status = integrity_check()
-		account_info = mdblist_api.call_mdblist('user')
-		stats = mdblist_api.call_mdblist('user/stats')['stats']
+		account_info = mdblist_api.call_mdblist('/user')
+		stats = mdblist_api.call_mdblist('/user/stats')['stats']
+		if not stats: stats = dummy_stats()
 		joined = jsondate_to_datetime(account_info['date_joined']).astimezone()
 		api_requests = account_info['api_requests']
 		remaining = api_requests - account_info['api_requests_count']
@@ -67,6 +68,13 @@ def mdbl_account_info():
 		return kodi_utils.show_text('MDBList'.upper(), '[CR]'.join(body), font_size='large')
 	except: kodi_utils.hide_busy_dialog()
 
+def dummy_stats():
+	return {
+		'movies'  : {'all_time': 0, 'runtime_hours': 0, 'rated': 0},
+		'shows'   : {'watched': 0, 'rated': 0},
+		'episodes': {'all_time': 0, 'runtime_hours': 0, 'rated': 0},
+	}
+
 class BaseMdblList(list_helper.BaseList):
 	def process_results(self):
 		for item in self.lists:
@@ -98,7 +106,7 @@ class SearchMdblLists(BaseMdblList):
 		super().__init__(params)
 		self.page = params.get('new_page', '1')
 		self.pages = self.page
-		self.search_title = params.get('search_title') or kodi_utils.dialog.input('POV')
+		self.search_title = params.get('search_title') or kodi_utils.dialog().input('POV')
 		self.category_name = self.search_title
 
 	def fetch_results(self):
@@ -206,15 +214,16 @@ class MdbListManager(list_helper.BaseListManager):
 		return False
 
 	def check_item_exists(self, choice_id):
-		if 'collection' in choice_id: list_items = self.api.mdblist_collection(self.mediatype, 'all')
-		elif 'watchlist' in choice_id: list_items = self.api.mdblist_watchlist(self.mediatype, 'all')
+		if any(x in choice_id for x in ('watchlist', 'collection')):
+			list_items = self.api.mdbl_collection_watchlist_items(choice_id, self.mediatype)
 		else: list_items = self.api.get_mdbl_list_contents('my_lists', choice_id)
 		return self.tmdb_id in {i['id'] for i in list_items}
 
 	def execute_toggle(self, choice, action_add):
+		content = 'shows' if self.mediatype == 'tvshow' else 'movies'
 		if 'collection' in choice[0]:
-			data = {'shows' if self.mediatype == 'tvshow' else 'movies': [{'ids': {'tmdb': self.tmdb_id}}]}
+			data = {content: [{'ids': {'tmdb': self.tmdb_id}}]}
 			return self.api.add_to_collection(data) if action_add else self.api.remove_from_collection(data)
-		data = {'shows' if self.mediatype == 'tvshow' else 'movies': [{'tmdb': self.tmdb_id}]}
+		data = {content: [{'tmdb': self.tmdb_id}]}
 		return self.api.add_to_list(choice[0], data) if action_add else self.api.remove_from_list(choice[0], data)
 

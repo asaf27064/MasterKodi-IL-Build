@@ -1048,8 +1048,8 @@ def test_hebrew_title_quality_classification():
     called from modules/sources.py for every source), and Gears does the same
     job in the other engine."""
     print("\n=== quality: release name -> resolution label (3 classifiers) ===")
-    MAG = _load_classifier('addons', 'plugin.video.pov', 'resources', 'lib',
-                           'magneto', 'modules', 'source_utils.py')
+    # 6.10 moved the bundled scraper package to a top-level python module lib/pov
+    MAG = _load_classifier('addons', 'plugin.video.pov', 'lib', 'pov', 'modules', 'source_utils.py')
     POVSU = _load_classifier('addons', 'plugin.video.pov', 'resources', 'lib',
                              'modules', 'source_utils.py')
     GEARSSU = _load_classifier('addons', 'plugin.video.gears', 'resources',
@@ -2900,7 +2900,7 @@ def test_continue_watching_row():
     check('upstream still marks unaired episodes', "props['pov_unaired']" in ep)
 
     entry = open(os.path.join(REPO, 'overlays', 'plugin.video.pov', 'files',
-                              'resources', 'lib', 'entry.py'), encoding='utf-8').read()
+                              'resources', 'lib', 'modules', 'entry.py'), encoding='utf-8').read()  # 6.10: moved under modules/
     check('the route is registered', "'build_continue_watching'" in entry)
     check('...and points at our module',
           "kodirdil.continue_watching" in entry and 'ContinueWatching' in entry)
@@ -3011,7 +3011,7 @@ def test_continue_watching_row():
         print('       stale seed: %s' % p2.replace(REPO + os.sep, ''))
 
     # and the route must exist in the MIRROR that actually ships
-    mirror_entry = os.path.join(REPO, 'addons', 'plugin.video.pov', 'resources', 'lib', 'entry.py')
+    mirror_entry = os.path.join(REPO, 'addons', 'plugin.video.pov', 'resources', 'lib', 'modules', 'entry.py')
     mirror_mod = os.path.join(REPO, 'addons', 'plugin.video.pov', 'resources', 'lib',
                               'kodirdil', 'continue_watching.py')
     check('the shipped mirror carries the route',
