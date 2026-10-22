@@ -1,0 +1,3845 @@
+{
+  "version": 1,
+  "dimensions": [
+    320,
+    720
+  ],
+  "phasesPerMovingLayer": 5,
+  "cloudMotion": false,
+  "foliageMotion": false,
+  "rotatingCloudCodes": [
+    "0",
+    "2"
+  ],
+  "frameDurationMs": {
+    "atmosphere": 1200,
+    "surface": 300,
+    "weather": 180
+  },
+  "rotatingCloudDurationMs": 300,
+  "rotatingCloudFadeMs": 100,
+  "lightning": {
+    "cycleTimeMs": 5000,
+    "attackMs": [
+      1200,
+      1480
+    ],
+    "decayMs": [
+      1250,
+      1530
+    ],
+    "fadeInMs": 30,
+    "fadeOutMs": 220,
+    "peakOpacity": [
+      0.8,
+      0.56
+    ]
+  },
+  "generator": "one fixed plate per card; authored masks and deterministic alpha compositing",
+  "cleanPlatePrompt": "Use case: precise-object-edit. Create ONE clean static background plate from the supplied approved Japanese woodblock weather card, for layered animation. Remove ONLY the moving airborne precipitation: every falling rain streak, drifting snowflake, sleet pellet, hailstone in flight, and every lightning bolt. Repair their former pixels naturally with the same paper grain and flat printed colors. Preserve the exact composition and weather setting, cloud shapes and coverage, fog and mist, day/night lighting, sun or moon, sea waves, rippled water, ground puddles, architecture, trees and mountain silhouettes in their existing positions. Preserve all existing settled snow on roofs/trees/ground, ice glaze, icicles, frost, slush and hail pellets already resting on the ground. In mixed precipitation remove all airborne types. For scattered or isolated showers keep the localized shower-cloud shapes and clear gaps, just remove the falling marks beneath them. Do not turn the scene sunny or clear. Do not add objects or change colors, proportions, scene details or crop. Tall narrow 4:9 full-bleed image, same as input, no text or borders. The output is one static clean plate; animation overlays will be composited separately from single-frame PNGs.",
+  "approvedReference": "tools/drafts/woodblock-animation-3",
+  "cards": [
+    {
+      "code": "0",
+      "condition": "tornado",
+      "base": "0/base.jpg",
+      "effects": [
+        "atmosphere"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "0/atmosphere/00.png",
+          "0/atmosphere/01.png",
+          "0/atmosphere/02.png",
+          "0/atmosphere/03.png",
+          "0/atmosphere/04.png"
+        ],
+        "surface": [
+          "0/surface/00.png",
+          "0/surface/01.png",
+          "0/surface/02.png",
+          "0/surface/03.png",
+          "0/surface/04.png"
+        ],
+        "weather": [
+          "0/weather/00.png",
+          "0/weather/01.png",
+          "0/weather/02.png",
+          "0/weather/03.png",
+          "0/weather/04.png"
+        ]
+      },
+      "lightning": "0/lightning.png",
+      "regions": {
+        "skyBottom": 360,
+        "vortex": {
+          "type": "funnel",
+          "cloudLayer": "tools/woodblock-vortex-layers/0/clouds.png",
+          "skyPlate": "tools/woodblock-vortex-layers/0/sky-plate.png",
+          "sceneReference": "tools/woodblock-vortex-layers/0/scene-reference.jpg",
+          "method": "separated painted cloud layer over static sky",
+          "cloudFrames": [
+            "tools/woodblock-vortex-layers/0/cloud-00.png",
+            "tools/woodblock-vortex-layers/0/cloud-01.png",
+            "tools/woodblock-vortex-layers/0/cloud-02.png",
+            "tools/woodblock-vortex-layers/0/cloud-03.png",
+            "tools/woodblock-vortex-layers/0/cloud-04.png"
+          ]
+        },
+        "foliage": [
+          [
+            [
+              0,
+              412
+            ],
+            [
+              70,
+              412
+            ],
+            [
+              71,
+              488
+            ],
+            [
+              0,
+              490
+            ]
+          ]
+        ],
+        "wind": 1.6
+      }
+    },
+    {
+      "code": "1",
+      "condition": "tropical storm",
+      "base": "1/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "1/atmosphere/00.png",
+          "1/atmosphere/01.png",
+          "1/atmosphere/02.png",
+          "1/atmosphere/03.png",
+          "1/atmosphere/04.png"
+        ],
+        "surface": [
+          "1/surface/00.png",
+          "1/surface/01.png",
+          "1/surface/02.png",
+          "1/surface/03.png",
+          "1/surface/04.png"
+        ],
+        "weather": [
+          "1/weather/00.png",
+          "1/weather/01.png",
+          "1/weather/02.png",
+          "1/weather/03.png",
+          "1/weather/04.png"
+        ]
+      },
+      "lightning": "1/lightning.png",
+      "regions": {
+        "skyBottom": 250,
+        "water": [
+          [
+            45,
+            390
+          ],
+          [
+            180,
+            387
+          ],
+          [
+            208,
+            440
+          ],
+          [
+            120,
+            475
+          ],
+          [
+            80,
+            430
+          ]
+        ],
+        "puddles": [
+          [
+            145,
+            549
+          ],
+          [
+            175,
+            550
+          ],
+          [
+            310,
+            720
+          ],
+          [
+            0,
+            720
+          ],
+          [
+            72,
+            630
+          ]
+        ],
+        "foliage": [
+          [
+            [
+              162,
+              258
+            ],
+            [
+              320,
+              245
+            ],
+            [
+              320,
+              398
+            ],
+            [
+              210,
+              385
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "2",
+      "condition": "hurricane",
+      "base": "2/base.jpg",
+      "effects": [
+        "atmosphere",
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "2/atmosphere/00.png",
+          "2/atmosphere/01.png",
+          "2/atmosphere/02.png",
+          "2/atmosphere/03.png",
+          "2/atmosphere/04.png"
+        ],
+        "surface": [
+          "2/surface/00.png",
+          "2/surface/01.png",
+          "2/surface/02.png",
+          "2/surface/03.png",
+          "2/surface/04.png"
+        ],
+        "weather": [
+          "2/weather/00.png",
+          "2/weather/01.png",
+          "2/weather/02.png",
+          "2/weather/03.png",
+          "2/weather/04.png"
+        ]
+      },
+      "lightning": "2/lightning.png",
+      "regions": {
+        "skyBottom": 260,
+        "vortex": {
+          "type": "spiral",
+          "center": [
+            224,
+            174
+          ],
+          "radius": [
+            350,
+            210
+          ],
+          "skyMask": "tools/woodblock-vortex-layers/2/sky-mask.png",
+          "cloudLayer": "tools/woodblock-vortex-layers/2/clouds.png",
+          "skyPlate": "tools/woodblock-vortex-layers/2/sky-plate.png",
+          "sceneReference": "tools/woodblock-vortex-layers/2/scene-reference.jpg",
+          "method": "separated painted cloud layer over static sky"
+        },
+        "water": [
+          [
+            80,
+            365
+          ],
+          [
+            320,
+            355
+          ],
+          [
+            320,
+            565
+          ],
+          [
+            130,
+            530
+          ]
+        ]
+      }
+    },
+    {
+      "code": "3",
+      "condition": "severe thunderstorms",
+      "base": "3/base.jpg",
+      "effects": [
+        "surface",
+        "weather",
+        "lightning"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "3/atmosphere/00.png",
+          "3/atmosphere/01.png",
+          "3/atmosphere/02.png",
+          "3/atmosphere/03.png",
+          "3/atmosphere/04.png"
+        ],
+        "surface": [
+          "3/surface/00.png",
+          "3/surface/01.png",
+          "3/surface/02.png",
+          "3/surface/03.png",
+          "3/surface/04.png"
+        ],
+        "weather": [
+          "3/weather/00.png",
+          "3/weather/01.png",
+          "3/weather/02.png",
+          "3/weather/03.png",
+          "3/weather/04.png"
+        ]
+      },
+      "lightning": "3/lightning.png",
+      "regions": {
+        "skyBottom": 300,
+        "water": [
+          [
+            178,
+            575
+          ],
+          [
+            195,
+            575
+          ],
+          [
+            220,
+            610
+          ],
+          [
+            247,
+            615
+          ],
+          [
+            232,
+            630
+          ],
+          [
+            277,
+            642
+          ],
+          [
+            270,
+            654
+          ],
+          [
+            320,
+            681
+          ],
+          [
+            320,
+            713
+          ],
+          [
+            285,
+            700
+          ],
+          [
+            249,
+            675
+          ],
+          [
+            208,
+            656
+          ],
+          [
+            184,
+            637
+          ],
+          [
+            214,
+            622
+          ],
+          [
+            192,
+            607
+          ]
+        ]
+      }
+    },
+    {
+      "code": "4",
+      "condition": "thunderstorms",
+      "base": "4/base.jpg",
+      "effects": [
+        "surface",
+        "weather",
+        "lightning"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "4/atmosphere/00.png",
+          "4/atmosphere/01.png",
+          "4/atmosphere/02.png",
+          "4/atmosphere/03.png",
+          "4/atmosphere/04.png"
+        ],
+        "surface": [
+          "4/surface/00.png",
+          "4/surface/01.png",
+          "4/surface/02.png",
+          "4/surface/03.png",
+          "4/surface/04.png"
+        ],
+        "weather": [
+          "4/weather/00.png",
+          "4/weather/01.png",
+          "4/weather/02.png",
+          "4/weather/03.png",
+          "4/weather/04.png"
+        ]
+      },
+      "lightning": "4/lightning.png",
+      "regions": {
+        "skyBottom": 210,
+        "puddles": [
+          [
+            169,
+            577
+          ],
+          [
+            197,
+            576
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ]
+        ]
+      }
+    },
+    {
+      "code": "5",
+      "condition": "mixed rain and snow",
+      "base": "5/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "5/atmosphere/00.png",
+          "5/atmosphere/01.png",
+          "5/atmosphere/02.png",
+          "5/atmosphere/03.png",
+          "5/atmosphere/04.png"
+        ],
+        "surface": [
+          "5/surface/00.png",
+          "5/surface/01.png",
+          "5/surface/02.png",
+          "5/surface/03.png",
+          "5/surface/04.png"
+        ],
+        "weather": [
+          "5/weather/00.png",
+          "5/weather/01.png",
+          "5/weather/02.png",
+          "5/weather/03.png",
+          "5/weather/04.png"
+        ]
+      },
+      "lightning": "5/lightning.png",
+      "regions": {
+        "skyBottom": 240,
+        "water": [
+          [
+            122,
+            555
+          ],
+          [
+            194,
+            556
+          ],
+          [
+            220,
+            615
+          ],
+          [
+            320,
+            650
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            160,
+            696
+          ],
+          [
+            132,
+            630
+          ]
+        ]
+      }
+    },
+    {
+      "code": "6",
+      "condition": "mixed rain and sleet",
+      "base": "6/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "6/atmosphere/00.png",
+          "6/atmosphere/01.png",
+          "6/atmosphere/02.png",
+          "6/atmosphere/03.png",
+          "6/atmosphere/04.png"
+        ],
+        "surface": [
+          "6/surface/00.png",
+          "6/surface/01.png",
+          "6/surface/02.png",
+          "6/surface/03.png",
+          "6/surface/04.png"
+        ],
+        "weather": [
+          "6/weather/00.png",
+          "6/weather/01.png",
+          "6/weather/02.png",
+          "6/weather/03.png",
+          "6/weather/04.png"
+        ]
+      },
+      "lightning": "6/lightning.png",
+      "regions": {
+        "skyBottom": 130,
+        "water": [
+          [
+            197,
+            482
+          ],
+          [
+            220,
+            482
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            82,
+            720
+          ],
+          [
+            155,
+            580
+          ]
+        ]
+      }
+    },
+    {
+      "code": "7",
+      "condition": "mixed snow and sleet",
+      "base": "7/base.jpg",
+      "effects": [
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "7/atmosphere/00.png",
+          "7/atmosphere/01.png",
+          "7/atmosphere/02.png",
+          "7/atmosphere/03.png",
+          "7/atmosphere/04.png"
+        ],
+        "surface": [
+          "7/surface/00.png",
+          "7/surface/01.png",
+          "7/surface/02.png",
+          "7/surface/03.png",
+          "7/surface/04.png"
+        ],
+        "weather": [
+          "7/weather/00.png",
+          "7/weather/01.png",
+          "7/weather/02.png",
+          "7/weather/03.png",
+          "7/weather/04.png"
+        ]
+      },
+      "lightning": "7/lightning.png",
+      "regions": {
+        "skyBottom": 170
+      }
+    },
+    {
+      "code": "8",
+      "condition": "freezing drizzle",
+      "base": "8/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "8/atmosphere/00.png",
+          "8/atmosphere/01.png",
+          "8/atmosphere/02.png",
+          "8/atmosphere/03.png",
+          "8/atmosphere/04.png"
+        ],
+        "surface": [
+          "8/surface/00.png",
+          "8/surface/01.png",
+          "8/surface/02.png",
+          "8/surface/03.png",
+          "8/surface/04.png"
+        ],
+        "weather": [
+          "8/weather/00.png",
+          "8/weather/01.png",
+          "8/weather/02.png",
+          "8/weather/03.png",
+          "8/weather/04.png"
+        ]
+      },
+      "lightning": "8/lightning.png",
+      "regions": {
+        "skyBottom": 40,
+        "puddles": [
+          [
+            150,
+            589
+          ],
+          [
+            195,
+            590
+          ],
+          [
+            210,
+            720
+          ],
+          [
+            80,
+            720
+          ]
+        ],
+        "foliage": [
+          [
+            [
+              0,
+              50
+            ],
+            [
+              167,
+              110
+            ],
+            [
+              227,
+              270
+            ],
+            [
+              129,
+              300
+            ],
+            [
+              0,
+              210
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "9",
+      "condition": "drizzle",
+      "base": "9/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "9/atmosphere/00.png",
+          "9/atmosphere/01.png",
+          "9/atmosphere/02.png",
+          "9/atmosphere/03.png",
+          "9/atmosphere/04.png"
+        ],
+        "surface": [
+          "9/surface/00.png",
+          "9/surface/01.png",
+          "9/surface/02.png",
+          "9/surface/03.png",
+          "9/surface/04.png"
+        ],
+        "weather": [
+          "9/weather/00.png",
+          "9/weather/01.png",
+          "9/weather/02.png",
+          "9/weather/03.png",
+          "9/weather/04.png"
+        ]
+      },
+      "lightning": "9/lightning.png",
+      "regions": {
+        "skyBottom": 170,
+        "puddles": [
+          [
+            160,
+            532
+          ],
+          [
+            200,
+            532
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ]
+        ]
+      }
+    },
+    {
+      "code": "10",
+      "condition": "freezing rain",
+      "base": "10/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "10/atmosphere/00.png",
+          "10/atmosphere/01.png",
+          "10/atmosphere/02.png",
+          "10/atmosphere/03.png",
+          "10/atmosphere/04.png"
+        ],
+        "surface": [
+          "10/surface/00.png",
+          "10/surface/01.png",
+          "10/surface/02.png",
+          "10/surface/03.png",
+          "10/surface/04.png"
+        ],
+        "weather": [
+          "10/weather/00.png",
+          "10/weather/01.png",
+          "10/weather/02.png",
+          "10/weather/03.png",
+          "10/weather/04.png"
+        ]
+      },
+      "lightning": "10/lightning.png",
+      "regions": {
+        "skyBottom": 40,
+        "water": [
+          [
+            0,
+            559
+          ],
+          [
+            114,
+            570
+          ],
+          [
+            170,
+            550
+          ],
+          [
+            320,
+            555
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ]
+        ]
+      }
+    },
+    {
+      "code": "11",
+      "condition": "showers",
+      "base": "11/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "11/atmosphere/00.png",
+          "11/atmosphere/01.png",
+          "11/atmosphere/02.png",
+          "11/atmosphere/03.png",
+          "11/atmosphere/04.png"
+        ],
+        "surface": [
+          "11/surface/00.png",
+          "11/surface/01.png",
+          "11/surface/02.png",
+          "11/surface/03.png",
+          "11/surface/04.png"
+        ],
+        "weather": [
+          "11/weather/00.png",
+          "11/weather/01.png",
+          "11/weather/02.png",
+          "11/weather/03.png",
+          "11/weather/04.png"
+        ]
+      },
+      "lightning": "11/lightning.png",
+      "regions": {
+        "skyBottom": 170,
+        "puddles": [
+          [
+            163,
+            538
+          ],
+          [
+            195,
+            538
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ]
+        ]
+      }
+    },
+    {
+      "code": "12",
+      "condition": "showers",
+      "base": "12/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "12/atmosphere/00.png",
+          "12/atmosphere/01.png",
+          "12/atmosphere/02.png",
+          "12/atmosphere/03.png",
+          "12/atmosphere/04.png"
+        ],
+        "surface": [
+          "12/surface/00.png",
+          "12/surface/01.png",
+          "12/surface/02.png",
+          "12/surface/03.png",
+          "12/surface/04.png"
+        ],
+        "weather": [
+          "12/weather/00.png",
+          "12/weather/01.png",
+          "12/weather/02.png",
+          "12/weather/03.png",
+          "12/weather/04.png"
+        ]
+      },
+      "lightning": "12/lightning.png",
+      "regions": {
+        "skyBottom": 250,
+        "puddles": [
+          [
+            171,
+            502
+          ],
+          [
+            250,
+            501
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            41,
+            720
+          ]
+        ]
+      }
+    },
+    {
+      "code": "13",
+      "condition": "snow flurries",
+      "base": "13/base.jpg",
+      "effects": [
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "13/atmosphere/00.png",
+          "13/atmosphere/01.png",
+          "13/atmosphere/02.png",
+          "13/atmosphere/03.png",
+          "13/atmosphere/04.png"
+        ],
+        "surface": [
+          "13/surface/00.png",
+          "13/surface/01.png",
+          "13/surface/02.png",
+          "13/surface/03.png",
+          "13/surface/04.png"
+        ],
+        "weather": [
+          "13/weather/00.png",
+          "13/weather/01.png",
+          "13/weather/02.png",
+          "13/weather/03.png",
+          "13/weather/04.png"
+        ]
+      },
+      "lightning": "13/lightning.png",
+      "regions": {
+        "skyBottom": 65,
+        "foliage": [
+          [
+            [
+              0,
+              108
+            ],
+            [
+              58,
+              98
+            ],
+            [
+              100,
+              245
+            ],
+            [
+              43,
+              310
+            ],
+            [
+              0,
+              281
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "14",
+      "condition": "light snow showers",
+      "base": "14/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "14/atmosphere/00.png",
+          "14/atmosphere/01.png",
+          "14/atmosphere/02.png",
+          "14/atmosphere/03.png",
+          "14/atmosphere/04.png"
+        ],
+        "surface": [
+          "14/surface/00.png",
+          "14/surface/01.png",
+          "14/surface/02.png",
+          "14/surface/03.png",
+          "14/surface/04.png"
+        ],
+        "weather": [
+          "14/weather/00.png",
+          "14/weather/01.png",
+          "14/weather/02.png",
+          "14/weather/03.png",
+          "14/weather/04.png"
+        ]
+      },
+      "lightning": "14/lightning.png",
+      "regions": {
+        "skyBottom": 170,
+        "water": [
+          [
+            58,
+            527
+          ],
+          [
+            250,
+            531
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ],
+          [
+            0,
+            622
+          ]
+        ],
+        "foliage": [
+          [
+            [
+              0,
+              190
+            ],
+            [
+              120,
+              210
+            ],
+            [
+              193,
+              325
+            ],
+            [
+              79,
+              365
+            ],
+            [
+              0,
+              300
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "15",
+      "condition": "blowing snow",
+      "base": "15/base.jpg",
+      "effects": [
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "15/atmosphere/00.png",
+          "15/atmosphere/01.png",
+          "15/atmosphere/02.png",
+          "15/atmosphere/03.png",
+          "15/atmosphere/04.png"
+        ],
+        "surface": [
+          "15/surface/00.png",
+          "15/surface/01.png",
+          "15/surface/02.png",
+          "15/surface/03.png",
+          "15/surface/04.png"
+        ],
+        "weather": [
+          "15/weather/00.png",
+          "15/weather/01.png",
+          "15/weather/02.png",
+          "15/weather/03.png",
+          "15/weather/04.png"
+        ]
+      },
+      "lightning": "15/lightning.png",
+      "regions": {
+        "skyBottom": 240,
+        "wind": 1.6
+      }
+    },
+    {
+      "code": "16",
+      "condition": "snow",
+      "base": "16/base.jpg",
+      "effects": [
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "16/atmosphere/00.png",
+          "16/atmosphere/01.png",
+          "16/atmosphere/02.png",
+          "16/atmosphere/03.png",
+          "16/atmosphere/04.png"
+        ],
+        "surface": [
+          "16/surface/00.png",
+          "16/surface/01.png",
+          "16/surface/02.png",
+          "16/surface/03.png",
+          "16/surface/04.png"
+        ],
+        "weather": [
+          "16/weather/00.png",
+          "16/weather/01.png",
+          "16/weather/02.png",
+          "16/weather/03.png",
+          "16/weather/04.png"
+        ]
+      },
+      "lightning": "16/lightning.png",
+      "regions": {
+        "skyBottom": 220
+      }
+    },
+    {
+      "code": "17",
+      "condition": "hail",
+      "base": "17/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "17/atmosphere/00.png",
+          "17/atmosphere/01.png",
+          "17/atmosphere/02.png",
+          "17/atmosphere/03.png",
+          "17/atmosphere/04.png"
+        ],
+        "surface": [
+          "17/surface/00.png",
+          "17/surface/01.png",
+          "17/surface/02.png",
+          "17/surface/03.png",
+          "17/surface/04.png"
+        ],
+        "weather": [
+          "17/weather/00.png",
+          "17/weather/01.png",
+          "17/weather/02.png",
+          "17/weather/03.png",
+          "17/weather/04.png"
+        ]
+      },
+      "lightning": "17/lightning.png",
+      "regions": {
+        "skyBottom": 70,
+        "puddles": [
+          [
+            50,
+            573
+          ],
+          [
+            320,
+            572
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ]
+        ]
+      }
+    },
+    {
+      "code": "18",
+      "condition": "sleet",
+      "base": "18/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "18/atmosphere/00.png",
+          "18/atmosphere/01.png",
+          "18/atmosphere/02.png",
+          "18/atmosphere/03.png",
+          "18/atmosphere/04.png"
+        ],
+        "surface": [
+          "18/surface/00.png",
+          "18/surface/01.png",
+          "18/surface/02.png",
+          "18/surface/03.png",
+          "18/surface/04.png"
+        ],
+        "weather": [
+          "18/weather/00.png",
+          "18/weather/01.png",
+          "18/weather/02.png",
+          "18/weather/03.png",
+          "18/weather/04.png"
+        ]
+      },
+      "lightning": "18/lightning.png",
+      "regions": {
+        "skyBottom": 210,
+        "puddles": [
+          [
+            153,
+            548
+          ],
+          [
+            186,
+            546
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ]
+        ]
+      }
+    },
+    {
+      "code": "19",
+      "condition": "dust",
+      "base": "19/base.jpg",
+      "effects": [],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "19/atmosphere/00.png",
+          "19/atmosphere/01.png",
+          "19/atmosphere/02.png",
+          "19/atmosphere/03.png",
+          "19/atmosphere/04.png"
+        ],
+        "surface": [
+          "19/surface/00.png",
+          "19/surface/01.png",
+          "19/surface/02.png",
+          "19/surface/03.png",
+          "19/surface/04.png"
+        ],
+        "weather": [
+          "19/weather/00.png",
+          "19/weather/01.png",
+          "19/weather/02.png",
+          "19/weather/03.png",
+          "19/weather/04.png"
+        ]
+      },
+      "lightning": "19/lightning.png",
+      "regions": {
+        "skyBottom": 300,
+        "wind": 1.6
+      }
+    },
+    {
+      "code": "20",
+      "condition": "foggy",
+      "base": "20/base.jpg",
+      "effects": [
+        "atmosphere"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "20/atmosphere/00.png",
+          "20/atmosphere/01.png",
+          "20/atmosphere/02.png",
+          "20/atmosphere/03.png",
+          "20/atmosphere/04.png"
+        ],
+        "surface": [
+          "20/surface/00.png",
+          "20/surface/01.png",
+          "20/surface/02.png",
+          "20/surface/03.png",
+          "20/surface/04.png"
+        ],
+        "weather": [
+          "20/weather/00.png",
+          "20/weather/01.png",
+          "20/weather/02.png",
+          "20/weather/03.png",
+          "20/weather/04.png"
+        ]
+      },
+      "lightning": "20/lightning.png",
+      "regions": {
+        "skyBottom": 0,
+        "foliage": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              69,
+              0
+            ],
+            [
+              104,
+              280
+            ],
+            [
+              50,
+              352
+            ],
+            [
+              0,
+              275
+            ]
+          ]
+        ],
+        "fog": [
+          [
+            75,
+            80
+          ],
+          [
+            275,
+            80
+          ],
+          [
+            275,
+            600
+          ],
+          [
+            75,
+            600
+          ]
+        ]
+      }
+    },
+    {
+      "code": "21",
+      "condition": "haze",
+      "base": "21/base.jpg",
+      "effects": [
+        "surface"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "21/atmosphere/00.png",
+          "21/atmosphere/01.png",
+          "21/atmosphere/02.png",
+          "21/atmosphere/03.png",
+          "21/atmosphere/04.png"
+        ],
+        "surface": [
+          "21/surface/00.png",
+          "21/surface/01.png",
+          "21/surface/02.png",
+          "21/surface/03.png",
+          "21/surface/04.png"
+        ],
+        "weather": [
+          "21/weather/00.png",
+          "21/weather/01.png",
+          "21/weather/02.png",
+          "21/weather/03.png",
+          "21/weather/04.png"
+        ]
+      },
+      "lightning": "21/lightning.png",
+      "regions": {
+        "skyBottom": 160,
+        "water": [
+          [
+            100,
+            509
+          ],
+          [
+            320,
+            505
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            215,
+            720
+          ],
+          [
+            170,
+            650
+          ]
+        ],
+        "fixedCircles": [
+          [
+            220,
+            205,
+            42
+          ]
+        ]
+      }
+    },
+    {
+      "code": "22",
+      "condition": "smoky",
+      "base": "22/base.jpg",
+      "effects": [],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "22/atmosphere/00.png",
+          "22/atmosphere/01.png",
+          "22/atmosphere/02.png",
+          "22/atmosphere/03.png",
+          "22/atmosphere/04.png"
+        ],
+        "surface": [
+          "22/surface/00.png",
+          "22/surface/01.png",
+          "22/surface/02.png",
+          "22/surface/03.png",
+          "22/surface/04.png"
+        ],
+        "weather": [
+          "22/weather/00.png",
+          "22/weather/01.png",
+          "22/weather/02.png",
+          "22/weather/03.png",
+          "22/weather/04.png"
+        ]
+      },
+      "lightning": "22/lightning.png",
+      "regions": {
+        "skyBottom": 300,
+        "fixedCircles": [
+          [
+            233,
+            125,
+            48
+          ]
+        ],
+        "wind": 1.6
+      }
+    },
+    {
+      "code": "23",
+      "condition": "blustery",
+      "base": "23/base.jpg",
+      "effects": [],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "23/atmosphere/00.png",
+          "23/atmosphere/01.png",
+          "23/atmosphere/02.png",
+          "23/atmosphere/03.png",
+          "23/atmosphere/04.png"
+        ],
+        "surface": [
+          "23/surface/00.png",
+          "23/surface/01.png",
+          "23/surface/02.png",
+          "23/surface/03.png",
+          "23/surface/04.png"
+        ],
+        "weather": [
+          "23/weather/00.png",
+          "23/weather/01.png",
+          "23/weather/02.png",
+          "23/weather/03.png",
+          "23/weather/04.png"
+        ]
+      },
+      "lightning": "23/lightning.png",
+      "regions": {
+        "skyBottom": 110,
+        "foliage": [
+          [
+            [
+              0,
+              140
+            ],
+            [
+              92,
+              170
+            ],
+            [
+              167,
+              370
+            ],
+            [
+              42,
+              415
+            ],
+            [
+              0,
+              350
+            ]
+          ]
+        ],
+        "wind": 1.6
+      }
+    },
+    {
+      "code": "24",
+      "condition": "windy",
+      "base": "24/base.jpg",
+      "effects": [
+        "surface"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "24/atmosphere/00.png",
+          "24/atmosphere/01.png",
+          "24/atmosphere/02.png",
+          "24/atmosphere/03.png",
+          "24/atmosphere/04.png"
+        ],
+        "surface": [
+          "24/surface/00.png",
+          "24/surface/01.png",
+          "24/surface/02.png",
+          "24/surface/03.png",
+          "24/surface/04.png"
+        ],
+        "weather": [
+          "24/weather/00.png",
+          "24/weather/01.png",
+          "24/weather/02.png",
+          "24/weather/03.png",
+          "24/weather/04.png"
+        ]
+      },
+      "lightning": "24/lightning.png",
+      "regions": {
+        "skyBottom": 220,
+        "water": [
+          [
+            200,
+            430
+          ],
+          [
+            320,
+            430
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            180,
+            720
+          ],
+          [
+            142,
+            610
+          ]
+        ],
+        "foliage": [
+          [
+            [
+              0,
+              268
+            ],
+            [
+              76,
+              260
+            ],
+            [
+              161,
+              365
+            ],
+            [
+              125,
+              419
+            ],
+            [
+              0,
+              420
+            ]
+          ]
+        ],
+        "wind": 1.6
+      }
+    },
+    {
+      "code": "25",
+      "condition": "cold",
+      "base": "25/base.jpg",
+      "effects": [],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "25/atmosphere/00.png",
+          "25/atmosphere/01.png",
+          "25/atmosphere/02.png",
+          "25/atmosphere/03.png",
+          "25/atmosphere/04.png"
+        ],
+        "surface": [
+          "25/surface/00.png",
+          "25/surface/01.png",
+          "25/surface/02.png",
+          "25/surface/03.png",
+          "25/surface/04.png"
+        ],
+        "weather": [
+          "25/weather/00.png",
+          "25/weather/01.png",
+          "25/weather/02.png",
+          "25/weather/03.png",
+          "25/weather/04.png"
+        ]
+      },
+      "lightning": "25/lightning.png",
+      "regions": {
+        "skyBottom": 220,
+        "foliage": [
+          [
+            [
+              0,
+              570
+            ],
+            [
+              125,
+              590
+            ],
+            [
+              160,
+              710
+            ],
+            [
+              0,
+              720
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "26",
+      "condition": "cloudy",
+      "base": "26/base.jpg",
+      "effects": [
+        "surface"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "26/atmosphere/00.png",
+          "26/atmosphere/01.png",
+          "26/atmosphere/02.png",
+          "26/atmosphere/03.png",
+          "26/atmosphere/04.png"
+        ],
+        "surface": [
+          "26/surface/00.png",
+          "26/surface/01.png",
+          "26/surface/02.png",
+          "26/surface/03.png",
+          "26/surface/04.png"
+        ],
+        "weather": [
+          "26/weather/00.png",
+          "26/weather/01.png",
+          "26/weather/02.png",
+          "26/weather/03.png",
+          "26/weather/04.png"
+        ]
+      },
+      "lightning": "26/lightning.png",
+      "regions": {
+        "skyBottom": 300,
+        "water": [
+          [
+            9,
+            515
+          ],
+          [
+            265,
+            510
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ]
+        ]
+      }
+    },
+    {
+      "code": "27",
+      "condition": "mostly cloudy (night)",
+      "base": "27/base.jpg",
+      "effects": [
+        "atmosphere"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "27/atmosphere/00.png",
+          "27/atmosphere/01.png",
+          "27/atmosphere/02.png",
+          "27/atmosphere/03.png",
+          "27/atmosphere/04.png"
+        ],
+        "surface": [
+          "27/surface/00.png",
+          "27/surface/01.png",
+          "27/surface/02.png",
+          "27/surface/03.png",
+          "27/surface/04.png"
+        ],
+        "weather": [
+          "27/weather/00.png",
+          "27/weather/01.png",
+          "27/weather/02.png",
+          "27/weather/03.png",
+          "27/weather/04.png"
+        ]
+      },
+      "lightning": "27/lightning.png",
+      "regions": {
+        "skyBottom": 310,
+        "fixedCircles": [
+          [
+            237,
+            143,
+            56
+          ]
+        ],
+        "stars": [
+          [
+            208,
+            116,
+            2
+          ],
+          [
+            267,
+            167,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "code": "28",
+      "condition": "mostly cloudy (day)",
+      "base": "28/base.jpg",
+      "effects": [
+        "surface"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "28/atmosphere/00.png",
+          "28/atmosphere/01.png",
+          "28/atmosphere/02.png",
+          "28/atmosphere/03.png",
+          "28/atmosphere/04.png"
+        ],
+        "surface": [
+          "28/surface/00.png",
+          "28/surface/01.png",
+          "28/surface/02.png",
+          "28/surface/03.png",
+          "28/surface/04.png"
+        ],
+        "weather": [
+          "28/weather/00.png",
+          "28/weather/01.png",
+          "28/weather/02.png",
+          "28/weather/03.png",
+          "28/weather/04.png"
+        ]
+      },
+      "lightning": "28/lightning.png",
+      "regions": {
+        "skyBottom": 230,
+        "water": [
+          [
+            111,
+            540
+          ],
+          [
+            246,
+            540
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ],
+          [
+            65,
+            620
+          ]
+        ]
+      }
+    },
+    {
+      "code": "29",
+      "condition": "partly cloudy (night)",
+      "base": "29/base.jpg",
+      "effects": [
+        "atmosphere",
+        "surface"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "29/atmosphere/00.png",
+          "29/atmosphere/01.png",
+          "29/atmosphere/02.png",
+          "29/atmosphere/03.png",
+          "29/atmosphere/04.png"
+        ],
+        "surface": [
+          "29/surface/00.png",
+          "29/surface/01.png",
+          "29/surface/02.png",
+          "29/surface/03.png",
+          "29/surface/04.png"
+        ],
+        "weather": [
+          "29/weather/00.png",
+          "29/weather/01.png",
+          "29/weather/02.png",
+          "29/weather/03.png",
+          "29/weather/04.png"
+        ]
+      },
+      "lightning": "29/lightning.png",
+      "regions": {
+        "skyBottom": 300,
+        "water": [
+          [
+            116,
+            531
+          ],
+          [
+            320,
+            525
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            185,
+            720
+          ],
+          [
+            115,
+            630
+          ]
+        ],
+        "fixedCircles": [
+          [
+            240,
+            105,
+            47
+          ]
+        ],
+        "stars": [
+          [
+            62,
+            11,
+            2
+          ],
+          [
+            82,
+            24,
+            2
+          ],
+          [
+            151,
+            26,
+            2
+          ],
+          [
+            269,
+            37,
+            2
+          ],
+          [
+            177,
+            44,
+            2
+          ],
+          [
+            188,
+            58,
+            2
+          ],
+          [
+            286,
+            60,
+            2
+          ],
+          [
+            307,
+            86,
+            2
+          ],
+          [
+            166,
+            88,
+            2
+          ],
+          [
+            298,
+            112,
+            2
+          ],
+          [
+            138,
+            124,
+            2
+          ],
+          [
+            167,
+            147,
+            2
+          ],
+          [
+            196,
+            147,
+            2
+          ],
+          [
+            303,
+            148,
+            2
+          ],
+          [
+            218,
+            166,
+            2
+          ],
+          [
+            231,
+            186,
+            2
+          ],
+          [
+            159,
+            236,
+            2
+          ],
+          [
+            182,
+            240,
+            2
+          ],
+          [
+            212,
+            247,
+            2
+          ],
+          [
+            102,
+            254,
+            2
+          ],
+          [
+            138,
+            270,
+            2
+          ],
+          [
+            164,
+            274,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "code": "30",
+      "condition": "partly cloudy (day)",
+      "base": "30/base.jpg",
+      "effects": [
+        "surface"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "30/atmosphere/00.png",
+          "30/atmosphere/01.png",
+          "30/atmosphere/02.png",
+          "30/atmosphere/03.png",
+          "30/atmosphere/04.png"
+        ],
+        "surface": [
+          "30/surface/00.png",
+          "30/surface/01.png",
+          "30/surface/02.png",
+          "30/surface/03.png",
+          "30/surface/04.png"
+        ],
+        "weather": [
+          "30/weather/00.png",
+          "30/weather/01.png",
+          "30/weather/02.png",
+          "30/weather/03.png",
+          "30/weather/04.png"
+        ]
+      },
+      "lightning": "30/lightning.png",
+      "regions": {
+        "skyBottom": 210,
+        "water": [
+          [
+            112,
+            558
+          ],
+          [
+            270,
+            558
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            45,
+            720
+          ]
+        ],
+        "foliage": [
+          [
+            [
+              0,
+              251
+            ],
+            [
+              75,
+              250
+            ],
+            [
+              150,
+              421
+            ],
+            [
+              25,
+              435
+            ],
+            [
+              0,
+              345
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "31",
+      "condition": "clear (night)",
+      "base": "31/base.jpg",
+      "effects": [
+        "atmosphere",
+        "surface"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "31/atmosphere/00.png",
+          "31/atmosphere/01.png",
+          "31/atmosphere/02.png",
+          "31/atmosphere/03.png",
+          "31/atmosphere/04.png"
+        ],
+        "surface": [
+          "31/surface/00.png",
+          "31/surface/01.png",
+          "31/surface/02.png",
+          "31/surface/03.png",
+          "31/surface/04.png"
+        ],
+        "weather": [
+          "31/weather/00.png",
+          "31/weather/01.png",
+          "31/weather/02.png",
+          "31/weather/03.png",
+          "31/weather/04.png"
+        ]
+      },
+      "lightning": "31/lightning.png",
+      "regions": {
+        "skyBottom": 0,
+        "water": [
+          [
+            95,
+            516
+          ],
+          [
+            320,
+            514
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            220,
+            720
+          ],
+          [
+            135,
+            640
+          ]
+        ],
+        "foliage": [
+          [
+            [
+              0,
+              200
+            ],
+            [
+              90,
+              224
+            ],
+            [
+              152,
+              344
+            ],
+            [
+              92,
+              421
+            ],
+            [
+              0,
+              376
+            ]
+          ]
+        ],
+        "stars": [
+          [
+            93,
+            14,
+            2
+          ],
+          [
+            243,
+            18,
+            2
+          ],
+          [
+            53,
+            31,
+            2
+          ],
+          [
+            274,
+            32,
+            2
+          ],
+          [
+            154,
+            34,
+            2
+          ],
+          [
+            145,
+            46,
+            2
+          ],
+          [
+            224,
+            50,
+            2
+          ],
+          [
+            25,
+            63,
+            2
+          ],
+          [
+            101,
+            64,
+            2
+          ],
+          [
+            259,
+            64,
+            2
+          ],
+          [
+            188,
+            66,
+            2
+          ],
+          [
+            293,
+            67,
+            2
+          ],
+          [
+            40,
+            79,
+            2
+          ],
+          [
+            292,
+            80,
+            2
+          ],
+          [
+            119,
+            90,
+            2
+          ],
+          [
+            82,
+            94,
+            2
+          ],
+          [
+            157,
+            106,
+            2
+          ],
+          [
+            23,
+            111,
+            2
+          ],
+          [
+            302,
+            112,
+            2
+          ],
+          [
+            72,
+            123,
+            2
+          ],
+          [
+            146,
+            131,
+            2
+          ],
+          [
+            52,
+            138,
+            2
+          ],
+          [
+            288,
+            147,
+            2
+          ],
+          [
+            132,
+            150,
+            2
+          ],
+          [
+            301,
+            180,
+            2
+          ],
+          [
+            156,
+            182,
+            2
+          ],
+          [
+            286,
+            204,
+            2
+          ],
+          [
+            174,
+            216,
+            2
+          ],
+          [
+            256,
+            231,
+            2
+          ],
+          [
+            128,
+            243,
+            2
+          ],
+          [
+            192,
+            250,
+            2
+          ],
+          [
+            292,
+            254,
+            2
+          ],
+          [
+            249,
+            274,
+            2
+          ],
+          [
+            171,
+            276,
+            2
+          ],
+          [
+            284,
+            284,
+            2
+          ],
+          [
+            232,
+            300,
+            2
+          ],
+          [
+            278,
+            309,
+            2
+          ],
+          [
+            182,
+            324,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "code": "32",
+      "condition": "sunny",
+      "base": "32/base.jpg",
+      "effects": [
+        "surface"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "32/atmosphere/00.png",
+          "32/atmosphere/01.png",
+          "32/atmosphere/02.png",
+          "32/atmosphere/03.png",
+          "32/atmosphere/04.png"
+        ],
+        "surface": [
+          "32/surface/00.png",
+          "32/surface/01.png",
+          "32/surface/02.png",
+          "32/surface/03.png",
+          "32/surface/04.png"
+        ],
+        "weather": [
+          "32/weather/00.png",
+          "32/weather/01.png",
+          "32/weather/02.png",
+          "32/weather/03.png",
+          "32/weather/04.png"
+        ]
+      },
+      "lightning": "32/lightning.png",
+      "regions": {
+        "skyBottom": 0,
+        "water": [
+          [
+            90,
+            503
+          ],
+          [
+            320,
+            503
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            205,
+            720
+          ],
+          [
+            165,
+            641
+          ],
+          [
+            105,
+            594
+          ]
+        ],
+        "foliage": [
+          [
+            [
+              0,
+              170
+            ],
+            [
+              74,
+              180
+            ],
+            [
+              168,
+              315
+            ],
+            [
+              125,
+              355
+            ],
+            [
+              0,
+              303
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "33",
+      "condition": "fair (night)",
+      "base": "33/base.jpg",
+      "effects": [
+        "atmosphere"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "33/atmosphere/00.png",
+          "33/atmosphere/01.png",
+          "33/atmosphere/02.png",
+          "33/atmosphere/03.png",
+          "33/atmosphere/04.png"
+        ],
+        "surface": [
+          "33/surface/00.png",
+          "33/surface/01.png",
+          "33/surface/02.png",
+          "33/surface/03.png",
+          "33/surface/04.png"
+        ],
+        "weather": [
+          "33/weather/00.png",
+          "33/weather/01.png",
+          "33/weather/02.png",
+          "33/weather/03.png",
+          "33/weather/04.png"
+        ]
+      },
+      "lightning": "33/lightning.png",
+      "regions": {
+        "skyBottom": 260,
+        "fixedCircles": [
+          [
+            240,
+            141,
+            55
+          ]
+        ],
+        "stars": [
+          [
+            42,
+            27,
+            2
+          ],
+          [
+            255,
+            33,
+            2
+          ],
+          [
+            130,
+            42,
+            2
+          ],
+          [
+            148,
+            62,
+            2
+          ],
+          [
+            277,
+            66,
+            2
+          ],
+          [
+            93,
+            67,
+            2
+          ],
+          [
+            190,
+            68,
+            2
+          ],
+          [
+            17,
+            93,
+            2
+          ],
+          [
+            146,
+            118,
+            2
+          ],
+          [
+            46,
+            129,
+            2
+          ],
+          [
+            300,
+            146,
+            2
+          ],
+          [
+            106,
+            153,
+            2
+          ],
+          [
+            65,
+            158,
+            2
+          ],
+          [
+            172,
+            173,
+            2
+          ],
+          [
+            40,
+            183,
+            2
+          ],
+          [
+            97,
+            208,
+            2
+          ],
+          [
+            160,
+            218,
+            2
+          ],
+          [
+            218,
+            239,
+            2
+          ],
+          [
+            155,
+            248,
+            2
+          ],
+          [
+            284,
+            252,
+            2
+          ],
+          [
+            172,
+            294,
+            2
+          ],
+          [
+            220,
+            323,
+            2
+          ],
+          [
+            196,
+            356,
+            2
+          ]
+        ]
+      }
+    },
+    {
+      "code": "34",
+      "condition": "fair (day)",
+      "base": "34/base.jpg",
+      "effects": [
+        "surface"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "34/atmosphere/00.png",
+          "34/atmosphere/01.png",
+          "34/atmosphere/02.png",
+          "34/atmosphere/03.png",
+          "34/atmosphere/04.png"
+        ],
+        "surface": [
+          "34/surface/00.png",
+          "34/surface/01.png",
+          "34/surface/02.png",
+          "34/surface/03.png",
+          "34/surface/04.png"
+        ],
+        "weather": [
+          "34/weather/00.png",
+          "34/weather/01.png",
+          "34/weather/02.png",
+          "34/weather/03.png",
+          "34/weather/04.png"
+        ]
+      },
+      "lightning": "34/lightning.png",
+      "regions": {
+        "skyBottom": 150,
+        "water": [
+          [
+            97,
+            571
+          ],
+          [
+            286,
+            562
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ],
+          [
+            0,
+            660
+          ]
+        ],
+        "foliage": [
+          [
+            [
+              0,
+              175
+            ],
+            [
+              100,
+              213
+            ],
+            [
+              170,
+              352
+            ],
+            [
+              97,
+              381
+            ],
+            [
+              0,
+              323
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "35",
+      "condition": "mixed rain and hail",
+      "base": "35/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "35/atmosphere/00.png",
+          "35/atmosphere/01.png",
+          "35/atmosphere/02.png",
+          "35/atmosphere/03.png",
+          "35/atmosphere/04.png"
+        ],
+        "surface": [
+          "35/surface/00.png",
+          "35/surface/01.png",
+          "35/surface/02.png",
+          "35/surface/03.png",
+          "35/surface/04.png"
+        ],
+        "weather": [
+          "35/weather/00.png",
+          "35/weather/01.png",
+          "35/weather/02.png",
+          "35/weather/03.png",
+          "35/weather/04.png"
+        ]
+      },
+      "lightning": "35/lightning.png",
+      "regions": {
+        "skyBottom": 160,
+        "puddles": [
+          [
+            129,
+            539
+          ],
+          [
+            320,
+            538
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            14,
+            720
+          ]
+        ]
+      }
+    },
+    {
+      "code": "36",
+      "condition": "hot",
+      "base": "36/base.jpg",
+      "effects": [
+        "surface"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "36/atmosphere/00.png",
+          "36/atmosphere/01.png",
+          "36/atmosphere/02.png",
+          "36/atmosphere/03.png",
+          "36/atmosphere/04.png"
+        ],
+        "surface": [
+          "36/surface/00.png",
+          "36/surface/01.png",
+          "36/surface/02.png",
+          "36/surface/03.png",
+          "36/surface/04.png"
+        ],
+        "weather": [
+          "36/weather/00.png",
+          "36/weather/01.png",
+          "36/weather/02.png",
+          "36/weather/03.png",
+          "36/weather/04.png"
+        ]
+      },
+      "lightning": "36/lightning.png",
+      "regions": {
+        "skyBottom": 90,
+        "foliage": [
+          [
+            [
+              245,
+              134
+            ],
+            [
+              320,
+              117
+            ],
+            [
+              320,
+              418
+            ],
+            [
+              244,
+              408
+            ],
+            [
+              215,
+              324
+            ]
+          ],
+          [
+            [
+              0,
+              280
+            ],
+            [
+              64,
+              274
+            ],
+            [
+              93,
+              438
+            ],
+            [
+              0,
+              475
+            ]
+          ]
+        ],
+        "heat": [
+          [
+            65,
+            451
+          ],
+          [
+            165,
+            451
+          ],
+          [
+            219,
+            570
+          ],
+          [
+            193,
+            680
+          ],
+          [
+            73,
+            668
+          ]
+        ]
+      }
+    },
+    {
+      "code": "37",
+      "condition": "isolated thunderstorms",
+      "base": "37/base.jpg",
+      "effects": [
+        "surface",
+        "weather",
+        "lightning"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "37/atmosphere/00.png",
+          "37/atmosphere/01.png",
+          "37/atmosphere/02.png",
+          "37/atmosphere/03.png",
+          "37/atmosphere/04.png"
+        ],
+        "surface": [
+          "37/surface/00.png",
+          "37/surface/01.png",
+          "37/surface/02.png",
+          "37/surface/03.png",
+          "37/surface/04.png"
+        ],
+        "weather": [
+          "37/weather/00.png",
+          "37/weather/01.png",
+          "37/weather/02.png",
+          "37/weather/03.png",
+          "37/weather/04.png"
+        ]
+      },
+      "lightning": "37/lightning.png",
+      "regions": {
+        "skyBottom": 300,
+        "water": [
+          [
+            0,
+            569
+          ],
+          [
+            320,
+            565
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ]
+        ],
+        "precipitation": [
+          [
+            [
+              222,
+              321
+            ],
+            [
+              320,
+              320
+            ],
+            [
+              320,
+              477
+            ],
+            [
+              225,
+              454
+            ]
+          ]
+        ],
+        "lightning": [
+          [
+            [
+              249,
+              331
+            ],
+            [
+              290,
+              331
+            ],
+            [
+              286,
+              457
+            ],
+            [
+              240,
+              457
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "38",
+      "condition": "scattered thunderstorms",
+      "base": "38/base.jpg",
+      "effects": [
+        "surface",
+        "weather",
+        "lightning"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "38/atmosphere/00.png",
+          "38/atmosphere/01.png",
+          "38/atmosphere/02.png",
+          "38/atmosphere/03.png",
+          "38/atmosphere/04.png"
+        ],
+        "surface": [
+          "38/surface/00.png",
+          "38/surface/01.png",
+          "38/surface/02.png",
+          "38/surface/03.png",
+          "38/surface/04.png"
+        ],
+        "weather": [
+          "38/weather/00.png",
+          "38/weather/01.png",
+          "38/weather/02.png",
+          "38/weather/03.png",
+          "38/weather/04.png"
+        ]
+      },
+      "lightning": "38/lightning.png",
+      "regions": {
+        "skyBottom": 320,
+        "water": [
+          [
+            177,
+            520
+          ],
+          [
+            220,
+            520
+          ],
+          [
+            220,
+            580
+          ],
+          [
+            320,
+            630
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            250,
+            720
+          ],
+          [
+            205,
+            640
+          ],
+          [
+            160,
+            577
+          ]
+        ],
+        "precipitation": [
+          [
+            [
+              0,
+              195
+            ],
+            [
+              92,
+              195
+            ],
+            [
+              85,
+              354
+            ],
+            [
+              0,
+              355
+            ]
+          ],
+          [
+            [
+              220,
+              280
+            ],
+            [
+              320,
+              280
+            ],
+            [
+              320,
+              382
+            ],
+            [
+              217,
+              370
+            ]
+          ]
+        ],
+        "lightning": [
+          [
+            [
+              0,
+              190
+            ],
+            [
+              95,
+              190
+            ],
+            [
+              95,
+              355
+            ],
+            [
+              0,
+              355
+            ]
+          ],
+          [
+            [
+              225,
+              278
+            ],
+            [
+              320,
+              278
+            ],
+            [
+              320,
+              390
+            ],
+            [
+              225,
+              390
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "39",
+      "condition": "scattered thunderstorms",
+      "base": "39/base.jpg",
+      "effects": [
+        "surface",
+        "weather",
+        "lightning"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "39/atmosphere/00.png",
+          "39/atmosphere/01.png",
+          "39/atmosphere/02.png",
+          "39/atmosphere/03.png",
+          "39/atmosphere/04.png"
+        ],
+        "surface": [
+          "39/surface/00.png",
+          "39/surface/01.png",
+          "39/surface/02.png",
+          "39/surface/03.png",
+          "39/surface/04.png"
+        ],
+        "weather": [
+          "39/weather/00.png",
+          "39/weather/01.png",
+          "39/weather/02.png",
+          "39/weather/03.png",
+          "39/weather/04.png"
+        ]
+      },
+      "lightning": "39/lightning.png",
+      "regions": {
+        "skyBottom": 320,
+        "water": [
+          [
+            135,
+            449
+          ],
+          [
+            320,
+            444
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ],
+          [
+            70,
+            600
+          ]
+        ],
+        "precipitation": [
+          [
+            [
+              0,
+              348
+            ],
+            [
+              78,
+              349
+            ],
+            [
+              79,
+              430
+            ],
+            [
+              0,
+              435
+            ]
+          ],
+          [
+            [
+              200,
+              235
+            ],
+            [
+              320,
+              235
+            ],
+            [
+              320,
+              429
+            ],
+            [
+              190,
+              423
+            ]
+          ]
+        ],
+        "lightning": [
+          [
+            [
+              0,
+              330
+            ],
+            [
+              85,
+              330
+            ],
+            [
+              85,
+              444
+            ],
+            [
+              0,
+              444
+            ]
+          ],
+          [
+            [
+              190,
+              223
+            ],
+            [
+              320,
+              223
+            ],
+            [
+              320,
+              450
+            ],
+            [
+              190,
+              450
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "40",
+      "condition": "scattered showers",
+      "base": "40/base.jpg",
+      "effects": [
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "40/atmosphere/00.png",
+          "40/atmosphere/01.png",
+          "40/atmosphere/02.png",
+          "40/atmosphere/03.png",
+          "40/atmosphere/04.png"
+        ],
+        "surface": [
+          "40/surface/00.png",
+          "40/surface/01.png",
+          "40/surface/02.png",
+          "40/surface/03.png",
+          "40/surface/04.png"
+        ],
+        "weather": [
+          "40/weather/00.png",
+          "40/weather/01.png",
+          "40/weather/02.png",
+          "40/weather/03.png",
+          "40/weather/04.png"
+        ]
+      },
+      "lightning": "40/lightning.png",
+      "regions": {
+        "skyBottom": 300,
+        "precipitation": [
+          [
+            [
+              0,
+              195
+            ],
+            [
+              80,
+              195
+            ],
+            [
+              80,
+              346
+            ],
+            [
+              0,
+              342
+            ]
+          ],
+          [
+            [
+              224,
+              273
+            ],
+            [
+              320,
+              273
+            ],
+            [
+              320,
+              394
+            ],
+            [
+              221,
+              381
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "41",
+      "condition": "heavy snow",
+      "base": "41/base.jpg",
+      "effects": [
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "41/atmosphere/00.png",
+          "41/atmosphere/01.png",
+          "41/atmosphere/02.png",
+          "41/atmosphere/03.png",
+          "41/atmosphere/04.png"
+        ],
+        "surface": [
+          "41/surface/00.png",
+          "41/surface/01.png",
+          "41/surface/02.png",
+          "41/surface/03.png",
+          "41/surface/04.png"
+        ],
+        "weather": [
+          "41/weather/00.png",
+          "41/weather/01.png",
+          "41/weather/02.png",
+          "41/weather/03.png",
+          "41/weather/04.png"
+        ]
+      },
+      "lightning": "41/lightning.png",
+      "regions": {
+        "skyBottom": 170
+      }
+    },
+    {
+      "code": "42",
+      "condition": "scattered snow showers",
+      "base": "42/base.jpg",
+      "effects": [
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "42/atmosphere/00.png",
+          "42/atmosphere/01.png",
+          "42/atmosphere/02.png",
+          "42/atmosphere/03.png",
+          "42/atmosphere/04.png"
+        ],
+        "surface": [
+          "42/surface/00.png",
+          "42/surface/01.png",
+          "42/surface/02.png",
+          "42/surface/03.png",
+          "42/surface/04.png"
+        ],
+        "weather": [
+          "42/weather/00.png",
+          "42/weather/01.png",
+          "42/weather/02.png",
+          "42/weather/03.png",
+          "42/weather/04.png"
+        ]
+      },
+      "lightning": "42/lightning.png",
+      "regions": {
+        "skyBottom": 210,
+        "precipitation": [
+          [
+            [
+              13,
+              62
+            ],
+            [
+              130,
+              62
+            ],
+            [
+              130,
+              311
+            ],
+            [
+              0,
+              310
+            ]
+          ],
+          [
+            [
+              218,
+              180
+            ],
+            [
+              320,
+              180
+            ],
+            [
+              320,
+              379
+            ],
+            [
+              214,
+              370
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "43",
+      "condition": "heavy snow",
+      "base": "43/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "43/atmosphere/00.png",
+          "43/atmosphere/01.png",
+          "43/atmosphere/02.png",
+          "43/atmosphere/03.png",
+          "43/atmosphere/04.png"
+        ],
+        "surface": [
+          "43/surface/00.png",
+          "43/surface/01.png",
+          "43/surface/02.png",
+          "43/surface/03.png",
+          "43/surface/04.png"
+        ],
+        "weather": [
+          "43/weather/00.png",
+          "43/weather/01.png",
+          "43/weather/02.png",
+          "43/weather/03.png",
+          "43/weather/04.png"
+        ]
+      },
+      "lightning": "43/lightning.png",
+      "regions": {
+        "skyBottom": 210,
+        "water": [
+          [
+            154,
+            559
+          ],
+          [
+            216,
+            560
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            194,
+            720
+          ]
+        ]
+      }
+    },
+    {
+      "code": "44",
+      "condition": "partly cloudy",
+      "base": "44/base.jpg",
+      "effects": [
+        "surface"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "44/atmosphere/00.png",
+          "44/atmosphere/01.png",
+          "44/atmosphere/02.png",
+          "44/atmosphere/03.png",
+          "44/atmosphere/04.png"
+        ],
+        "surface": [
+          "44/surface/00.png",
+          "44/surface/01.png",
+          "44/surface/02.png",
+          "44/surface/03.png",
+          "44/surface/04.png"
+        ],
+        "weather": [
+          "44/weather/00.png",
+          "44/weather/01.png",
+          "44/weather/02.png",
+          "44/weather/03.png",
+          "44/weather/04.png"
+        ]
+      },
+      "lightning": "44/lightning.png",
+      "regions": {
+        "skyBottom": 150,
+        "water": [
+          [
+            180,
+            529
+          ],
+          [
+            246,
+            530
+          ],
+          [
+            247,
+            600
+          ],
+          [
+            320,
+            625
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            265,
+            720
+          ],
+          [
+            212,
+            651
+          ],
+          [
+            180,
+            610
+          ]
+        ],
+        "foliage": [
+          [
+            [
+              0,
+              160
+            ],
+            [
+              67,
+              180
+            ],
+            [
+              174,
+              300
+            ],
+            [
+              125,
+              345
+            ],
+            [
+              0,
+              320
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "45",
+      "condition": "thundershowers",
+      "base": "45/base.jpg",
+      "effects": [
+        "surface",
+        "weather",
+        "lightning"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "45/atmosphere/00.png",
+          "45/atmosphere/01.png",
+          "45/atmosphere/02.png",
+          "45/atmosphere/03.png",
+          "45/atmosphere/04.png"
+        ],
+        "surface": [
+          "45/surface/00.png",
+          "45/surface/01.png",
+          "45/surface/02.png",
+          "45/surface/03.png",
+          "45/surface/04.png"
+        ],
+        "weather": [
+          "45/weather/00.png",
+          "45/weather/01.png",
+          "45/weather/02.png",
+          "45/weather/03.png",
+          "45/weather/04.png"
+        ]
+      },
+      "lightning": "45/lightning.png",
+      "regions": {
+        "skyBottom": 220,
+        "puddles": [
+          [
+            105,
+            570
+          ],
+          [
+            320,
+            565
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ]
+        ]
+      }
+    },
+    {
+      "code": "46",
+      "condition": "snow showers",
+      "base": "46/base.jpg",
+      "effects": [
+        "surface",
+        "weather"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "46/atmosphere/00.png",
+          "46/atmosphere/01.png",
+          "46/atmosphere/02.png",
+          "46/atmosphere/03.png",
+          "46/atmosphere/04.png"
+        ],
+        "surface": [
+          "46/surface/00.png",
+          "46/surface/01.png",
+          "46/surface/02.png",
+          "46/surface/03.png",
+          "46/surface/04.png"
+        ],
+        "weather": [
+          "46/weather/00.png",
+          "46/weather/01.png",
+          "46/weather/02.png",
+          "46/weather/03.png",
+          "46/weather/04.png"
+        ]
+      },
+      "lightning": "46/lightning.png",
+      "regions": {
+        "skyBottom": 220,
+        "water": [
+          [
+            240,
+            549
+          ],
+          [
+            320,
+            545
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            301,
+            720
+          ],
+          [
+            262,
+            655
+          ]
+        ]
+      }
+    },
+    {
+      "code": "47",
+      "condition": "isolated thundershowers",
+      "base": "47/base.jpg",
+      "effects": [
+        "surface",
+        "weather",
+        "lightning"
+      ],
+      "cleanPlate": true,
+      "frames": {
+        "atmosphere": [
+          "47/atmosphere/00.png",
+          "47/atmosphere/01.png",
+          "47/atmosphere/02.png",
+          "47/atmosphere/03.png",
+          "47/atmosphere/04.png"
+        ],
+        "surface": [
+          "47/surface/00.png",
+          "47/surface/01.png",
+          "47/surface/02.png",
+          "47/surface/03.png",
+          "47/surface/04.png"
+        ],
+        "weather": [
+          "47/weather/00.png",
+          "47/weather/01.png",
+          "47/weather/02.png",
+          "47/weather/03.png",
+          "47/weather/04.png"
+        ]
+      },
+      "lightning": "47/lightning.png",
+      "regions": {
+        "skyBottom": 270,
+        "water": [
+          [
+            133,
+            470
+          ],
+          [
+            320,
+            470
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            164,
+            720
+          ],
+          [
+            91,
+            646
+          ]
+        ],
+        "precipitation": [
+          [
+            [
+              213,
+              352
+            ],
+            [
+              310,
+              352
+            ],
+            [
+              310,
+              462
+            ],
+            [
+              206,
+              462
+            ]
+          ]
+        ],
+        "lightning": [
+          [
+            [
+              210,
+              352
+            ],
+            [
+              310,
+              352
+            ],
+            [
+              310,
+              469
+            ],
+            [
+              210,
+              469
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "code": "na",
+      "condition": "not available",
+      "base": "na/base.jpg",
+      "effects": [
+        "surface"
+      ],
+      "cleanPlate": false,
+      "frames": {
+        "atmosphere": [
+          "na/atmosphere/00.png",
+          "na/atmosphere/01.png",
+          "na/atmosphere/02.png",
+          "na/atmosphere/03.png",
+          "na/atmosphere/04.png"
+        ],
+        "surface": [
+          "na/surface/00.png",
+          "na/surface/01.png",
+          "na/surface/02.png",
+          "na/surface/03.png",
+          "na/surface/04.png"
+        ],
+        "weather": [
+          "na/weather/00.png",
+          "na/weather/01.png",
+          "na/weather/02.png",
+          "na/weather/03.png",
+          "na/weather/04.png"
+        ]
+      },
+      "lightning": "na/lightning.png",
+      "regions": {
+        "skyBottom": 190,
+        "water": [
+          [
+            150,
+            520
+          ],
+          [
+            320,
+            509
+          ],
+          [
+            320,
+            720
+          ],
+          [
+            0,
+            720
+          ],
+          [
+            52,
+            652
+          ]
+        ],
+        "foliage": [
+          [
+            [
+              0,
+              260
+            ],
+            [
+              83,
+              249
+            ],
+            [
+              137,
+              353
+            ],
+            [
+              50,
+              401
+            ],
+            [
+              0,
+              367
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -30,6 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from check_upstream import _get, _dep_latest, _dep_current, _semver  # noqa: E402
 
 _JURIAL = 'https://raw.githubusercontent.com/jurialmunkey/repository.jurialmunkey/master/omega/zips'
+_JURIAL_REPO = 'https://raw.githubusercontent.com/jurialmunkey/repository.jurialmunkey/master/repo/zips'
 
 # id -> (latest-version source url, source kind, zip url template)
 AUTO_DEPS = {
@@ -50,10 +51,12 @@ AUTO_DEPS = {
     'script.skinshortcuts': (
         'https://mirrors.kodi.tv/addons/omega/script.skinshortcuts/', 'kodi_dir',
         'https://mirrors.kodi.tv/addons/omega/{id}/{id}-{ver}.zip'),
-    # Asaf's active scraper (kodifitzwell / yashimaru mirror)
-    'script.module.magneto': (
-        'https://kodiyashimaru.github.io/repo/packages/addons.xml', 'addons_xml',
-        'https://kodiyashimaru.github.io/repo/{id}/{id}-{ver}.zip'),
+    # script.module.magneto (Asaf's active Gears scraper) is NOT auto-adopted
+    # any more (2026-10-22): from 6.10.16 upstream turned it into a thin
+    # wrapper with a hard <import addon="plugin.video.pov"> -- adopting it
+    # unattended would leave every Gears-only box with a dependency-broken
+    # scraper. It stays on check_upstream's alert-only watch (kodifitzwell's
+    # repo; the kodiyashimaru mirror we used to read is empty now).
     # Third-party SKINS, vendored unmodified (nothing of ours inside them), so
     # they track their developers the same way any other vanilla dep does.
     #
@@ -74,6 +77,12 @@ AUTO_DEPS = {
         _JURIAL + '/addons.xml', 'addons_xml', _JURIAL + '/{id}/{id}-{ver}.zip'),
     'resource.font.robotocjksc': (
         _JURIAL + '/addons.xml', 'addons_xml', _JURIAL + '/{id}/{id}-{ver}.zip'),
+    # AF3 3.4.4+ hard-requires these art packs. They are published in
+    # jurialmunkey's OTHER datadir (repo/zips, not omega/zips).
+    'resource.images.arctic.splash': (
+        _JURIAL_REPO + '/addons.xml', 'addons_xml', _JURIAL_REPO + '/{id}/{id}-{ver}.zip'),
+    'resource.images.arctic.weather': (
+        _JURIAL_REPO + '/addons.xml', 'addons_xml', _JURIAL_REPO + '/{id}/{id}-{ver}.zip'),
     'service.subtitles.localsubtitle': (
         'https://raw.githubusercontent.com/peno64/repository.peno64/master/repo/zips/addons.xml', 'addons_xml',
         'https://raw.githubusercontent.com/peno64/repository.peno64/master/repo/zips/{id}/{id}-{ver}.zip'),

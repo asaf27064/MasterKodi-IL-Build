@@ -256,6 +256,7 @@ def check_one(overlay_dir, target=None):
 # where upstream offers one (jurialmunkey omega endpoint) so we never alert on
 # versions meant for a newer Kodi.
 _JURIAL_OMEGA = 'https://raw.githubusercontent.com/jurialmunkey/repository.jurialmunkey/master/omega/zips/addons.xml'
+_JURIAL_REPO = 'https://raw.githubusercontent.com/jurialmunkey/repository.jurialmunkey/master/repo/zips/addons.xml'
 DEPS_WATCH = [
     # skin.nimbus is our committed FORK (no base.json) -> the overlay watcher
     # never sees ivarbrandt move; he publishes no releases, so watch master.
@@ -275,10 +276,17 @@ DEPS_WATCH = [
     ('script.module.gearsscrapers',
      'https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/addons.xml', 'addons_xml'),
     # Asaf's active scraper -- was shipping with ZERO watch coverage (found
-    # 2 versions behind, 2026-07-19)
+    # 2 versions behind, 2026-07-19). Source moved back to kodifitzwell's own
+    # repo 2026-10-22 (the kodiyashimaru mirror now serves an empty <addons />).
+    # ALERT-ONLY since 6.10.16: the module became a thin wrapper that hard-
+    # requires plugin.video.pov, so adopting it means shipping POV to every
+    # Gears box -- Asaf's call, never CI's.
     ('script.module.magneto',
-     'https://kodiyashimaru.github.io/repo/packages/addons.xml', 'addons_xml'),
+     'https://kodifitzwell.github.io/repo/packages/addons.xml', 'addons_xml'),
     ('script.texturemaker', _JURIAL_OMEGA, 'addons_xml'),
+    # AF3 3.4.4+ hard deps; published in jurialmunkey's repo/zips datadir
+    ('resource.images.arctic.splash', _JURIAL_REPO, 'addons_xml'),
+    ('resource.images.arctic.weather', _JURIAL_REPO, 'addons_xml'),
     ('service.subtitles.localsubtitle',
      'https://raw.githubusercontent.com/peno64/repository.peno64/master/repo/zips/addons.xml', 'addons_xml'),
     # nimbus's helper script: GitHub master only (no zip repo) -> alert-only,

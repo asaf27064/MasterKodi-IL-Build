@@ -114,7 +114,13 @@ def write_addon_tree(zout, dist_zip_path):
 def build_repack(name, spec, original_path, dist_dir, manifest, shas, out_path):
     orig = zipfile.ZipFile(original_path)
     orig_addons = addons_in_original(original_path)
-    replaced = sorted(a for a in orig_addons if shas.get(a))
+    # "add": addons the skin newly depends on that the previously published
+    # bundle never carried (a repack only refreshes what the original had, so
+    # without this a new hard <import> -- AF3 3.4.4's resource.images.arctic.*
+    # -- would be missing from every bundle install). They are written like a
+    # replaced tree, from the freshly built dist zip.
+    added = sorted(a for a in spec.get('add', []) if a not in orig_addons and shas.get(a))
+    replaced = sorted(a for a in orig_addons if shas.get(a)) + added
     dropped = sorted(a for a in orig_addons if a in DROP_ADDONS and a not in replaced)
     kept = sorted(orig_addons - set(replaced) - set(dropped))
     with zipfile.ZipFile(out_path, 'w', zipfile.ZIP_DEFLATED) as zout:
@@ -137,10 +143,10 @@ def build_repack(name, spec, original_path, dist_dir, manifest, shas, out_path):
         if spec.get('state_seed'):
             seed = {aid: shas[aid] for aid in replaced}
             zout.writestr(SEED_PATH, json.dumps(seed, indent=2))
-    log('%s: repacked (%d addons refreshed, %d kept as-was, %d junk dropped: %s | dropped: %s)'
+    log('%s: repacked (%d addons refreshed, %d kept as-was, %d junk dropped: %s | dropped: %s | added: %s)'
         % (name, len(replaced), len(kept), len(dropped),
-           ','.join(kept) or '-', ','.join(dropped) or '-'))
-    return sorted(a for a in orig_addons if a not in dropped)
+           ','.join(kept) or '-', ','.join(dropped) or '-', ','.join(added) or '-'))
+    return sorted(set(a for a in orig_addons if a not in dropped) | set(added))
 
 
 def build_fresh(name, spec, dist_dir, manifest, shas, out_path, originals_dir=None):
@@ -211,7 +217,7 @@ def main():
             if not original_sha:
                 log('%s: SKIPPED - original bundle not available for repack' % name)
                 continue
-            addon_ids = sorted(a for a in addons_in_original(original_path))
+            addon_ids = sorted(set(addons_in_original(original_path)) | set(spec.get('add', [])))
         else:
             addon_ids = list(spec.get('fresh', []))
         fp = bundle_fingerprint(spec, addon_ids, shas, original_sha if spec.get('repack') else None)

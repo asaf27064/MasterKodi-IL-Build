@@ -120,6 +120,7 @@
                         <itemlayout height="80">
                             <include content="OSD_Stream_Selector_Layout">
                                 <param name="enabled">VideoPlayer.SubtitlesEnabled</param>
+                                <param name="label_right">240</param>
                             </include>
                         </itemlayout>
                         <focusedlayout height="80">
@@ -127,6 +128,7 @@
                                 <param name="selected">true</param>
                                 <param name="color_fg">$VAR[ColorSelected]</param>
                                 <param name="enabled">VideoPlayer.SubtitlesEnabled</param>
+                                <param name="label_right">240</param>
                             </include>
                         </focusedlayout>
                         <content>plugin://script.skinvariables?info=get_player_streams&amp;stream_type=subtitle&amp;reload=$INFO[Window.Property(UID)]</content>

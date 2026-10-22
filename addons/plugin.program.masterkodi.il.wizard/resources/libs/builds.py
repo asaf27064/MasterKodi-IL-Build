@@ -1419,7 +1419,10 @@ class BuildManager:
                             'script.module.idna', 'script.module.six',
                             'resource.images.weathericons.white',
                             'resource.images.studios.coloured',
-                            'resource.font.robotocjksc']},
+                            'resource.font.robotocjksc',
+                            # AF3 3.4.4+ hard-requires its two art packs
+                            'resource.images.arctic.splash',
+                            'resource.images.arctic.weather']},
         'nimbus': {'id': 'skin.nimbus', 'name': 'Nimbus',
                    'url_key': 'nimbus_skin_url', 'zip': 'nimbus.zip',
                    'manifest_install': True,
@@ -1947,7 +1950,8 @@ class BuildManager:
             'plugin.video.themoviedb.helper', 'script.module.jurialmunkey',
             'script.module.infotagger', 'script.module.addon.signals',
             'script.module.qrcode', 'resource.images.weathericons.white',
-            'resource.images.studios.coloured', 'resource.font.robotocjksc'},
+            'resource.images.studios.coloured', 'resource.font.robotocjksc',
+            'resource.images.arctic.splash', 'resource.images.arctic.weather'},
         'skin.nimbus': {'script.nimbus.helper'},
         # Rounded had NO entry here until 2026-08-31, so installing it disabled
         # all 18 addons in the other skins' stacks -- skinshortcuts, skinvariables,

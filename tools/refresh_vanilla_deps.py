@@ -67,6 +67,10 @@ VANILLA_DEPS = {
     'plugin.video.themoviedb.helper': 'jurialmunkey',
     'script.module.jurialmunkey': 'jurialmunkey',
     'script.module.infotagger': 'jurialmunkey',
+    # AF3 >= 3.4.4 hard-requires these two art packs (<import> in addon.xml);
+    # they live in jurialmunkey's repo/zips datadir (JURIAL_DIRS covers it).
+    'resource.images.arctic.splash': 'jurialmunkey',
+    'resource.images.arctic.weather': 'jurialmunkey',
     'script.skinshortcuts': 'kodi',
     'script.module.simplejson': 'kodi',
     'script.module.unidecode': 'kodi',

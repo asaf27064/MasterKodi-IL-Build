@@ -24,7 +24,7 @@
     "musicvideos": "501",
     "artists": "500",
     "albums": "500",
-    "songs": "508",
+    "songs": "582",
     "files": "500",
     "sources": "500",
     "addons": "500",
@@ -63,7 +63,7 @@
     "musicvideos": "501",
     "artists": "500",
     "albums": "500",
-    "songs": "508",
+    "songs": "582",
     "files": "500",
     "sources": "500",
     "addons": "500",
@@ -78,17 +78,17 @@
     "none": "500"
   },
   "plugin.video.gears": {
-    "none": "506",
+    "none": "580",
     "movies": "505",
     "tvshows": "505",
-    "episodes": "509",
-    "seasons": "509"
+    "episodes": "583",
+    "seasons": "583"
   },
   "plugin.video.themoviedb.helper": {
-    "none": "506",
+    "none": "580",
     "movies": "505",
     "tvshows": "505",
-    "episodes": "509",
-    "seasons": "509"
+    "episodes": "583",
+    "seasons": "583"
   }
 }

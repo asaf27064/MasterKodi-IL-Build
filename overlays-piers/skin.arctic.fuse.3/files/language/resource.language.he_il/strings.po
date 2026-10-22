@@ -411,8 +411,8 @@ msgstr "סגנון דירוגים"
 
 #: /1080i/Includes_Labels.xml
 msgctxt "#31083"
-msgid "Combined"
-msgstr "משולב"
+msgid "Combined Row"
+msgstr "שורה משולבת"
 
 #: /1080i/Includes_SkinSettings.xml
 msgctxt "#31084"
@@ -600,6 +600,11 @@ msgctxt "#31122"
 msgid "Watchlist"
 msgstr "רשימת צפייה"
 
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31123"
+msgid "Plot line"
+msgstr "שורת עלילה"
+
 msgctxt "#31124"
 msgid "Indicator"
 msgstr "מחוון"
@@ -607,6 +612,16 @@ msgstr "מחוון"
 msgctxt "#31125"
 msgid "Invert Text Colour"
 msgstr "היפוך צבע טקסט"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31126"
+msgid "Plotline"
+msgstr "שורת עלילה"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31127"
+msgid "Genre colours"
+msgstr "צבעי ז'אנר"
 
 #: /1080i/Includes_MediaFilter.xml
 msgctxt "#31128"
@@ -625,6 +640,16 @@ msgctxt "#31131"
 msgid "Continue watching in"
 msgstr "המשך צפייה בעוד"
 
+#: /shortcuts/skinvariables-splash.json
+msgctxt "#31132"
+msgid "Preloading Hubs"
+msgstr "טוען מרכזים"
+
+#: /shortcuts/skinvariables-splash.json
+msgctxt "#31133"
+msgid "Loading Widgets"
+msgstr "טוען ווידג'טים"
+
 #: /1080i/Includes_Labels.xml
 msgctxt "#31134"
 msgid "Playing"
@@ -634,6 +659,11 @@ msgstr "מתנגן"
 msgctxt "#31135"
 msgid "Page"
 msgstr "עמוד"
+
+#: /1080i/Includes_Labels.xml For Spotlight to allow shorter labels which fit
+msgctxt "#31136"
+msgid "Browse"
+msgstr "עיון"
 
 #: /1080i/SkinSettings.xml /1080i/Includes_Labels.xml
 msgctxt "#31137"
@@ -665,23 +695,73 @@ msgctxt "#31143"
 msgid "Classic"
 msgstr "קלאסי"
 
+#: /1080i/Includes_Labels.xml For Spotlight to allow shorter labels which fit
+msgctxt "#31144"
+msgid "Play"
+msgstr "נגן"
+
 msgctxt "#31145"
 msgid "Initialising Skin"
 msgstr "מאתחל את הסקין"
+
+#: /1080i/Includes_Labels.xml
+msgctxt "#31146"
+msgid "Onyx"
+msgstr "אוניקס"
 
 #: /1080i/Includes_Shortcuts_Window.xml
 msgctxt "#31147"
 msgid "More"
 msgstr "עוד"
 
+#: /1080i/Dialog_DialogCustom.xml
+msgctxt "#31148"
+msgid "Black Onyx"
+msgstr "אוניקס שחור"
+
+#: /1080i/Settings.xml /1080i/SettingsSystemInfo.xml
+msgctxt "#31149"
+msgid "Used memory"
+msgstr "זיכרון בשימוש"
+
 #: /1080i/Includes_Labels.xml
 msgctxt "#31150"
 msgid "Categories"
 msgstr "קטגוריות"
 
+#: /1080i/Settings.xml
+msgctxt "#31151"
+msgid "Customise video info"
+msgstr "התאמה אישית של מידע הווידאו"
+
+#: /1080i/AddonBrowser.xml
+msgctxt "#31152"
+msgid "Running add-ons"
+msgstr "תוספים פעילים"
+
+#: /1080i/Includes_Search.xml
+msgctxt "#31153"
+msgid "Results for"
+msgstr "תוצאות עבור"
+
 msgctxt "#31154"
 msgid "Misc options"
 msgstr "אפשרויות שונות"
+
+#: /1080i/Includes_Search.xml
+msgctxt "#31155"
+msgid "Decades"
+msgstr "עשורים"
+
+#: /1080i/Includes_Views_Row.xml
+msgctxt "#31156"
+msgid "Row Flyer"
+msgstr "שורת פליירים"
+
+#: /1080i/Includes_Views_Wall.xml
+msgctxt "#31157"
+msgid "Wall Flyer"
+msgstr "קיר פליירים"
 
 #: /1080i/Includes_Keyboard_Mini.xml
 msgctxt "#31158"
@@ -697,10 +777,25 @@ msgctxt "#31160"
 msgid "REC"
 msgstr "הקלטה"
 
+#: /1080i/Includes_Actions.xml
+msgctxt "#31161"
+msgid "Flyer"
+msgstr "פלייר"
+
 #: /1080i/Includes_Labels.xml
 msgctxt "#31162"
 msgid "Hide"
 msgstr "הסתר"
+
+#: /shortcuts/skinviewtypes.json
+msgctxt "#31163"
+msgid "Combined Flyer"
+msgstr "משולב – פליירים"
+
+#: /1080i/Includes_Views_Row.xml
+msgctxt "#31164"
+msgid "Row Placard"
+msgstr "שורת פלקטים"
 
 #: /1080i/SkinSettings.xml
 msgctxt "#31165"
@@ -737,6 +832,11 @@ msgctxt "#31171"
 msgid "On-screen keyboard size"
 msgstr "גודל מקלדת על המסך"
 
+#: /1080i/Includes_Actions.xml
+msgctxt "#31172"
+msgid "Placard"
+msgstr "פלקט"
+
 #: /1080i/SkinSettings.xml
 msgctxt "#31173"
 msgid "Scroll"
@@ -746,19 +846,44 @@ msgctxt "#31174"
 msgid "Navigation"
 msgstr "ניווט"
 
+#: /1080i/Dialog_Lists.xml
+msgctxt "#31175"
+msgid "Player"
+msgstr "שחקן"
+
+#: /1080i/Includes_Labels.xml
+msgctxt "#31176"
+msgid "Create a new save"
+msgstr "יצירת שמירה חדשה"
+
 msgctxt "#31177"
 msgid "Menus"
 msgstr "תפריטים"
+
+#: /1080i/Dialog_DialogGameControllers.xml
+msgctxt "#31178"
+msgid "Cheats available"
+msgstr "קודי צ'יט זמינים"
 
 #: /1080i/Includes_Search.xml
 msgctxt "#31179"
 msgid "Keyword"
 msgstr "מילת מפתח"
 
+#: /1080i/Dialog_DialogPlot.xml
+msgctxt "#31180"
+msgid "Garbage"
+msgstr "זבל"
+
 #: /1080i/Includes_DialogInfo.xml
 msgctxt "#31181"
 msgid "Scheduled"
 msgstr "מתוזמן"
+
+#: /1080i/Dialog_DialogPlot.xml
+msgctxt "#31182"
+msgid "Bad"
+msgstr "גרוע"
 
 #: /1080i/Includes_Info.xml
 msgctxt "#31183"
@@ -789,6 +914,26 @@ msgstr "הגבלה"
 msgctxt "#31189"
 msgid "Autoclose OSD after X seconds"
 msgstr "סגירה אוטומטית של OSD לאחר X שניות"
+
+#: /1080i/Dialog_DialogPlot.xml
+msgctxt "#31190"
+msgid "Average"
+msgstr "בינוני"
+
+#: /1080i/Dialog_DialogPlot.xml
+msgctxt "#31191"
+msgid "Good"
+msgstr "טוב"
+
+#: /1080i/Dialog_DialogPlot.xml
+msgctxt "#31192"
+msgid "Great"
+msgstr "מצוין"
+
+#: /1080i/Dialog_DialogPlot.xml
+msgctxt "#31193"
+msgid "Amazing"
+msgstr "מדהים"
 
 #: /1080i/Includes_Info.xml
 msgctxt "#31194"
@@ -824,6 +969,11 @@ msgctxt "#31200"
 msgid "Added on"
 msgstr "נוסף ב־"
 
+#: /1080i/Dialog_DialogPlot.xml
+msgctxt "#31201"
+msgid "Excellent"
+msgstr "יוצא מן הכלל"
+
 msgctxt "#31202"
 msgid "Ratings"
 msgstr "דירוגים"
@@ -852,7 +1002,7 @@ msgctxt "#31207"
 msgid "Codecs"
 msgstr "קודקים"
 
-#: /1080i/SkinSettings.xml /1080i/SkinSettings.xml
+#: /1080i/SkinSettings.xml
 msgctxt "#31208"
 msgid "Header"
 msgstr "כותרת"
@@ -903,6 +1053,11 @@ msgstr "פורמט פיקסלים"
 msgctxt "#31218"
 msgid "Mid-Season Finale"
 msgstr "סיום אמצע עונה"
+
+#: /1080i/Settings.xml
+msgctxt "#31219"
+msgid "Recently Watched"
+msgstr "נצפו לאחרונה"
 
 #: /1080i/Includes_Items.xml
 msgctxt "#31220"
@@ -1029,6 +1184,16 @@ msgctxt "#31246"
 msgid "Autoscroll textboxes"
 msgstr "גלילה אוטומטית של תיבות טקסט"
 
+#: /1080i/Includes_Settings.xml
+msgctxt "#31247"
+msgid "Networks"
+msgstr "רשתות"
+
+#: /1080i/Includes_Settings.xml
+msgctxt "#31248"
+msgid "Certifications"
+msgstr "דירוגי גיל"
+
 msgctxt "#31249"
 msgid "Waiting for PVR"
 msgstr "ממתין ל־PVR"
@@ -1038,9 +1203,19 @@ msgctxt "#31250"
 msgid "Highlight"
 msgstr "הדגשה"
 
+#: /1080i/Settings.xml
+msgctxt "#31251"
+msgid "Statistics"
+msgstr "סטטיסטיקה"
+
 msgctxt "#31252"
 msgid "Catch-up"
 msgstr "צפייה חוזרת"
+
+#: /1080i/Settings.xml
+msgctxt "#31253"
+msgid "Daily"
+msgstr "יומי"
 
 #: /1080i/Includes_Labels.xml
 msgctxt "#31254"
@@ -1091,6 +1266,16 @@ msgctxt "#31265"
 msgid "Budget"
 msgstr "תקציב"
 
+#: /1080i/Settings.xml
+msgctxt "#31266"
+msgid "Monthly"
+msgstr "חודשי"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31268"
+msgid "Background fallback"
+msgstr "רקע חלופי"
+
 msgctxt "#31270"
 msgid "Single image"
 msgstr "תמונה בודדת"
@@ -1103,6 +1288,10 @@ msgstr "תיקיית תמונות"
 msgctxt "#31272"
 msgid "Searching"
 msgstr "מחפש"
+
+msgctxt "#31273"
+msgid "Label"
+msgstr "תווית"
 
 #: /1080i/Includes_Items.xml
 msgctxt "#31274"
@@ -1259,9 +1448,9 @@ msgctxt "#31320"
 msgid "Square"
 msgstr "ריבוע"
 
-#: /1080i/Includes_SkinSettings.xml
+#: /1080i/Includes_SkinSettings.xml /1080i/Settings.xml
 msgctxt "#31321"
-msgid "Select viewtypes"
+msgid "Customise viewtypes"
 msgstr "בחירת סוגי תצוגה"
 
 #: /1080i/SkinSettings.xml /1080i/Includes_Labels.xml
@@ -1670,9 +1859,9 @@ msgctxt "#31432"
 msgid "Adaptive"
 msgstr "מותאם"
 
-#: /1080i/SkinSettings.xml
+#: /1080i/Includes_SkinSettings.xml /1080i/Settings.xml
 msgctxt "#31434"
-msgid "Video OSD"
+msgid "Customise video OSD"
 msgstr "OSD וידאו"
 
 #: /1080i/SkinSettings.xml
@@ -2289,3 +2478,158 @@ msgstr "נוסף"
 msgctxt "#31605"
 msgid "Next aired"
 msgstr "השידור הבא"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31610"
+msgid "Seasonal Themes"
+msgstr "ערכות נושא עונתיות"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31611"
+msgid "Christmas Theme"
+msgstr "ערכת חג המולד"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31612"
+msgid "Dec 7 - Jan 7"
+msgstr "7 בדצמבר – 7 בינואר"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31613"
+msgid "Winter Frost"
+msgstr "כפור חורפי"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31614"
+msgid "Aussie Christmas"
+msgstr "חג מולד אוסטרלי"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31615"
+msgid "Summer Breeze"
+msgstr "משב קיץ"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31616"
+msgid "Jun 21 - Aug 15"
+msgstr "21 ביוני – 15 באוגוסט"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31617"
+msgid "Halloween Spook"
+msgstr "ליל כל הקדושים"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31618"
+msgid "Oct 1 - Nov 1"
+msgstr "1 באוקטובר – 1 בנובמבר"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31619"
+msgid "Background Overlay"
+msgstr "שכבת רקע"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31620"
+msgid "Background Atmosphere"
+msgstr "אווירת רקע"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31621"
+msgid "Fly-by Animations"
+msgstr "אנימציות חולפות"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31622"
+msgid "Falling Props Density"
+msgstr "צפיפות עצמים נופלים"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31623"
+msgid "Off"
+msgstr "כבוי"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31624"
+msgid "Normal"
+msgstr "רגיל"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31625"
+msgid "High"
+msgstr "גבוה"
+
+#: /shortcuts/skinviewtypes.json
+msgctxt "#31626"
+msgid "Combined Wall"
+msgstr "קיר משולב"
+
+#: /1080i/Includes_Views_Combined_Wall.xml
+msgctxt "#31627"
+msgid "Combined Wall Square"
+msgstr "קיר משולב – ריבועים"
+
+#: /1080i/Includes_Views_Combined_Wall.xml
+msgctxt "#31628"
+msgid "Combined Wall Landscape"
+msgstr "קיר משולב – לרוחב"
+
+#: /1080i/Includes_Views_Combined_Wall.xml
+msgctxt "#31629"
+msgid "Combined Wall Poster"
+msgstr "קיר משולב – פוסטרים"
+
+#: /1080i/Includes_Views_Combined_Wall.xml
+msgctxt "#31630"
+msgid "Combined Wall Circle"
+msgstr "קיר משולב – עיגולים"
+
+#: /1080i/Includes_Views_Combined_Wall.xml
+msgctxt "#31631"
+msgid "Combined Wall Board"
+msgstr "קיר משולב – לוח"
+
+#: /1080i/Includes_Views_Combined_Wall.xml
+msgctxt "#31632"
+msgid "Combined Wall Flyer"
+msgstr "קיר משולב – פליירים"
+
+#: /1080i/Includes_SkinSettings.xml
+msgctxt "#31633"
+msgid "Fallback style"
+msgstr "סגנון חלופי"
+
+#: /1080i/Includes_Labels.xml
+msgctxt "#31634"
+msgid "Stylised"
+msgstr "מעוצב"
+
+#: /1080i/Includes_Views_List.xml
+msgctxt "#31635"
+msgid "List Poster"
+msgstr "רשימת פוסטרים"
+
+#: /1080i/Includes_Views_List.xml
+msgctxt "#31636"
+msgid "List Square"
+msgstr "רשימת ריבועים"
+
+#: /1080i/Dialog_DialogCustom.xml
+msgctxt "#31637"
+msgid "Trailer source"
+msgstr "מקור הטריילרים"
+
+#: /1080i/Dialog_DialogShortcuts.xml
+msgctxt "#31638"
+msgid "Hub type"
+msgstr "סוג המרכז"
+
+#: /1080i/Dialog_DialogShortcuts.xml
+msgctxt "#31639"
+msgid "Custom"
+msgstr "מותאם אישית"
+
+#: /1080i/Dialog_DialogShortcuts.xml
+msgctxt "#31640"
+msgid "Calendar source"
+msgstr "מקור לוח השנה"

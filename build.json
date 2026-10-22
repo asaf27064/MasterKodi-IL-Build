@@ -23,6 +23,8 @@
       "plugin.video.themoviedb.helper",
       "plugin.video.tmdb.bingie.helper",
       "resource.font.robotocjksc",
+      "resource.images.arctic.splash",
+      "resource.images.arctic.weather",
       "resource.images.moviecountryicons.flags",
       "resource.images.moviecountryicons.maps",
       "resource.images.moviegenreicons.transparent",
@@ -82,7 +84,11 @@
       "state_seed": true
     },
     "Arctic_Fuse_Skin.zip": {
-      "repack": true
+      "repack": true,
+      "add": [
+        "resource.images.arctic.splash",
+        "resource.images.arctic.weather"
+      ]
     },
     "nimbus.zip": {
       "repack": true
