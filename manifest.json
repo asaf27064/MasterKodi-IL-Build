@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-10-22T22:30:23Z",
+  "generated_utc": "2026-10-22T22:34:23Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -48,8 +48,8 @@
       "version": "2.4.191",
       "channel": "core",
       "zip": "plugin.program.masterkodi.il.wizard-2.4.191.zip",
-      "sha256": "45d46225fd552288b1d3df5a3190ff81a01e09e86e916376d3452d694b847030",
-      "size": 6304178,
+      "sha256": "54756f8a19ab055d067af36c1a9d0b1d54ad59366ad225a81da1727b64b6f586",
+      "size": 6304133,
       "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.program.masterkodi.il.wizard-2.4.191.zip"
     },
     {
@@ -65,11 +65,12 @@
     {
       "id": "plugin.video.pov",
       "version": "6.10.21",
-      "channel": "core",
+      "channel": "optional",
       "zip": "plugin.video.pov-6.10.21.zip",
       "sha256": "3a8f271b84c23077ab9b6e382890a0515619a3f4719e72badf749c8b2995722f",
       "size": 3548233,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.pov-6.10.21.zip"
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.pov-6.10.21.zip",
+      "content": "pov"
     },
     {
       "id": "plugin.video.themoviedb.helper",
@@ -707,11 +708,11 @@
     }
   ],
   "config": {
-    "version": "68",
-    "zip": "config-68.zip",
-    "sha256": "7ddf8751b92f48ce3da84da9005a72ce249261af6acdac1f4fea60799e6aa50a",
-    "size": 2698393,
-    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-68.zip"
+    "version": "69",
+    "zip": "config-69.zip",
+    "sha256": "a20c19e91d0b409c9c0a0e74f5fc383fae9f0ce40f210eeb6351ac962f3dc7d3",
+    "size": 2697648,
+    "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/config-69.zip"
   },
   "content_variants": {
     "version": "cccc7e56039d4522"
