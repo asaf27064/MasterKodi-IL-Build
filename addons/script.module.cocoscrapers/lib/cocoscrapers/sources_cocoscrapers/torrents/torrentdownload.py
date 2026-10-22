@@ -42,7 +42,9 @@ class source:
 		except:
 			source_utils.scraper_error('TORRENTDOWNLOAD')
 
+	@source_utils.airdate_sources
 	def sources(self, data, hostDict):
+		airdate = source_utils.episode_airdate(data) if data and 'tvshowtitle' in data else None
 		if not data: return []
 		files = []
 		sources = []
@@ -53,7 +55,7 @@ class source:
 			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
 			episode_title = data['title'] if 'tvshowtitle' in data else None
 			year = data['year']
-			hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else year
+			hdlr = source_utils.episode_identifier(data, 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else year)
 
 			query = '%s %s' % (title, hdlr)
 			query = re.sub(r'[^A-Za-z0-9\s\.-]+', '', query)
@@ -77,8 +79,8 @@ class source:
 
 				name = source_utils.clean_name(name)
 
-				if not source_utils.check_title(title, aliases, name, hdlr, year): continue
-				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
+				if not source_utils.check_title(title, aliases, name, hdlr, year, airdate=airdate): continue
+				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title, airdate=airdate)
 				if source_utils.remove_lang(name_info, check_foreign_audio): continue
 				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 

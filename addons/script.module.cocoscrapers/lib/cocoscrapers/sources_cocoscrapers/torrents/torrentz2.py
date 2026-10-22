@@ -22,7 +22,9 @@ class source:
 		self.search_link = '/search?q=%s'
 		self.min_seeders = 0
 
+	@source_utils.airdate_sources
 	def sources(self, data, hostDict):
+		airdate = source_utils.episode_airdate(data) if data and 'tvshowtitle' in data else None
 		sources = []
 		if not data: return sources
 		append = sources.append
@@ -32,11 +34,11 @@ class source:
 			if 'tvshowtitle' in data:
 				title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
 				episode_title = data['title']
-				hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode']))
+				hdlr = source_utils.episode_identifier(data, 'S%02dE%02d' % (int(data['season']), int(data['episode'])))
 			else:
 				title = data['title'].replace('&', 'and').replace('/', ' ').replace('$', 's')
 				episode_title = None
-				hdlr = year
+				hdlr = source_utils.episode_identifier(data, year)
 
 			query = '%s %s' % (re.sub(r'[^A-Za-z0-9\s\.-]+', '', title), hdlr)
 
@@ -62,8 +64,8 @@ class source:
 				hash = re.search(r'btih:(.*?)&', url, re.I).group(1)
 				name = source_utils.clean_name(url.split('&dn=')[1])
 
-				if not source_utils.check_title(title, aliases, name, hdlr, year): continue
-				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
+				if not source_utils.check_title(title, aliases, name, hdlr, year, airdate=airdate): continue
+				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title, airdate=airdate)
 				if source_utils.remove_lang(name_info, check_foreign_audio): continue
 				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 

@@ -24,7 +24,9 @@ class source:
 		self.tvSearch_link = '/api/v1/search'
 		self.min_seeders = 0
 
+	@source_utils.airdate_sources
 	def sources(self, data, hostDict):
+		airdate = source_utils.episode_airdate(data) if data and 'tvshowtitle' in data else None
 		sources = []
 		if not (data and self.token): return sources
 		sources_append = sources.append
@@ -38,11 +40,11 @@ class source:
 			if 'tvshowtitle' in data:
 				season = data['season']
 				episode = data['episode']
-				hdlr = 'S%02dE%02d' % (int(season), int(episode))
+				hdlr = source_utils.episode_identifier(data, 'S%02dE%02d' % (int(season), int(episode)))
 				url = '%s%s' % (self.base_link, self.tvSearch_link)
 				params = {'type': 'search', 'limit': 100, 'categories': 5000, 'query': '%s %s' % (title.lower(), hdlr)}
 			else:
-				hdlr = year
+				hdlr = source_utils.episode_identifier(data, year)
 				url = '%s%s' % (self.base_link, self.movieSearch_link)
 				params = {'type': 'search', 'limit': 100, 'categories': 2000, 'query': title.lower()}
 			try:
@@ -64,8 +66,8 @@ class source:
 			try:
 				name = source_utils.clean_name(file['title'])
 
-				if not source_utils.check_title(title, aliases, name.replace('.(Archie.Bunker', ''), hdlr, year): continue
-				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
+				if not source_utils.check_title(title, aliases, name.replace('.(Archie.Bunker', ''), hdlr, year, airdate=airdate): continue
+				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title, airdate=airdate)
 				if source_utils.remove_lang(name_info, check_foreign_audio): continue
 				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 

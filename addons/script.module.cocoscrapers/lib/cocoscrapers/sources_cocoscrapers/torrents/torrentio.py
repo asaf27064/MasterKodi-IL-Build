@@ -27,6 +27,7 @@ class source(source_utils.SourceRegistry):
 # Currently supports YTS(+), EZTV(+), RARBG(+), 1337x(+), ThePirateBay(+), KickassTorrents(+), TorrentGalaxy(+), HorribleSubs(+), NyaaSi(+), NyaaPantsu(+), Rutor(+), Comando(+), ComoEuBaixo(+), Lapumia(+), OndeBaixa(+), Torrent9(+).
 
 	def sources(self, data, hostDict):
+		airdate = source_utils.episode_airdate(data) if data and 'tvshowtitle' in data else None
 		sources = []
 		if not data: return sources
 		sources_append = sources.append
@@ -68,8 +69,8 @@ class source(source_utils.SourceRegistry):
 
 				name = source_utils.clean_name(file_title[0])
 
-				if not source_utils.check_title(title, aliases, name.replace('.(Archie.Bunker', ''), hdlr, year, years): continue
-				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
+				if not source_utils.check_title(title, aliases, name.replace('.(Archie.Bunker', ''), hdlr, year, years, airdate=airdate): continue
+				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title, airdate=airdate)
 				if source_utils.remove_lang(name_info, check_foreign_audio): continue
 				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 

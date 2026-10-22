@@ -1,4 +1,9 @@
+[COLOR red][B]Version 1.0.44[/B][/COLOR]
+- Add episode air-date matching across TV providers and date queries for text-search providers.
+
 [COLOR red][B]Version 1.0.43[/B][/COLOR]
+- Replace EZTV website scraping with the paginated JSON API; retain numbered, air-date, and season-pack matching.
+- Enable single-episode TV searches in Rutor.
 - Update Torlock to Torznab XML, Knaben to JSON API, and Nyaa to RSS.
 - Update YTS API endpoint and Kickass search/result parsing.
 - Add standalone compatibility helpers; no POV runtime dependency.

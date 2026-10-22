@@ -128,7 +128,63 @@ def aliases_to_array(aliases, filter=None):
 		log_utils.error()
 		return []
 
-def check_title(title, aliases, release_title, hdlr, year, years=None): # non pack file title check, single eps and movies
+def episode_airdate(data):
+	"""Return a validated episode air date; never use a show's premiere year."""
+	from datetime import datetime
+	value = data.get('premiered')
+	if not isinstance(value, str) or not re.fullmatch(r'\d{4}[-.]\d{2}[-.]\d{2}', value): return None
+	try:
+		return datetime.strptime(value.replace('.', '-'), '%Y-%m-%d').strftime('%Y.%m.%d')
+	except ValueError:
+		return None
+
+
+def episode_identifier(data, numbered):
+	"""Private date-query override; season and episode metadata stay unchanged."""
+	return data.get('_coco_airdate_query') or numbered
+
+
+def airdate_sources(method):
+	"""Run text-search providers with numbered and dated identifiers, merging results.
+
+	Use the original method directly for both passes because some legacy providers
+	store their result list on self.sources. Never mutate the caller's metadata.
+	"""
+	from functools import wraps
+	@wraps(method)
+	def search(self, data, hostDict):
+		results = list(method(self, data, hostDict) or [])
+		airdate = episode_airdate(data) if data and 'tvshowtitle' in data else None
+		if not airdate: return results
+		dated_data = dict(data, _coco_airdate_query=airdate)
+		try:
+			results.extend(method(self, dated_data, hostDict) or [])
+		except Exception:
+			scraper_error(method.__module__)
+		merged, seen = [], set()
+		for item in results:
+			key = (item.get('hash') or item.get('url') or '').lower()
+			if key and key in seen: continue
+			if key: seen.add(key)
+			merged.append(item)
+		return merged
+	return search
+
+
+def check_episode_title(title, aliases, release_title, hdlr, year, airdate=None):
+	"""Keep numbered matching, with an optional exact air-date alternative."""
+	if check_title(title, aliases, release_title, hdlr, year): return hdlr
+	if airdate:
+		date_pattern = r'(?<!\d)' + r'[. -]'.join(airdate.split('.')) + r'(?!\d)'
+		if check_title(title, aliases, release_title, date_pattern, year): return airdate
+	return None
+
+
+def check_title(title, aliases, release_title, hdlr, year, years=None, airdate=None): # non pack file title check, single eps and movies
+	if airdate and hdlr != year:
+		return bool(check_episode_title(title, aliases, release_title, hdlr, year, airdate))
+	if re.fullmatch(r'\d{4}\.\d{2}\.\d{2}', str(hdlr)):
+		hdlr = r'(?<!\d)' + r'[. -]'.join(hdlr.split('.')) + r'(?!\d)'
 	if years: # for movies only, scraper to pass None for episodes
 		if not any(value in release_title for value in years): return False
 	else: 
@@ -517,12 +573,13 @@ def filter_show_pack(show_title, aliases, imdb, year, season, release_title, tot
 		log_utils.error()
 		# return True, total_seasons
 
-def info_from_name(release_title, title, year, hdlr=None, episode_title=None, season=None, pack=None):
+def info_from_name(release_title, title, year, hdlr=None, episode_title=None, season=None, pack=None, airdate=None):
 	try:
 		release_title = release_title.lower().replace('&', 'and').replace("'", "")
 		release_title = re.sub(r'[^a-z0-9]+', '.', release_title)
 		title = title.lower().replace('&', 'and').replace("'", "")
 		title = re.sub(r'[^a-z0-9]+', '.', title)
+		if airdate: release_title = release_title.replace(airdate, '')
 		name_info = release_title.replace(title, '').replace(year, '')
 		if hdlr: name_info = name_info.replace(hdlr.lower(), '')
 		if episode_title:

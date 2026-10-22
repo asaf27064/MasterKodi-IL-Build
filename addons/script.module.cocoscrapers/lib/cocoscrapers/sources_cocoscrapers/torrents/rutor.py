@@ -62,21 +62,23 @@ class source:
 		except:
 			source_utils.scraper_error('RUTOR')
 
+	@source_utils.airdate_sources
 	def sources(self, data, hostDict):
-		if not data or 'tvshowtitle' in data: return []
+		airdate = source_utils.episode_airdate(data) if data and 'tvshowtitle' in data else None
+		if not data: return []
 		files = []
 		sources = []
 		sources_append = sources.append
 		try:
 			aliases = source_utils.aliases_to_array(data['aliases'])
-			title = data['title'].replace('&', 'and').replace('/', ' ').replace('$', 's')
-			episode_title = None
+			title = (data['tvshowtitle'] if 'tvshowtitle' in data else data['title']).replace('&', 'and').replace('/', ' ').replace('$', 's')
+			episode_title = data['title'] if 'tvshowtitle' in data else None
 			year = data['year']
-			hdlr = year
+			hdlr = source_utils.episode_identifier(data, 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else year)
 
 			query = '%s %s' % (title, hdlr)
 			query = re.sub(r'[^A-Za-z0-9\s\.-]+', '', query)
-			url = self.search_link % (self.movie_params, quote_plus(query))
+			url = self.search_link % (self.tvshow_params if 'tvshowtitle' in data else self.movie_params, quote_plus(query))
 			url = '%s%s' % (self.base_link, url)
 			# log_utils.log('url = %s' % url)
 			self.get_sources(url, files)
@@ -93,8 +95,8 @@ class source:
 
 				name = source_utils.clean_name(name).replace('2./.', '').replace('./.', '').replace('|.', '').replace('...', '.').replace('..', '.').replace(',.', '.').replace(':.', '.')
 
-				if not source_utils.check_title(title, aliases, name, hdlr, year): continue
-				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
+				if not source_utils.check_title(title, aliases, name, hdlr, year, airdate=airdate): continue
+				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title, airdate=airdate)
 				if source_utils.remove_lang(name_info, check_foreign_audio): continue
 				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 

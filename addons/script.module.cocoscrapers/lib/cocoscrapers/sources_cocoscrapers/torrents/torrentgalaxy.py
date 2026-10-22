@@ -46,7 +46,9 @@ class source:
             size_str = f"{sb / (1024.0 ** 2):.2f} MB"
         return source_utils._size(size_str)
 
+    @source_utils.airdate_sources
     def sources(self, data, hostDict):
+        airdate = source_utils.episode_airdate(data) if data and 'tvshowtitle' in data else None
         sources = []
         if not data:
             return sources
@@ -67,7 +69,7 @@ class source:
                     .replace("/", " ")
                     .replace("$", "s")
                 )
-                hdlr = "S%02dE%02d" % (int(data["season"]), int(data["episode"]))
+                hdlr = source_utils.episode_identifier(data, "S%02dE%02d" % (int(data["season"]), int(data["episode"])))
                 clean_title = re.sub(r"[^A-Za-z0-9\s\.-]+", "", title)
                 query = f"{clean_title} {hdlr}"
                 search_term = quote_plus(query)
@@ -76,7 +78,7 @@ class source:
                 title = (
                     data["title"].replace("&", "and").replace("/", " ").replace("$", "s")
                 )
-                hdlr = year
+                hdlr = source_utils.episode_identifier(data, year)
                 years = [str(int(year) - 1), str(year), str(int(year) + 1)]
                 search_term = imdb if imdb else quote_plus(title)
 
@@ -120,10 +122,10 @@ class source:
                 magnet = f"magnet:?xt=urn:btih:{hash_str}"
                 dsize, isize = self._size_from_bytes(size_bytes)
 
-                if not source_utils.check_title(title, aliases, name, hdlr, year, years):
+                if not source_utils.check_title(title, aliases, name, hdlr, year, years, airdate=airdate):
                     continue
 
-                name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
+                name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title, airdate=airdate)
                 if source_utils.remove_lang(name_info, check_foreign_audio):
                     continue
                 if undesirables and source_utils.remove_undesirables(name_info, undesirables):

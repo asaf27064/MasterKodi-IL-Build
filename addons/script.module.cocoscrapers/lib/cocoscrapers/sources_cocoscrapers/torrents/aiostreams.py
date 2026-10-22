@@ -78,6 +78,7 @@ class source:
 		)}
 
 	def sources(self, data, hostDict):
+		airdate = source_utils.episode_airdate(data) if data and 'tvshowtitle' in data else None
 		sources = []
 		if not data: return sources
 		sources_append = sources.append
@@ -119,7 +120,7 @@ class source:
 
 				name = source_utils.clean_name(file_title[0])
 
-				if not source_utils.check_title(title, aliases, name, hdlr, year):
+				if not source_utils.check_title(title, aliases, name, hdlr, year, airdate=airdate):
 					if total_seasons is None: continue
 					valid, last_season = source_utils.filter_show_pack(title, aliases, imdb, year, season, name, total_seasons)
 					if not valid:
@@ -127,7 +128,7 @@ class source:
 						if not valid: continue
 						else: package = 'season'
 					else: package = 'show'
-				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
+				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title, airdate=airdate)
 				if source_utils.remove_lang(name_info, check_foreign_audio): continue
 				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 

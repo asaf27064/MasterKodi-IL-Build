@@ -827,6 +827,14 @@ msgctxt "#32595"
 msgid "Source Health Check"
 msgstr ""
 
+msgctxt "#32611"
+msgid "Torrent Sites"
+msgstr ""
+
+msgctxt "#32612"
+msgid "Torrent Aggregators"
+msgstr ""
+
 msgctxt "#32600"
 msgid "Health"
 msgstr ""

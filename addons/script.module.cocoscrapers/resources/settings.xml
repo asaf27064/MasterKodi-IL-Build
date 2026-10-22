@@ -172,11 +172,83 @@
 				</setting>
 			</group>
 			<group id="3">
+				<setting type="lsep" label="32611"/>
 				<setting id="provider.1337x" type="boolean" label="32101" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="provider.bitsearch" type="boolean" label="32138" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.eztv" type="boolean" label="32107" help="">
+					<level>0</level>
+					<default>true</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.kickass2" type="boolean" label="32111" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.knaben" type="boolean" label="32545" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.limetorrents" type="boolean" label="32575" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.nyaa" type="boolean" label="32116" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.piratebay" type="boolean" label="32117" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.rutor" type="boolean" label="32583" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.torlock" type="boolean" label="32586" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.torrentdownload" type="boolean" label="32123" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.torrentgalaxy" type="boolean" label="32125" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.torrentproject2" type="boolean" label="32136" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.torrentz2" type="boolean" label="32588" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting id="provider.ytsmx" type="boolean" label="32127" help="">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
+				<setting type="lsep" label="32612"/>
 				<setting id="provider.aiostreams" type="boolean" label="32601" help="">
 					<level>0</level>
 					<default>false</default>
@@ -254,11 +326,6 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="provider.bitsearch" type="boolean" label="32138" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="provider.comet" type="boolean" label="32563" help="">
 					<level>0</level>
 					<default>false</default>
@@ -282,26 +349,6 @@
 					<control type="spinner" format="string"/>
 				</setting>
 				<setting id="provider.dmm" type="boolean" label="32581" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="provider.eztv" type="boolean" label="32107" help="">
-					<level>0</level>
-					<default>true</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="provider.kickass2" type="boolean" label="32111" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="provider.knaben" type="boolean" label="32545" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="provider.limetorrents" type="boolean" label="32575" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
@@ -404,16 +451,6 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="provider.nyaa" type="boolean" label="32116" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="provider.piratebay" type="boolean" label="32117" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="provider.prowlarr" type="boolean" label="32576">
 					<level>0</level>
 					<default>false</default>
@@ -449,11 +486,6 @@
 						<heading>32577</heading>
 					</control>
 				</setting>
-				<setting id="provider.rutor" type="boolean" label="32583" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="torbox.token" type="string" label="32585" help="" parent="provider.tbtorznab">
 					<level>0</level>
 					<default/>
@@ -469,37 +501,12 @@
 						<heading>32585</heading>
 					</control>
 				</setting>
-				<setting id="provider.torlock" type="boolean" label="32586" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="provider.torrentdownload" type="boolean" label="32123" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="provider.torrentgalaxy" type="boolean" label="32125" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="provider.torrentio" type="boolean" label="32139" help="">
 					<level>0</level>
 					<default>true</default>
 					<control type="toggle"/>
 				</setting>
-				<setting id="provider.torrentproject2" type="boolean" label="32136" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
 				<setting id="provider.torrentsdb" type="boolean" label="32587" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
-				</setting>
-				<setting id="provider.torrentz2" type="boolean" label="32588" help="">
 					<level>0</level>
 					<default>false</default>
 					<control type="toggle"/>
@@ -525,11 +532,6 @@
 						</dependency>
 					</dependencies>
 					<control type="spinner" format="string"/>
-				</setting>
-				<setting id="provider.ytsmx" type="boolean" label="32127" help="">
-					<level>0</level>
-					<default>false</default>
-					<control type="toggle"/>
 				</setting>
 				<setting id="provider.zilean" type="boolean" label="32591" help="">
 					<level>0</level>
