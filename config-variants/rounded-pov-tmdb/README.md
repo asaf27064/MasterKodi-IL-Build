@@ -10,7 +10,7 @@ auto-updating through `tools/adopt_deps.py`; everything we add lives here.
   so skinshortcuts namespaces every group per skin.
   Categories: srtym (movies), sdrvt (tv), 137 (search), hybvrshyrvtym (services),
   thzvkh (maintenance), hhlptskyn (skin switch), 5 (settings), 13012 (exit),
-  plus powermenu and searchmenulist.
+  plus powermenu and searchlistmenu (the skin's search-provider list; named searchmenulist before Rounded 1.3.17).
   Content rows live in the `-1` submenu files; the mainmenu entries are categories.
 - `skin.rounded/settings.xml` — a PARTIAL seed of skin settings (ratings, clearlogo).
   Merged per id by the wizard; the user's other settings are never touched.

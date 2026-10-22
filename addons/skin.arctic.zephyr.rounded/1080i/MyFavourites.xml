@@ -57,7 +57,7 @@
 
                     <include content="Def_Dialog_Menu_GroupList"><param name="height" value="910" /><param name="idlayout" value="50" /></include>
 
-                    <!-- NOW PLAYING -->
+                <!-- NOW PLAYING -->
 
                     <control type="button" id="55555">
                         <include>Def_Dialog_Menu_Button_Title</include>
@@ -71,12 +71,15 @@
 
                     <include>Def_Dialog_Menu_MiniPlayer</include>
 
-                    <!-- FILTER -->
+                <!-- MISC -->
 
                     <control type="button" id="55553">
                         <include>Def_Dialog_Menu_Button_Title</include>
-                        <label>587</label>
+                        <label>31052</label>
                     </control>
+
+                    <!-- FILTER -->
+
                     <control type="edit" id="19">
                         <label>587</label>
                         <description>Filter (hidden)</description>
@@ -84,7 +87,17 @@
                         <visible>!Container.CanFilterAdvanced</visible>
                     </control>
 
-                    <!-- ALL VIEWS -->
+                    <!-- SEARCH -->
+
+                    <control type="button" id="9091">
+                        <description>Global Search</description>
+                        <include>Def_Dialog_Menu_Button_Focus_Select</include>
+                        <label>137</label>
+                        <onclick>SetFocus(50)</onclick>
+                        <onclick>ActivateWindow(1148)</onclick>
+                    </control>
+
+                <!-- ALL VIEWS -->
 
                     <control type="button" id="55550">
                         <include>Def_Dialog_Menu_Button_Title</include>
@@ -99,7 +112,7 @@
 
                     <control type="button" id="9011">
                         <include>Def_Dialog_Menu_Button_Focus_Select</include>
-                        <label>$LOCALIZE[582]:</label>
+                        <label>$LOCALIZE[582]$LOCALIZE[31079]</label>
                         <label2>$INFO[Container.Viewmode]</label2>
                         <onclick>Runscript(script.skinvariables,action=buildviews,contentid=$VAR[Items_ViewMode_Switch],pluginname=$INFO[Container.PluginName])</onclick>
                     </control>
@@ -107,7 +120,7 @@
                     <control type="button" id="6053">
                         <description>Sort</description>
                         <include>Def_Dialog_Menu_Button_Focus_Select</include>
-                        <label>$LOCALIZE[31511]:</label>
+                        <label>$LOCALIZE[31511]$LOCALIZE[31079]</label>
                         <label2>$INFO[Container.SortMethod]</label2>
                         <visible>Control.IsEnabled(3)</visible>
                         <onclick>SendClick(3)</onclick>
@@ -116,7 +129,7 @@
                     <control type="button" id="4">
                         <description>Order Toggle</description>
                         <include>Def_Dialog_Menu_Button_Focus_Select</include>
-                        <label>$LOCALIZE[31512]:</label>
+                        <label>$LOCALIZE[31512]$LOCALIZE[31079]</label>
                         <label2>$INFO[Container.SortOrder]</label2>
                     </control>
 
@@ -133,11 +146,18 @@
                         <!-- <altlabel>585</altlabel> -->
                     <!-- </control> -->
 
-                    <!-- THIS VIEW  -->
+                <!-- THIS VIEW  -->
 
                     <control type="button" id="55551">
                         <include>Def_Dialog_Menu_Button_Title</include>
                         <label>31051</label>
+                        <visible>Control.IsVisible(50)</visible>
+                    </control>
+                    <control type="radiobutton" id="9028">
+                        <include>Def_Dialog_Menu_Button_Focus_Select</include>
+                        <label>31192</label>
+                        <selected>Skin.HasSetting(enable.view.5x.51x.extended.list)</selected>
+                        <onclick>Skin.ToggleSetting(enable.view.5x.51x.extended.list)</onclick>
                         <visible>Control.IsVisible(50)</visible>
                     </control>
                     <control type="radiobutton" id="90281">
@@ -145,21 +165,7 @@
                         <label>31192</label>
                         <selected>!Skin.HasSetting(disable.view.550.extended.list.video)</selected>
                         <onclick>Skin.ToggleSetting(disable.view.550.extended.list.video)</onclick>
-                        <visible>Control.IsVisible(50)</visible>
-                    </control>
-
-                    <!-- OTHER OPTIONS -->
-
-                    <control type="button" id="55554">
-                        <include>Def_Dialog_Menu_Button_Title</include>
-                        <label>31052</label>
-                    </control>
-                    <control type="button" id="9091">
-                        <description>Global Search</description>
-                        <include>Def_Dialog_Menu_Button_Focus_Select</include>
-                        <label>137</label>
-                        <onclick>SetFocus(50)</onclick>
-                        <onclick>ActivateWindow(1146)</onclick>
+                        <visible>Control.IsVisible(550)</visible>
                     </control>
                 </control>
             </control>

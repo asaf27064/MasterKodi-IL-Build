@@ -3,10 +3,12 @@
     <defaultcontrol always="true">9100</defaultcontrol>
 
     <onunload>ClearProperty(Backg,Home)</onunload>
+    <onunload>ClearProperty(widgetmanagement,Home)</onunload>
     <onunload>ClearProperty(skinshortcuts-Widget,Home)</onunload>
+
     <!-- <onunload condition="Control.IsVisible(9900)">ClearProperty(custommenu,Home)</onunload> -->
 
-    <onunload>RunScript(script.skinshortcuts,type=buildxml&amp;mainmenuID=300&amp;group=mainmenu|x1111|x1112|x1113|x1114|x1115|x1116|x1117|x1118|x1119|powermenu|searchmenulist&amp;levels=10)</onunload>
+    <onunload>RunScript(script.skinshortcuts,type=buildxml&amp;mainmenuID=300&amp;group=mainmenu|x1111|x1112|x1113|x1114|x1115|x1116|x1117|x1118|x1119|powermenu|searchlistmenu|searchdynamenu&amp;levels=10)</onunload>
 
     <controls>
         <include>Background_Overlay</include>
@@ -171,6 +173,7 @@
                     <texturenofocus colordiffuse="B3BBBBBB">skinshortcuts/circle-xmark.png</texturenofocus>
                     <texturefocus colordiffuse="Selected">skinshortcuts/circle-xmark.png</texturefocus>
                     <onfocus condition="!String.IsEqual(Window(Home).Property(custommenu),yes)">ClearProperty(skinshortcuts-Widget,Home)</onfocus>
+                    <visible>!String.IsEqual(Window.Property(groupname),searchdynamenu)</visible>
                 </control>
 
                 <!-- ADD -->
@@ -184,6 +187,7 @@
                     <texturenofocus colordiffuse="B3BBBBBB">skinshortcuts/circle-plus.png</texturenofocus>
                     <texturefocus colordiffuse="Selected">skinshortcuts/circle-plus.png</texturefocus>
                     <onfocus condition="!String.IsEqual(Window(Home).Property(custommenu),yes)">ClearProperty(skinshortcuts-Widget,Home)</onfocus>
+                    <visible>!String.IsEqual(Window.Property(groupname),searchdynamenu)</visible>
                 </control>
 
                 <!-- UP -->
@@ -276,6 +280,7 @@
                 <!-- MAIN MENU - CHOOSE ACTION - DISPLAY COMMAND ACTION -->
 
                 <control type="button" id="307" description="Custom">
+                    <visible>!String.IsEqual(Window.Property(groupname),searchdynamenu)</visible>
                     <visible>String.IsEmpty(Window(Home).Property(skinshortcuts-Widget))</visible>
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
                     <visible>!$EXP[Script_SkinShortcuts_Widget]</visible>
@@ -288,6 +293,7 @@
                 <!-- WIDGETS - CHOOSE WIDGET -->
 
                 <control type="button" id="4001" description="Choose Widget">
+                    <visible>!String.IsEqual(Window.Property(groupname),searchdynamenu)</visible>
                     <visible>$EXP[Script_SkinShortcuts_Widget]</visible>
                     <include>Def_Skinshortcuts_Button_Menu_Right_Side</include>
                     <label>31558</label>
@@ -300,6 +306,7 @@
                 <!-- WIDGETS - DISPLAY/EDIT ACTION -->
 
                 <control type="button" id="4307" description="Custom">
+                    <visible>!String.IsEqual(Window.Property(groupname),searchdynamenu)</visible>
                     <visible>String.IsEmpty(Window(Home).Property(skinshortcuts-Widget))</visible>
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
                     <visible>$EXP[Script_SkinShortcuts_Widget]</visible>
@@ -311,7 +318,7 @@
                     <onclick>SendClick(307)</onclick>
                 </control>
 
-                <!-- MAIN MENU - SET LABEL -->
+                <!-- MAIN MENU / WIDGETS - SET LABEL -->
 
                 <control type="button" id="305" description="Set Label">
                     <!-- <visible>String.IsEmpty(Window(Home).Property(skinshortcuts-Widget))</visible> -->
@@ -358,7 +365,7 @@
         <!-- MAIN MENU - TITLE - MAIN MENU / WIDGETS - "OPTIONS" -->
 
                 <control type="button" id="4989">
-                    <visible>String.IsEqual(Window.Property(groupname),mainmenu) | String.IsEqual(Window.Property(groupname),searchmenulist) | $EXP[Script_SkinShortcuts_Widget]</visible>
+                    <visible>String.IsEqual(Window.Property(groupname),mainmenu) | String.IsEqual(Window.Property(groupname),searchlistmenu) | String.IsEqual(Window.Property(groupname),searchdynamenu) | $EXP[Script_SkinShortcuts_Widget]</visible>
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
                     <include>Def_Skinshortcuts_Button_Title_Right_Side</include>
                     <label>33063</label>
@@ -378,11 +385,12 @@
                 <!-- SEARCH MENU - SET BACKGROUND - SEARCH FALLBACK -->
 
                 <control type="button" id="4990" description="Background">
-                    <visible>String.IsEqual(Window.Property(groupname),searchmenulist) + String.IsEmpty(Window(Home).Property(skinshortcuts-Widget))</visible>
+                    <visible>[String.IsEqual(Window.Property(groupname),searchlistmenu) | String.IsEqual(Window.Property(groupname),searchdynamenu)] + String.IsEmpty(Window(Home).Property(skinshortcuts-Widget))</visible>
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
                     <include>Def_Skinshortcuts_Button_Menu_Right_Side</include>
                     <label>$LOCALIZE[31081]</label>
                     <label2>$INFO[Skin.String(fanart.fallback.search)]</label2>
+                    <onclick condition="String.IsEqual(Window.Property(groupname),searchdynamenu)">SetProperty(widgetmanagement,1,Home)</onclick>
                     <onclick>Skin.SetImage(fanart.fallback.search)</onclick>
                 </control>
 
@@ -395,11 +403,13 @@
                 <control type="button" id="9901" description="Widget Aspect">
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
                     <visible>$EXP[Script_SkinShortcuts_Widget]</visible>
-                    <enable>!String.IsEqual(Container(211).ListItem.Property(widgettarget),system) + !String.IsEqual(Container(211).ListItem.Property(widget),epg) + !Skin.HasSetting(home.style.horizontal.clean)</enable>
+                    <visible>!$EXP[Widget_Content_Info_Sys]</visible>
+                    <enable>!String.IsEqual(Container(211).ListItem.Property(widgettarget),system) + !String.IsEqual(Container(211).ListItem.Property(widgettarget),epg) + ![Skin.HasSetting(home.style.horizontal.clean) + String.IsEqual(Window(Home).Property(SkinshortcutsMenuName),mainmenu)]</enable>
                     <include>Def_Skinshortcuts_Button_Menu_Right_Side</include>
                     <label>31189</label>
                     <label2>$VAR[Label_Widget_Aspect]</label2>
                     <!-- <label2>$INFO[Container(211).ListItem.Property(widgetaspect)]</label2> -->
+                    <onclick>SetProperty(widgetmanagement,1,Home)</onclick>
                 </control>
 
                 <!-- WIDGETS - ENABLE CLEARLOGO WITH FANART -->
@@ -407,6 +417,7 @@
                 <control type="radiobutton" id="9411" description="Widget ClearLogo">
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
                     <visible>$EXP[Script_SkinShortcuts_Widget]</visible>
+                    <visible>!$EXP[Widget_Content_Sys_Info_Weather]</visible>
                     <visible>!String.IsEqual(Container(211).ListItem.Property(widget),epg)</visible>
                     <visible>String.IsEqual(Container(211).ListItem.Property(widgetaspect),Fanart) | String.IsEqual(Container(211).ListItem.Property(widgetaspect),FanartSmall)</visible>
                     <selected>!String.IsEqual(Container(211).ListItem.Property(widgetClearLogoFanart),no)</selected>
@@ -423,11 +434,13 @@
                 <control type="button" id="9902" description="Widget Aspect">
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
                     <visible>$EXP[Script_SkinShortcuts_Widget]</visible>
+                    <visible>!$EXP[Widget_Content_Sys_Info_Weather]</visible>
                     <include>Def_Skinshortcuts_Button_Menu_Right_Side</include>
                     <label>$LOCALIZE[31559]</label>
                     <label2>$VAR[Label_Widget_Content]</label2>
                     <!-- <label2>$INFO[Container(211).ListItem.Property(widgetTarget)]</label2> -->
                     <include>Set_SkinShortcuts_Content_Type_On_Focus</include>
+                    <onclick>SetProperty(widgetmanagement,1,Home)</onclick>
                 </control>
 
                 <!-- WIDGETS - SORT BY -->
@@ -435,10 +448,12 @@
                 <control type="button" id="9903" description="Widget SortBy">
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
                     <visible>$EXP[Script_SkinShortcuts_Widget]</visible>
+                    <visible>!$EXP[Widget_Content_Sys_Info_Weather]</visible>
                     <include>Def_Skinshortcuts_Button_Menu_Right_Side</include>
                     <label>581</label>
                     <label2>$VAR[Label_Widget_Sort_By]</label2>
                     <!-- <label2>$INFO[Container(211).ListItem.Property(widgetSortby)]</label2> -->
+                    <onclick>SetProperty(widgetmanagement,1,Home)</onclick>
                 </control>
 
                 <!-- WIDGETS - SORT ORDER -->
@@ -446,17 +461,20 @@
                 <control type="button" id="9904">
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
                     <visible>$EXP[Script_SkinShortcuts_Widget]</visible>
+                    <visible>!$EXP[Widget_Content_Sys_Info_Weather]</visible>
                     <include>Def_Skinshortcuts_Button_Menu_Right_Side</include>
                     <label>580</label>
                     <label2>$VAR[Label_Widget_Sort_Order]</label2>
                     <!-- <label2>$INFO[Container(211).ListItem.Property(widgetSortorder)]</label2> -->
+                    <onclick>SetProperty(widgetmanagement,1,Home)</onclick>
                 </control>
 
                 <!-- WIDGETS - DISABLE RELOAD -->
 
 			    <control type="radiobutton" id="9412" description="Prevent reload">
+                    <visible>!String.IsEqual(Window.Property(groupname),searchdynamenu)</visible>
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
-	                <visible>!$EXP[Widget_Content_Weather_Sys_Info]</visible>
+	                <visible>!$EXP[Widget_Content_Sys_Info_Weather]</visible>
                     <visible>$EXP[Script_SkinShortcuts_Widget]</visible>
 			        <include>Def_Skinshortcuts_Button_Menu_Right_Side</include>
                     <label>$LOCALIZE[31640]</label>
@@ -471,11 +489,14 @@
                 <!-- WIDGETS - AUTO SCROLL - TIME -->
 
                 <control type="button" id="4196">
+                    <visible>!String.IsEqual(Window.Property(groupname),searchdynamenu)</visible>
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
                     <visible>$EXP[Script_SkinShortcuts_Widget]</visible>
+                    <visible>!$EXP[Widget_Content_Sys_Info_Weather]</visible>
                     <include>Def_Skinshortcuts_Button_Menu_Right_Side</include>
                     <label>$LOCALIZE[31256]</label>
                     <label2>$VAR[Label_Widget_AutoScroll_Time]</label2>
+                    <onclick>SetProperty(widgetmanagement,1,Home)</onclick>
                 </control>
 
                 <!-- WIDGETS - LIMIT NUM ITEMS -->
@@ -483,24 +504,24 @@
                 <control type="button" id="9907">
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
                     <visible>$EXP[Script_SkinShortcuts_Widget]</visible>
-                    <!-- <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible> -->
-                    <!-- <visible>String.EndsWith(Window.Property(groupname),.1) | String.IsEqual(Window.Property(groupname),searchmenulist)</visible> -->
+                    <visible>!$EXP[Widget_Content_Sys_Info_Weather]</visible>
                     <include>Def_Skinshortcuts_Button_Menu_Right_Side</include>
                     <label>$LOCALIZE[31000]</label>
                     <label2>$VAR[Label_Widget_Num_Item]</label2>
                     <!-- <label2>$INFO[Container(211).ListItem.Property(widgetLimit)]</label2> -->
+                    <onclick>SetProperty(widgetmanagement,1,Home)</onclick>
                 </control>
 
                 <!-- WIDGETS - LIST TYPE -->
 
                 <control type="button" id="41911" description="ListType">
                     <visible>!String.IsEqual(Container(211).ListItem.Property(skinshortcuts-disabled),True)</visible>
+                    <visible>![Skin.HasSetting(home.style.horizontal.clean) + String.IsEqual(Window(Home).Property(SkinshortcutsMenuName),mainmenu)]</visible>
                     <visible>$EXP[Script_SkinShortcuts_Widget]</visible>
-                    <visible>!$EXP[Home_Is_Horizontal_Clean]</visible>
-
                     <include>Def_Skinshortcuts_Button_Menu_Right_Side</include>
                     <label>$LOCALIZE[31257]</label>
                     <label2>$VAR[Label_Widget_List_Type]</label2>
+                    <onclick>SetProperty(widgetmanagement,1,Home)</onclick>
                 </control>
 
                 <include content="Def_Shortcuts_SetHub">
@@ -565,16 +586,6 @@
                     <label>$ADDON[script.skinshortcuts 32037]:</label>
                     <label2>$VAR[Label_SkinShortcuts_Menu_Name]</label2>
                     <onclick>RunScript(script.skinshortcuts,type=reset,menu=$INFO[Window.Property(groupname)])</onclick>
-                </control>
-
-                <!-- MAIN MENU - RESET - DEFAULT SUB MENU -->
-
-                <control type="button" id="312" description="Reset">
-                    <visible>String.IsEmpty(Window(Home).Property(skinshortcuts-Widget))</visible>
-                    <!-- <visible>String.IsEqual(Window.Property(groupname),mainmenu)</visible> -->
-                    <include>Def_Skinshortcuts_Button_Menu_Right_Side</include>
-                	<label>$ADDON[script.skinshortcuts 32028]:</label>
-                    <label2>$INFO[Container(211).ListItem.Label]</label2>
                 </control>
             </control>
 

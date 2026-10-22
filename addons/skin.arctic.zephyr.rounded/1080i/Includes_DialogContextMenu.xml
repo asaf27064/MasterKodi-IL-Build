@@ -40,7 +40,7 @@
 
             <!-- PLAY -->
 
-            <include content="Object_OSD_Button" condition="$EXP[Exp_ContextMenu_Show_Info] + !Window.IsVisible(DialogPVRChannelGuide.xml)">
+            <include content="Object_OSD_Button" condition="$EXP[Exp_ContextMenu_Show_Info] + !Window.IsVisible(DialogPVRChannelGuide.xml) + !String.IsEqual(ListItem.Property(tmdb_type),person) + !String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person) + !Window.IsVisible(DialogVideoInfo.xml)">
                 <param name="visible" value="true" />
                 <param name="size" value="44" />
                 <param name="left" value="-56" />
@@ -110,7 +110,7 @@
 
             <!-- WIKIPEDIA -->
 
-            <include content="Object_OSD_Button" condition="[String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),tvshow) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),season) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),episode) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),movie) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),director) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),actor) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),album) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),artist) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),song) | String.IsEqual(ListItem.Property(tmdb_type),person) | [String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),set) + !$EXP[IsJlomItem]]]">
+            <include content="Object_OSD_Button" condition="[String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),tvshow) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),season) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),episode) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),movie) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),director) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),actor) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),album) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),artist) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),song) | Container.Content(files) | String.IsEqual(ListItem.Property(tmdb_type),person) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person) | [String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),set) + !$EXP[IsJlomItem]]]">
                 <param name="visible" value="true" />
                 <param name="size" value="44" />
                 <param name="left" value="-56" />
@@ -236,6 +236,8 @@
                 <!-- <onclick condition="Integer.IsGreater(Playlist.Length(video),0) + [Player.HasVideo | Integer.IsEqual(Playlist.Length(music),0)]">ActivateWindow(videoplaylist)</onclick> -->
                 <onclick condition="Integer.IsGreater(Playlist.Length(music),0) + !Player.HasVideo">ActivateWindow(musicplaylist)</onclick>
                 <onclick>Dialog.Close(contextmenu)</onclick>
+                <enable>!VideoPlayer.Content(livetv) + !Window.IsVisible(MyPlaylist.xml)</enable>
+                <animation effect="fade" start="100" end="66" time="100" condition="Window.IsVisible(MyPlaylist.xml)">Conditional</animation>
             </include>
 
             <!-- FILES MANAGERS -->
@@ -387,7 +389,7 @@
                     <height>40</height>
                     <font>SymbolList</font>
                     <textcolor>$PARAM[color]</textcolor>
-                    <label>$PARAM[label] :</label>
+                    <label>$PARAM[label_icon]$LOCALIZE[31079]</label>
                 </control>
                 <control type="label">
                     <left>40</left>
@@ -395,7 +397,7 @@
                     <height>40</height>
                     <font>$PARAM[font]</font>
                     <textcolor>$PARAM[color]</textcolor>
-                    <label fallback="19055">$PARAM[value]</label>
+                    <label fallback="19055">$PARAM[label_value]</label>
                 </control>
             </control>
         </definition>

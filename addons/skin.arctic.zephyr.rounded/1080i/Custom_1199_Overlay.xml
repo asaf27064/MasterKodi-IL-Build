@@ -343,15 +343,26 @@
                 <visible>Window.IsVisible(Custom_1145_Home_SearchBar_Helper.xml)</visible>
             </control>
 
-            <!-- Custom_1146_Home_SearchDialog.xml  -->
+            <!-- Custom_1147_Home_Search_List.xml  -->
 
             <control type="label">
                 <width>780</width>
                 <textcolor>FFFFFFFF</textcolor>
                 <font>Tiny</font>
                 <align>left</align>
-                <label>Custom_1146_Home_SearchDialog.xml</label>
-                <visible>Window.IsVisible(Custom_1146_Home_SearchDialog.xml)</visible>
+                <label>Custom_1147_Home_Search_List.xml</label>
+                <visible>Window.IsVisible(Custom_1147_Home_Search_List.xml)</visible>
+            </control>
+
+            <!-- Custom_1148_Home_Search_Dynamic.xml  -->
+
+            <control type="label">
+                <width>780</width>
+                <textcolor>FFFFFFFF</textcolor>
+                <font>Tiny</font>
+                <align>left</align>
+                <label>Custom_1148_Home_Search_Dynamic.xml</label>
+                <visible>Window.IsVisible(Custom_1148_Home_Search_Dynamic.xml)</visible>
             </control>
 
             <!-- Custom_1149_Set_Media_Flags.xml  -->
@@ -2478,6 +2489,32 @@
                 <!-- <textcolor>red</textcolor> -->
             <!-- </include> -->
 
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(BackToFirstRow) : $INFO[Window(Home).Property(BackToFirstRow)]</label> -->
+                <!-- <textcolor>red</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Skin.String(horizontal_up_action) : $INFO[Skin.String(horizontal_up_action)]</label> -->
+                <!-- <textcolor>red</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Skin.String(horizontal_down_action) : $INFO[Skin.String(horizontal_down_action)]</label> -->
+                <!-- <textcolor>red</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Skin.String(vertical_updown_action) : $INFO[Skin.String(vertical_updown_action)]</label> -->
+                <!-- <textcolor>red</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(view_extended) : $INFO[Window(Home).Property(view_extended)]</label> -->
+                <!-- <textcolor>red</textcolor> -->
+            <!-- </include> -->
+
+
     <!-- =========================== -->
     <!--       SKIN THEME COLOR      -->
     <!-- =========================== -->
@@ -2498,17 +2535,7 @@
             <!-- </include> -->
 
             <!-- <include content="Overlay_InfoLabel"> -->
-                <!-- <label> - Control.GetLabel(312).index(1) : $INFO[Control.GetLabel(312).index(1)]</label> -->
-                <!-- <textcolor>orange</textcolor> -->
-            <!-- </include> -->
-
-            <!-- <include content="Overlay_InfoLabel"> -->
-                <!-- <label> - Window(Home).Property(keyboard_value) : $INFO[Window(Home).Property(keyboard_value)]</label> -->
-                <!-- <textcolor>orange</textcolor> -->
-            <!-- </include> -->
-
-            <!-- <include content="Overlay_InfoLabel"> -->
-                <!-- <label> - Window(Home).Property(Show_Menu_Search) : $INFO[Window(Home).Property(Show_Menu_Search)]</label> -->
+                <!-- <label> - Window(Home).Property(Launch_local_Search) : $INFO[Window(Home).Property(Launch_local_Search)]</label> -->
                 <!-- <textcolor>orange</textcolor> -->
             <!-- </include> -->
 
@@ -2519,6 +2546,21 @@
 
             <!-- <include content="Overlay_InfoLabel"> -->
                 <!-- <label> - Window(Home).Property(Launch_Search) : $INFO[Window(Home).Property(Launch_Search)]</label> -->
+                <!-- <textcolor>orange</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(Show_Menu_Search) : $INFO[Window(Home).Property(Show_Menu_Search)]</label> -->
+                <!-- <textcolor>orange</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(SkinshortcutsLoad) : $INFO[Window(Home).Property(SkinshortcutsLoad)]</label> -->
+                <!-- <textcolor>orange</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(SkinshortcutsClose) : $INFO[Window(Home).Property(SkinshortcutsClose)]</label> -->
                 <!-- <textcolor>orange</textcolor> -->
             <!-- </include> -->
 
@@ -2552,6 +2594,51 @@
             <!-- </include> -->
 
             <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(List.Multi.Director.0) : $INFO[Window(Home).Property(List.Multi.Director.0)]</label> -->
+                <!-- <textcolor>cyan</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(List.Multi.Director.1) : $INFO[Window(Home).Property(List.Multi.Director.1)]</label> -->
+                <!-- <textcolor>cyan</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(List.Multi.Director.2) : $INFO[Window(Home).Property(List.Multi.Director.2)]</label> -->
+                <!-- <textcolor>cyan</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(List.Multi.Director.3) : $INFO[Window(Home).Property(List.Multi.Director.3)]</label> -->
+                <!-- <textcolor>cyan</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(SetWriterSelected) : $INFO[Window(Home).Property(SetWriterSelected)]</label> -->
+                <!-- <textcolor>cyan</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(List.Multi.Writer.0) : $INFO[Window(Home).Property(List.Multi.Writer.0)]</label> -->
+                <!-- <textcolor>cyan</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(List.Multi.Writer.1) : $INFO[Window(Home).Property(List.Multi.Writer.1)]</label> -->
+                <!-- <textcolor>cyan</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(List.Multi.Writer.2) : $INFO[Window(Home).Property(List.Multi.Writer.2)]</label> -->
+                <!-- <textcolor>cyan</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
+                <!-- <label> - Window(Home).Property(List.Multi.Writer.3) : $INFO[Window(Home).Property(List.Multi.Writer.3)]</label> -->
+                <!-- <textcolor>cyan</textcolor> -->
+            <!-- </include> -->
+
+            <!-- <include content="Overlay_InfoLabel"> -->
                 <!-- <label> - Window(Home).Property(TMDbHelper.Player.tmdb_id) : $INFO[Window(Home).Property(TMDbHelper.Player.tmdb_id)]</label> -->
                 <!-- <textcolor>orange</textcolor> -->
             <!-- </include> -->
@@ -2561,25 +2648,25 @@
                 <!-- <textcolor>orange</textcolor> -->
             <!-- </include> -->
 
-            <!-- <include content="Overlay_InfoLabel"> -->
-                <!-- <label> - ListItem.Property(tmdb_id) : $INFO[ListItem.Property(tmdb_id)]</label> -->
-                <!-- <textcolor>magenta</textcolor> -->
-            <!-- </include> -->
+            <include content="Overlay_InfoLabel">
+                <label> - ListItem.Property(tmdb_id) : $INFO[ListItem.Property(tmdb_id)]</label>
+                <textcolor>magenta</textcolor>
+            </include>
 
-            <!-- <include content="Overlay_InfoLabel"> -->
-                <!-- <label> - Window(Home).Property(TMDbHelper.ListItem.tmdb_id) :    $INFO[Window(Home).Property(TMDbHelper.ListItem.tmdb_id)]</label> -->
-                <!-- <textcolor>magenta</textcolor> -->
-            <!-- </include> -->
+            <include content="Overlay_InfoLabel">
+                <label> - Window(Home).Property(TMDbHelper.ListItem.tmdb_id) :    $INFO[Window(Home).Property(TMDbHelper.ListItem.tmdb_id)]</label>
+                <textcolor>magenta</textcolor>
+            </include>
 
-            <!-- <include content="Overlay_InfoLabel"> -->
-                <!-- <label> - Window(Home).Property(Set_Movie_TvShow_TMDb_id) : $INFO[Window(Home).Property(Set_Movie_TvShow_TMDb_id)]</label> -->
-                <!-- <textcolor>magenta</textcolor> -->
-            <!-- </include> -->
+            <include content="Overlay_InfoLabel">
+                <label> - Window(Home).Property(Set_Movie_TvShow_TMDb_id) : $INFO[Window(Home).Property(Set_Movie_TvShow_TMDb_id)]</label>
+                <textcolor>magenta</textcolor>
+            </include>
 
-            <!-- <include content="Overlay_InfoLabel"> -->
-                <!-- <label> - ListItem.UniqueID(tmdb) : $INFO[ListItem.UniqueID(tmdb)]</label> -->
-                <!-- <textcolor>magenta</textcolor> -->
-            <!-- </include> -->
+            <include content="Overlay_InfoLabel">
+                <label> - ListItem.UniqueID(tmdb) : $INFO[ListItem.UniqueID(tmdb)]</label>
+                <textcolor>magenta</textcolor>
+            </include>
 
             <!-- <include content="Overlay_InfoLabel"> -->
                 <!-- <label> - ListItem.Property(tmdb_type) : $INFO[ListItem.Property(tmdb_type)]</label> -->
@@ -2658,6 +2745,11 @@
                 <!-- <label> - Window(Home).Property(ListItem_FolderPath) : $INFO[Window(Home).Property(ListItem_FolderPath)]</label> -->
                 <!-- <textcolor>magenta</textcolor> -->
             <!-- </include> -->
+
+            <include content="Overlay_InfoLabel">
+                <label> - Player.folderpath: [COLOR Selected]$INFO[Player.FolderPath][/COLOR]</label>
+                <textcolor>cyan</textcolor>
+            </include>
 
             <include content="Overlay_InfoLabel">
                 <label> - listitem.folderpath: [COLOR Selected]$INFO[ListItem.FolderPath][/COLOR]</label>

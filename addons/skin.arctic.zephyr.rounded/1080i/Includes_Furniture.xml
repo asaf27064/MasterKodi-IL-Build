@@ -21,21 +21,44 @@
                 <right>$PARAM[right]</right>
 
                 <!-- BACKGROUND -->
+
                 <control type="image">
                     <include>Def_Background_Media_Status_Icon_Top_Right</include>
                     <texture background="true" colordiffuse="$VAR[Color_Background_Status_Poster]">$VAR[Image_Indicator_Icon_Background]</texture>
                 </control>
 
                 <!-- CIRCLE -->
+
                 <control type="image">
                     <include>Def_Background_Media_Status_Icon_Top_Right</include>
                     <texture background="true" colordiffuse="$VAR[Color_Indicator_Status_Poster]">$VAR[Image_Indicator_Icon_Circle]</texture>
                 </control>
 
                 <!-- ICON -->
+
+                <!-- All others -->
                 <control type="label">
-                   <include>Def_Media_Status_Icon_Symbol</include>
-                   <label>$VAR[Label_Icon_Status_Poster]</label>
+                    <visible>!ListItem.IsPlaying + !$EXP[IsAlbumIsPlaying] | [ListItem.IsPlaying + Skin.HasSetting(hide.markers.isplaying)]</visible>
+                    <include>Def_Media_Status_Icon_Symbol</include>
+                    <label>$VAR[Label_Icon_Status_Poster]</label>
+                </control>
+
+                <!-- Item is playing + Player not paused -->
+                <control type="label">
+                    <visible>!Skin.HasSetting(hide.markers.isplaying)</visible>
+                    <visible>ListItem.IsPlaying | $EXP[IsAlbumIsPlaying]</visible>
+                    <visible>!Player.Paused</visible>
+                    <include>Def_Media_Status_Icon_Symbol</include>
+                    <label>[COLOR=$VAR[Color_Indicator_Status_Poster]]&#62811;[/COLOR]</label>
+                </control>
+
+                <!-- Item is playing + Player paused -->
+                <control type="label">
+                    <visible>!Skin.HasSetting(hide.markers.isplaying)</visible>
+                    <visible>ListItem.IsPlaying | $EXP[IsAlbumIsPlaying]</visible>
+                    <visible>Player.Paused</visible>
+                    <include>Def_Media_Status_Icon_Symbol</include>
+                    <label>[COLOR=$VAR[Color_Indicator_Status_Poster]]&#62813;[/COLOR]</label>
                 </control>
             </control>
 
@@ -56,14 +79,13 @@
 
                     <control type="image">
                         <include>Def_Media_Status_Banner_Background</include>
-                        <texture colordiffuse="$VAR[Color_Indicator_Background_Is_Playing]" background="true">dialog/misc/banner_status_overlay.png</texture>
+                        <texture colordiffuse="$VAR[Color_Indicator_Background_Is_Playing]" background="true">$VAR[Image_Indicator_Banner_Overlay]</texture>
                     </control>
 
                     <!-- ICON - PLAYING -->
 
                     <control type="label">
                         <visible>!Player.Paused</visible>
-
                         <include>Def_Media_Status_Banner_Symbol</include>
                         <label>&#62811;</label>
                     </control>
@@ -72,7 +94,6 @@
 
                     <control type="label">
                         <visible>Player.Paused</visible>
-
                         <include>Def_Media_Status_Banner_Symbol</include>
                         <label>&#62813;</label>
                     </control>
@@ -86,9 +107,8 @@
 
                     <control type="image">
                         <visible>[ListItem.IsResumable | $EXP[IsTVShowInProgress]]</visible>
-
                         <include>Def_Media_Status_Banner_Background</include>
-                        <texture colordiffuse="$VAR[Color_Indicator_Background_In_Progress]" background="true">dialog/misc/banner_status_overlay.png</texture>
+                        <texture colordiffuse="$VAR[Color_Indicator_Background_In_Progress]" background="true">$VAR[Image_Indicator_Banner_Overlay]</texture>
                     </control>
 
                     <!-- MOVIE -->
@@ -96,7 +116,6 @@
                     <control type="label">
                         <visible>!String.IsEqual(ListItem.DBType,set)</visible>
                         <visible>!Skin.HasSetting(hide.markers) + !$EXP[IsTVShowInProgress] + ListItem.IsResumable</visible>
-
                         <include>Def_Media_Status_Banner_Label</include>
                         <label>$VAR[Label_Flag_Indicator_Is_Resumable]</label>
                     </control>
@@ -106,7 +125,6 @@
                     <control type="label">
                         <visible>String.IsEqual(ListItem.DBType,set)</visible>
                         <visible>!$EXP[IsTVShowInProgress] + ListItem.IsResumable</visible>
-
                         <include>Def_Media_Status_Banner_Label</include>
                         <label>$VAR[Label_Flag_Indicator_Set_In_Progress]</label>
                     </control>
@@ -132,7 +150,7 @@
 
                     <control type="image">
                         <include>Def_Media_Status_Banner_Background</include>
-                        <texture colordiffuse="$VAR[Color_Indicator_Background_Watched]" background="true">dialog/misc/banner_status_overlay.png</texture>
+                        <texture colordiffuse="$VAR[Color_Indicator_Background_Watched]" background="true">$VAR[Image_Indicator_Banner_Overlay]</texture>
                     </control>
                     <control type="label">
                         <include>Def_Media_Status_Banner_Label</include>
@@ -155,7 +173,7 @@
 
                     <control type="image">
                         <include>Def_Media_Status_Banner_Background</include>
-                        <texture colordiffuse="$VAR[Color_Indicator_Background_UnWatched]" background="true">dialog/misc/banner_status_overlay.png</texture>
+                        <texture colordiffuse="$VAR[Color_Indicator_Background_UnWatched]" background="true">$VAR[Image_Indicator_Banner_Overlay]</texture>
                     </control>
                     <control type="label">
                         <include>Def_Media_Status_Banner_Label</include>
@@ -173,7 +191,7 @@
 
                     <control type="image">
                         <include>Def_Media_Status_Banner_Background</include>
-                        <texture colordiffuse="$VAR[Color_Indicator_Background_New]" background="true">dialog/misc/banner_status_overlay.png</texture>
+                        <texture colordiffuse="$VAR[Color_Indicator_Background_New]" background="true">$VAR[Image_Indicator_Banner_Overlay]</texture>
                     </control>
                     <control type="label">
                         <include>Def_Media_Status_Banner_Label</include>
@@ -669,7 +687,7 @@
 
                 <!-- SLIDE UP - HOME - HIDE WITH NOWPLAYING - ENABLE  / HOME CLEAN - WITH MAIN MENU HIDDEN -->
 
-                <animation type="Conditional" condition="[Skin.HasSetting(hide.home.menu.with.nowplaying.extended) + Player.HasMedia + $EXP[Extended_Now_Playing_Is_Enable] + [ControlGroup(777).HasFocus() | !$EXP[Extended_Now_Playing_Helper_AutoShow]] + !$EXP[Home_Menu_Is_Focus] + !$EXP[Home_Search_Is_Focus] + !ControlGroup(301).HasFocus() + Window.IsVisible(Home) + !$EXP[View_Info_Dialog] + !Window.IsVisible(MyPVRGuide.xml) + !Window.IsVisible(DialogContextMenu.xml)] | [Skin.HasSetting(home.style.horizontal.clean) + Skin.HasSetting(hide.home.menu) + !$EXP[Home_Menu_Is_Focus] + !$EXP[Home_Search_Is_Focus]]" reversible="true">
+                <animation type="Conditional" condition="[Skin.HasSetting(hide.home.menu.with.nowplaying.extended) + Player.HasMedia + $EXP[Extended_Now_Playing_Is_Enable] + [ControlGroup(777).HasFocus() | !$EXP[Extended_Now_Playing_Helper_AutoShow]] + !$EXP[Home_Menu_Is_Focus] + !$EXP[Home_Search_Is_Focus] + !$EXP[Home_Widget_Is_Focus] + Window.IsVisible(Home) + !$EXP[View_Info_Dialog] + !Window.IsVisible(MyPVRGuide.xml) + !Window.IsVisible(DialogContextMenu.xml)] | [Skin.HasSetting(home.style.horizontal.clean) + Skin.HasSetting(hide.home.menu) + !$EXP[Home_Menu_Is_Focus] + !$EXP[Home_Search_Is_Focus]]" reversible="true">
                     <effect type="slide" start="0,0" end="-115,0" tween="sine" easing="out" time="250" delay="0" />
                     <effect type="fade" start="100" end="0" time="150" delay="0" />
                 </animation>
@@ -686,26 +704,34 @@
                     <!-- SEARCH ICON HEADER -->
 
                     <control type="group">
-                        <visible>!Control.HasFocus(9099) + !Control.HasFocus(90009) + !Control.HasFocus(340)</visible>
+                        <visible>!Control.HasFocus(9099)</visible>
+
+                        <!-- Shadows Background -->
 
                         <control type="image">
-                            <visible>$EXP[Has_Home_Profil_Image] | String.IsEmpty(Skin.String(home_search_state))</visible>
+                            <visible>$EXP[Has_Home_Profil_Image] | String.IsEmpty(Skin.String(home_search_state)) | !String.IsEmpty(Window(Home).Property(Show_Menu_Search))</visible>
                             <width>160</width>
                             <height>160</height>
-                            <texture colordiffuse="White70">$VAR[Image_Header_Background]</texture>
+                            <include>Texture_Header_Common_Background_Icon</include>
                             <animation effect="fade" start="100" end="40" condition="!Skin.HasSetting(show.home.header.clock.left)">Conditional</animation>
                             <animation effect="fade" start="100" end="90" condition="Skin.HasSetting(show.home.header.clock.left)">Conditional</animation>
                         </control>
+
+                        <!-- Icon search -->
+
                         <control type="image">
-                            <visible>!$EXP[Has_Home_Profil_Image] + String.IsEmpty(Skin.String(home_search_state))</visible>
+                            <visible>[!$EXP[Has_Home_Profil_Image] + String.IsEmpty(Skin.String(home_search_state))] | !String.IsEmpty(Window(Home).Property(Show_Menu_Search))</visible>
                             <top>36</top>
                             <left>36</left>
                             <width>88</width>
                             <height>88</height>
-                            <texture colordiffuse="PanelWhite100" border="12">special://skin/extras/icons/search.png</texture>
+                            <texture colordiffuse="PanelWhite100">special://skin/extras/icons/search.png</texture>
                             <animation effect="fade" start="100" end="40" condition="!Skin.HasSetting(show.home.header.clock.left)">Conditional</animation>
                             <animation effect="fade" start="100" end="90" condition="Skin.HasSetting(show.home.header.clock.left)">Conditional</animation>
                         </control>
+
+                        <!-- Icon profile -->
+
                         <control type="image">
                             <visible>$EXP[Has_Home_Profil_Image]</visible>
                             <top>36</top>
@@ -719,11 +745,14 @@
                     <control type="group">
                         <visible>Control.HasFocus(9099)</visible>
 
+                        <!-- Shadow -->
                         <control type="image">
                             <width>160</width>
                             <height>160</height>
-                            <texture colordiffuse="White70">$VAR[Image_Header_Background]</texture>
+                            <include>Texture_Header_Common_Background_Icon</include>
                         </control>
+
+                        <!-- Background -->
                         <control type="image">
                             <top>40</top>
                             <left>40</left>
@@ -731,12 +760,14 @@
                             <height>80</height>
                             <include>Texture_Circle_80</include>
                         </control>
+
+                        <!-- Icon -->
                         <control type="image">
                             <top>36</top>
                             <left>36</left>
                             <width>88</width>
                             <height>88</height>
-                            <texture colordiffuse="Selected" border="12">special://skin/extras/icons/search.png</texture>
+                            <include>Texture_Icon_Search_Focus</include>
                         </control>
                     </control>
                 </control>
@@ -746,8 +777,6 @@
                 <control type="group">
                     <visible>!Window.IsVisible(DialogBusy.xml)</visible>
                     <visible>Window.IsActive(Home) + Skin.HasSetting(show.home.header.clock.left) + Skin.HasSetting(show.furniture.clock.date.weather)</visible>
-
-                    <include>Animation_Fade_Vertical_Focus_Search</include>
 
                     <top>40</top>
                     <left>144</left>
@@ -812,7 +841,7 @@
 
         <control type="group">
             <visible>!$EXP[Extended_Now_Playing_Is_Visible]</visible>
-            <visible>![$EXP[Home_Menu_Is_Focus] | Control.HasFocus(9099) | Control.HasFocus(2011)]</visible>
+            <visible>$EXP[Home_Widget_Is_Focus] | Control.HasFocus(2011)</visible>
 
             <!-- HOME - HEADER - CLEARLOGO - CROP -->
 
@@ -873,7 +902,7 @@
 
                 <!-- SLIDE LEFT - HOME - HIDE WITH NOWPLAYING - ENABLE -->
 
-                <animation type="Conditional" condition="Skin.HasSetting(hide.home.menu.with.nowplaying.extended) + Player.HasMedia + $EXP[Extended_Now_Playing_Is_Enable] + [ControlGroup(777).HasFocus() | !$EXP[Extended_Now_Playing_Helper_AutoShow]] + !$EXP[Home_Menu_Is_Focus] + !$EXP[Home_Search_Is_Focus] + !ControlGroup(301).HasFocus() + Window.IsVisible(Home) + !$EXP[View_Info_Dialog] + !Window.IsVisible(MyPVRGuide.xml) + !Window.IsVisible(DialogContextMenu.xml)" reversible="true">
+                <animation type="Conditional" condition="Skin.HasSetting(hide.home.menu.with.nowplaying.extended) + Player.HasMedia + $EXP[Extended_Now_Playing_Is_Enable] + [ControlGroup(777).HasFocus() | !$EXP[Extended_Now_Playing_Helper_AutoShow]] + !$EXP[Home_Menu_Is_Focus] + !$EXP[Home_Search_Is_Focus] + !$EXP[Home_Widget_Is_Focus] + Window.IsVisible(Home) + !$EXP[View_Info_Dialog] + !Window.IsVisible(MyPVRGuide.xml) + !Window.IsVisible(DialogContextMenu.xml)" reversible="true">
                     <effect type="slide" start="0,0" end="-115,0" tween="sine" easing="out" time="250" delay="0" />
                     <effect type="fade" start="100" end="0" time="150" delay="0" />
                 </animation>
@@ -886,7 +915,7 @@
                 <control type="group" description="iconbox">
                     <visible>!Window.IsActive(Home) + !Skin.HasSetting(hide.furniture.header)</visible>
                     <visible>!Skin.HasSetting(hide.view.flix.furniture.header) | [Skin.HasSetting(hide.view.flix.furniture.header) + !$EXP[View_Flix]]</visible>
-                    <visible>![Skin.HasSetting(home.style.horizontal.clean) + [Control.HasFocus(2011) | ControlGroup(301).HasFocus()]]</visible>
+                    <visible>![Skin.HasSetting(home.style.horizontal.clean) + [Control.HasFocus(2011) | $EXP[Home_Widget_Is_Focus]]]</visible>
                     <visible>!Window.IsVisible(script-globalsearch.xml)</visible>
 
                     <width>160</width>
@@ -897,7 +926,7 @@
                     <control type="image">
                         <width>160</width>
                         <height>160</height>
-                        <texture colordiffuse="White70">$VAR[Image_Header_Background]</texture>
+                        <include>Texture_Header_Common_Background_Icon</include>
                         <animation effect="fade" start="100" end="90" condition="true">Conditional</animation>
                     </control>
                     <control type="image">
@@ -1126,7 +1155,7 @@
 
                 <!-- SLIDE RIGHT - HOME - HIDE WITH NOWPLAYING - ENABLE -->
 
-                <animation type="Conditional" condition="Skin.HasSetting(hide.home.menu.with.nowplaying.extended) + Player.HasMedia + $EXP[Extended_Now_Playing_Is_Enable] + [ControlGroup(777).HasFocus() | !$EXP[Extended_Now_Playing_Helper_AutoShow]] + !$EXP[Home_Menu_Is_Focus] + !ControlGroup(301).HasFocus() + Window.IsVisible(Home) + !$EXP[View_Info_Dialog] + !Window.IsVisible(DialogContextMenu.xml) + !$EXP[Home_Search_Is_Focus]" reversible="true">
+                <animation type="Conditional" condition="Skin.HasSetting(hide.home.menu.with.nowplaying.extended) + Player.HasMedia + $EXP[Extended_Now_Playing_Is_Enable] + [ControlGroup(777).HasFocus() | !$EXP[Extended_Now_Playing_Helper_AutoShow]] + !$EXP[Home_Menu_Is_Focus] + !$EXP[Home_Widget_Is_Focus] + Window.IsVisible(Home) + !$EXP[View_Info_Dialog] + !Window.IsVisible(DialogContextMenu.xml) + !$EXP[Home_Search_Is_Focus]" reversible="true">
                     <effect type="slide" start="0,0" end="350,0" tween="sine" easing="out" time="250" delay="0" />
                     <effect type="fade" start="100" end="0" time="150" delay="0" />
                 </animation>
@@ -1241,6 +1270,7 @@
         <definition>
             <control type="group">
                 <visible>$PARAM[visible]</visible>
+
                 <animation type="Visible">
                     <effect type="slide" start="-400,0" end="0,0" tween="sine" easing="in" time="450" delay="250" />
                     <effect type="fade" start="0" end="100" time="350" delay="350" />
@@ -1309,6 +1339,7 @@
         </definition>
     </include>
 
+
     <!-- FURNITURE - FOOTER -->
 
     <include name="Furniture_Footer_Clock_Right">
@@ -1328,7 +1359,7 @@
 
             <!-- SLIDE DOWN - HOME - HIDE WITH NOWPLAYING - ENABLE -->
 
-            <animation type="Conditional" condition="Skin.HasSetting(hide.home.menu.with.nowplaying.extended) + Player.HasMedia + $EXP[Extended_Now_Playing_Is_Enable] + [ControlGroup(777).HasFocus() | !$EXP[Extended_Now_Playing_Helper_AutoShow]] + !$EXP[Home_Menu_Is_Focus] + !$EXP[Home_Search_Is_Focus] + !ControlGroup(301).HasFocus() + Window.IsVisible(Home) + !$EXP[View_Info_Dialog] + !Window.IsVisible(DialogContextMenu.xml) + !Skin.HasSetting(home.style.horizontal.clean)" reversible="true">
+            <animation type="Conditional" condition="Skin.HasSetting(hide.home.menu.with.nowplaying.extended) + Player.HasMedia + $EXP[Extended_Now_Playing_Is_Enable] + [ControlGroup(777).HasFocus() | !$EXP[Extended_Now_Playing_Helper_AutoShow]] + !$EXP[Home_Menu_Is_Focus] + !$EXP[Home_Search_Is_Focus] + !$EXP[Home_Widget_Is_Focus] + Window.IsVisible(Home) + !$EXP[View_Info_Dialog] + !Window.IsVisible(DialogContextMenu.xml) + !Skin.HasSetting(home.style.horizontal.clean)" reversible="true">
                 <effect type="slide" start="0" end="0,123" time="250" tween="sine" easing="out" />
                 <effect type="fade" start="100" end="0" time="150" delay="0" />
             </animation>
@@ -1850,7 +1881,7 @@
             <control type="image">
                 <width>160</width>
                 <height>160</height>
-                <texture colordiffuse="White70">$VAR[Image_Header_Background]</texture>
+                <include>Texture_Header_Common_Background_Icon</include>
                 <animation effect="fade" start="100" end="90" condition="true">Conditional</animation>
             </control>
             <control type="image">

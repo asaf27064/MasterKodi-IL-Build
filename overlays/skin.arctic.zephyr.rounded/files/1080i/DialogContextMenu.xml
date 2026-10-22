@@ -2,6 +2,10 @@
 <window type="dialog">
     <defaultcontrol always="true">995</defaultcontrol>
 
+    <coordinates>
+        <origin x="0" y="0"/>
+    </coordinates>
+
     <include>Def_Context_Menu_Focus_OnLoad</include>
 
     <!-- INIT - ENCODE -->
@@ -41,7 +45,7 @@
     <onload>ClearProperty(filemanager_back_video_info_type,Home)</onload>
     <onload>ClearProperty(filemanager_back_video_info_bdid,Home)</onload>
 
-    <onunload> ClearProperty(SlideHomeNowPlaying,Home)</onunload>
+    <onunload>ClearProperty(SlideHomeNowPlaying,Home)</onunload>
 
     <menucontrol>5050</menucontrol>
 
@@ -89,7 +93,7 @@
                 <!-- SHOW INFO -->
 
                 <onclick condition="![Window.IsActive(movieinformation) + !String.IsEmpty(Window(Home).Property(moviecontent))] + ![Window.IsActive(musicinformation) | Window.IsActive(songinformation)] + $EXP[Exp_ContextMenu_Show_Info]">Dialog.Close(contextmenu)</onclick>
-                <onclick condition="![Window.IsActive(movieinformation) + !String.IsEmpty(Window(Home).Property(moviecontent))] + ![Window.IsActive(musicinformation) | Window.IsActive(songinformation)] + $EXP[Exp_ContextMenu_Show_Info]">AlarmClock(Launch_Search,$VAR[Path_ContextParams_Path_Info],00:01,silent)</onclick>
+                <onclick condition="![Window.IsActive(movieinformation) + !String.IsEmpty(Window(Home).Property(moviecontent))] + ![Window.IsActive(musicinformation) | Window.IsActive(songinformation)] + $EXP[Exp_ContextMenu_Show_Info]">AlarmClock(Delay_Search,$VAR[Path_ContextParams_Path_Info],00:01,silent)</onclick>
 
                 <!-- BACK MENU LIST -->
 
@@ -187,7 +191,7 @@
                 <!-- PLOT -->
 
                 <control type="textbox" id="8600">
-                    <include content="Def_Height" condition="String.IsEqual(ListItem.Property(tmdb_type),person) + !Window.IsVisible(DialogVideoInfo.xml)">
+                    <include content="Def_Height" condition="[String.IsEqual(ListItem.Property(tmdb_type),person) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person)] + [!Window.IsVisible(DialogVideoInfo.xml) | [Window.IsVisible(DialogVideoInfo.xml) + String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person)]]">
                         <param name="height" value="520" />
                     </include>
                     <height>450</height>
@@ -204,7 +208,7 @@
                     <visible>Container(8600).HasNext</visible>
                     <animation effect="fade" end="100" start="0" time="250" delay="300">Visible</animation>
                     <include>Animation_Common_Fade_In</include>
-                    <include content="Def_Top" condition="String.IsEqual(ListItem.Property(tmdb_type),person) + !Window.IsVisible(DialogVideoInfo.xml)">
+                    <include content="Def_Top" condition="[String.IsEqual(ListItem.Property(tmdb_type),person) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person)] + [!Window.IsVisible(DialogVideoInfo.xml) | [Window.IsVisible(DialogVideoInfo.xml) + String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person)]]">
                         <param name="top" value="532" />
                     </include>
                     <top>462</top>
@@ -218,7 +222,7 @@
                     <visible>Container(8600).HasPrevious</visible>
                     <animation effect="fade" end="100" start="0" time="250" delay="300">Visible</animation>
                     <include>Animation_Common_Fade_In</include>
-                    <include content="Def_Top" condition="String.IsEqual(ListItem.Property(tmdb_type),person) + !Window.IsVisible(DialogVideoInfo.xml)">
+                    <include content="Def_Top" condition="[String.IsEqual(ListItem.Property(tmdb_type),person) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person)] + [!Window.IsVisible(DialogVideoInfo.xml) | [Window.IsVisible(DialogVideoInfo.xml) + String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person)]]">
                         <param name="top" value="520" />
                     </include>
                     <top>450</top>
@@ -431,6 +435,7 @@
 
             <control type="grouplist">
                 <visible>!Window.IsVisible(AddonBrowser.xml) + !Window.IsVisible(FileManager.xml)</visible>
+                <visible>!Window.IsVisible(DialogVideoInfo.xml) | [Window.IsVisible(DialogVideoInfo.xml) + String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person)]</visible>
 
                 <top>500</top>
                 <left>44</left>
@@ -441,28 +446,40 @@
                 <usecontrolcoords>true</usecontrolcoords>
 
                 <include content="Def_Context_Menu_Information">
-                    <param name="label" value="&#61747;" />
+                    <param name="label_icon" value="&#61747;" />
                     <param name="font" value="InfoNetflix" />
-                    <param name="value" value="$VAR[Label_Actors_Context_Name]" />
-                    <param name="visible" value="String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),album) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),artist) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),song) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),musicvideo) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),actor)" />
+                    <param name="label_value" value="$VAR[Label_Actors_Context_Name]" />
+                    <param name="visible" value="String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),album) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),artist) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),song) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),musicvideo) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),actor) | String.IsEqual(ListItem.Property(tmdb_type),person) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person)" />
                 </include>
                 <include content="Def_Context_Menu_Information">
-                    <param name="label" value="&#61825;" />
+                    <param name="label_icon" value="&#61825;" />
                     <param name="font" value="Small24" />
-                    <param name="value" value="$INFO[Window(Home).Property(TMDbHelper.ListItem.base_album)]" />
+                    <param name="label_value" value="$INFO[Window(Home).Property(TMDbHelper.ListItem.base_album)]" />
                     <param name="visible" value="String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),album) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),song) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),musicvideo)" />
                 </include>
                 <include content="Def_Context_Menu_Information">
-                    <param name="label" value="&#62229;" />
+                    <param name="label_icon" value="&#62229;" />
                     <param name="font" value="Small24" />
-                    <param name="value" value="$INFO[Window(Home).Property(TMDbHelper.ListItem.base_genre)]" />
+                    <param name="label_value" value="$INFO[Window(Home).Property(TMDbHelper.ListItem.base_genre)]" />
                     <param name="visible" value="String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),artist) + !String.IsEmpty(Window(Home).Property(TMDbHelper.ListItem.base_genre))" />
                 </include>
                 <include content="Def_Context_Menu_Information">
-                    <param name="label" value="&#62229;" />
+                    <param name="label_icon" value="&#62229;" />
                     <param name="font" value="Small24" />
-                    <param name="value" value="$VAR[Label_Actors_Context_Gender]" />
-                    <param name="visible" value="String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),actor)" />
+                    <param name="label_value" value="$VAR[Label_Actors_Context_Gender]" />
+                    <param name="visible" value="String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),actor) | String.IsEqual(ListItem.Property(tmdb_type),person) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person)" />
+                </include>
+                <include content="Def_Context_Menu_Information">
+                    <param name="label_icon" value="&#62315;" />
+                    <param name="font" value="Small24" />
+                    <param name="label_value" value="$VAR[Label_Actors_Context_Birth_Death]" />
+                    <param name="visible" value="[String.IsEqual(ListItem.Property(tmdb_type),person) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person)] + !String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),actor)" />
+                </include>
+                <include content="Def_Context_Menu_Information">
+                    <param name="label_icon" value="&#62046;" />
+                    <param name="font" value="Small24" />
+                    <param name="label_value" value="$VAR[Label_Actors_Context_Department]" />
+                    <param name="visible" value="[String.IsEqual(ListItem.Property(tmdb_type),person) | String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.DBType),person)] + !String.IsEqual(Window(Home).Property(TMDbHelper.ListItem.base_dbtype),actor)" />
                 </include>
             </control>
 

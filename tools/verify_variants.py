@@ -189,7 +189,7 @@ def analyze(vdir):
         base = rel.rsplit('/', 1)[-1]
         for m in URL_RE.finditer(text):
             eng, fn, key = classify(m.group(1), m.group(2))
-            # A skin's built-in `searchmenulist` group is NOT our content
+            # A skin's built-in `searchmenulist` group (`searchlistmenu` from Rounded 1.3.17) is NOT our content
             # search -- it is the skin's own list of search PROVIDERS
             # (globalsearch / TMDb Helper / YouTube / TV guide / podcasts),
             # reachable from the skin's main search button and editable in skin
@@ -198,7 +198,7 @@ def analyze(vdir):
             # the content addon applies to OUR search entry in the categories
             # row, not here. Tag it separately so it stays visible in the
             # report instead of being silently ignored.
-            if fn == 'search' and base.endswith('-searchmenulist.DATA.xml'):
+            if fn == 'search' and base.endswith(('-searchmenulist.DATA.xml', '-searchlistmenu.DATA.xml')):
                 fn = 'searchlist'
             items.append((eng, fn, key, rel))
         for m in re.finditer(r'plugin\.video\.pov/\?([^"\'<]+)', dec):

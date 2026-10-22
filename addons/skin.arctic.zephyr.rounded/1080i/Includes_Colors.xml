@@ -269,12 +269,12 @@
     <!-- DIALOG -->
 
     <variable name="Color_Label_Dialog_Notification_Title">
-        <value condition="VideoPlayer.IsFullscreen | Window.IsVisible(MusicVisualisation.xml)">$VAR[Color_OSD_Label_Line1]</value>
+        <value condition="$EXP[Player_Music_Video_Is_FullScreen]">$VAR[Color_OSD_Label_Line1]</value>
         <value>Dark1</value>
     </variable>
 
     <variable name="Color_Label_Dialog_Notification_Sub_Title">
-        <value condition="VideoPlayer.IsFullscreen | Window.IsVisible(MusicVisualisation.xml)">$VAR[Color_OSD_Label_Line2]</value>
+        <value condition="$EXP[Player_Music_Video_Is_FullScreen]">$VAR[Color_OSD_Label_Line2]</value>
         <value>PanelWhite70</value>
     </variable>
 
@@ -514,7 +514,7 @@
 
     <variable name="Color_Background_Status_Poster">
         <!-- <value condition="Skin.HasSetting(hide.markers)"></value> -->
-        <value condition="ListItem.IsPlaying + !Skin.HasSetting(hide.markers.isplaying)">$VAR[Color_Indicator_Background_Is_Playing]</value>
+        <value condition="[ListItem.IsPlaying | $EXP[IsAlbumIsPlaying]] + !Skin.HasSetting(hide.markers.isplaying)">$VAR[Color_Indicator_Background_Is_Playing]</value>
         <!-- <value condition="[ListItem.IsResumable | $EXP[IsTVShowInProgress]] + Skin.HasSetting(hide.markers.inprogress)"></value> -->
         <value condition="ListItem.IsResumable | $EXP[IsTVShowInProgress]">$VAR[Color_Indicator_Background_In_Progress]</value>
         <!-- <value condition="Integer.IsGreater(ListItem.Playcount,0) + Skin.HasSetting(hide.markers.watched)"></value> -->
@@ -603,5 +603,19 @@
 
     <variable name="Color_Icon_Light">
 		<value>FFD6AD05</value>
+    </variable>
+
+    <variable name="Color_Label_Edit_Search">
+		<value condition="Control.HasFocus(90009)">Selected</value>
+		<value condition="$EXP[View_Search_Focus_Keyboard]">Dark2</value>
+		<value>Dark3</value>
+    </variable>
+
+    <variable name="Color_Label_Tips_Search">
+		<value>B3BBBBBB</value>
+    </variable>
+
+    <variable name="$VAR[Color_Search_Bar_Border]">
+		<value>BoxBorder</value>
     </variable>
 </includes>

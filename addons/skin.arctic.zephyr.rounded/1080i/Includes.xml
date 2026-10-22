@@ -17,6 +17,7 @@
     <include file="Includes_Lists.xml" />
 
     <include file="Includes_Dialogs.xml" />
+    <include file="Includes_Keyboard.xml" />
     <include file="Includes_Objects.xml" />
     <include file="Includes_Textures.xml" />
     <include file="Includes_DialogSelect.xml" />
@@ -32,7 +33,6 @@
     <include file="Includes_DialogPVRInfo.xml" />
 
     <include file="Includes_NowPlaying.xml" />
-    <include file="Includes_Search_Menu_List.xml" />
     <include file="Includes_Custom_Items.xml" />
     <include file="Includes_Games.xml" />
     <include file="Includes_Flags.xml" />

@@ -252,7 +252,7 @@
                 <textcolor>$PARAM[textcolor]</textcolor>
                 <selectedcolor>$PARAM[selectedcolor]</selectedcolor>
                 <label>$PARAM[label_line_1]</label>
-                <animation effect="slide" end="0,18" condition="$EXP[Label2_Dialog_Select_Empty]">Conditional</animation>
+                <animation effect="slide" end="0,18" condition="String.IsEmpty(ListItem.Label2)">Conditional</animation>
                 <visible>$PARAM[visible]</visible>
             </control>
 
@@ -330,14 +330,14 @@
     </include>
 
     <include name="Def_View_List_Item_IsPlaying_square">
-        <param name="visible" value="$PARAM[visible]" default="true" />
         <param name="pad_image" value="$PARAM[pad_image]" default="5" />
         <param name="condition_scroll_anim" value="$PARAM[condition_scroll_anim]" default="true" />
+        <param name="visible" value="$PARAM[visible]" default="true" />
 
         <definition>
             <control type="image">
                 <include content="Def_Padding"><param name="pad" value="$PARAM[pad_image]" /></include>
-                <texture colordiffuse="Dark3">common/white.png</texture>
+                <include>Texture_Layout_Item_Square_IsPlaying_Background_NoFocus</include>
                 <include condition="$PARAM[condition_scroll_anim]">Animation_View_List_Focus_Scroll</include>
                 <visible>ListItem.IsPlaying</visible>
                 <visible>$PARAM[visible]</visible>
@@ -345,7 +345,7 @@
             <control type="image">
                 <include content="Def_Padding"><param name="pad" value="$PARAM[pad_image]" /></include>
                 <aspectratio aligny="top">center</aspectratio>
-                <texture>common/selected.png</texture>
+                <include>Texture_Layout_Item_Square_IsPlaying_Selected</include>
                 <animation effect="fade" start="100" end="15" condition="ListItem.IsPlaying">Conditional</animation>
                 <include condition="$PARAM[condition_scroll_anim]">Animation_View_List_Focus_Scroll</include>
                 <visible>ListItem.IsPlaying</visible>
@@ -356,19 +356,21 @@
 
     <include name="Def_View_List_Focus_IsPlaying_square">
         <param name="visible" value="$PARAM[visible]" default="true" />
+        <param name="list_id" value="$PARAM[list_id]" default="50" />
         <param name="pad_image" value="$PARAM[pad_image]" default="5" />
         <param name="condition_scroll_anim" value="$PARAM[condition_scroll_anim]" default="true" />
 
         <definition>
             <control type="image">
                 <include>Texture_PVR_Item_Focus</include>
+                <animation effect="fade" start="100" end="50" condition="!Control.HasFocus($PARAM[list_id])">Conditional</animation>
                 <include condition="$PARAM[condition_scroll_anim]">Animation_View_List_Focus_Scroll</include>
                 <visible>$PARAM[visible]</visible>
             </control>
             <control type="image">
                 <include content="Def_Padding"><param name="pad" value="$PARAM[pad_image]" /></include>
                 <aspectratio aligny="top">center</aspectratio>
-                <texture border="12">common/selected.png</texture>
+                <include>Texture_Layout_Item_Square_IsPlaying_Selected</include>
                 <animation effect="fade" start="100" end="15" condition="ListItem.IsPlaying">Conditional</animation>
                 <include condition="$PARAM[condition_scroll_anim]">Animation_View_List_Focus_Scroll</include>
                 <visible>ListItem.IsPlaying</visible>
@@ -1084,12 +1086,13 @@
         <param name="SquareMiddle" default="false" />
         <param name="SquareSmall" default="false" />
         <param name="aspectratio" default="scale" />
+        <param name="clearlogo" default="false" />
 
         <definition>
             <itemlayout height="325" width="222" condition="![$PARAM[Banner] | $PARAM[Thumbnail] | $PARAM[Fanart] | $PARAM[FanartSmall] | $PARAM[ThumbnailSmall] | $PARAM[PosterFanartSmall] | $PARAM[Square] | $PARAM[SquareMiddle] | $PARAM[SquareSmall]]">
                 <control type="group">
                     <width>222</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Poster">
                         <param name="texture" value="$VAR[Image_Poster]" />
                         <param name="texture_diffuse" value="poster_w202_h305" />
@@ -1101,7 +1104,7 @@
             <itemlayout height="325" width="325" condition="$PARAM[Square]">
                 <control type="group">
                 <width>325</width>
-                <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                 <include content="Layout_Widget_Square">
                     <param name="texture" value="$VAR[Image_Poster]" />
                     <param name="texture_diffuse" value="square_w305_h305" />
@@ -1117,7 +1120,7 @@
             <itemlayout height="325" width="260" condition="$PARAM[SquareMiddle]">
                 <control type="group">
                 <width>260</width>
-                <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                 <include content="Layout_Widget_Square">
                     <param name="visible_background_b12" value="true" />
                     <param name="texture" value="$VAR[Image_Poster]" />
@@ -1133,7 +1136,7 @@
             <itemlayout height="325" width="222" condition="$PARAM[SquareSmall]">
                 <control type="group">
                     <width>222</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Square">
                         <param name="visible_background_b12" value="true" />
                         <param name="texture" value="$VAR[Image_Poster]" />
@@ -1150,7 +1153,7 @@
             <itemlayout height="325" width="562" condition="$PARAM[Fanart]">
                 <control type="group">
                     <width>562</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Fanart">
                         <param name="texture" value="$VAR[Image_Widget_Fanart]" />
                         <param name="texture_diffuse" value="fanart_w570_h305" />
@@ -1158,13 +1161,14 @@
                         <param name="image_height" value="325" />
                         <param name="middle" value="false" />
                         <param name="small" value="false" />
+                        <param name="clearlogo" value="$PARAM[clearlogo]" />
                     </include>
                 </control>
             </itemlayout>
             <itemlayout height="325" width="400" condition="$PARAM[FanartSmall]">
                 <control type="group">
                     <width>400</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Fanart">
                         <param name="visible_background_b12" value="true" />
                         <param name="texture" value="$VAR[Image_Widget_Fanart]" />
@@ -1173,13 +1177,14 @@
                         <param name="image_height" value="234" />
                         <param name="middle" value="false" />
                         <param name="small" value="true" />
+                        <param name="clearlogo" value="$PARAM[clearlogo]" />
                     </include>
                 </control>
             </itemlayout>
             <itemlayout height="325" width="562" condition="$PARAM[Thumbnail]">
                 <control type="group">
                     <width>562</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Thumb">
                         <param name="texture" value="$VAR[Image_Widget_Thumb]" />
                         <param name="texture_diffuse" value="fanart_w570_h305" />
@@ -1193,7 +1198,7 @@
             <itemlayout height="325" width="400" condition="$PARAM[ThumbnailSmall]">
                 <control type="group">
                     <width>400</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Thumb">
                         <param name="visible_background_b12" value="true" />
                         <param name="texture" value="$VAR[Image_Widget_Thumb]" />
@@ -1218,12 +1223,13 @@
         <param name="Square" default="false" />
         <param name="SquareMiddle" default="false" />
         <param name="SquareSmall" default="false" />
+        <param name="clearlogo" default="false" />
 
         <definition>
-            <focusedlayout height="325" width="222" condition="![$PARAM[Banner] | $PARAM[Thumbnail] | $PARAM[Fanart] | $PARAM[FanartSmall] | $PARAM[ThumbnailSmall] | $PARAM[PosterFanartSmall] | $PARAM[Square] | $PARAM[SquareMiddle] | $PARAM[SquareSmall]] | $EXP[Home_Is_Horizontal_Clean]">
+            <focusedlayout height="325" width="222" condition="![$PARAM[Banner] | $PARAM[Thumbnail] | $PARAM[Fanart] | $PARAM[FanartSmall] | $PARAM[ThumbnailSmall] | $PARAM[PosterFanartSmall] | $PARAM[Square] | $PARAM[SquareMiddle] | $PARAM[SquareSmall]] | [$EXP[Home_Is_Horizontal_Clean] + !$PARAM[window_search]]">
                 <control type="group">
                     <width>222</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Poster_Focus">
                         <param name="texture" value="$VAR[Image_Poster]" />
                         <param name="texture_diffuse" value="poster_w202_h305" />
@@ -1238,10 +1244,10 @@
                 <include condition="Skin.HasSetting(home.views.flix.autoplay.trailer) + [$EXP[Home_Is_Horizontal_Flix] | $EXP[Home_Is_Vertical_Flix] | $EXP[Home_Is_Horizontal_Clean]]">Button_Auto_Trailer_Control</include>
                 <include>Button_Home_Widget_Set_DBID_FolderPath</include>
             </focusedlayout>
-            <focusedlayout height="325" width="325" condition="$PARAM[Square] + !$EXP[Home_Is_Horizontal_Clean]">
+            <focusedlayout height="325" width="325" condition="$PARAM[Square] + [!$EXP[Home_Is_Horizontal_Clean] | [$EXP[Home_Is_Horizontal_Clean] + $PARAM[window_search]]]">
                 <control type="group">
                     <width>325</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Square_Focus">
                         <param name="texture" value="$VAR[Image_Poster]" />
                         <param name="texture_diffuse" value="square_w305_h305" />
@@ -1258,10 +1264,10 @@
                 <include condition="Skin.HasSetting(home.views.flix.autoplay.trailer) + [$EXP[Home_Is_Horizontal_Flix] | $EXP[Home_Is_Vertical_Flix] | $EXP[Home_Is_Horizontal_Clean]]">Button_Auto_Trailer_Control</include>
                 <include>Button_Home_Widget_Set_DBID_FolderPath</include>
             </focusedlayout>
-            <focusedlayout height="325" width="260" condition="$PARAM[SquareMiddle] + !$EXP[Home_Is_Horizontal_Clean]">
+            <focusedlayout height="325" width="260" condition="$PARAM[SquareMiddle] + [!$EXP[Home_Is_Horizontal_Clean] | [$EXP[Home_Is_Horizontal_Clean] + $PARAM[window_search]]]">
                 <control type="group">
                     <width>260</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Square_Focus">
                         <param name="visible_background_b12" value="true" />
                         <param name="texture" value="$VAR[Image_Poster]" />
@@ -1279,10 +1285,10 @@
                 <include condition="Skin.HasSetting(home.views.flix.autoplay.trailer) + [$EXP[Home_Is_Horizontal_Flix] | $EXP[Home_Is_Vertical_Flix] | $EXP[Home_Is_Horizontal_Clean]]">Button_Auto_Trailer_Control</include>
                 <include>Button_Home_Widget_Set_DBID_FolderPath</include>
             </focusedlayout>
-            <focusedlayout height="325" width="222" condition="$PARAM[SquareSmall] + !$EXP[Home_Is_Horizontal_Clean]">
+            <focusedlayout height="325" width="222" condition="$PARAM[SquareSmall] + [!$EXP[Home_Is_Horizontal_Clean] | [$EXP[Home_Is_Horizontal_Clean] + $PARAM[window_search]]]">
                 <control type="group">
                     <width>222</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Square_Focus">
                         <param name="visible_background_b12" value="true" />
                         <param name="texture" value="$VAR[Image_Poster]" />
@@ -1300,10 +1306,10 @@
                 <include condition="Skin.HasSetting(home.views.flix.autoplay.trailer) + [$EXP[Home_Is_Horizontal_Flix] | $EXP[Home_Is_Vertical_Flix] | $EXP[Home_Is_Horizontal_Clean]]">Button_Auto_Trailer_Control</include>
                 <include>Button_Home_Widget_Set_DBID_FolderPath</include>
             </focusedlayout>
-            <focusedlayout height="325" width="562" condition="$PARAM[Fanart] + !$EXP[Home_Is_Horizontal_Clean]">
+            <focusedlayout height="325" width="562" condition="$PARAM[Fanart] + [!$EXP[Home_Is_Horizontal_Clean] | [$EXP[Home_Is_Horizontal_Clean] + $PARAM[window_search]]]">
                 <control type="group">
                     <width>562</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Fanart_Focus">
                         <param name="texture" value="$VAR[Image_Widget_Fanart]" />
                         <param name="texture_diffuse" value="fanart_w570_h305" />
@@ -1313,16 +1319,17 @@
                         <param name="glow_right" value="11" />
                         <param name="middle" value="false" />
                         <param name="small" value="false" />
+                        <param name="clearlogo" value="$PARAM[clearlogo]" />
                     </include>
                 </control>
                 <include condition="Skin.HasSetting(home.views.flix.autoplay.trailer) + [$EXP[Home_Is_Horizontal_Flix] | $EXP[Home_Is_Vertical_Flix] | $EXP[Home_Is_Horizontal_Clean]]">Button_Auto_Trailer_Control</include>
                 <include>Button_Home_Widget_Set_DBID_FolderPath</include>
             </focusedlayout>
 
-            <focusedlayout height="325" width="400" condition="$PARAM[FanartSmall] + !$EXP[Home_Is_Horizontal_Clean]">
+            <focusedlayout height="325" width="400" condition="$PARAM[FanartSmall] + [!$EXP[Home_Is_Horizontal_Clean] | [$EXP[Home_Is_Horizontal_Clean] + $PARAM[window_search]]]">
                 <control type="group">
                     <width>400</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Fanart_Focus">
                         <param name="visible_background_b12" value="true" />
                         <param name="texture" value="$VAR[Image_Widget_Fanart]" />
@@ -1333,16 +1340,17 @@
                         <param name="glow_right" value="5" />
                         <param name="middle" value="false" />
                         <param name="small" value="true" />
+                        <param name="clearlogo" value="$PARAM[clearlogo]" />
                     </include>
                 </control>
                 <include condition="Skin.HasSetting(home.views.flix.autoplay.trailer) + [$EXP[Home_Is_Horizontal_Flix] | $EXP[Home_Is_Vertical_Flix] | $EXP[Home_Is_Horizontal_Clean]]">Button_Auto_Trailer_Control</include>
                 <include>Button_Home_Widget_Set_DBID_FolderPath</include>
             </focusedlayout>
 
-            <focusedlayout height="325" width="562" condition="$PARAM[Thumbnail] + !$EXP[Home_Is_Horizontal_Clean]">
+            <focusedlayout height="325" width="562" condition="$PARAM[Thumbnail] + [!$EXP[Home_Is_Horizontal_Clean] | [$EXP[Home_Is_Horizontal_Clean] + $PARAM[window_search]]]">
                 <control type="group">
                     <width>562</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Thumb_Focus">
                         <param name="texture" value="$VAR[Image_Widget_Thumb]" />
                         <param name="texture_diffuse" value="fanart_w570_h305" />
@@ -1358,10 +1366,10 @@
                 <include>Button_Home_Widget_Set_DBID_FolderPath</include>
             </focusedlayout>
 
-            <focusedlayout height="325" width="400" condition="$PARAM[ThumbnailSmall] + !$EXP[Home_Is_Horizontal_Clean]">
+            <focusedlayout height="325" width="400" condition="$PARAM[ThumbnailSmall] + [!$EXP[Home_Is_Horizontal_Clean] | [$EXP[Home_Is_Horizontal_Clean] + $PARAM[window_search]]]">
                 <control type="group">
                     <width>400</width>
-                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean)"><param name="left" value="70" /></include>
+                    <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
                     <include content="Layout_Widget_Thumb_Focus">
                         <param name="visible_background_b12" value="true" />
                         <param name="texture" value="$VAR[Image_Widget_Thumb]" />

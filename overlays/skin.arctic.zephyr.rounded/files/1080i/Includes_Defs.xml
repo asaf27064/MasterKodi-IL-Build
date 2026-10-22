@@ -78,16 +78,12 @@
         </control>
     </include>
 
-    <include name="Hidden_Button_Search">
+    <include name="Hidden_Button_Home_Search">
         <control type="button" id="9099" description="Helper">
             <visible allowhiddenfocus="true">$EXP[Home_Search_Is_Focus]</visible>
             <animation effect="fade" time="300" start="0" end="0">Focus</animation>
 
             <include>Def_Hidden_Button</include>
-
-            <!-- SHOW MENU SEARCH -->
-
-            <onfocus>SetProperty(Show_Menu_Search,1,Home)</onfocus>
 
             <!-- CANCEL - TIMER - AUTO SLIDE MENU -->
 
@@ -96,8 +92,7 @@
 
             <!-- MAIN MENU : FOCUS IF INACTIVITY -->
 
-            <onfocus condition="String.IsEmpty(Window(Home).Property(Launch_Search))">SetProperty(focus_main_menu_timer_from_search_bar,1,Home)</onfocus>
-            <onfocus condition="!String.IsEmpty(Window(Home).Property(Launch_Search))">SetFocus(300)</onfocus>
+            <onfocus>SetProperty(focus_main_menu_timer_from_search_bar,1,Home)</onfocus>
 
             <onunfocus>ClearProperty(focus_main_menu_timer_from_search_bar,Home)</onunfocus>
             <onclick>ClearProperty(focus_main_menu_timer_from_search_bar,Home)</onclick>
@@ -113,9 +108,8 @@
             <onup condition="$EXP[Home_Is_Vertical]">SetProperty(end_menu,1,Home)</onup>
             <onup condition="$EXP[Home_Is_Vertical]">ClearProperty(Show_Menu_Search,Home)</onup>
 
-            <ondown condition="$EXP[Home_Is_Vertical] + !Control.IsVisible(3060)">SetFocus(300,0,absolute)</ondown>
-            <ondown condition="$EXP[Home_Is_Vertical] + !Control.IsVisible(3060)">SetProperty(first_menu,1,Home)</ondown>
-            <ondown condition="$EXP[Home_Is_Vertical] + Control.IsVisible(3060)">Control.SetFocus(3060,0,absolute)</ondown>
+            <ondown condition="$EXP[Home_Is_Vertical]">SetFocus(300,0,absolute)</ondown>
+            <ondown condition="$EXP[Home_Is_Vertical]">SetProperty(first_menu,1,Home)</ondown>
 
             <onleft condition="$EXP[Home_Is_Vertical]">SetFocus(300,0,absolute)</onleft>
             <onleft condition="$EXP[Home_Is_Vertical]">SetProperty(first_menu,1,Home)</onleft>
@@ -136,121 +130,16 @@
             <onright condition="$EXP[Home_Is_Horizontal]">SetProperty(first_menu,1,Home)</onright>
             <onright condition="$EXP[Home_Is_Horizontal]">ClearProperty(Show_Menu_Search,Home)</onright>
 
-            <ondown condition="$EXP[Home_Is_Horizontal] + !Control.IsVisible(3060)">SetFocus(300,0,absolute)</ondown>
-            <ondown condition="$EXP[Home_Is_Horizontal] + !Control.IsVisible(3060)">SetProperty(first_menu,1,Home)</ondown>
-            <ondown condition="$EXP[Home_Is_Horizontal] + Control.IsVisible(3060)">Control.SetFocus(3060,0,absolute)</ondown>
+            <ondown condition="$EXP[Home_Is_Horizontal]">SetFocus(300,0,absolute)</ondown>
+            <ondown condition="$EXP[Home_Is_Horizontal]">SetProperty(first_menu,1,Home)</ondown>
 
             <onup condition="$EXP[Home_Is_Horizontal]">SetFocus(300,0,absolute)</onup>
             <onup condition="$EXP[Home_Is_Horizontal]">SetProperty(first_menu,1,Home)</onup>
 
             <onclick>ClearProperty(GlobalSearchWindowOpen,Home)</onclick>
-            <onclick>Control.SetFocus(3060,0,absolute)</onclick>
+            <onclick condition="!Skin.HasSetting(Show.Home.Search.Type.Dynamic)">ActivateWindow(1147)</onclick>
+            <onclick condition="Skin.HasSetting(Show.Home.Search.Type.Dynamic)">ActivateWindow(1148)</onclick>
             <onclick>ClearProperty(AnimationDirection,Home)</onclick>
-        </control>
-
-        <control type="button" id="338" description="Helper">
-            <visible allowhiddenfocus="true">false</visible>
-            <include>Def_Hidden_Button</include>
-
-            <!-- CANCEL - TIMER - AUTO SLIDE MENU -->
-
-            <onfocus>CancelAlarm(power_menu_setfocus_399,true)</onfocus>
-            <onfocus condition="$EXP[Has_Home_Menu_Auto_Slide_Out_Animation]">CancelAlarm(slide_out_setfocus_2011,true)</onfocus>
-
-            <onfocus>ClearProperty(Show_Menu_Search,Home)</onfocus>
-            <onfocus>SetProperty(Launch_Search,1,Home)</onfocus>
-            <onfocus>9099</onfocus>
-        </control>
-
-        <!-- BUTTON EDIT WIKI -->
-
-        <control type="group">
-            <visible allowhiddenfocus="true">[Control.HasFocus(90009) | Control.HasFocus(340)] + !Window.IsVisible(DialogSelect.xml) + !Window.IsVisible(script-wikipedia.xml)</visible>
-
-            <animation effect="fade" time="300" start="0" end="0">Focus</animation>
-
-            <!-- SEARCH BAR WIKIPEDIA -->
-
-            <control type="group">
-                <visible>Control.HasFocus(90009) | Control.HasFocus(340)</visible>
-                <top>40</top>
-                <left>80</left>
-                <width>80</width>
-                <height>80</height>
-                <control type="image">
-                    <width>589</width>
-                    <height>80</height>
-                    <include>Texture_Dialog_Search</include>
-                </control>
-                <control type="image">
-                    <top>-4</top>
-                    <left>-4</left>
-                    <width>88</width>
-                    <height>88</height>
-                    <texture colordiffuse="Selected" border="12">special://skin/extras/icons/search.png</texture>
-                </control>
-            </control>
-            <control type="button" id="331" description="Helper">
-                <include>Def_Hidden_Button</include>
-                <onfocus>ActivateWindow(addonbrowser,return)</onfocus>
-                <onfocus>SetFocus(6000,4,absolute)</onfocus>
-                <onfocus>SetFocus(50)</onfocus>
-                <onfocus>Container.Update(addons://search/,return)</onfocus>
-            </control>
-            <control type="button" id="330" description="Helper">
-                <include>Def_Hidden_Button</include>
-                <onfocus>SetFocus(90009)</onfocus>
-            </control>
-
-            <!-- EDIT BAR WIKIPEDIA -->
-
-            <control type="grouplist">
-                <top>40</top>
-                <left>80</left>
-                <orientation>horizontal</orientation>
-
-                <control type="edit" id="90009">
-                    <width>580</width>
-                    <height>80</height>
-                    <label/>
-                    <align>left</align>
-                    <aligny>center</aligny>
-
-                    <font>HeaderLabel</font>
-                    <textoffsetx>80</textoffsetx>
-                    <textcolor />
-                    <focusedcolor>Selected</focusedcolor>
-                    <selectedcolor>Selected</selectedcolor>
-                    <disabledcolor>White12</disabledcolor>
-                    <texturefocus />
-                    <texturenofocus />
-
-                    <onup>SetFocus(399)</onup>
-                    <ondown>SetFocus(399)</ondown>
-                    <onright>340</onright>
-                    <onleft>340</onleft>
-                </control>
-
-                <control type="button" id="340" description="Helper">
-                    <include>Def_Hidden_Button</include>
-                    <onfocus condition="!String.IsEmpty(Control.GetLabel(90009).index(1))">RunScript(script.skinvariables,add_skinstring_history=SearchHistory,value=$INFO[Control.GetLabel(90009).index(1)])</onfocus>
-                    <onfocus condition="!String.IsEmpty(Control.GetLabel(90009).index(1))">RunScript(script.wikipedia,wikipedia=$INFO[Control.GetLabel(90009).index(1)])</onfocus>
-                    <onfocus>SetFocus(90009)</onfocus>
-                    <visible allowhiddenfocus="true">Control.HasFocus(340)</visible>
-                    <animation effect="fade" time="300" start="0" end="0">Focus</animation>
-                </control>
-            </control>
-
-            <!-- TIPS - FOOTER -->
-
-            <include content="Object_Footer_Tips">
-                <param name="top" value="120" />
-                <param name="left" value="94" />
-                <param name="label" value="$VAR[Label_Home_Search_Bar_Tip]" />
-                <param name="textcolor" value="Black70" />
-                <param name="colordiffuse" value="$VAR[Color_Icon_Light]" />
-                <param name="visible" value="[Control.HasFocus(90009) | Control.HasFocus(340)] + !Window.IsVisible(DialogKeyboard.xml)" />
-            </include>
         </control>
     </include>
 
@@ -312,6 +201,10 @@
 
     <variable name="border24">
         <value>common/border24.png</value>
+    </variable>
+
+    <variable name="border40">
+        <value>common/border40.png</value>
     </variable>
 
     <!-- ======================================================== -->
@@ -1141,7 +1034,7 @@
                 <usecontrolcoords>true</usecontrolcoords>
                 <control type="label">
                     <include>Def_Header_Sub_Info_Definition</include>
-                    <label>$INFO[Container.CurrentItem] / $INFO[Container.NumItems,,]</label>
+                    <label>$INFO[Container.CurrentItem,, / ]$INFO[Container.NumItems,,]</label>
                 </control>
                 <control type="label">
                     <include>Def_Label_Header_Sub_Icon_Definition</include>
@@ -1306,7 +1199,7 @@
 
         <!-- HIDE WITH NOWPLAYING -->
 
-        <animation type="Conditional" condition="Skin.HasSetting(hide.home.menu.with.nowplaying.extended) + Player.HasMedia + $EXP[Extended_Now_Playing_Is_Enable] + [ControlGroup(777).HasFocus() | !$EXP[Extended_Now_Playing_Helper_AutoShow]] + !ControlGroup(301).HasFocus() + Window.IsVisible(Home) + !$EXP[View_Info_Dialog] + !Window.IsVisible(DialogContextMenu.xml)" reversible="true">
+        <animation type="Conditional" condition="Skin.HasSetting(hide.home.menu.with.nowplaying.extended) + Player.HasMedia + $EXP[Extended_Now_Playing_Is_Enable] + [ControlGroup(777).HasFocus() | !$EXP[Extended_Now_Playing_Helper_AutoShow]] + !$EXP[Home_Widget_Is_Focus] + Window.IsVisible(Home) + !$EXP[View_Info_Dialog] + !Window.IsVisible(DialogContextMenu.xml)" reversible="true">
             <effect type="slide" start="0,0" end="350,0" tween="sine" easing="out" time="300" delay="0" />
             <effect type="fade" start="100" end="0" time="150" delay="0" />
         </animation>
@@ -1348,7 +1241,7 @@
 
     <include name="Def_Home_Label_Widget_Sub_Title_Rating">
         <control type="group">
-            <visible>!$EXP[IsYoutubeItem] + !$EXP[IsPluginRadio] + ControlGroup(301).HasFocus()</visible>
+            <visible>!$EXP[IsYoutubeItem] + !$EXP[IsPluginRadio] + $EXP[Home_Widget_Is_Focus]</visible>
 
             <control type="label">
                 <include>Widgets_Item_Sub_Title_Definition</include>
@@ -1643,7 +1536,7 @@
             <include>Widgets_Item_Sub_Title_Definition</include>
             <label> $INFO[Control.GetLabel(9967)]</label>
             <visible>!String.IsEmpty(Container($PARAM[id]).ListItem.Label)</visible>
-            <visible>ControlGroup(301).HasFocus()</visible>
+            <visible>$EXP[Home_Widget_Is_Focus]</visible>
             <visible>!Integer.IsGreater(Container($PARAM[id]).ListItem.Property(Album_Totaldiscs),1)</visible>
             <visible>Integer.IsGreater(Container(44022).NumItems,0)</visible>
         </control>
@@ -1651,7 +1544,7 @@
             <include>Widgets_Item_Sub_Title_Definition</include>
             <label> $INFO[Control.GetLabel(9970)]</label>
             <visible>!String.IsEmpty(Container($PARAM[id]).ListItem.Label)</visible>
-            <visible>ControlGroup(301).HasFocus()</visible>
+            <visible>$EXP[Home_Widget_Is_Focus]</visible>
             <visible>Integer.IsGreater(Container($PARAM[id]).ListItem.Property(Album_Totaldiscs),1)</visible>
             <visible>Integer.IsGreater(Container(44022).NumItems,0)</visible>
         </control>
@@ -1852,7 +1745,7 @@
                         <top>8</top>
                         <width>100</width>
                         <height>100</height>
-                        <texture colordiffuse="$VAR[Color_Indicator_Background_Watched]" background="true">dialog/misc/banner_status_overlay.png</texture>
+                        <texture colordiffuse="$VAR[Color_Indicator_Background_Watched]" background="true">$VAR[Image_Indicator_Banner_Overlay]</texture>
                     </control>
                     <control type="label">
                         <right>-9</right>
@@ -1886,7 +1779,7 @@
                         <top>8</top>
                         <width>100</width>
                         <height>100</height>
-                        <texture colordiffuse="$VAR[Color_Indicator_Background_New]" background="true">dialog/misc/banner_status_overlay.png</texture>
+                        <texture colordiffuse="$VAR[Color_Indicator_Background_New]" background="true">$VAR[Image_Indicator_Banner_Overlay]</texture>
                     </control>
                     <control type="label">
                         <right>-9</right>
@@ -1920,7 +1813,7 @@
                         <top>8</top>
                         <width>100</width>
                         <height>100</height>
-                        <texture colordiffuse="$VAR[Color_Indicator_Background_In_Progress]" background="true">dialog/misc/banner_status_overlay.png</texture>
+                        <texture colordiffuse="$VAR[Color_Indicator_Background_In_Progress]" background="true">$VAR[Image_Indicator_Banner_Overlay]</texture>
                     </control>
                     <control type="label">
                         <right>-9</right>
@@ -1954,7 +1847,7 @@
                         <top>8</top>
                         <width>100</width>
                         <height>100</height>
-                        <texture colordiffuse="$VAR[Color_Indicator_Background_Is_Playing]" background="true">dialog/misc/banner_status_overlay.png</texture>
+                        <texture colordiffuse="$VAR[Color_Indicator_Background_Is_Playing]" background="true">$VAR[Image_Indicator_Banner_Overlay]</texture>
                     </control>
                     <control type="label">
                         <right>-8</right>
@@ -1987,7 +1880,7 @@
                         <top>8</top>
                         <width>100</width>
                         <height>100</height>
-                        <texture colordiffuse="$VAR[Color_Indicator_Background_UnWatched]" background="true">dialog/misc/banner_status_overlay.png</texture>
+                        <texture colordiffuse="$VAR[Color_Indicator_Background_UnWatched]" background="true">$VAR[Image_Indicator_Banner_Overlay]</texture>
                     </control>
                     <control type="label">
                         <right>-9</right>
@@ -3198,6 +3091,7 @@
         <onclick>Skin.SetBool(home.show.menu.icons)</onclick>
         <onclick>Skin.Reset(home.enable.menu.background)</onclick>
         <onclick>Skin.Reset(home.disable.widget.animation)</onclick>
+        <onclick>Skin.SetBool(Show.Home.Search.Type.Dynamic)</onclick>
 
         <!-- ENABLE HOME WIDGET ANIMATION -->
 
@@ -3208,17 +3102,14 @@
         <onclick>Skin.SetBool(enable_widgets_to_position_0_onback_menu)</onclick>
 
         <!-- Menu Horizontal -->
-        <onclick>Skin.SetBool(disable.widgets.onup.go.back.to.last.item)</onclick>
-        <onclick>Skin.SetBool(enable.widgets.ondown.go.back.to.first.item)</onclick>
+        <onclick>Skin.SetString(horizontal_up_action,mainmenu)</onclick>
+        <onclick>Skin.SetString(horizontal_down_action,firstwidget)</onclick>
 
         <!-- Menu Vertical -->
-        <onclick>Skin.SetBool(enable.widgets.ondown.go.back.to.first.item)</onclick>
-        <onclick>Skin.Reset(enable.onleft.go.to.last.item.widget)</onclick>
+        <onclick>Skin.SetString(vertical_updown_action,lastfirstwidget)</onclick>
 
         <!-- On Back -->
-        <onclick>Skin.SetBool(widget.items.onback.go.back.to.position.0)</onclick>
-        <onclick>Skin.Reset(widget.items.onback.go.back.to.position.0.setfocus.home)</onclick>
-        <onclick>Skin.SetBool(home.onback.go.to.first.widget)</onclick>
+        <onclick>Skin.SetString(mainmenu_back_action,1)</onclick>
 
         <!-- HOME FLIX PREVIEW -->
 
@@ -3229,6 +3120,10 @@
         <!-- VIEWS - NOT FLIX -->
 
         <onclick>Skin.SetString(Value_Brightness_NoFlix,30)</onclick>
+
+        <!-- VIEW FLIX -->
+
+        <onclick>Skin.SetBool(hide.view.flix.furniture.header)</onclick>
 
         <!-- BLUR EFFECT -->
 
@@ -3547,6 +3442,7 @@
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(hide.only.if.widgetcontainer.gets.focus)</onload>
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(enable.morewidget)</onload>
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(home.show.menu.label.onfocus.icon)</onload>
+        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(Show.Home.Search.Type.Dynamic)</onload>
 
         <!-- BACKGROUND -->
 
@@ -3593,17 +3489,14 @@
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(enable_widgets_to_position_0_onback_menu)</onload>
 
         <!-- Menu Horizontal -->
-        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(disable.widgets.onup.go.back.to.last.item)</onload>
-        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(enable.widgets.ondown.go.back.to.first.item)</onload>
+        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(horizontal_up_action,mainmenu)</onload>
+        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(horizontal_down_action,firstwidget)</onload>
 
         <!-- Menu Vertical -->
-        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(enable.widgets.onup.go.back.to.last.widget)</onload>
-        <!-- <onload condition="!Skin.HasSetting(startup.init)">Skin.Reset(enable.onleft.go.to.last.item.widget)</onload> -->
+        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(vertical_updown_action,lastfirstwidget)</onload>
 
         <!-- On Back -->
-        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(widget.items.onback.go.back.to.position.0)</onload>
-        <!-- <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(widget.items.onback.go.back.to.position.0.setfocus.home)</onload> -->
-        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(home.onback.go.to.first.widget)</onload>
+        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(mainmenu_back_action,1)</onload>
 
         <!-- HOME FLIX PREVIEW -->
 
@@ -3614,6 +3507,10 @@
         <!-- VIEW NOT FLIX -->
 
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(Value_Brightness_NoFlix,30)</onload>
+
+        <!-- VIEW FLIX -->
+
+        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(hide.view.flix.furniture.header)</onload>
 
         <!-- DISPLAY -->
 
@@ -4066,15 +3963,15 @@
     </include>
 
     <include name="Overlay_InfoLabel">
-            <control type="button" id="$PARAM[id]">
-                <nested />
-                <texturenofocus colordiffuse="FF141414">common/white.png</texturenofocus>
-                <height>26</height>
-                <font>Tiny</font>
-                <align>left</align>
-                <textcolor>magenta</textcolor>
-                <width>auto</width>
-            </control>
+        <control type="button" id="$PARAM[id]">
+            <nested />
+            <texturenofocus colordiffuse="FF141414">common/white.png</texturenofocus>
+            <height>26</height>
+            <font>Tiny</font>
+            <align>left</align>
+            <textcolor>magenta</textcolor>
+            <width>auto</width>
+        </control>
     </include>
 
     <include name="Def_Views_509_514_Center_Info">

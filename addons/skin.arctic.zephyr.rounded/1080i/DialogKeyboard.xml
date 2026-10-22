@@ -2,24 +2,18 @@
 <window>
     <defaultcontrol always="true">300</defaultcontrol>
 
-
-
-    <onunload condition="Window.IsVisible(Home) + !$EXP[View_Info_Dialog] + !String.IsEmpty(Window(Home).Property(Launch_Search))">SetProperty(keyboard_value,$INFO[Control.GetLabel(312).index(1)],Home)</onunload>
-    <onunload condition="Window.IsVisible(Home) + !$EXP[View_Info_Dialog] + !String.IsEmpty(Window(Home).Property(Launch_Search)) + String.IsEmpty(Window(Home).Property(keyboard_value))">SetFocus(300)</onunload>
-
-    <onunload condition="String.IsEmpty(Control.GetLabel(312).index(1)) + String.IsEmpty(Window(Home).Property(keyboard_value)) + !String.IsEmpty(Window(Home).Property(Launch_Search))">ClearProperty(Launch_Search,Home)</onunload>
-
-    <onunload condition="!String.IsEmpty(Window(Home).Property(keyboard_value))">AlarmClock(delay_add_search_history,RunScript(script.skinvariables,add_skinstring_history=SearchHistory,value=$INFO[Window(Home).Property(keyboard_value)]),00:01,silent)</onunload>
+    <onunload condition="!String.IsEmpty(Control.GetLabel(312).index(1))">AlarmClock(delay_add_search_history,RunScript(script.skinvariables,add_skinstring_history=SearchHistory,value=$INFO[Control.GetLabel(312).index(1)]),00:01,silent)</onunload>
+    <onunload>AlarmClock(delay_clear,ClearProperty(Launch_local_Search,Home),00:01,silent)</onunload>
 
     <controls>
         <include content="Background_Overlay">
-            <param name="visible" value="!Window.IsVisible(Home)" />
+            <param name="visible" value="![Window.IsVisible(Home) | $EXP[View_Search_Dynamic] | $EXP[View_Search_List]]" />
         </include>
 
         <control type="group">
             <visible>!Window.IsVisible(numericinput)</visible>
 
-            <include content="Def_Top" condition="!Window.IsVisible(Home)">
+            <include content="Def_Top" condition="![Window.IsVisible(Home) | $EXP[View_Search_Dynamic] | $EXP[View_Search_List]]">
                 <param name="top" value="114" />
             </include>
 
@@ -71,9 +65,9 @@
                 <align>center</align>
                 <textcolor>Black70</textcolor>
                 <include>Texture_Dialog_Keyboard</include>
-
-                <onclick condition="!String.IsEmpty(Control.GetLabel(312).index(1))">SetProperty(keyboard_value,Control.GetLabel(312).index(1)),Home)</onclick>
                 <onclick condition="!String.IsEmpty(Control.GetLabel(312).index(1))">RunScript(script.skinvariables,add_skinstring_history=SearchHistory,value=$INFO[Control.GetLabel(312).index(1)])</onclick>
+                <onclick condition="String.IsEmpty(Control.GetLabel(312).index(1))">ClearProperty(Launch_local_Search,Home)</onclick>
+                <onback>ClearProperty(Launch_local_Search,Home)</onback>
             </control>
 
             <control type="group">
@@ -457,11 +451,12 @@
                     <control type="radiobutton" id="300">
                         <onup>307</onup>
 
-                        <onclick condition="!String.IsEmpty(Control.GetLabel(312).index(1))">SetProperty(keyboard_value,Control.GetLabel(312).index(1)),Home)</onclick>
                         <onclick condition="!String.IsEmpty(Control.GetLabel(312).index(1))">RunScript(script.skinvariables,add_skinstring_history=SearchHistory,value=$INFO[Control.GetLabel(312).index(1)])</onclick>
+                        <onclick condition="String.IsEmpty(Control.GetLabel(312).index(1))">ClearProperty(Launch_local_Search,Home)</onclick>
+                        <onback>ClearProperty(Launch_local_Search,Home)</onback>
 
                         <include content="Texture_Dialog_NumPad">
-                            <param name="icon" value="dialog/keyboard/enabled.png" />
+                            <param name="icon" value="dialog/keyboard/key_enabled.png" />
                         </include>
                         <include content="Def_Button_Dimensions_Keyboard">
                             <param name="keyboardbuttonwidth" value="370" />
@@ -480,7 +475,7 @@
                     <control type="radiobutton" id="8">
                         <onup>7200</onup>
                         <include content="Texture_Dialog_NumPad">
-                            <param name="icon" value="dialog/keyboard/uninstall.png" />
+                            <param name="icon" value="dialog/keyboard/key_uninstall.png" />
                         </include>
                         <include content="Def_Button_Dimensions_Keyboard">
                             <param name="keyboardbuttonwidth" value="275" />

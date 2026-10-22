@@ -192,7 +192,7 @@
                                 <width>32</width>
                                 <height>32</height>
                                 <aspectratio aligny="top">keep</aspectratio>
-                                <texture>$VAR[Image_Indicator_Status]</texture>
+                                <texture>$VAR[Image_Indicator_Status_PVR]</texture>
                                 <visible>!ListItem.IsParentFolder</visible>
                             </control>
                         </control>
@@ -202,7 +202,9 @@
 
                             <!-- IS PLAYING -->
 
-                            <include>Def_View_List_Focus_IsPlaying</include>
+                            <include content="Def_View_List_Focus_IsPlaying">
+                                <param name="list_id" value="50" />
+                            </include>
 
                             <!-- ILLUSTRATIONS -->
 
@@ -366,7 +368,7 @@
                                     <width>32</width>
                                     <height>32</height>
                                     <aspectratio aligny="top">keep</aspectratio>
-                                    <texture>$VAR[Image_Indicator_Status]</texture>
+                                    <texture>$VAR[Image_Indicator_Status_PVR]</texture>
                                     <visible>!ListItem.IsParentFolder</visible>
                                 </control>
                             </control>
@@ -1122,6 +1124,7 @@
                             <!-- IS PLAYING -->
 
                             <include content="Def_View_List_Focus_IsPlaying_square">
+                                <param name="list_id" value="54" />
                                 <param name="pad_image" value="1" />
                                 <param name="aspectratio" value="keep" />
                             </include>
@@ -1422,7 +1425,7 @@
                                 <width>32</width>
                                 <height>32</height>
                                 <aspectratio aligny="top">keep</aspectratio>
-                                <texture>$VAR[Image_Indicator_Status]</texture>
+                                <texture>$VAR[Image_Indicator_Status_PVR]</texture>
                                 <visible>!ListItem.IsParentFolder</visible>
                             </control>
                         </control>
@@ -1432,7 +1435,9 @@
 
                             <!-- IS PLAYING -->
 
-                            <include>Def_View_List_Focus_IsPlaying</include>
+                            <include content="Def_View_List_Focus_IsPlaying">
+                                <param name="list_id" value="55" />
+                            </include>
 
                             <control type="image">
                                 <animation effect="slide" end="10,-12" time="0" condition="ListItem.IsRecording + Window.IsVisible(MyPVRChannels.xml)">Conditional</animation>
@@ -1594,7 +1599,7 @@
                                     <width>32</width>
                                     <height>32</height>
                                     <aspectratio aligny="top">keep</aspectratio>
-                                    <texture>$VAR[Image_Indicator_Status]</texture>
+                                    <texture>$VAR[Image_Indicator_Status_PVR]</texture>
                                     <visible>!ListItem.IsParentFolder</visible>
                                 </control>
                             </control>
@@ -1614,9 +1619,9 @@
         </control>
     </include>
 
-    <include name="PVR_View_526">
+    <include name="PVR_View_528">
         <control type="group">
-            <visible>Control.IsVisible(526)</visible>
+            <visible>Control.IsVisible(528)</visible>
             <include>Animation_Common_Global</include>
 
             <top>368</top>
@@ -1629,7 +1634,7 @@
 
                 <include>Def_Dialog_Image_Background</include>
 
-                <control type="panel" id="526" description="TV CHANNELS">
+                <control type="panel" id="528" description="TV CHANNELS">
                     <include>Animation_Scrolltime_Views_List</include>
 
                     <top>24</top>
@@ -1637,8 +1642,8 @@
                     <right>0</right>
                     <left>0</left>
 
-                    <onup>526</onup>
-                    <ondown>526</ondown>
+                    <onup>528</onup>
+                    <ondown>528</ondown>
                     <onleft>1684</onleft>
                     <include>Def_View_Focus_Dialog_Menu_On_Right</include>
 
@@ -1778,6 +1783,7 @@
                             <!-- IS PLAYING -->
 
                             <include content="Def_View_List_Focus_IsPlaying_square">
+                                <param name="list_id" value="528" />
                                 <param name="pad_image" value="1" />
                                 <param name="aspectratio" value="keep" />
                             </include>
@@ -1879,13 +1885,13 @@
                 <include content="Object_Scrollbar_Views_Vertical">
                     <param name="scrollid" value="1684" />
                     <param name="height" value="290" />
-                    <param name="idlayout" value="526" />
+                    <param name="idlayout" value="528" />
                 </include>
             </control>
         </control>
 
         <include content="Def_View_Flix_Minimal_Content">
-            <param name="visible" value="Control.IsVisible(526)" />
+            <param name="visible" value="Control.IsVisible(528)" />
         </include>
     </include>
 
@@ -2097,6 +2103,9 @@
                         <label2>[B]$INFO[Container.NumNonFolderItems][/B]</label2>
                         <visible>Window.IsActive(TVRecordings)</visible>
                     </control>
+
+                    <!-- HIDE FOOTER INFO -->
+
                     <control type="radiobutton" id="9007">
                         <description>Search</description>
                         <include>Def_Dialog_Menu_Button_Focus_Select</include>
@@ -2106,28 +2115,46 @@
                         <onclick>SetProperty(reloadskin,1,Home)</onclick>
                         <visible>Window.IsActive(TvGuide)</visible>
                     </control>
+
                     <control type="radiobutton" id="5">
                         <description>Group recording items by folder structure</description>
                         <include>Def_Dialog_Menu_Button_Focus_Select</include>
                         <label>$LOCALIZE[19270]</label>
                         <visible>Window.IsActive(TVRecordings)</visible>
                     </control>
+
+                    <!-- VIEW FLIX - HIDE HEADER INFO -->
+
                     <control type="radiobutton" id="9257">
                         <include>Def_Dialog_Menu_Button_Focus_Select</include>
                         <label>$LOCALIZE[31085]</label>
                         <selected>!Skin.HasSetting(hide.view.flix.furniture.header)</selected>
                         <onclick>Skin.ToggleSetting(hide.view.flix.furniture.header)</onclick>
                         <visible>!Skin.HasSetting(hide.furniture.header)</visible>
-                        <visible>Control.IsVisible(526)</visible>
+                        <visible>Control.IsVisible(528)</visible>
                         <onclick>SetProperty(reloadskin,1,Home)</onclick>
                     </control>
-                    <control type="radiobutton" id="90445">
+
+                    <!-- HIDE PVR CHANNEL NUMBER -->
+
+                    <control type="radiobutton" id="9258">
                         <include>Def_Dialog_Menu_Button_Focus_Select</include>
                         <label>31583</label>
                         <selected>Skin.HasSetting(hide.pvr.channel.number)</selected>
                         <onclick>Skin.ToggleSetting(hide.pvr.channel.number)</onclick>
                         <visible>[Control.IsVisible(50) | Control.IsVisible(55)]</visible>
                         <visible>!Window.IsActive(TvGuide)</visible>
+                    </control>
+
+                    <!-- SHOW ONLY PVR CHANNEL LOGO -->
+
+                    <control type="radiobutton" id="9259">
+                        <include>Def_Dialog_Menu_Button_Focus_Select</include>
+                        <label>31060</label>
+                        <selected>Skin.HasSetting(hide.pvr.guide.number.label)</selected>
+                        <onclick>Skin.ToggleSetting(hide.pvr.guide.number.label)</onclick>
+                        <visible>Window.IsActive(TvGuide)</visible>
+                        <onclick>SetProperty(reloadskin,1,Home)</onclick>
                     </control>
 
                 <!-- OPTIONS VIEWS -->
@@ -2141,7 +2168,7 @@
 
                     <control type="button" id="9305">
                         <include>Def_Dialog_Menu_Button_Focus_Select</include>
-                        <label>$LOCALIZE[582]:</label>
+                        <label>$LOCALIZE[582]$LOCALIZE[31079]</label>
                         <label2>$INFO[Container.Viewmode]</label2>
                         <onclick>ActivateWindow(1152)</onclick>
                         <!-- <visible>!Window.IsActive(TvGuide) + !Window.IsActive(TVRecordings) + !Window.IsActive(TVTimers) + !Window.IsActive(TvTimerRules) + !Window.IsActive(TVSearch)</visible> -->

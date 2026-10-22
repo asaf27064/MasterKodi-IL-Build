@@ -95,7 +95,7 @@
                         <left>-40</left>
                         <width>160</width>
                         <height>160</height>
-                        <texture colordiffuse="White70">$VAR[Image_Header_Background]</texture>
+                        <include>Texture_Header_Common_Background_Icon</include>
                         <animation effect="fade" start="100" end="90" condition="true">Conditional</animation>
                     </control>
                     <control type="image">
@@ -584,8 +584,8 @@
                     <include content="Def_Dialog_Info_List_Updating">
                         <param name="visible" value="String.IsEqual(Window(Home).Property(moviecontent),4)" />
                         <param name="controlid" value="9503" />
-                        <param name="centerleft" value="50%" />
-                        <param name="centertop" value="50%" />
+                        <param name="centerleft" value="-262" />
+                        <param name="centertop" value="104" />
                         <param name="label_spinner" value="$LOCALIZE[13513] ..." />
                     </include>
 
@@ -1129,7 +1129,7 @@
                             <height>50</height>
                             <width>800</width>
                             <font>Tiny</font>
-                            <label>$INFO[ListItem.TrackNumber,,.  ]$INFO[ListItem.Label]</label>
+                            <label>[B]$INFO[ListItem.TrackNumber,,.  ]$INFO[ListItem.Label][/B]</label>
                             <animation effect="slide" start="0" end="45" time="0" condition="ListItem.IsPlaying">Conditional</animation>
                         </control>
                     </control>
