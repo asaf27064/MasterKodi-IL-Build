@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-10-22T11:34:10Z",
+  "generated_utc": "2026-10-22T17:00:16Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -364,12 +364,12 @@
     },
     {
       "id": "script.module.cocoscrapers",
-      "version": "1.0.43",
+      "version": "1.0.44",
       "channel": "core",
-      "zip": "script.module.cocoscrapers-1.0.43.zip",
-      "sha256": "c63253edffbadaa2fdc63be328890ea9b1b1ef20d5afc59a100a55bae2306b00",
-      "size": 381031,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.cocoscrapers-1.0.43.zip",
+      "zip": "script.module.cocoscrapers-1.0.44.zip",
+      "sha256": "900ada3b682717074a92bf9e06af15eaa1417d4035a7dd56aea1e870d85cfe42",
+      "size": 367457,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/script.module.cocoscrapers-1.0.44.zip",
       "content": "gears"
     },
     {
