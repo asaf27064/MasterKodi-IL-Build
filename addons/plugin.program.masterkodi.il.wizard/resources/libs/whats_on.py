@@ -61,10 +61,19 @@ def _log(msg, level=xbmc.LOGINFO):
 # ------------------------------------------------------------------ engine
 
 def engine():
-    if xbmc.getCondVisibility('System.HasAddon(plugin.video.pov)'):
-        return 'plugin.video.pov'
-    if xbmc.getCondVisibility('System.HasAddon(plugin.video.gears)'):
-        return 'plugin.video.gears'
+    """The engine the user actually watches with. POV is installed on EVERY
+    box since 2026-10-23 (it is also Gears' external scraper), so presence
+    alone says nothing: the wizard's content_source setting decides, and
+    the other engine is only a fallback when the chosen one is missing."""
+    try:
+        src = xbmcaddon.Addon().getSetting('content_source') or 'gears'
+    except Exception:
+        src = 'gears'
+    order = ('plugin.video.pov', 'plugin.video.gears') if src == 'pov' \
+        else ('plugin.video.gears', 'plugin.video.pov')
+    for aid in order:
+        if xbmc.getCondVisibility('System.HasAddon(%s)' % aid):
+            return aid
     return ''
 
 
