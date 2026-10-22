@@ -1886,7 +1886,7 @@ def _apply_policy(zf, policy, home, fresh, content='gears'):
     mode_key = 'fresh' if fresh else 'update'
     applied = []
     skipped_content = 0
-    _defer = {'viewtypes': False, 'skin_settings': False}
+    _defer = {'viewtypes': False, 'skin_settings': False, 'menu_nodes': False}
     for entry in policy.get('files', []):
         src = entry.get('src'); dest_rel = entry.get('dest')
         if not src or not dest_rel:
@@ -1977,6 +1977,13 @@ def _apply_policy(zf, policy, home, fresh, content='gears'):
                 if changed and dest_rel.endswith('-viewtypes.json') \
                         and 'script.skinvariables' in dest_rel:
                     _defer['viewtypes'] = True
+                if changed and '/script.skinvariables/nodes/' in dest_rel:
+                    # a delivered menu/shortcut node (AF3 power menu, home
+                    # tiles) is compiled into the skin by skinvariables'
+                    # buildtemplate; AF3 never re-runs it on its own, so a
+                    # changed node would sit uncompiled forever. Arm the boot
+                    # flow, which runs buildtemplate (hash-checked) + buildviews.
+                    _defer['menu_nodes'] = True
                 askin = _active_skin()
                 if changed and askin \
                         and dest_rel == 'userdata/addon_data/%s/settings.xml' % askin:
@@ -2027,7 +2034,7 @@ def _apply_policy(zf, policy, home, fresh, content='gears'):
         if wrote:
             applied.append('%s/ -> %s/ (%d files, %s)' % (srcd, destd, wrote, dmode))
 
-    if (not fresh) and (_defer['viewtypes'] or _defer['skin_settings']):
+    if (not fresh) and (_defer['viewtypes'] or _defer['skin_settings'] or _defer['menu_nodes']):
         try:
             _write_text(os.path.join(ADDON_DATA, 'pending_view_rebuild'),
                         _active_skin() or '')
