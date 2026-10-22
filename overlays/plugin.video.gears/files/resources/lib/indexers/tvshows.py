@@ -3,6 +3,7 @@ import sys
 from modules.metadata import tvshow_meta
 from modules.utils import get_datetime, get_current_timestamp, paginate_list, TaskPool, manual_function_import
 from modules import kodi_utils, settings, watched_status
+from kodirdil import kids
 # logger = kodi_utils.logger
 
 class TVShows:
@@ -160,6 +161,9 @@ class TVShows:
 			listitem = self.make_listitem()
 			set_properties = listitem.setProperties
 			meta_get = meta.get
+			########### KODIRDIL - kids profile gate ###########
+			if not kids.allowed(meta): return
+			####################################################
 			premiered = meta_get('premiered')
 			trailer, title, year = meta_get('trailer'), meta_get('title'), meta_get('year') or '2050'
 			tvdb_id, imdb_id = meta_get('tvdb_id'), meta_get('imdb_id')

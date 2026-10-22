@@ -23,6 +23,7 @@ default_internal_scrapers, cloud_scrapers = settings.default_internal_scrapers()
 
 ########### KODIRDIL - Hebrew Subtitles Integration ###########
 from kodirdil import thread_utils
+from kodirdil import kids
 from kodirdil import hebrew_subtitles_search_utils
 
 def is_hebrew_subtitles_enabled():
@@ -83,6 +84,11 @@ class Sources:
 		self.config_loader.apply(self, params)
 		if not hasattr(self, 'meta'):
 			self.meta = self.meta_builder.build(self)
+		########### KODIRDIL - kids profile gate ###########
+		if not kids.allowed(self.meta):
+			kids.block_notice()
+			return
+		####################################################
 		results = self.get_sources()
 		if not results: return self._process_post_results()
 		self.play_source(results)

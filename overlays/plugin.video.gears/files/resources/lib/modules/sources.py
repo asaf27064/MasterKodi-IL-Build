@@ -13,6 +13,7 @@ from modules.utils import clean_file_name, string_to_float, safe_string, remove_
 # logger = kodi_utils.logger
 ########### KODIRDIL - Hebrew Subtitles Integration ###########
 from kodirdil import thread_utils
+from kodirdil import kids
 from kodirdil import hebrew_subtitles_search_utils
 
 # Hebrew subtitles settings
@@ -607,6 +608,12 @@ class Sources():
 								'custom_season': self.custom_season, 'custom_episode': self.custom_episode})
 			except: pass
 		self.meta.update({'media_type': self.media_type, 'background': self.background, 'custom_title': self.custom_title, 'custom_year': self.custom_year})
+		########### KODIRDIL - kids profile gate ###########
+		# a kids profile: refuse here, before any scraper runs
+		if not kids.allowed(self.meta):
+			kids.block_notice()
+			raise Exception('kids profile: title not allowed')
+		####################################################
 
 	def make_search_info(self):
 		title, year, ep_name = self.get_search_title(), self.get_search_year(), self.get_ep_name()

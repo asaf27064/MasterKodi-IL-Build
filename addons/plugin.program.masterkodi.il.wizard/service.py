@@ -806,6 +806,23 @@ class POVHebrewService(xbmc.Monitor):
         # Never reload the skin out from under its own first-run setup: the
         # rebuild below reloads, and a reload would drop the setup AND leave
         # FullInitStarted stamped, losing it permanently (Asaf, 2026-08-31).
+        # Inside a profile Kodi created, the first boot copies the build's
+        # working pieces over from the master (resources/libs/profiles.py).
+        # Kodi restarts this service on every profile switch, so this runs
+        # once per new profile and is a no-op in the master. BEFORE the skin
+        # setup wait below: a fresh profile has fresh skin settings, so the
+        # skin's own first-run setup opens at once and the wait would sit on
+        # it for minutes; copying the master's skin settings and reloading
+        # the skin is what makes that setup go away.
+        try:
+            from resources.libs import profiles
+            profiles.complete_if_needed(self)
+            # ...and in the MASTER, prepare any profile Kodi created since
+            # (its own addon database starts with everything disabled).
+            profiles.prepare_pending()
+        except Exception as e:
+            log(f"profile completion error: {e}", xbmc.LOGWARNING)
+
         _wait_for_skin_setup(self)
 
         # Busy-tap notice (resources/libs/perf.py): a tap on a playable item
@@ -963,6 +980,13 @@ class POVHebrewService(xbmc.Monitor):
             # a sweep every few hours picks up add-ons updated mid-session
             if not pending:
                 _precompile(self, 'periodic', only_if_due=True)
+            # a profile created in Kodi's manager during this session gets
+            # prepared before anyone enters it (one stat per profile)
+            try:
+                from resources.libs import profiles
+                profiles.prepare_pending()
+            except Exception as e:
+                log(f"profile prepare error: {e}", xbmc.LOGWARNING)
         log("Service stopped")
 
 

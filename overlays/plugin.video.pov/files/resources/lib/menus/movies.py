@@ -2,6 +2,7 @@ from threading import Thread
 from indexers.metadata import movie_meta, art_infodict, movie_show_infodict, tmdb_image_base
 from caches.watched_cache import get_watched_info_movie, get_watched_status_movie, get_bookmarks, get_resumetime, set_resumetime
 from modules import kodi_utils, settings
+from kodirdil import kids
 from modules.utils import manual_function_import, get_datetime, TaskPool
 # logger = kodi_utils.logger
 
@@ -45,6 +46,10 @@ class Movies:
 			meta = movie_meta(self.id_type, tag, self.meta_user_info, self.current_date)
 			meta_get = meta.get
 			if not meta or meta_get('blank_entry', False): return
+			########### KODIRDIL - kids profile gate ###########
+			# a kids profile sees only titles its age allows (unrated = not allowed)
+			if not kids.allowed(meta): return
+			####################################################
 			playcount, overlay = get_watched_status_movie(self.watched_info, string(meta['tmdb_id']))
 			if self.widget_hide_watched and playcount: return
 			meta.update({'playcount': playcount, 'overlay': overlay})

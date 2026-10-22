@@ -10,12 +10,14 @@ records the version silently (there is nothing to compare to), so a new
 user is not greeted with a changelog.
 
 Shown only when the home screen is up and nothing is playing; if that is
-not the case now, the next boot tries again. Dismissed with OK/Back.
-Always available later from the wizard's status menu.
+not the case now, the next boot tries again. Its own window (whats-new.xml)
+so the Hebrew is right-aligned on every skin -- Kodi's built-in text viewer
+follows the skin's alignment, which is not always RTL.
 """
 import xbmc
 import xbmcaddon
 import xbmcgui
+import xbmcvfs
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
@@ -23,26 +25,28 @@ VERSION = ADDON.getAddonInfo('version')
 
 TITLE = 'מה חדש ב-MasterKodi IL'
 
-# One entry per release that deserves a note; the newest first. Plain text,
-# short paragraphs -- it is read on a TV from the couch.
+# One entry per release that deserves a note; the newest first. Plain
+# Hebrew, short paragraphs, no numbers -- it is read on a TV from the couch.
 NEWS = [
     ('2.4.191',
      '[B]מה רואים הערב?[/B]\n'
-     'מסך אחד עם הצעות לפי מה שצפיתם -- המשך צפייה, בשבילכם, וחם השבוע. '
-     'כל הצעה מסומנת אם יש לה כתוביות בעברית, והן קודם. '
-     'נמצא בתפריט הכיבוי של כל סקין, ובמסך הבית.\n\n'
+     'מסך חדש עם הצעות לצפייה לפי מה שצפיתם: המשך צפייה, בשבילכם וחם השבוע. '
+     'ליד כל הצעה מסומן אם יש לה כתוביות בעברית. '
+     'נמצא בתפריט הכיבוי של כל סקין ובמסך הבית.\n\n'
      '[B]פתיחת רשימות מהירה יותר[/B]\n'
-     'אחרי כל עדכון, הבילד מכין את קוד התוספים מראש ברקע. '
-     'הפתיחה הראשונה של רשימה (המשך צפייה, טרנדים, פופולריים) כבר לא מחכה. '
-     'נמדד: המשך צפייה מ-7 שניות לשנייה אחת.\n\n'
-     '[B]לחצתם? אנחנו עובדים על זה[/B]\n'
-     'אם חיפוש המקורות מתעכב אחרי לחיצה על סרט או פרק, תופיע הודעה קצרה. '
-     'לא צריך ללחוץ שוב.\n\n'
+     'אחרי כל עדכון הבילד מכין את קוד התוספים מראש ברקע, '
+     'כך שרשימות כמו המשך צפייה, טרנדים ופופולריים נפתחות מהר יותר.\n\n'
+     '[B]הודעה בזמן חיפוש מקורות[/B]\n'
+     'כשחיפוש המקורות מתעכב אחרי לחיצה על סרט או פרק, מופיעה הודעה קצרה שהחיפוש בעיצומו. '
+     'אין צורך ללחוץ שוב.\n\n'
      '[B]כתוביות AI נקיות יותר[/B]\n'
-     'תיאורי צלילים כמו [GUNFIRE] ושמות דוברים לא מגיעים יותר למסך, '
-     'גם בכתוביות ישנות מהמאגר. שורות שהמודל דילג עליהן מתורגמות שוב '
-     'במקום להישאר באנגלית.\n\n'
-     'כל ההגדרות החדשות ניתנות לכיבוי בהגדרות הוויזארד, תחת "ביצועים".'),
+     'תיאורי צלילים כמו [GUNFIRE] ושמות דוברים לא מופיעים יותר על המסך, '
+     'גם בכתוביות ישנות מהמאגר. שורות שלא תורגמו מתורגמות שוב במקום להישאר באנגלית.\n\n'
+     '[B]פרופילים ומצב ילדים[/B]\n'
+     'אפשר ליצור פרופיל לכל בן משפחה, והבילד מכין אותו לבד עם התפריטים וההגדרות. '
+     'בפרופיל ילדים ההורה בוחר גיל, ורק תוכן שמתאים לגיל הזה מוצג ומתנגן. '
+     'הכל בתפריט הוויזארד, תחת "פרופילים ומצב ילדים".\n\n'
+     'את ההגדרות החדשות אפשר לכבות בהגדרות הוויזארד, תחת "ביצועים".'),
 ]
 
 
@@ -57,9 +61,31 @@ def text_for(version):
     return ''
 
 
+class _NoteWindow(xbmcgui.WindowXMLDialog):
+    def __init__(self, *args, **kwargs):
+        self.body = kwargs.pop('body', '')
+        super().__init__(*args)
+
+    def onInit(self):
+        self.setProperty('heading', TITLE)
+        self.setProperty('body', self.body)
+        self.setFocusId(300)
+
+    def onClick(self, control_id):
+        if control_id == 300:
+            self.close()
+
+    def onAction(self, action):
+        if action.getId() in (9, 10, 92, 216, 247):
+            self.close()
+
+
 def show(version=None):
     body = text_for(version or VERSION) or NEWS[0][1]
-    xbmcgui.Dialog().textviewer(TITLE, body)
+    path = xbmcvfs.translatePath(ADDON.getAddonInfo('path'))
+    w = _NoteWindow('whats-new.xml', path, 'Default', '1080i', body=body)
+    w.doModal()
+    del w
 
 
 def show_if_due(monitor):

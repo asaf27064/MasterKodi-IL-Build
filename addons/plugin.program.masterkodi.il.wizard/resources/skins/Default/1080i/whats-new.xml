@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- MasterKodi IL - "מה חדש" (resources/libs/whats_new.py).
+     Own window so the text is right-aligned on every skin; Kodi's built-in
+     text viewer follows the skin's alignment. Generic fonts + own white.png. -->
+<window type="dialog" id="3103">
+    <defaultcontrol always="true">300</defaultcontrol>
+    <controls>
+        <control type="image">
+            <left>0</left><top>0</top><width>1920</width><height>1080</height>
+            <texture colordiffuse="E6000000">white.png</texture>
+        </control>
+        <control type="image">
+            <left>0</left><top>0</top><width>1920</width><height>6</height>
+            <texture colordiffuse="FFFFD700">white.png</texture>
+        </control>
+        <!-- panel -->
+        <control type="image">
+            <left>260</left><top>90</top><width>1400</width><height>900</height>
+            <texture colordiffuse="F0141720">white.png</texture>
+        </control>
+        <control type="image">
+            <right>260</right><top>90</top><width>6</width><height>900</height>
+            <texture colordiffuse="FFFFD700">white.png</texture>
+        </control>
+        <control type="image">
+            <right>300</right><top>120</top><width>64</width><height>64</height>
+            <texture>logo.png</texture>
+            <aspectratio>keep</aspectratio>
+        </control>
+        <control type="label">
+            <left>300</left><top>120</top><width>1240</width><height>64</height>
+            <align>right</align><aligny>center</aligny><font>font14</font>
+            <textcolor>FFFFD700</textcolor>
+            <label>$INFO[Window.Property(heading)]</label>
+        </control>
+        <control type="image">
+            <left>300</left><top>200</top><width>1320</width><height>2</height>
+            <texture colordiffuse="33FFD700">white.png</texture>
+        </control>
+        <!-- the note, right-aligned, scrolls with up/down -->
+        <control type="textbox" id="100">
+            <left>300</left><top>222</top><width>1320</width><height>660</height>
+            <align>right</align><font>font13</font>
+            <textcolor>FFE4E8EE</textcolor>
+            <pagecontrol>101</pagecontrol>
+            <label>$INFO[Window.Property(body)]</label>
+        </control>
+        <control type="scrollbar" id="101">
+            <left>272</left><top>222</top><width>12</width><height>660</height>
+            <texturesliderbackground colordiffuse="22FFFFFF">white.png</texturesliderbackground>
+            <texturesliderbar colordiffuse="88FFD700">white.png</texturesliderbar>
+            <texturesliderbarfocus colordiffuse="FFFFD700">white.png</texturesliderbarfocus>
+            <orientation>vertical</orientation>
+            <showonepage>false</showonepage>
+            <onright>300</onright><onleft>300</onleft>
+        </control>
+        <control type="button" id="300">
+            <left>800</left><top>905</top><width>320</width><height>62</height>
+            <font>font13</font><align>center</align>
+            <textcolor>FF101418</textcolor><focusedcolor>FF101418</focusedcolor>
+            <texturenofocus colordiffuse="CCFFD700" border="4">white.png</texturenofocus>
+            <texturefocus colordiffuse="FFFFD700" border="4">white.png</texturefocus>
+            <label>הבנתי</label>
+            <onup>101</onup><ondown>300</ondown><onleft>300</onleft><onright>300</onright>
+        </control>
+    </controls>
+</window>

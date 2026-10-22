@@ -3,6 +3,7 @@ import sys
 from modules.metadata import movie_meta, movieset_meta
 from modules.utils import get_datetime, get_current_timestamp, paginate_list, jsondate_to_datetime, TaskPool, manual_function_import
 from modules import kodi_utils, settings, watched_status
+from kodirdil import kids
 # logger = kodi_utils.logger
 
 class Movies:
@@ -138,6 +139,9 @@ class Movies:
 			set_properties = listitem.setProperties
 			clearprog_params, watched_status_params = '', ''
 			meta_get = meta.get
+			########### KODIRDIL - kids profile gate ###########
+			if not kids.allowed(meta): return
+			####################################################
 			premiered = meta_get('premiered')
 			title, year = meta_get('title'), meta_get('year') or '2050'
 			tmdb_id, imdb_id = meta_get('tmdb_id'), meta_get('imdb_id')

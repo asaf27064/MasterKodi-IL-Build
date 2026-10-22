@@ -132,6 +132,12 @@ def build_status_menu():
 # ============================================
 # MAIN MENU
 # ============================================
+def profiles_menu():
+    """פרופילים ומצב ילדים (resources/libs/profiles.py)."""
+    from resources.libs import profiles
+    profiles.menu()
+
+
 def main_menu():
     """Show beautiful main menu"""
     dialog = xbmcgui.Dialog()
@@ -160,6 +166,8 @@ def main_menu():
         handlers.append(maintenance_menu)
         items.append(menu_item('גיבוי ושחזור', 'מפתח Gemini | דבריד | הגדרות', 'DefaultHardDisk.png'))
         handlers.append(backup_menu)
+        items.append(menu_item('פרופילים ומצב ילדים', 'פרופיל לכל בן משפחה | סינון לפי גיל | אישור תוכן', 'DefaultUser.png'))
+        handlers.append(profiles_menu)
         items.append(menu_item('הגדרות האשף', 'עדכון אוטומטי | השהיות | אפשרויות', 'DefaultAddonProgram.png'))
         handlers.append(lambda: ADDON.openSettings())
 
@@ -846,6 +854,8 @@ if __name__ == '__main__':
     elif mode == 'whats_on':
         from resources.libs import whats_on
         whats_on.show()
+    elif mode == 'profiles':
+        profiles_menu()
     elif mode == 'status':
         build_status_menu()
     elif mode == 'skins':
