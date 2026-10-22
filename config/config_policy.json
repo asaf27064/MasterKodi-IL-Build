@@ -1,5 +1,5 @@
 {
-  "config_version": 67,
+  "config_version": 68,
   "_comment": "Declarative policy for how the wizard applies the shipped build-config onto a device. Bump build.json config_version whenever ANY file under config/ changes. Modes: replace (overwrite whole file), seed_if_absent (write only if missing), merge_id (per <setting id>, build value wins - CLOBBERS user changes), merge_seed (per <setting id>, add-if-absent - our value is the DEFAULT but a user's own change is NEVER overwritten), merge_name (per <source><name>, add build's, keep user's). To DELIBERATELY push a changed default to every device with merge_seed: add that id to the file's optional \"force_ids\" list (overwrites even user-set values) and bump config_version; remove it once propagated if you want user changes to stick again. exclude_ids always win over force_ids to protect credentials. gears_settings enforces critical values in Gears' binary settings.db.",
   "files": [
     {
@@ -106,11 +106,12 @@
       "update": "skip"
     },
     {
-      "src": "userdata/addon_data/script.module.magneto/settings.xml",
-      "dest": "userdata/addon_data/script.module.magneto/settings.xml",
+      "src": "userdata/addon_data/plugin.video.pov/settings.xml",
+      "dest": "userdata/addon_data/plugin.video.pov/settings.xml",
       "fresh": "replace",
       "update": "merge_seed",
-      "content": "gears"
+      "content": "gears",
+      "note": "Gears boxes only: POV is Gears' external scraper (magneto 6.10.16+ became a wrapper around it), so its provider list/instances are seeded here. POV boxes get their full POV settings from the skin variant instead."
     },
     {
       "src": "userdata/addon_data/script.skinvariables/nodes/skin.arctic.fuse.3/skinvariables-shortcut-powermenu.json",
@@ -239,8 +240,8 @@
     "autoscrape_next_episode": "true",
     "hebrew_subtitles.match_wait": "4",
     "meta_language": "he",
-    "external_scraper.module": "script.module.magneto",
-    "external_scraper.name": "Magneto Module",
+    "external_scraper.module": "plugin.video.pov",
+    "external_scraper.name": "POV",
     "provider.external": "true"
   },
   "gears_settings_exclude": [

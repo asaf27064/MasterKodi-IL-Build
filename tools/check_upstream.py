@@ -275,14 +275,6 @@ DEPS_WATCH = [
      'https://raw.githubusercontent.com/not-coco-joe/repository.cocoscrapers/master/zips/addons.xml', 'addons_xml'),
     ('script.module.gearsscrapers',
      'https://raw.githubusercontent.com/unhingedthemes/zips/main/_zips/addons.xml', 'addons_xml'),
-    # Asaf's active scraper -- was shipping with ZERO watch coverage (found
-    # 2 versions behind, 2026-07-19). Source moved back to kodifitzwell's own
-    # repo 2026-10-22 (the kodiyashimaru mirror now serves an empty <addons />).
-    # ALERT-ONLY since 6.10.16: the module became a thin wrapper that hard-
-    # requires plugin.video.pov, so adopting it means shipping POV to every
-    # Gears box -- Asaf's call, never CI's.
-    ('script.module.magneto',
-     'https://kodifitzwell.github.io/repo/packages/addons.xml', 'addons_xml'),
     ('script.texturemaker', _JURIAL_OMEGA, 'addons_xml'),
     # AF3 3.4.4+ hard deps; published in jurialmunkey's repo/zips datadir
     ('resource.images.arctic.splash', _JURIAL_REPO, 'addons_xml'),

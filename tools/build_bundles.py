@@ -51,6 +51,10 @@ SEED_PATH = 'userdata/addon_data/plugin.program.masterkodi.il.wizard/applied_man
 # build tool can't import the Kodi-only module); keep the two in sync.
 DROP_ADDONS = {
     'repository.KodiRealDebridIsrael',
+    # retired 2026-10-23: from 6.10.16 magneto is a thin wrapper that hard-
+    # requires plugin.video.pov; Gears now uses POV directly as its external
+    # scraper, so the module must not ride along in a repacked base bundle
+    'script.module.magneto',
 }
 
 
