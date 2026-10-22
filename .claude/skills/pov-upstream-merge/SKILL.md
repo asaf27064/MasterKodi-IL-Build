@@ -15,10 +15,11 @@ onto a new upstream POV release. This exact flow shipped 0.1.2 (6.07.89) and
 REPO      = C:\Users\asaf2\Desktop\kodi\MasterKodi-IL-Build
 OVERLAY   = overlays/plugin.video.pov            (files/ = source of truth)
 ADDON     = addons/plugin.video.pov              (mirror: clean base + overlay)
-MIRROR    = https://kodiyashimaru.github.io/repo (kodifitzwell.github.io is EMPTY)
+MIRROR    = https://kodifitzwell.github.io/repo   (PRIMARY again since 2026-10-22;
+            kodiyashimaru.github.io/repo now serves an empty <addons /> -- do not use)
 ADDONS_XML= {MIRROR}/packages/addons.xml
 ZIP       = {MIRROR}/plugin.video.pov/plugin.video.pov-{version}.zip
-ISSUES    = gh issue list -R kodifitzwell/repo   (upstream bug reports live here)
+ISSUES    = kodifitzwell/repo has issues DISABLED (checked 2026-10-22); read changelog.txt instead
 LIVE      = C:\MasterKodi IL\portable_data\addons\plugin.video.pov   (Windows box)
 ```
 
