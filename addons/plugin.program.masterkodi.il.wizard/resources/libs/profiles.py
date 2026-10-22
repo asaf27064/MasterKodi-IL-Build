@@ -37,6 +37,7 @@ import os
 import re
 import shutil
 import sqlite3
+import time
 import xml.etree.ElementTree as ET
 
 import xbmc
@@ -340,6 +341,7 @@ class _PickerWindow(xbmcgui.WindowXMLDialog):
         self.mode = kwargs.pop('mode', 'profiles')     # 'profiles' | 'avatar'
         self.title = kwargs.pop('title', '')
         self.choice = None
+        self.dismissed = False     # the USER closed it (vs. a skin reload)
         super().__init__(*args)
 
     def onInit(self):
@@ -395,21 +397,26 @@ class _PickerWindow(xbmcgui.WindowXMLDialog):
             i = self.getControl(100).getSelectedPosition()
             if 0 <= i < len(self.rows):
                 self.choice = self.rows[i][0]
+            self.dismissed = True
             self.close()
         elif control_id == 300:
             self.choice = '__add__'
+            self.dismissed = True
             self.close()
         elif control_id == 301:
+            self.dismissed = True
             self.close()
 
     def onAction(self, action):
         aid = action.getId()
         if aid in (9, 10, 92, 216, 247):
+            self.dismissed = True
             self.close()
         elif aid == 117 and self.mode == 'profiles' and self.rows:   # context key: avatar
             i = self.getControl(100).getSelectedPosition()
             if 0 <= i < len(self.rows):
                 self.choice = '__avatar__:' + self.rows[i][0]
+                self.dismissed = True
                 self.close()
 
 
@@ -459,18 +466,53 @@ def _decide_fresh_mode():
     _log('profiles mode decided: %s' % ('fresh install, master hidden' if fresh else 'existing user, main profile shown'))
 
 
-def show_picker(startup=False):
+def wait_home_stable(monitor, stable=4, timeout=60):
+    """Block until the home window has been visible, with no modal dialog on
+    top, for `stable` seconds in a row. A skin's own start-up reload (Rounded
+    does one a few seconds after boot) closes every Python dialog, so a
+    window opened before the dust settles is lost. Returns False on abort
+    or timeout."""
+    good = 0
+    for _ in range(int(timeout * 2)):
+        if monitor is not None and monitor.abortRequested():
+            return False
+        ok = (xbmc.getCondVisibility('Window.IsVisible(home)')
+              and not xbmc.getCondVisibility('System.HasActiveModalDialog')
+              and xbmcgui.getCurrentWindowId() == 10000)
+        good = good + 1 if ok else 0
+        if good >= stable * 2:
+            return True
+        if monitor is not None:
+            if monitor.waitForAbort(0.5):
+                return False
+        else:
+            xbmc.sleep(500)
+    return False
+
+
+def show_picker(startup=False, monitor=None):
     """Open the picker; load the chosen profile. Returns True when a switch
-    was requested."""
+    was requested. At start-up a dialog that is closed from outside within a
+    few seconds (the skin reloading itself) is shown again once the home
+    screen is stable."""
+    retries = 2 if startup else 0
     while True:
         rows = _visible_rows()
         w = _PickerWindow('profile-picker.xml', xbmcvfs.translatePath(ADDON.getAddonInfo('path')),
                           'Default', '1080i', rows=rows, startup=startup)
+        t0 = time.time()
         w.doModal()
-        choice = w.choice
+        choice, dismissed = w.choice, w.dismissed
         del w
         if choice and choice.startswith('__avatar__:'):
             choose_avatar(choice.split(':', 1)[1])
+            continue
+        if choice is None and not dismissed and time.time() - t0 < 6 and retries > 0:
+            retries -= 1
+            _log('start-up picker closed from outside after %.1fs (skin reload?); showing it again'
+                 % (time.time() - t0))
+            if not wait_home_stable(monitor, stable=5):
+                break
             continue
         break
     if choice == '__add__':
@@ -510,16 +552,11 @@ def maybe_show_at_start(monitor):
         # empty screen with "+" until a profile exists
         if len(profiles()) < 2 and ADDON.getSetting('hide_master_profile') != 'true':
             return False
-        for _ in range(30):
-            if monitor.abortRequested():
-                return False
-            if xbmc.getCondVisibility('Window.IsVisible(home)') and not xbmc.getCondVisibility('System.HasActiveModalDialog'):
-                break
-            if monitor.waitForAbort(1):
-                return False
+        if not wait_home_stable(monitor, stable=4, timeout=45):
+            return False
         home.setProperty(_SHOWN_PROP, '1')
         _log('start-up picker')
-        return show_picker(startup=True)
+        return show_picker(startup=True, monitor=monitor)
     except Exception as e:
         _log('start-up picker failed: %s' % e, xbmc.LOGWARNING)
         return False

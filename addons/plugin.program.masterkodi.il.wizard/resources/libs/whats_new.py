@@ -67,6 +67,7 @@ def text_for(version):
 class _NoteWindow(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         self.body = kwargs.pop('body', '')
+        self.dismissed = False     # the USER closed it (vs. a skin reload)
         super().__init__(*args)
 
     def onInit(self):
@@ -76,10 +77,12 @@ class _NoteWindow(xbmcgui.WindowXMLDialog):
 
     def onClick(self, control_id):
         if control_id == 300:
+            self.dismissed = True
             self.close()
 
     def onAction(self, action):
         if action.getId() in (9, 10, 92, 216, 247):
+            self.dismissed = True
             self.close()
 
 
@@ -88,7 +91,9 @@ def show(version=None):
     path = xbmcvfs.translatePath(ADDON.getAddonInfo('path'))
     w = _NoteWindow('whats-new.xml', path, 'Default', '1080i', body=body)
     w.doModal()
+    dismissed = w.dismissed
     del w
+    return dismissed
 
 
 def show_if_due(monitor):
@@ -119,7 +124,13 @@ def show_if_due(monitor):
             return False
         _log('showing note for %s (was %s)' % (VERSION, last))
         ADDON.setSetting('last_boot_version', VERSION)
-        show(VERSION)
+        if not show(VERSION):
+            # closed from outside (a skin reload drops every Python dialog):
+            # show it once more when the home screen has settled
+            from resources.libs import profiles
+            _log('note closed from outside; showing it again')
+            if profiles.wait_home_stable(monitor, stable=5):
+                show(VERSION)
         return True
     except Exception as e:
         _log('failed: %s' % e)
