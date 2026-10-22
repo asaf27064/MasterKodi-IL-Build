@@ -667,6 +667,19 @@ def _prewarm_gears(mon):
         log("prewarm error: %s" % e, xbmc.LOGDEBUG)
 
 
+def _precompile(mon, reason, only_if_due=False):
+    """Bytecode sweep (resources/libs/perf.py). Fail-open: never lets a
+    compile problem touch the service."""
+    try:
+        from resources.libs import perf
+        if only_if_due:
+            perf.precompile_if_due(mon)
+        else:
+            perf.precompile_pass(mon, reason)
+    except Exception as e:
+        log(f"bytecode sweep error: {e}", xbmc.LOGWARNING)
+
+
 def _has_debrid():
     """True when a debrid credential actually exists for the installed engine.
 
@@ -786,6 +799,16 @@ class POVHebrewService(xbmc.Monitor):
         # FullInitStarted stamped, losing it permanently (Asaf, 2026-08-31).
         _wait_for_skin_setup(self)
 
+        # Busy-tap notice (resources/libs/perf.py): a tap on a playable item
+        # that leaves Kodi's busy wheel up for a moment gets one short toast,
+        # so a slow engine start does not look like an ignored tap. Started
+        # here, before any settle wait -- the first taps are the slow ones.
+        try:
+            from resources.libs import perf
+            perf.start_busy_watcher(self)
+        except Exception as e:
+            log(f"busy watcher not started: {e}", xbmc.LOGWARNING)
+
         if not self.waitForAbort(2):
             # Make sure the Gears shortcut folder the default networks widget
             # points at exists BEFORE the rebuild's reload populates widgets
@@ -826,6 +849,7 @@ class POVHebrewService(xbmc.Monitor):
             _process_pending_skin_removal()
             if not self.waitForAbort(12):
                 _prewarm_gears(self)
+                _precompile(self, 'post-install')
             # this IS the boot right after an install -- the moment the build
             # comes up with no credentials, which is what the offer is for
             _offer_services_connect(self)
@@ -881,6 +905,11 @@ class POVHebrewService(xbmc.Monitor):
 
         # Warm gears now that boot + update check are done (nothing else to do).
         _prewarm_gears(self)
+        # ...and compile every add-on's bytecode once, so the first open of
+        # each list after an update does not pay the compile on the user's
+        # tap. After the update check on purpose: a freshly updated add-on is
+        # exactly what has stale caches.
+        _precompile(self, 'boot')
 
         # Keep the service alive until Kodi shuts down.
         #
@@ -913,6 +942,9 @@ class POVHebrewService(xbmc.Monitor):
                 if os.path.isfile(_pending_removal_marker()):
                     _process_pending_skin_removal()
             _process_pending_skin_setup()
+            # a sweep every few hours picks up add-ons updated mid-session
+            if not pending:
+                _precompile(self, 'periodic', only_if_due=True)
         log("Service stopped")
 
 

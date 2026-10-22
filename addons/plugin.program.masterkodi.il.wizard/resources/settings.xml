@@ -5,6 +5,10 @@
         <setting id="update_check_delay" type="slider" label="השהייה לפני בדיקת עדכונים (שניות)" default="15" range="5,5,60" option="int" />
         <setting type="lsep" label="כל הבילד מתעדכן אוטומטית מהמאניפסט (אימות SHA256, רק מה שהשתנה). אין צורך בהתקנות עברית נפרדות." />
         <setting type="sep" />
+        <setting type="lsep" label="ביצועים" />
+        <setting id="precompile_bytecode" type="bool" label="הכנת קוד התוספים מראש ברקע (פתיחת רשימות מהירה יותר אחרי עדכון)" default="true" />
+        <setting id="busy_tap_notice" type="bool" label="הודעה קצרה כשחיפוש המקורות מתעכב אחרי לחיצה" default="true" />
+        <setting type="sep" />
         <setting id="check_updates_now" type="action" label="בדוק עדכונים עכשיו" action="RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=check_updates)" option="close" />
     </category>
     <category label="התקנה">
