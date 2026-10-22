@@ -49,6 +49,11 @@
 						<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=whats_on)</onclick>
 					</item>
 					<item>
+						<label>החלפת פרופיל</label>
+						<onclick>Dialog.Close(shutdownmenu)</onclick>
+						<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=switch_profile)</onclick>
+					</item>
+					<item>
 						<label>שלח לוגים לתמיכה</label>
 						<onclick>Dialog.Close(shutdownmenu)</onclick>
 						<onclick>RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)</onclick>

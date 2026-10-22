@@ -856,6 +856,9 @@ if __name__ == '__main__':
         whats_on.show()
     elif mode == 'profiles':
         profiles_menu()
+    elif mode == 'switch_profile':
+        from resources.libs import profiles
+        profiles.show_picker()
     elif mode == 'status':
         build_status_menu()
     elif mode == 'skins':

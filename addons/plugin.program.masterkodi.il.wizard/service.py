@@ -820,6 +820,10 @@ class POVHebrewService(xbmc.Monitor):
             # ...and in the MASTER, prepare any profile Kodi created since
             # (its own addon database starts with everything disabled).
             profiles.prepare_pending()
+            # "מי צופה?" once per Kodi run when there is more than one
+            # profile (Asaf, 2026-10-22: the picker at start-up, in every skin)
+            if profiles.maybe_show_at_start(self):
+                return      # Kodi is switching profile; this service restarts there
         except Exception as e:
             log(f"profile completion error: {e}", xbmc.LOGWARNING)
 

@@ -24,12 +24,6 @@ def get_kodi_json(method, params):
 
     return json.loads(json_query)
 
-def is_hebrew(input_str):
-    hebrew_range = (0x0590, 0x05FF)  # Hebrew Unicode range
-    for char in input_str:
-        if hebrew_range[0] <= ord(char) <= hebrew_range[1]:
-            return True
-    return False
 
 def start_info_actions(infos, params):
     listitems = []
@@ -39,12 +33,9 @@ def start_info_actions(infos, params):
         elif info == 'selectautocomplete':
             xbmc.executebuiltin('Dialog.Close(busydialog)')
             xbmc.sleep(500)
-            # KODI-RD-IL
-            input_str = params.get("id")
-            if is_hebrew(input_str): input_str = input_str[::-1]
             get_kodi_json(
                 method="Input.SendText",
-                params={"text": input_str, "done": False},
+                params={"text": params.get("id"), "done": False},
             )
             xbmc.executebuiltin('ActivateWindowAndFocus(virtualkeyboard,300,0)')
 

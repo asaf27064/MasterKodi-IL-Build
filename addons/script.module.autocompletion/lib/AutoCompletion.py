@@ -47,6 +47,7 @@ def get_autocomplete_items(search_str, limit=10, provider=None):
     provider.limit = limit
     return provider.get_predictions(search_str)
 
+
 def prep_search_str(text):
     for char in text:
         if 1488 <= ord(char) <= 1514:
@@ -84,9 +85,7 @@ class BaseProvider(ABC):
             yield li
 
     def fetch_data(self, search_str):
-        
         url = self.build_url(quote_plus(search_str))
-        
         result = get_JSON_response(url=self.BASE_URL.format(endpoint=url), headers=self.HEADERS, folder=self.FOLDER)
         return self.process_result(result)
 

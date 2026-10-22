@@ -35,6 +35,13 @@
     "guid": "guid-mk-whatson"
   },
   {
+    "label": "החלפת פרופיל",
+    "path": "RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=switch_profile)",
+    "icon": "special://skin/extras/icons/user.png",
+    "target": "",
+    "guid": "guid-mk-switchprofile"
+  },
+  {
     "label": "שלח לוגים לתמיכה",
     "path": "RunPlugin(plugin://plugin.program.masterkodi.il.wizard/?mode=send_logs)",
     "icon": "special://skin/extras/icons/info.png",

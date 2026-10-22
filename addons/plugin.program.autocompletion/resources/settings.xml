@@ -5,7 +5,7 @@
             <group id="1" label="">
                 <setting label="32003" id="autocomplete_provider" type="string" help="">
                     <level>0</level>
-                    <default>TMDb</default>
+                    <default>Google</default>
                     <constraints>
                         <options>
                             <option>Google</option>
@@ -23,7 +23,7 @@
 
                 <setting label="32002" id="autocomplete_lang" type="string" help="">
                     <level>0</level>
-                    <default>he</default>
+                    <default>en</default>
                     <constraints>
                         <options>
                             <option>bg</option>

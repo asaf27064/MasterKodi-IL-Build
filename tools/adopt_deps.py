@@ -93,6 +93,7 @@ _KODI_OFFICIAL = (
     'script.module.beautifulsoup4', 'script.module.certifi', 'script.module.chardet',
     'script.module.idna', 'script.module.pysubs2', 'script.module.qrcode',
     'script.module.requests', 'script.module.simpleeval', 'script.module.simplejson',
+    'script.module.autocompletion', 'plugin.program.autocompletion',
     'script.module.six', 'script.module.soupsieve', 'script.module.unidecode',
     'script.module.urllib3', 'service.xbmc.versioncheck',
 )

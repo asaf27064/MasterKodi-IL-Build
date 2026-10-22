@@ -256,6 +256,138 @@ def complete_if_needed(monitor=None):
         return False
 
 
+# ---------------------------------------------------------------- the picker
+
+_SHOWN_PROP = 'mk.profile_picker.shown'   # on the home window: once per Kodi run
+
+
+class _PickerWindow(xbmcgui.WindowXMLDialog):
+    """"מי צופה?" -- cards for every profile; OK loads it through Kodi's own
+    LoadProfile(name,prompt), so a locked profile asks for its code."""
+
+    def __init__(self, *args, **kwargs):
+        self.rows = kwargs.pop('rows', [])
+        self.startup = kwargs.pop('startup', False)
+        self.choice = None
+        super().__init__(*args)
+
+    def onInit(self):
+        self.setProperty('heading', 'מי צופה?')
+        self.setProperty('summary', 'בחרו פרופיל' if self.startup else 'החלפת פרופיל')
+        self.setProperty('closelabel', 'המשך כרגיל' if self.startup else 'ביטול')
+        lst = self.getControl(100)
+        lst.reset()
+        current = xbmc.getInfoLabel('System.ProfileName')
+        cur_index = 0
+        for i, (name, d, thumb, pol) in enumerate(self.rows):
+            li = xbmcgui.ListItem(name)
+            li.setLabel2('הפרופיל הנוכחי' if name == current else '')
+            li.setArt({'icon': thumb or ADDON.getAddonInfo('icon')})
+            if pol:
+                li.setProperty('kids', 'ילדים · עד גיל %s' % pol.get('age'))
+            lst.addItem(li)
+            if name == current:
+                cur_index = i
+        lst.selectItem(cur_index)
+        # centre the row of cards (320 px each, up to five on screen)
+        try:
+            n = min(len(self.rows), 5)
+            lst.setPosition(int((1920 - n * 320) / 2), 400)
+            lst.setWidth(n * 320)
+        except Exception:
+            pass
+        self.setFocusId(100)
+
+    def onClick(self, control_id):
+        if control_id == 100:
+            i = self.getControl(100).getSelectedPosition()
+            if 0 <= i < len(self.rows):
+                self.choice = self.rows[i][0]
+            self.close()
+        elif control_id == 300:
+            self.choice = '__add__'
+            self.close()
+        elif control_id == 301:
+            self.close()
+
+    def onAction(self, action):
+        if action.getId() in (9, 10, 92, 216, 247):
+            self.close()
+
+
+def _rows():
+    out = []
+    try:
+        root = ET.parse(os.path.join(MASTER, 'profiles.xml')).getroot()
+        for p in root.findall('profile'):
+            name = (p.findtext('name') or '').strip()
+            d = (p.findtext('directory') or '').strip()
+            path = xbmcvfs.translatePath(d) if d.startswith('special://') else os.path.join(MASTER, d)
+            thumb = (p.findtext('thumbnail') or '').strip()
+            out.append((name, os.path.normpath(path), thumb, read_policy(path)))
+    except Exception as e:
+        _log('profiles.xml unreadable: %s' % e, xbmc.LOGWARNING)
+    return out
+
+
+def show_picker(startup=False):
+    """Open the picker; load the chosen profile. Returns True when a switch
+    was requested."""
+    rows = _rows()
+    if not rows:
+        return False
+    w = _PickerWindow('profile-picker.xml', xbmcvfs.translatePath(ADDON.getAddonInfo('path')),
+                      'Default', '1080i', rows=rows, startup=startup)
+    w.doModal()
+    choice = w.choice
+    del w
+    if choice == '__add__':
+        open_kodi_profiles()
+        return False
+    if not choice or choice == xbmc.getInfoLabel('System.ProfileName'):
+        return False
+    _log('switching to "%s"' % choice)
+    # Kodi's own switch: honours the profile's lock code (prompt)
+    xbmc.executebuiltin('LoadProfile(%s,prompt)' % choice)
+    return True
+
+
+def _kodi_login_screen_on():
+    try:
+        root = ET.parse(os.path.join(MASTER, 'profiles.xml')).getroot()
+        return (root.findtext('useloginscreen') or '').strip().lower() == 'true'
+    except Exception:
+        return False
+
+
+def maybe_show_at_start(monitor):
+    """Service hook: the picker once per Kodi run, on the home screen, when
+    there is more than one profile and the setting is on. Kodi restarts this
+    service on a profile switch, so the home-window property keeps the
+    picker from showing again inside the chosen profile."""
+    try:
+        if ADDON.getSetting('profile_picker_at_start') == 'false':
+            return False
+        home = xbmcgui.Window(10000)
+        if home.getProperty(_SHOWN_PROP):
+            return False
+        if len(profiles()) < 2 or _kodi_login_screen_on():
+            return False
+        for _ in range(30):
+            if monitor.abortRequested():
+                return False
+            if xbmc.getCondVisibility('Window.IsVisible(home)') and not xbmc.getCondVisibility('System.HasActiveModalDialog'):
+                break
+            if monitor.waitForAbort(1):
+                return False
+        home.setProperty(_SHOWN_PROP, '1')
+        _log('start-up picker')
+        return show_picker(startup=True)
+    except Exception as e:
+        _log('start-up picker failed: %s' % e, xbmc.LOGWARNING)
+        return False
+
+
 # ---------------------------------------------------------------- the menu
 
 def _pick_profile(title):
@@ -373,13 +505,18 @@ def remove_kids_mode():
 def menu():
     from resources.libs.ui import WizardMenu
     while True:
-        rows = [('ניהול פרופילים של Kodi', 'הוספה / מחיקה / קוד נעילה / מסך כניסה', 'DefaultUser.png'),
+        rows = [('החלפת פרופיל', 'מי צופה? -- מסך הבחירה, גם בהפעלה', 'DefaultUser.png'),
+                ('ניהול פרופילים של Kodi', 'הוספה / מחיקה / קוד נעילה', 'DefaultUser.png'),
                 ('הכן פרופיל', 'פרופיל שנוצר ב-Kodi מקבל את התפריטים, הסקין וההגדרות של הבילד', 'DefaultAddonProgram.png'),
                 ('הפעל מצב ילדים על פרופיל', 'גיל מקסימלי · תוכן ללא דירוג נחסם · שיתוף דבריד', 'DefaultAddonService.png'),
                 ('אשר סרט או סדרה לפרופיל ילדים', 'חיפוש לפי שם · האישור חל גם על הפרקים', 'DefaultVideo.png'),
                 ('הסר מצב ילדים', 'הפרופיל חוזר להציג הכל', 'DefaultAddonNone.png'),
                 ('חזרה', '', 'DefaultFolderBack.png')]
         sel = WizardMenu.pick('פרופילים ומצב ילדים', rows)
-        if sel in (-1, 5):
+        if sel in (-1, 6):
             return
-        (open_kodi_profiles, prepare_now, set_kids_mode, approve_title, remove_kids_mode)[sel]()
+        if sel == 0:
+            if show_picker():
+                return
+            continue
+        (open_kodi_profiles, prepare_now, set_kids_mode, approve_title, remove_kids_mode)[sel - 1]()

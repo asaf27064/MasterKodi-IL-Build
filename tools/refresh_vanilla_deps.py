@@ -71,6 +71,8 @@ VANILLA_DEPS = {
     'script.module.simplejson': 'kodi',
     'script.module.unidecode': 'kodi',
     'script.module.simpleeval': 'kodi',
+    'script.module.autocompletion': 'kodi',
+    'plugin.program.autocompletion': 'kodi',
     'resource.images.studios.white': 'kodi',
     'resource.images.studios.coloured': 'kodi',
     'resource.images.moviegenreicons.transparent': 'kodi',
