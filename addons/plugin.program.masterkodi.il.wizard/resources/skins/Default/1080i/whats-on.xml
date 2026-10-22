@@ -230,7 +230,7 @@
                 <onup>100</onup><ondown>300</ondown><onleft>301</onleft><onright>300</onright>
             </control>
             <control type="button" id="301">
-                <left>1100</left><top>0</top><width>220</width><height>62</height>
+                <left>1060</left><top>0</top><width>260</width><height>62</height>
                 <font>font13</font><align>center</align>
                 <textcolor>FFC9D2DE</textcolor><focusedcolor>FF101418</focusedcolor>
                 <texturenofocus colordiffuse="33FFFFFF" border="4">white.png</texturenofocus>
@@ -239,7 +239,7 @@
                 <onup>100</onup><ondown>301</ondown><onleft>302</onleft><onright>300</onright>
             </control>
             <control type="button" id="302">
-                <left>860</left><top>0</top><width>220</width><height>62</height>
+                <left>780</left><top>0</top><width>260</width><height>62</height>
                 <font>font13</font><align>center</align>
                 <textcolor>FFC9D2DE</textcolor><focusedcolor>FF101418</focusedcolor>
                 <texturenofocus colordiffuse="33FFFFFF" border="4">white.png</texturenofocus>

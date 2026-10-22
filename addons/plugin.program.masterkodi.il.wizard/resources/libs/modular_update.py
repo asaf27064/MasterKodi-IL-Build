@@ -383,6 +383,75 @@ def fix_invalid_tmdb_widgets():
     return changed
 
 
+def seed_menu_items():
+    """Add the build's new menu rows to a skinshortcuts menu that predates
+    them: "מה רואים הערב?" and "החלפת פרופיל" next to "שלח לוגים לתמיכה" in
+    the power menu, and the "מה רואים הערב?" home tile after "סדרות".
+
+    A migration for the same reason as fix_invalid_tmdb_widgets: the
+    skinshortcuts config dir is `update: skip`, so the corrected seeds reach
+    fresh installs only -- an existing Rounded/Zephyr/Bingie box would never
+    see the rows. Inserts ONLY when the anchor row is present and ours is
+    not, so a customised menu keeps whatever the user did; then drops the
+    skin's skinshortcuts hash so the menu is rebuilt on the next skin load.
+    """
+    import glob
+    import re as _re
+    changed = []
+    try:
+        base = xbmcvfs.translatePath('special://profile/addon_data/script.skinshortcuts/')
+        if not os.path.isdir(base):
+            return changed
+        WIZ = 'plugin://plugin.program.masterkodi.il.wizard/?mode='
+
+        def shortcut(default_id, label, icon, action):
+            return ('\t<shortcut>\n\t\t<defaultID>%s</defaultID>\n\t\t<label>%s</label>\n'
+                    '\t\t<label2>Common Shortcut</label2>\n\t\t<icon>%s</icon>\n\t\t<thumb>%s</thumb>\n'
+                    '\t\t<action>RunPlugin(%s%s)</action>\n\t\t</shortcut>\n' % (default_id, label, icon, icon, WIZ, action))
+
+        for path in glob.glob(os.path.join(base, '*.DATA.xml')):
+            name = os.path.basename(path)
+            try:
+                with open(path, encoding='utf-8', errors='replace') as fh:
+                    txt = fh.read()
+            except Exception:
+                continue
+            new = txt
+            if name.endswith('powermenu.DATA.xml') and 'mode=send_logs' in txt and 'mode=whats_on' not in txt:
+                m = _re.search(r'[ \t]*<shortcut>\n(?:[ \t]*<defaultID\b[^>]*(?:/>|>[^<]*</defaultID>)\n)?[ \t]*<label>שלח לוגים לתמיכה</label>.*?</shortcut>[ \t]*\n', txt, _re.S)
+                if m:
+                    im = _re.search(r'<icon>([^<]*)</icon>', m.group(0))
+                    icon = im.group(1) if im else ''
+                    rows = (shortcut('mkil_whatson', 'מה רואים הערב?', icon, 'whats_on')
+                            + shortcut('mkil_switchprofile', 'החלפת פרופיל', icon, 'switch_profile'))
+                    new = txt[:m.start()] + rows + txt[m.start():]
+            elif name.endswith('mainmenu.DATA.xml') and 'mkil_tvshows' in txt and 'mkil_whatson' not in txt:
+                m = _re.search(r'[ \t]*<shortcut>\n[ \t]*<defaultID>mkil_tvshows</defaultID>.*?</shortcut>[ \t]*\n', txt, _re.S)
+                if m:
+                    im = _re.search(r'<icon>([^<]*)</icon>', m.group(0))
+                    icon = (im.group(1).rsplit('/', 1)[0] + '/star.png') if im and '/' in im.group(1) else ''
+                    row = ('\t<shortcut>\n\t\t<defaultID>mkil_whatson</defaultID>\n\t\t<label>מה רואים הערב?</label>\n'
+                           '\t\t<label2>פריטים מותאמים אישית</label2>\n\t\t<icon>%s</icon>\n\t\t<thumb>%s</thumb>\n'
+                           '\t\t<action>RunPlugin(%swhats_on)</action>\n\t\t</shortcut>\n' % (icon, icon, WIZ))
+                    new = txt[:m.end()] + row + txt[m.end():]
+            if new != txt:
+                with open(path, 'w', encoding='utf-8', newline='') as fh:
+                    fh.write(new)
+                changed.append(name)
+        if changed:
+            # the menu is compiled from these files; dropping the hash makes
+            # skinshortcuts rebuild it on the next skin load
+            for h in glob.glob(os.path.join(base, '*.hash')):
+                try:
+                    os.remove(h)
+                except Exception:
+                    pass
+            log('seeded new menu rows into: %s (skinshortcuts hash dropped)' % ', '.join(changed))
+    except Exception as e:
+        log('menu rows seed failed: %s' % e, xbmc.LOGWARNING)
+    return changed
+
+
 def fix_pov_placeholder_tokens():
     """Blank Gears' 'empty_setting' sentinel out of POV's settings.xml.
 

@@ -853,6 +853,9 @@ class POVHebrewService(xbmc.Monitor):
                 # the shipped skinshortcuts dir is `update: skip`, so a menu
                 # correction only reaches existing boxes through a migration
                 modular_update.fix_invalid_tmdb_widgets()
+                # the new power-menu rows + home tile for menus that predate
+                # them (the shipped skinshortcuts dir is `update: skip`)
+                modular_update.seed_menu_items()
                 # a KEEP reinstall planted Gears' 'empty_setting' sentinel as
                 # POV debrid tokens -> fake "authorized" services; keep.py is
                 # fixed for future reinstalls, existing boxes need the scrub

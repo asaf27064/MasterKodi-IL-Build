@@ -513,7 +513,7 @@ class WhatsOnWindow(xbmcgui.WindowXMLDialog):
         for it in self.items:
             li = xbmcgui.ListItem(it['title'])
             li.setArt({'poster': it['poster'], 'thumb': it['poster'], 'fanart': it['fanart']})
-            meta = ' · '.join(x for x in (it['year'], it['genres'], ('%.1f ★' % it['rating']) if it['rating'] else '',
+            meta = ' · '.join(x for x in (it['year'], it['genres'], ('דירוג %.1f' % it['rating']) if it['rating'] else '',
                                           ('%d דק׳' % it['runtime']) if it.get('runtime') else '') if x)
             li.setProperty('meta', meta)
             li.setProperty('plot', it['plot'] or 'אין תקציר בעברית לכותר הזה.')

@@ -1,155 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- MasterKodi IL - "מי צופה?" profile picker (resources/libs/profiles.py).
-     Shown at start-up when there is more than one profile, and from every
-     skin's power menu. Generic fonts + own white.png: identical on any skin.
-     Controls: 100 the cards, 300 "הוסף פרופיל", 301 close. -->
+     Avatar tiles in a centred row, the focused one scaled up with a white
+     frame, the name underneath, a "+" tile to add a profile. The headline is
+     an image because the six skins share no large font name. Own textures,
+     identical on any skin. Controls: 100 the tiles, 300 add, 301 close. -->
 <window type="dialog" id="3104">
     <defaultcontrol always="true">100</defaultcontrol>
     <controls>
         <control type="image">
             <left>0</left><top>0</top><width>1920</width><height>1080</height>
-            <texture colordiffuse="F2000000">white.png</texture>
+            <texture colordiffuse="FF12161C">white.png</texture>
         </control>
         <control type="image">
             <left>0</left><top>0</top><width>1920</width><height>1080</height>
-            <texture colordiffuse="18FFFFFF">fanart.jpg</texture>
+            <texture colordiffuse="14FFFFFF">fanart.jpg</texture>
             <aspectratio>scale</aspectratio>
         </control>
         <control type="image">
-            <left>0</left><top>0</top><width>1920</width><height>6</height>
-            <texture colordiffuse="FFFFD700">white.png</texture>
+            <left>0</left><top>0</top><width>1920</width><height>1080</height>
+            <texture colordiffuse="B012161C">vgrad.png</texture>
         </control>
+        <!-- headline -->
         <control type="image">
-            <centerleft>50%</centerleft><top>110</top><width>120</width><height>120</height>
-            <texture>logo.png</texture>
+            <centerleft>50%</centerleft><top>150</top><width>560</width><height>150</height>
+            <texture>title_who.png</texture>
             <aspectratio>keep</aspectratio>
         </control>
         <control type="label">
-            <left>0</left><top>250</top><width>1920</width><height>70</height>
-            <align>center</align><font>font14</font>
-            <textcolor>FFFFD700</textcolor>
-            <label>$INFO[Window.Property(heading)]</label>
-        </control>
-        <control type="label">
-            <left>0</left><top>316</top><width>1920</width><height>36</height>
+            <left>0</left><top>300</top><width>1920</width><height>36</height>
             <align>center</align><font>font12</font>
-            <textcolor>FF9AA3B0</textcolor>
+            <textcolor>FF8A94A6</textcolor>
             <label>$INFO[Window.Property(summary)]</label>
         </control>
 
-        <!-- profile cards, centred row -->
+        <!-- avatar tiles -->
         <control type="list" id="100">
-            <left>0</left><top>400</top><width>1920</width><height>400</height>
+            <left>0</left><top>400</top><width>1920</width><height>440</height>
             <orientation>horizontal</orientation>
-            <onup>100</onup><ondown>300</ondown>
+            <onup>100</onup><ondown>301</ondown>
             <onleft>100</onleft><onright>100</onright>
             <scrolltime tween="cubic" easing="out">200</scrolltime>
-            <itemlayout width="320" height="400">
-                <control type="image">
-                    <left>20</left><top>20</top><width>280</width><height>280</height>
-                    <texture colordiffuse="FF1B1F28" border="20">rounded.png</texture>
-                </control>
-                <control type="image">
-                    <left>20</left><top>20</top><width>280</width><height>280</height>
-                    <texture colordiffuse="FF22262E">white.png</texture>
-                </control>
-                <control type="image">
-                    <left>70</left><top>60</top><width>180</width><height>180</height>
-                    <texture fallback="DefaultUser.png">$INFO[ListItem.Icon]</texture>
-                    <aspectratio>keep</aspectratio>
-                </control>
-                <control type="image">
-                    <left>20</left><top>250</top><width>280</width><height>50</height>
-                    <texture colordiffuse="CC27AE60">white.png</texture>
-                    <visible>!String.IsEmpty(ListItem.Property(kids))</visible>
-                </control>
-                <control type="label">
-                    <left>20</left><top>250</top><width>280</width><height>50</height>
-                    <align>center</align><aligny>center</aligny><font>font12</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <label>$INFO[ListItem.Property(kids)]</label>
-                    <visible>!String.IsEmpty(ListItem.Property(kids))</visible>
-                </control>
-                <control type="label">
-                    <left>10</left><top>312</top><width>300</width><height>44</height>
-                    <align>center</align><font>font13</font>
-                    <textcolor>FFC9D2DE</textcolor>
-                    <label>$INFO[ListItem.Label]</label>
-                </control>
-                <control type="label">
-                    <left>10</left><top>352</top><width>300</width><height>30</height>
-                    <align>center</align><font>font10</font>
-                    <textcolor>FF7A838F</textcolor>
-                    <label>$INFO[ListItem.Label2]</label>
+            <itemlayout width="340" height="440">
+                <control type="group">
+                    <left>20</left><top>20</top>
+                    <control type="image">
+                        <left>0</left><top>0</top><width>300</width><height>300</height>
+                        <texture>$INFO[ListItem.Icon]</texture>
+                        <aspectratio>scale</aspectratio>
+                    </control>
+                    <control type="image">
+                        <left>0</left><top>0</top><width>300</width><height>300</height>
+                        <texture colordiffuse="40000000">white.png</texture>
+                    </control>
+                    <control type="image">
+                        <left>0</left><top>250</top><width>300</width><height>50</height>
+                        <texture colordiffuse="E627AE60">white.png</texture>
+                        <visible>!String.IsEmpty(ListItem.Property(kids))</visible>
+                    </control>
+                    <control type="label">
+                        <left>0</left><top>250</top><width>300</width><height>50</height>
+                        <align>center</align><aligny>center</aligny><font>font12</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <label>$INFO[ListItem.Property(kids)]</label>
+                        <visible>!String.IsEmpty(ListItem.Property(kids))</visible>
+                    </control>
+                    <control type="label">
+                        <left>-20</left><top>322</top><width>340</width><height>44</height>
+                        <align>center</align><font>font13</font>
+                        <textcolor>FF8A94A6</textcolor>
+                        <label>$INFO[ListItem.Label]</label>
+                    </control>
+                    <control type="label">
+                        <left>-20</left><top>364</top><width>340</width><height>30</height>
+                        <align>center</align><font>font10</font>
+                        <textcolor>FF5E6878</textcolor>
+                        <label>$INFO[ListItem.Label2]</label>
+                    </control>
                 </control>
             </itemlayout>
-            <focusedlayout width="320" height="400">
-                <control type="image">
-                    <left>14</left><top>14</top><width>292</width><height>292</height>
-                    <texture colordiffuse="FFFFD700">white.png</texture>
-                </control>
-                <control type="image">
-                    <left>20</left><top>20</top><width>280</width><height>280</height>
-                    <texture colordiffuse="FF2A2F3A">white.png</texture>
-                </control>
-                <control type="image">
-                    <left>70</left><top>60</top><width>180</width><height>180</height>
-                    <texture fallback="DefaultUser.png">$INFO[ListItem.Icon]</texture>
-                    <aspectratio>keep</aspectratio>
-                </control>
-                <control type="image">
-                    <left>20</left><top>250</top><width>280</width><height>50</height>
-                    <texture colordiffuse="FF27AE60">white.png</texture>
-                    <visible>!String.IsEmpty(ListItem.Property(kids))</visible>
-                </control>
-                <control type="label">
-                    <left>20</left><top>250</top><width>280</width><height>50</height>
-                    <align>center</align><aligny>center</aligny><font>font12</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <label>$INFO[ListItem.Property(kids)]</label>
-                    <visible>!String.IsEmpty(ListItem.Property(kids))</visible>
-                </control>
-                <control type="label">
-                    <left>10</left><top>312</top><width>300</width><height>44</height>
-                    <align>center</align><font>font13</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <label>$INFO[ListItem.Label]</label>
-                </control>
-                <control type="label">
-                    <left>10</left><top>352</top><width>300</width><height>30</height>
-                    <align>center</align><font>font10</font>
-                    <textcolor>FFFFD700</textcolor>
-                    <label>$INFO[ListItem.Label2]</label>
+            <focusedlayout width="340" height="440">
+                <control type="group">
+                    <left>20</left><top>20</top>
+                    <animation effect="zoom" start="100" end="112" center="150,150" time="160" tween="sine" easing="out">Focus</animation>
+                    <animation effect="zoom" start="112" end="100" center="150,150" time="160" tween="sine" easing="out">UnFocus</animation>
+                    <control type="image">
+                        <left>0</left><top>0</top><width>300</width><height>300</height>
+                        <texture>$INFO[ListItem.Icon]</texture>
+                        <aspectratio>scale</aspectratio>
+                    </control>
+                    <control type="image">
+                        <left>-6</left><top>-6</top><width>312</width><height>312</height>
+                        <texture colordiffuse="FFFFFFFF" border="18">rounded_line.png</texture>
+                    </control>
+                    <control type="image">
+                        <left>0</left><top>250</top><width>300</width><height>50</height>
+                        <texture colordiffuse="FF27AE60">white.png</texture>
+                        <visible>!String.IsEmpty(ListItem.Property(kids))</visible>
+                    </control>
+                    <control type="label">
+                        <left>0</left><top>250</top><width>300</width><height>50</height>
+                        <align>center</align><aligny>center</aligny><font>font12</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <label>$INFO[ListItem.Property(kids)]</label>
+                        <visible>!String.IsEmpty(ListItem.Property(kids))</visible>
+                    </control>
+                    <control type="label">
+                        <left>-20</left><top>330</top><width>340</width><height>44</height>
+                        <align>center</align><font>font13</font>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <label>$INFO[ListItem.Label]</label>
+                    </control>
+                    <control type="label">
+                        <left>-20</left><top>372</top><width>340</width><height>30</height>
+                        <align>center</align><font>font10</font>
+                        <textcolor>FFFFD700</textcolor>
+                        <label>$INFO[ListItem.Label2]</label>
+                    </control>
                 </control>
             </focusedlayout>
         </control>
 
-        <control type="group">
-            <left>0</left><top>860</top>
-            <control type="button" id="300">
-                <left>700</left><top>0</top><width>250</width><height>60</height>
-                <font>font13</font><align>center</align>
-                <textcolor>FFC9D2DE</textcolor><focusedcolor>FF101418</focusedcolor>
-                <texturenofocus colordiffuse="33FFFFFF" border="4">white.png</texturenofocus>
-                <texturefocus colordiffuse="FFFFD700" border="4">white.png</texturefocus>
-                <label>הוסף פרופיל</label>
-                <onup>100</onup><ondown>300</ondown><onleft>301</onleft><onright>300</onright>
-            </control>
-            <control type="button" id="301">
-                <left>970</left><top>0</top><width>250</width><height>60</height>
-                <font>font13</font><align>center</align>
-                <textcolor>FFC9D2DE</textcolor><focusedcolor>FF101418</focusedcolor>
-                <texturenofocus colordiffuse="33FFFFFF" border="4">white.png</texturenofocus>
-                <texturefocus colordiffuse="FFFFD700" border="4">white.png</texturefocus>
-                <label>$INFO[Window.Property(closelabel)]</label>
-                <onup>100</onup><ondown>301</ondown><onleft>301</onleft><onright>300</onright>
-            </control>
+        <!-- the "+" tile: a button that looks like one more tile (placed by code) -->
+        <control type="button" id="300">
+            <left>0</left><top>420</top><width>300</width><height>300</height>
+            <texturenofocus>avatar_add.png</texturenofocus>
+            <texturefocus>avatar_add.png</texturefocus>
+            <label></label>
+            <onup>300</onup><ondown>301</ondown><onleft>100</onleft><onright>100</onright>
+            <animation effect="zoom" start="100" end="112" center="auto" time="160" tween="sine" easing="out">Focus</animation>
+            <animation effect="zoom" start="112" end="100" center="auto" time="160" tween="sine" easing="out">UnFocus</animation>
         </control>
-        <control type="label">
-            <left>0</left><bottom>36</bottom><width>1920</width><height>34</height>
-            <align>center</align><font>font10</font>
-            <textcolor>FF6B7380</textcolor>
-            <label>OK לכניסה  |  פרופיל נעול יבקש קוד</label>
+        <control type="image">
+            <left>0</left><top>414</top><width>312</width><height>312</height>
+            <texture colordiffuse="FFFFFFFF" border="18">rounded_line.png</texture>
+            <visible>Control.HasFocus(300)</visible>
+        </control>
+        <control type="label" id="302">
+            <left>0</left><top>742</top><width>300</width><height>44</height>
+            <align>center</align><font>font13</font>
+            <textcolor>FF8A94A6</textcolor>
+            <label>הוסף פרופיל</label>
+        </control>
+
+        <control type="button" id="301">
+            <centerleft>50%</centerleft><top>900</top><width>320</width><height>60</height>
+            <font>font13</font><align>center</align>
+            <textcolor>FF8A94A6</textcolor><focusedcolor>FF12161C</focusedcolor>
+            <texturenofocus colordiffuse="22FFFFFF" border="4">white.png</texturenofocus>
+            <texturefocus colordiffuse="FFFFFFFF" border="4">white.png</texturefocus>
+            <label>$INFO[Window.Property(closelabel)]</label>
+            <onup>100</onup><ondown>301</ondown><onleft>301</onleft><onright>301</onright>
         </control>
     </controls>
 </window>

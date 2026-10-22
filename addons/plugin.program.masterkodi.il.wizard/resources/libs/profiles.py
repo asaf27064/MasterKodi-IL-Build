@@ -144,11 +144,11 @@ def _copy(src, dst, overwrite=False):
     return True
 
 
-def _copy_addons_db(profile_dir):
-    """A consistent copy of the master's addon database into the profile's
-    own Database folder, so every add-on the build enabled is enabled there
-    too. sqlite's backup API: the master's file is open by Kodi."""
-    src = os.path.join(MASTER, 'Database', ADDONS_DB)
+def _copy_addons_db(profile_dir, src_dir):
+    """A consistent copy of the template profile's addon database into the
+    new profile's own Database folder, so every add-on the build enabled is
+    enabled there too. sqlite's backup API: the source file is open by Kodi."""
+    src = os.path.join(src_dir, 'Database', ADDONS_DB)
     dst_dir = os.path.join(profile_dir, 'Database')
     dst = os.path.join(dst_dir, ADDONS_DB)
     if not os.path.isfile(src) or os.path.isfile(dst):
@@ -166,11 +166,20 @@ def _copy_addons_db(profile_dir):
     return True
 
 
-def _fill(profile_dir, share_tokens):
-    """Everything a profile needs from the master, never overwriting what the
-    profile already has. Returns the list of what was copied."""
+def _template_dir():
+    """The profile a new one is modelled on: the one the parent is running,
+    unless that is a kids profile (then the master)."""
+    if not is_master() and read_policy(CURRENT) is None:
+        return CURRENT
+    return MASTER
+
+
+def _fill(profile_dir, share_tokens, src_dir=None):
+    """Everything a profile needs from the template profile, never
+    overwriting what the profile already has. Returns what was copied."""
+    MASTER = src_dir or _template_dir()
     copied = []
-    if _copy_addons_db(profile_dir):
+    if _copy_addons_db(profile_dir, MASTER):
         copied.append('Database/' + ADDONS_DB)
     for rel in ('guisettings.xml', 'sources.xml'):
         if _copy(os.path.join(MASTER, rel), os.path.join(profile_dir, rel)):
@@ -222,11 +231,13 @@ def prepare_profile(name, profile_dir, share_tokens=None):
 def prepare_pending():
     """Master service hook: prepare every profile that is not yet prepared.
     Cheap when there is nothing to do (one stat per profile)."""
-    if not is_master():
+    if read_policy(CURRENT) is not None:      # never from a kids profile
         return 0
     n = 0
     for name, d, master in profiles():
         if master or not os.path.isdir(d) or os.path.isfile(os.path.join(d, DONE_REL)):
+            continue
+        if os.path.normcase(d) == os.path.normcase(os.path.normpath(CURRENT)):
             continue
         try:
             if prepare_profile(name, d):
@@ -243,7 +254,7 @@ def complete_if_needed(monitor=None):
         if is_master() or os.path.isfile(os.path.join(CURRENT, DONE_REL)):
             return False
         pol = read_policy(CURRENT)
-        copied = _fill(CURRENT, bool(pol and pol.get('shared_debrid')))
+        copied = _fill(CURRENT, bool(pol and pol.get('shared_debrid')), MASTER)
         _mark_done(CURRENT)
         _log('completed from inside the profile: %s' % ', '.join(copied))
         if copied:
@@ -254,6 +265,64 @@ def complete_if_needed(monitor=None):
     except Exception as e:
         _log('completion failed: %s' % e, xbmc.LOGWARNING)
         return False
+
+
+# ---------------------------------------------------------------- avatars
+
+AVATARS = [('avatar0.png', 'כחול'), ('avatar1.png', 'ענבר'), ('avatar2.png', 'סגול'),
+           ('avatar3.png', 'תכלת'), ('avatar4.png', 'ירוק'), ('avatar5.png', 'אדום'),
+           ('avatar6.png', 'טורקיז'), ('avatar7.png', 'ורוד'), ('avatar_kids.png', 'ילדים')]
+_AVATARS_FILE = os.path.join(MASTER, 'addon_data', ADDON_ID, 'avatars.json')
+
+
+def _media_dir():
+    return os.path.join(xbmcvfs.translatePath(ADDON.getAddonInfo('path')), 'resources', 'skins', 'Default', 'media')
+
+
+def _avatar_map():
+    try:
+        with io.open(_AVATARS_FILE, encoding='utf-8') as fh:
+            return json.load(fh)
+    except Exception:
+        return {}
+
+
+def set_avatar(profile_name, filename):
+    m = _avatar_map()
+    m[profile_name] = filename
+    os.makedirs(os.path.dirname(_AVATARS_FILE), exist_ok=True)
+    with io.open(_AVATARS_FILE, 'w', encoding='utf-8') as fh:
+        json.dump(m, fh, ensure_ascii=False, indent=2)
+
+
+def avatar_for(index, name, thumb, pol):
+    """Kodi's own profile picture when the user chose one in Kodi's manager;
+    else the avatar picked here; else the palette by position (kids: theirs)."""
+    if thumb and os.path.isfile(xbmcvfs.translatePath(thumb)):
+        return thumb
+    chosen = _avatar_map().get(name)
+    if chosen:
+        return os.path.join(_media_dir(), chosen)
+    if pol:
+        return os.path.join(_media_dir(), 'avatar_kids.png')
+    return os.path.join(_media_dir(), 'avatar%d.png' % (index % 8))
+
+
+def choose_avatar(profile_name):
+    """The same tile screen, showing the avatars instead of the profiles."""
+    rows = [(label, '', os.path.join(_media_dir(), f), None) for f, label in AVATARS]
+    w = _PickerWindow('profile-picker.xml', xbmcvfs.translatePath(ADDON.getAddonInfo('path')),
+                      'Default', '1080i', rows=rows, startup=False, mode='avatar', title=profile_name)
+    w.doModal()
+    choice = w.choice
+    del w
+    if choice and choice != '__add__':
+        for f, label in AVATARS:
+            if label == choice:
+                set_avatar(profile_name, f)
+                _log('avatar for "%s": %s' % (profile_name, f))
+                return True
+    return False
 
 
 # ---------------------------------------------------------------- the picker
@@ -268,35 +337,58 @@ class _PickerWindow(xbmcgui.WindowXMLDialog):
     def __init__(self, *args, **kwargs):
         self.rows = kwargs.pop('rows', [])
         self.startup = kwargs.pop('startup', False)
+        self.mode = kwargs.pop('mode', 'profiles')     # 'profiles' | 'avatar'
+        self.title = kwargs.pop('title', '')
         self.choice = None
         super().__init__(*args)
 
     def onInit(self):
+        avatar_mode = self.mode == 'avatar'
         self.setProperty('heading', 'מי צופה?')
-        self.setProperty('summary', 'בחרו פרופיל' if self.startup else 'החלפת פרופיל')
-        self.setProperty('closelabel', 'המשך כרגיל' if self.startup else 'ביטול')
+        if avatar_mode:
+            self.setProperty('summary', 'בחרו אווטאר לפרופיל "%s"' % self.title)
+            self.setProperty('closelabel', 'ביטול')
+        elif not self.rows:
+            self.setProperty('summary', 'צרו פרופיל כדי להתחיל')
+            self.setProperty('closelabel', 'המשך בלי פרופיל' if self.startup else 'סגור')
+        else:
+            self.setProperty('summary', 'בחרו פרופיל' if self.startup else 'החלפת פרופיל')
+            self.setProperty('closelabel', 'המשך כרגיל' if self.startup else 'ביטול')
+        self.setProperty('mode', self.mode)
         lst = self.getControl(100)
         lst.reset()
         current = xbmc.getInfoLabel('System.ProfileName')
         cur_index = 0
         for i, (name, d, thumb, pol) in enumerate(self.rows):
             li = xbmcgui.ListItem(name)
-            li.setLabel2('הפרופיל הנוכחי' if name == current else '')
-            li.setArt({'icon': thumb or ADDON.getAddonInfo('icon')})
-            if pol:
-                li.setProperty('kids', 'ילדים · עד גיל %s' % pol.get('age'))
+            if avatar_mode:
+                icon = thumb
+            else:
+                li.setLabel2('הפרופיל הנוכחי' if name == current else '')
+                icon = avatar_for(i, name, thumb, pol)
+                if pol:
+                    li.setProperty('kids', 'ילדים · עד גיל %s' % pol.get('age'))
+            li.setArt({'icon': icon, 'thumb': icon})
             lst.addItem(li)
             if name == current:
                 cur_index = i
         lst.selectItem(cur_index)
-        # centre the row of cards (320 px each, up to five on screen)
+        # centre the tiles (340 px per tile, up to four) with the "+" tile at
+        # the end of the row -- the row's end is the LEFT in RTL reading order
         try:
-            n = min(len(self.rows), 5)
-            lst.setPosition(int((1920 - n * 320) / 2), 400)
-            lst.setWidth(n * 320)
+            n = min(len(self.rows), 5 if avatar_mode else 4)
+            add_w = 0 if avatar_mode else 340
+            total = n * 340 + add_w
+            x0 = int((1920 - total) / 2)
+            lst.setPosition(x0 + add_w, 400)
+            lst.setWidth(max(n, 1) * 340)
+            self.getControl(300).setPosition(x0 + 20, 420)
+            self.getControl(302).setPosition(x0 + 20, 742)
+            self.getControl(300).setVisible(not avatar_mode)
+            self.getControl(302).setVisible(not avatar_mode)
         except Exception:
             pass
-        self.setFocusId(100)
+        self.setFocusId(100 if self.rows else 300)
 
     def onClick(self, control_id):
         if control_id == 100:
@@ -311,8 +403,14 @@ class _PickerWindow(xbmcgui.WindowXMLDialog):
             self.close()
 
     def onAction(self, action):
-        if action.getId() in (9, 10, 92, 216, 247):
+        aid = action.getId()
+        if aid in (9, 10, 92, 216, 247):
             self.close()
+        elif aid == 117 and self.mode == 'profiles' and self.rows:   # context key: avatar
+            i = self.getControl(100).getSelectedPosition()
+            if 0 <= i < len(self.rows):
+                self.choice = '__avatar__:' + self.rows[i][0]
+                self.close()
 
 
 def _rows():
@@ -330,17 +428,51 @@ def _rows():
     return out
 
 
+def _visible_rows():
+    rows = _rows()
+    if ADDON.getSetting('hide_master_profile') == 'true':
+        rows = [r for r in rows if os.path.normcase(r[1]) != os.path.normcase(os.path.normpath(MASTER))]
+    return rows
+
+
+def _decide_fresh_mode():
+    """Once: a box that has never been used (no history, no debrid) is a FRESH
+    install -> the master stays hidden and the user creates their own profile.
+    A box with history is an existing user -> their main profile is shown."""
+    if ADDON.getSetting('hide_master_profile'):
+        return
+    fresh = True
+    try:
+        from resources.libs import whats_on
+        eng = whats_on.engine()
+        if eng and whats_on.history(eng):
+            fresh = False
+        for eid in _ENGINE_IDS:
+            p = os.path.join(MASTER, 'addon_data', eid, 'settings.xml')
+            if os.path.isfile(p):
+                txt = io.open(p, encoding='utf-8', errors='replace').read()
+                if re.search(r'<setting id="[^"]*(token|api_key)[^"]*"[^>]*>[^<]{8,}<', txt):
+                    fresh = False
+    except Exception:
+        fresh = False
+    ADDON.setSetting('hide_master_profile', 'true' if fresh else 'false')
+    _log('profiles mode decided: %s' % ('fresh install, master hidden' if fresh else 'existing user, main profile shown'))
+
+
 def show_picker(startup=False):
     """Open the picker; load the chosen profile. Returns True when a switch
     was requested."""
-    rows = _rows()
-    if not rows:
-        return False
-    w = _PickerWindow('profile-picker.xml', xbmcvfs.translatePath(ADDON.getAddonInfo('path')),
-                      'Default', '1080i', rows=rows, startup=startup)
-    w.doModal()
-    choice = w.choice
-    del w
+    while True:
+        rows = _visible_rows()
+        w = _PickerWindow('profile-picker.xml', xbmcvfs.translatePath(ADDON.getAddonInfo('path')),
+                          'Default', '1080i', rows=rows, startup=startup)
+        w.doModal()
+        choice = w.choice
+        del w
+        if choice and choice.startswith('__avatar__:'):
+            choose_avatar(choice.split(':', 1)[1])
+            continue
+        break
     if choice == '__add__':
         open_kodi_profiles()
         return False
@@ -371,7 +503,12 @@ def maybe_show_at_start(monitor):
         home = xbmcgui.Window(10000)
         if home.getProperty(_SHOWN_PROP):
             return False
-        if len(profiles()) < 2 or _kodi_login_screen_on():
+        _decide_fresh_mode()
+        if _kodi_login_screen_on():
+            return False
+        # existing user with one profile: nothing to pick; fresh install: the
+        # empty screen with "+" until a profile exists
+        if len(profiles()) < 2 and ADDON.getSetting('hide_master_profile') != 'true':
             return False
         for _ in range(30):
             if monitor.abortRequested():
@@ -447,7 +584,7 @@ def set_kids_mode():
     prepare_profile(name, d, share_tokens=bool(share))
     if share:
         for eid in _ENGINE_IDS:
-            _copy(os.path.join(MASTER, 'addon_data', eid, 'settings.xml'),
+            _copy(os.path.join(_template_dir(), 'addon_data', eid, 'settings.xml'),
                   os.path.join(d, 'addon_data', eid, 'settings.xml'), overwrite=True)
     _log('kids mode on "%s": age %s, shared_debrid=%s' % (name, age, share))
     xbmcgui.Dialog().ok('מצב ילדים הופעל',
@@ -502,6 +639,15 @@ def remove_kids_mode():
     xbmcgui.Dialog().ok('פרופילים', 'מצב ילדים הוסר מהפרופיל "%s".' % name)
 
 
+def pick_avatar_menu():
+    rows = [(n, d) for n, d, m in profiles() if not m or ADDON.getSetting('hide_master_profile') != 'true']
+    if not rows:
+        return
+    i = xbmcgui.Dialog().select('אווטאר לאיזה פרופיל?', [n for n, d in rows])
+    if i >= 0:
+        choose_avatar(rows[i][0])
+
+
 def menu():
     from resources.libs.ui import WizardMenu
     while True:
@@ -511,12 +657,13 @@ def menu():
                 ('הפעל מצב ילדים על פרופיל', 'גיל מקסימלי · תוכן ללא דירוג נחסם · שיתוף דבריד', 'DefaultAddonService.png'),
                 ('אשר סרט או סדרה לפרופיל ילדים', 'חיפוש לפי שם · האישור חל גם על הפרקים', 'DefaultVideo.png'),
                 ('הסר מצב ילדים', 'הפרופיל חוזר להציג הכל', 'DefaultAddonNone.png'),
+                ('אווטאר לפרופיל', 'תמונה לכל פרופיל (או מקש התפריט על פרופיל במסך הבחירה)', 'DefaultPicture.png'),
                 ('חזרה', '', 'DefaultFolderBack.png')]
         sel = WizardMenu.pick('פרופילים ומצב ילדים', rows)
-        if sel in (-1, 6):
+        if sel in (-1, 7):
             return
         if sel == 0:
             if show_picker():
                 return
             continue
-        (open_kodi_profiles, prepare_now, set_kids_mode, approve_title, remove_kids_mode)[sel - 1]()
+        (open_kodi_profiles, prepare_now, set_kids_mode, approve_title, remove_kids_mode, pick_avatar_menu)[sel - 1]()
