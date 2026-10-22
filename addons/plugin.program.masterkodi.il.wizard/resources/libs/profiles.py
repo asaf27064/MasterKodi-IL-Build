@@ -386,8 +386,11 @@ class _PickerWindow(xbmcgui.WindowXMLDialog):
             lst.setWidth(max(n, 1) * 340)
             self.getControl(300).setPosition(x0 + 20, 420)
             self.getControl(302).setPosition(x0 + 20, 742)
+            self.getControl(303).setPosition(x0 + 14, 414)   # the tile's focus frame
             self.getControl(300).setVisible(not avatar_mode)
             self.getControl(302).setVisible(not avatar_mode)
+            self.getControl(303).setVisible(not avatar_mode)
+            lst.setVisible(bool(self.rows))
         except Exception:
             pass
         self.setFocusId(100 if self.rows else 300)

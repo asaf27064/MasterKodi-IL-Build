@@ -130,7 +130,7 @@
             <animation effect="zoom" start="100" end="112" center="auto" time="160" tween="sine" easing="out">Focus</animation>
             <animation effect="zoom" start="112" end="100" center="auto" time="160" tween="sine" easing="out">UnFocus</animation>
         </control>
-        <control type="image">
+        <control type="image" id="303">
             <left>0</left><top>414</top><width>312</width><height>312</height>
             <texture colordiffuse="FFFFFFFF" border="18">rounded_line.png</texture>
             <visible>Control.HasFocus(300)</visible>
