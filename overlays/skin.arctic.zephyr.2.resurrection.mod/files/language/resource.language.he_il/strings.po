@@ -461,11 +461,6 @@ msgid "This section contains playback settings."
 msgstr "מקטע זה מכיל הגדרות השמעה."
 
 #: /1080i/SkinSettings.xml
-msgctxt "#31092"
-msgid "Plot boxes use Faune font"
-msgstr "תיבות עלילה משתמשות בגופן Faune"
-
-#: /1080i/SkinSettings.xml
 msgctxt "#31093"
 msgid "Disable Slim PVR Guide"
 msgstr "השבת מדריך PVR מצומצם"
@@ -703,11 +698,6 @@ msgstr "טקסט נגלל"
 msgctxt "#31143"
 msgid "Miscellaneous"
 msgstr "שונות"
-
-#: /1080i/SkinSettings.xml
-msgctxt "#31144"
-msgid "Fonts and Artwork"
-msgstr "גופנים ועטיפות"
 
 #: /1080i/SkinSettings.xml
 msgctxt "#31145"
