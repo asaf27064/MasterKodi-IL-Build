@@ -130,11 +130,14 @@ def aliases_to_array(aliases, filter=None):
 
 def episode_airdate(data):
 	"""Return a validated episode air date; never use a show's premiere year."""
-	from datetime import datetime
+	from datetime import date
 	value = data.get('premiered')
 	if not isinstance(value, str) or not re.fullmatch(r'\d{4}[-.]\d{2}[-.]\d{2}', value): return None
 	try:
-		return datetime.strptime(value.replace('.', '-'), '%Y-%m-%d').strftime('%Y.%m.%d')
+		# Avoid strptime's runtime imports in Kodi's threaded scraper environment.
+		year, month, day = map(int, value.replace('.', '-').split('-'))
+		parsed = date(year, month, day)
+		return '%04d.%02d.%02d' % (parsed.year, parsed.month, parsed.day)
 	except ValueError:
 		return None
 
