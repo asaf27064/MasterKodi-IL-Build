@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-10-22T22:34:04Z",
+  "generated_utc": "2026-10-23T16:53:39Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -382,12 +382,12 @@
     },
     {
       "id": "script.module.cocoscrapers",
-      "version": "1.0.44",
+      "version": "1.0.45",
       "channel": "core",
-      "zip": "script.module.cocoscrapers-1.0.44.zip",
-      "sha256": "900ada3b682717074a92bf9e06af15eaa1417d4035a7dd56aea1e870d85cfe42",
-      "size": 367457,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.cocoscrapers-1.0.44.zip",
+      "zip": "script.module.cocoscrapers-1.0.45.zip",
+      "sha256": "0cd99236e773403856b3bbf294c6812249aef82ce235b786b0a66c442bef1a9f",
+      "size": 367571,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.cocoscrapers-1.0.45.zip",
       "content": "gears"
     },
     {
@@ -410,12 +410,12 @@
     },
     {
       "id": "script.module.gearsscrapers",
-      "version": "1.6.2",
+      "version": "1.6.3",
       "channel": "core",
-      "zip": "script.module.gearsscrapers-1.6.2.zip",
-      "sha256": "68c302bd9ee76c25c8f57f56cb3a2acea97c46ea917a955283b4ab5233723682",
-      "size": 2124260,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.gearsscrapers-1.6.2.zip",
+      "zip": "script.module.gearsscrapers-1.6.3.zip",
+      "sha256": "b6af0e3abbc218684a046c9e55f02b58e95227bffc460ddc8849c4e8cefc0d1b",
+      "size": 2124235,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.module.gearsscrapers-1.6.3.zip",
       "content": "gears"
     },
     {
