@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-10-23T16:52:43Z",
+  "generated_utc": "2026-10-24T15:44:42Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -74,12 +74,12 @@
     },
     {
       "id": "plugin.video.themoviedb.helper",
-      "version": "6.18.1",
+      "version": "6.18.2",
       "channel": "optional",
-      "zip": "plugin.video.themoviedb.helper-6.18.1.zip",
-      "sha256": "52b78a7fab127c578aeafb565451b4cdadef45e8a66d2653d1354cd395d56a69",
-      "size": 4309085,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.18.1.zip"
+      "zip": "plugin.video.themoviedb.helper-6.18.2.zip",
+      "sha256": "15e5bb411c635276bd968bfa59a5b1f10f2a7437602ed9c450914ce35675ca47",
+      "size": 4310120,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.18.2.zip"
     },
     {
       "id": "plugin.video.tmdb.bingie.helper",
@@ -166,12 +166,12 @@
     },
     {
       "id": "resource.images.arctic.splash",
-      "version": "1.0.7",
+      "version": "1.1.0",
       "channel": "optional",
-      "zip": "resource.images.arctic.splash-1.0.7.zip",
-      "sha256": "d7e972a6f9851e7038dd66456e72917d1706e52b60f57da657dac7c511b2ee44",
-      "size": 72337293,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.images.arctic.splash-1.0.7.zip"
+      "zip": "resource.images.arctic.splash-1.1.0.zip",
+      "sha256": "38aebc4468cf6f8ee701aec622399d07d348acd2e259e039513d9942da3bd822",
+      "size": 70299475,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/resource.images.arctic.splash-1.1.0.zip"
     },
     {
       "id": "resource.images.arctic.weather",
