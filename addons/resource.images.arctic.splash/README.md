@@ -1,120 +1,102 @@
 # Arctic Splash
 
-Kodi image resource add-on `resource.images.arctic.splash`, version 1.0.7.
+Kodi image resource `resource.images.arctic.splash`, version **1.1.0**.
 
-Weather cards are provided separately by Arctic Weather (resource.images.arctic.weather).
+One package contains Fuji, Countryside and Tokyo. The existing skin keeps Fuji
+as its startup scene and exposes all three through the scene preview. Weather
+cards remain in `resource.images.arctic.weather`. No Python runs in Kodi.
 
-## Layered splash
+## Layout and contract
 
-The 616 registered 1920 x 1080 image layers are in `resources/layers/`. The
-manifest defines four seasons, five weather patterns and 24 hourly states.
-Composite each state's nine images in manifest order using normal alpha-over.
-Scene lighting and reflections are authored in the image assets. The skin adds
-animated weather on separate layers.
+- `resources/manifest.json`: version 2 scene index and delivery contract.
+- `resources/layers/`: Fuji layers plus shared sky, celestial, cloud, glow and haze artwork.
+- `resources/scenes/countryside/`: unique landscape, foreground, water and stream frames.
+- `resources/scenes/tokyo/`: unique street and hourly illumination artwork.
+- `resources/shared/conditions/`: common Countryside/Tokyo weather veils.
+- `resources/effects/`: common foliage, precipitation and small effect assets.
+- `resources/masks/`: shared white-RGB, lossless-alpha diffuse textures.
+- `resources/catalog.json`: asset hashes, dimensions, original source aliases and encodings.
 
-Lake layers use quality 85 WebP with lossless alpha; other large layers retain
-quality 95 WebP with lossless alpha. Celestial, glow and conditions overlays
-retain lossless PNG; sky plates retain JPG. `compile="false"` preserves these
-compressed files.
+All scene-manifest image and diffuse paths are relative to `resources/`.
+Composite by applying a layer's optional diffuse alpha, then ordinary
+straight-alpha source-over at its declared opacity. An RGB file with a diffuse
+entry is opaque on its own: the diffuse is required. Layer dimensions and
+registered positions are unchanged.
 
-The distributable add-on must remain below 100,000,000 bytes (decimal 100 MB),
-including README and development tools but excluding Git history and Python
-caches. Run `python tools/optimize_size.py` to check the budget. The one-time
-`--lakes` option compresses original lake plates at WebP quality 85,
-retaining only smaller files.
-The tool verifies dimensions and exact lake alpha before writing. Avoid rerunning
-lossy compression on already optimized artwork. All runtime filenames and image
-dimensions stay the same.
+The skin must use `special://home/addons/resource.images.arctic.splash/resources/`
+for these files, with `compile="false"`. This preserves WebP delivery files.
+The skin dependency now requires version 1.1.0; earlier consumers do not
+understand the extracted masks or renamed large PNG layer files.
 
-The skin declares this add-on as a required dependency and reads images from:
+## Shared transparency and motion
 
-`special://home/addons/resource.images.arctic.splash/resources/layers/`
+Clouds share five weather mattes across their hourly colors. The original/mirrored
+loop and its flipped lake reflection apply the same matte and orientation.
+Diffuse filenames are literal Kodi texture attributes: weather changes select
+separate visible controls instead of putting dynamic `$INFO`/`$VAR` labels in
+`diffuse`. Seasonal scene controls use the same pattern for seasonal masks.
 
-Kodi's image resource `resource://` handler only publishes PNG/JPG, including
-in Kodi 21 and current source. Reading the add-on's files through `special://`
-allows WebP decoding without expanding the artwork back to PNG. Install this
-add-on normally in Kodi's user add-ons directory. No executable code is needed.
+Fuji water uses one shoreline matte. Two additional lossless masks combine that
+matte with the original alternating ripple bands, so the existing opposing
+three-pixel motion still uses one diffuse per draw. The combination is stored at
+8-bit alpha precision. Cloud and lake lightning flashes use the matching masks.
 
-The skin selects season, hour and weather. Custom user image paths continue to
-use the existing slideshow and do not use these layers.
+Countryside keeps its seasonal water, foreground and landscape mattes; pond
+strips share a matte per season/band. Its 48-frame stream loops retain 80 ms
+per frame, all hourly/seasonal selections, the 456 x 252 source frame size,
+and the 760 x 420 display rectangle at (480, 660). Each seasonal `multiimage`
+control applies its fixed matte through the `imagepath` diffuse attribute.
 
-Animated weather uses `resources/effects/rain.png`, a 240 x 540 transparent tile
-drawn at 480 x 1080. The skin reuses it in four strips at different speeds with
-two vertically adjacent copies per strip, following the holiday falling-texture
-pattern. Rebuild it with `python tools/generate_weather_effects.py` (Pillow).
+Tokyo shares a street matte per season. Café illumination and residential
+window schedules retain all existing hourly selections. Snow, rain, wind,
+lightning, foliage and live preview selectors keep their existing behavior.
 
-Snow weather reuses the rain cloud and lake plates with a separate animated
-`resources/effects/snow.png` tile (300 x 560, about 14 KiB). The weather tile
-reuses the existing winter snowflake sprite at varied sizes, angles and opacity,
-with filled crystal branches and blurred alpha edges for soft, fluffy flakes.
-Four strips fall over 16–22 seconds with independent sine sways and a small
-vertical lilt; overscan keeps their edges covered. The same generator rebuilds
-both precipitation tiles. Snow and mixed snow conditions select this effect in
-every season, and the splash preview includes a snow option.
+## Compression and size
 
-Thunderstorms use rain cloud/lake plates between flashes. The existing storm
-clouds and lake plates appear together in a short double flash every ten seconds,
-reusing the authored lightning bolts and matching reflections. A blue-white wash
-reuses the skin's existing white texture to briefly light the scene. Static rain
-conditions plates are replaced by the animated tile. No animation frames or
-additional full-screen images are required.
+The approved mixed profile uses WebP settings 50 and 60 for large delivery
+textures, choosing a smaller original or exact lossless WebP when available.
+Skies remain original JPG and small effects/sprites remain original PNG. Large
+PNG layer families consistently use `.webp` so selectors have predictable paths.
+Neither dimensions nor state/frame coverage is reduced. Alpha stays exact in
+embedded channels or separate lossless masks; RGB compression is lossy.
 
-All weather conditions reuse their hourly cloud plate in a slow,
-continuous rightward loop behind the mountains (6.4 pixels per second). Original and horizontally
-mirrored copies meet at matching edges; two identical pairs cover the full
-3840-pixel loop so the restart has exactly the same image as the end. A faint,
-vertically flipped and compressed copy moves in sync over the lake, below the
-foreground trees. The shoreline stays fixed. The cloud
-animation adds no image assets or animation frames. Foreground haze uses the
-same loop at half the speed during hazy conditions.
+The entire distributable, including documentation and offline build tools, must
+stay below **100,000,000 bytes**. Git history, caches, preserved originals and
+visual reviews are outside the distributable. Small repeated alias files remain
+where keeping a predictable hourly selector is simpler than adding lookup logic;
+large common textures are shared across scenes.
 
-Clear and hazy cloud plates use a repaired continuous cloud bank, with the old
-mountain and foliage cutouts filled for scrolling. One generated transparent
-daytime master supplies both weather sets and their eight existing hourly
-palettes; hazy retains 40% cloud opacity. These replace the existing WebP plates
-without adding runtime layers. The [repair prompt](tools/cloud-repair-prompt.md)
-records the source and offline rebuild command.
+## Rebuilding offline
 
-Lake ripples reuse the existing hourly lake texture with two tiny 4 x 1080
-diffuse masks, `resources/effects/lake-odd.png` and `lake-even.png`. The masks
-select alternating horizontal bands with feathered joins, widening toward the
-viewer and fading out near the distant bank. Two native skin slide animations
-move these bands three pixels in opposite directions, beneath the trees and
-time-of-day grade. The base lake and shoreline stay registered; no new lake
-artwork or animation frames are needed. Rebuild the masks with
-`python tools/generate_lake_masks.py` (Pillow).
+The original three add-on directories, previous authoring tools, source masters
+and provenance were preserved before conversion outside the distributed package.
+They are immutable build inputs. **Do not rebuild from installed delivery
+textures or recompress them again.** Source SHA-256 checks enforce this.
 
-Each season uses one small transparent sprite shape in
-`resources/effects/foliage/`. Spring petals and autumn leaves were extracted from
-the detached pieces in their foreground plates; those pieces are removed from
-the static artwork. Summer has no detached pieces, so its sprite is clipped from
-an attached green leaf while its foreground stays unchanged. Each shape has eight
-tiny PNG lighting variants using the original scene's night and twilight grades;
-there are no animation frames or additional full-screen textures. Winter uses
-a soft, fluffy snow particle at 64 x 64 pixels, derived from the generated
-snowflake with the same branch filling and alpha blur used by falling snow;
-its eight lighting variants total approximately 31 KiB. Cleaning the
-foreground and lighting plates offsets the sprites' storage cost.
+With Pillow installed, run the offline builder against that original source set:
 
-The skin reuses each seasonal sprite in six particles with different sizes,
-diagonal paths and timings. A smooth lilt periodically lifts each particle against
-its gentle descent, while rotation and foreshortening add flutter. Particles fade
-before their paths restart. They sit above the static lighting plate and use the
-matching hourly sprite so moving pieces retain their correct lighting anywhere
-on screen. Winter reuses the same motion for snowflakes. Rain, snow and thunderstorms
-hide these seasonal particles. The preview's season selector updates them while
-the window remains open.
+```text
+python tools/rebuild.py --sources /path/to/original-addons --output /path/to/new/resource.images.arctic.splash
+```
 
-Rebuild the sprites and cleaned plates with `python tools/extract_foliage.py`
-(Pillow and Git). The script reads the recorded original Git revision, or accepts
-`--source-dir` pointing to the original three foreground WebP files. It replaces
-only the WebP alpha chunk in both the foreground and time-of-day plates,
-preserving the compressed RGB data and verifying that every other decoded pixel
-remains identical. Where a removed piece reveals terrain, the script repairs its
-lighting alpha against the original scene's land grade.
+`--sources` contains `resource.images.arctic.splash`,
+`resource.images.arctic.countryside` and `resource.images.arctic.tokyo`.
+The output must be a new directory outside both the installed package and
+original sources. `--verify-bytes` additionally requires the recorded encoded
+bytes, using the Pillow/libwebp versions in `tools/build-plan.json`. The plan
+records original hashes, selected encodings and mask recipes. No original
+source paths or private absolute paths are needed in the distributed package.
 
-Rebuild only the winter lighting variants with
-`python tools/extract_foliage.py --snowflake-source tools/snowflake-source.png`.
-Both snow generators read this preserved original so repeated rebuilds do not
-progressively blur the runtime artwork.
-The [snowflake prompt](tools/snowflake-prompt.md) records its image-generation source.
+The builder checks source identity, image dimensions, exact alpha, extracted
+RGB/matte reconstruction and total package size. Broader verification and
+review renders stay outside the add-on. Original prompts and earlier scene
+builders are in the preserved source archive; the new builder reproduces
+delivery conversion and merging, not the initial artwork generation.
+
+## Validation status
+
+The merge is checked outside Kodi. Pixel reconstruction checks do not establish
+GPU filtering, memory/performance behavior or visual approval inside Kodi.
+Launching or controlling Kodi for testing requires separate explicit typed
+approval in chat. See `AUTHORING.md` for the visual workflow and `AGENTS.md`
+for contributor instructions.

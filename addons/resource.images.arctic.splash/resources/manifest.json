@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "addon": "resource.images.arctic.splash",
+  "minimumVersion": "1.1.0",
+  "scenes": {
+    "fuji": "layers/manifest.json",
+    "countryside": "scenes/countryside/manifest.json",
+    "tokyo": "scenes/tokyo/manifest.json"
+  },
+  "compression": {
+    "profile": "mixed-50-60",
+    "alpha": "exact lossless masks or embedded alpha",
+    "dimensions": "unchanged"
+  },
+  "texturePaths": "relative to resources/",
+  "diffusePaths": "static Kodi texture attributes; select weather/season controls with live visibility"
+}
