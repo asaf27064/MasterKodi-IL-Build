@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-10-24T15:44:42Z",
+  "generated_utc": "2026-10-25T11:07:34Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-latest",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/",
@@ -74,12 +74,12 @@
     },
     {
       "id": "plugin.video.themoviedb.helper",
-      "version": "6.18.2",
+      "version": "6.18.3",
       "channel": "optional",
-      "zip": "plugin.video.themoviedb.helper-6.18.2.zip",
-      "sha256": "15e5bb411c635276bd968bfa59a5b1f10f2a7437602ed9c450914ce35675ca47",
-      "size": 4310120,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.18.2.zip"
+      "zip": "plugin.video.themoviedb.helper-6.18.3.zip",
+      "sha256": "aa495b0594feaa10d09d9d7fcfed1eff39e56bff6518f7a370b6fd1e82d35e6c",
+      "size": 4313295,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-latest/plugin.video.themoviedb.helper-6.18.3.zip"
     },
     {
       "id": "plugin.video.tmdb.bingie.helper",
