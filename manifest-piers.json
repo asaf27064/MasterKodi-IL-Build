@@ -2,7 +2,7 @@
   "build": "MasterKodi IL",
   "brand": "MasterKodi",
   "schema": 1,
-  "generated_utc": "2026-10-25T11:07:41Z",
+  "generated_utc": "2026-10-25T20:42:18Z",
   "repo": "asaf27064/MasterKodi-IL-Build",
   "release_tag": "addons-piers",
   "base_url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/",
@@ -564,12 +564,12 @@
     },
     {
       "id": "script.skinshortcuts",
-      "version": "3.0.4",
+      "version": "3.0.5",
       "channel": "optional",
-      "zip": "script.skinshortcuts-3.0.4.zip",
-      "sha256": "3a795fa1959d858303c51c9d04327bc688f3451cf405ef6491197e83f92208c7",
-      "size": 630757,
-      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.skinshortcuts-3.0.4.zip"
+      "zip": "script.skinshortcuts-3.0.5.zip",
+      "sha256": "421caadfe657b8d8f23b523a4c1fc315db78c20de134169bedb546c76e4c2be1",
+      "size": 636622,
+      "url": "https://github.com/asaf27064/MasterKodi-IL-Build/releases/download/addons-piers/script.skinshortcuts-3.0.5.zip"
     },
     {
       "id": "script.skinvariables",
