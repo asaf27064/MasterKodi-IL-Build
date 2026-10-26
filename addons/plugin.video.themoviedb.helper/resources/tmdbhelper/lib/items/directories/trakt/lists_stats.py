@@ -1,4 +1,5 @@
-from tmdbhelper.lib.items.directories.lists_default import ListProperties, ListDefault
+from tmdbhelper.lib.items.directories.lists_default import ListDefault
+from tmdbhelper.lib.items.directories.sync import SyncProviderListProperties
 from tmdbhelper.lib.items.directories.trakt.mapper_stats import HistoryStatsItemMapper, DailyHistoryStatsItemMapper, MonthlyHistoryStatsItemMapper
 from tmdbhelper.lib.addon.plugin import convert_type
 from tmdbhelper.lib.addon.tmdate import get_datetime_today, get_timedelta
@@ -7,13 +8,16 @@ from jurialmunkey.ftools import cached_property
 from jurialmunkey.parser import try_int
 
 
-class ListHistoryStatsProperties(ListProperties):
+class ListHistoryStatsProperties(SyncProviderListProperties):
 
     container_content = 'files'
     item_mapper_class = HistoryStatsItemMapper
     item_type = None
     days = 30
     sort_how = 'desc'
+
+    def get_provider_available(self):
+        return SyncDataFactory().get_sync_provider('SyncWatched') is not None
 
     @cached_property
     def sync_data(self):
@@ -35,7 +39,7 @@ class ListHistoryStatsProperties(ListProperties):
         return [self.get_sync_data_getter(item_type) for item_type in self.item_types]
 
     def get_sync_data_getter(self, item_type):
-        return SyncDataFactory(self).get_watched_history_stats_getter(item_type, self.days)
+        return SyncDataFactory().get_watched_history_stats_getter(item_type, self.days)
 
     @cached_property
     def total(self):
@@ -73,6 +77,8 @@ class ListHistoryStatsProperties(ListProperties):
 
     @cached_property
     def items(self):
+        if not self.provider_available:
+            return []
         return [
             self.get_mapped_item({
                 'watched_date': watched_date,
@@ -129,7 +135,7 @@ class ListMonthlyHistoryStatsProperties(ListHistoryStatsProperties):
     months = 12
 
     def get_sync_data_getter(self, item_type):
-        return SyncDataFactory(self).get_watched_monthly_history_stats_getter(item_type, self.months)
+        return SyncDataFactory().get_watched_monthly_history_stats_getter(item_type, self.months)
 
     @cached_property
     def watched_dates(self):

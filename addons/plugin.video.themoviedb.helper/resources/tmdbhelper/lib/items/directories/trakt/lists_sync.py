@@ -1,5 +1,6 @@
 from tmdbhelper.lib.sync.itemlist import ItemListSyncDataFactory
-from tmdbhelper.lib.items.directories.lists_default import ListProperties, ListDefault
+from tmdbhelper.lib.items.directories.lists_default import ListDefault, ListProperties
+from tmdbhelper.lib.items.directories.sync import SyncProviderListProperties
 from tmdbhelper.lib.items.itemlist import ItemListPagination
 from tmdbhelper.lib.addon.plugin import convert_type, get_setting
 from jurialmunkey.ftools import cached_property
@@ -15,18 +16,23 @@ class ListSyncProperties(ListProperties):
     filters = None
     sort_by = None
     sort_how = None
+    sync_sort = {'votes': ('trakt_votes', True, 0, )}
     params_def = None
 
     @cached_property
     def sync_data(self):
-        return ItemListSyncDataFactory(
+        return self.get_sync_data()
+
+    def get_sync_data(self):
+        sync_data = ItemListSyncDataFactory(
             self.sync_type,
-            self.trakt_api,
             sort_by=self.sort_by,
             sort_how=self.sort_how,
             item_type=self.item_type,
             item_keys=self.item_keys,
-            tmdb_id=self.tmdb_id).items
+            tmdb_id=self.tmdb_id)
+        sync_data.sort = {**sync_data.sort, **self.sync_sort}
+        return sync_data.items
 
     @cached_property
     def response(self):
@@ -54,14 +60,20 @@ class ListSyncProperties(ListProperties):
         return self.items + self.response.next_page
 
 
+class ListProviderSyncProperties(SyncProviderListProperties, ListSyncProperties):
+    def get_sync_data(self):
+        if not self.provider_available:
+            return
+        return super().get_sync_data()
+
+
 class ListStandardSync(ListDefault):
 
-    list_properties_class = ListSyncProperties
+    list_properties_class = ListProviderSyncProperties
 
     def configure_list_properties(self, list_properties):
         list_properties.limit = 20 * max(get_setting('pagemulti_sync', 'int'), 1)
         list_properties.plugin_name = '{plural} {localized}'
-        list_properties.trakt_api = self.trakt_api
         return list_properties
 
     def get_items(self, tmdb_type, page=1, sort_by=None, sort_how=None, tmdb_id=None, **kwargs):
@@ -78,6 +90,7 @@ class ListCollection(ListStandardSync):
     def configure_list_properties(self, list_properties):
         list_properties = super().configure_list_properties(list_properties)
         list_properties.sync_type = 'collection'
+        list_properties.sync_capabilities = ('collection',)
         list_properties.sort_by = 'title'
         list_properties.sort_how = 'asc'
         list_properties.localize = 32192
@@ -88,6 +101,7 @@ class ListWatchlist(ListStandardSync):
     def configure_list_properties(self, list_properties):
         list_properties = super().configure_list_properties(list_properties)
         list_properties.sync_type = 'watchlist'
+        list_properties.sync_capabilities = ('watchlist',)
         list_properties.sort_by = 'unsorted'
         list_properties.localize = 32193
         return list_properties
@@ -97,6 +111,7 @@ class ListWatchlistReleased(ListStandardSync):
     def configure_list_properties(self, list_properties):
         list_properties = super().configure_list_properties(list_properties)
         list_properties.sync_type = 'watchlistreleased'
+        list_properties.sync_capabilities = ('watchlist',)
         list_properties.sort_by = 'released'
         list_properties.sort_how = 'desc'
         list_properties.localize = 32456
@@ -108,6 +123,7 @@ class ListWatchlistAnticipated(ListStandardSync):
     def configure_list_properties(self, list_properties):
         list_properties = super().configure_list_properties(list_properties)
         list_properties.sync_type = 'watchlistanticipated'
+        list_properties.sync_capabilities = ('watchlist',)
         list_properties.sort_by = 'released'
         list_properties.sort_how = 'asc'
         list_properties.localize = 32457
@@ -148,15 +164,6 @@ class ListPlaybackProgress(ListStandardSync):
         return list_properties
 
 
-class ListFavorites(ListStandardSync):
-    def configure_list_properties(self, list_properties):
-        list_properties = super().configure_list_properties(list_properties)
-        list_properties.sync_type = 'favorites'
-        list_properties.sort_by = 'unsorted'
-        list_properties.localize = 1036
-        return list_properties
-
-
 class ListDropped(ListStandardSync):
     def configure_list_properties(self, list_properties):
         list_properties = super().configure_list_properties(list_properties)
@@ -170,6 +177,7 @@ class ListToWatch(ListStandardSync):
     def configure_list_properties(self, list_properties):
         list_properties = super().configure_list_properties(list_properties)
         list_properties.sync_type = 'towatch'
+        list_properties.sync_capabilities = ('watched', 'watchlist')
         list_properties.localize = 32078
         return list_properties
 
