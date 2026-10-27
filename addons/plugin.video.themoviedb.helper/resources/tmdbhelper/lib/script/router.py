@@ -69,7 +69,7 @@ class Script(object):
         'sync_trakt':
             lambda **kwargs: importmodule('tmdbhelper.lib.script.method.sync', 'sync_item')(**kwargs),
         'sort_list':
-            lambda **kwargs: importmodule('tmdbhelper.lib.script.method.trakt', 'sort_list')(**kwargs),
+            lambda **kwargs: importmodule('tmdbhelper.lib.script.method.lists', 'sort_list')(**kwargs),
         'sort_mdblist':
             lambda **kwargs: importmodule('tmdbhelper.lib.script.method.mdblist', 'sort_mdblist')(**kwargs),
         'invalidate_sync':
@@ -154,6 +154,8 @@ class Script(object):
             lambda **kwargs: importmodule('tmdbhelper.lib.script.method.kodi_utils', 'do_wikipedia_gui')(**kwargs),
 
         # Maintenance and Logging
+        'clean_image_cache':
+            lambda **kwargs: importmodule('tmdbhelper.lib.script.method.image_cache', 'clean_image_cache')(**kwargs),
         'log_request':
             lambda **kwargs: importmodule('tmdbhelper.lib.script.method.logging', 'log_request')(**kwargs),
         'log_sync':
