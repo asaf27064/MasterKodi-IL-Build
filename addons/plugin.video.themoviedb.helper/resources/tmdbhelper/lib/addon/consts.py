@@ -77,6 +77,7 @@ PARAM_WIDGETS_RELOAD_FORCED = 'reload=$INFO[System.Time(hh:mm:ss)]'
 
 LASTACTIVITIES_DATA = 'TraktNewSyncLastActivities'
 LASTACTIVITIES_EXPIRY = 600
+KODI_LIBRARY_LAST_UPDATED = 'KodiLibrary.LastUpdated'
 
 UPNEXT_EPISODE_ART = {
     'thumb': lambda li: li.art.get('thumb') or '',
@@ -167,6 +168,9 @@ ROUTE_NOID = {
     'sync_history_stats': {'route': {
         'module_name': 'tmdbhelper.lib.items.directories.sync.lists_stats',
         'import_attr': 'ListHistoryStats'}},
+    'sync_watchedon': {'route': {
+        'module_name': 'tmdbhelper.lib.items.directories.sync.lists_watchedon',
+        'import_attr': 'ListWatchedOn'}},
     'sync_mostwatched': {'route': {
         'module_name': 'tmdbhelper.lib.items.directories.sync.lists_standard',
         'import_attr': 'ListMostWatched'}},
