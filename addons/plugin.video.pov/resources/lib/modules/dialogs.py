@@ -444,7 +444,7 @@ def clear_scrapers_cache(silent=False):
 def scraper_names(folder):
 	provider_list = []
 	provider_list_append = provider_list.append
-	location = ku.external_path
+	location = ku.external_path()
 	source_subfolders = {'hosters': '', 'torrents': ''}
 	if folder == 'all': source_subfolders = ['']
 	else: source_subfolders = [v for k, v in source_subfolders.items() if k == folder]

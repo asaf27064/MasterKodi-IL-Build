@@ -239,10 +239,9 @@ class Discover:
 		if self._action(key) in ('clear', None): return
 		network_list = []
 		network_list_append = network_list.append
-		networks = sorted(meta_lists.networks, key=lambda k: k['name'])
-		for item in networks:
-			name = item['name']
-			network_list_append({'line1': name, 'icon': item['logo'], 'name': name, 'id': item['id']})
+		for item in meta_lists.networks:
+			icon = '%s%s%s' % ('https://image.tmdb.org/t/p', '/w300', item['logo'])
+			network_list_append({'line1': item['name'], 'icon': icon, 'name': item['name'], 'id': item['id']})
 		heading = heading_base % ls(32480)
 		kwargs = {'items': json.dumps(network_list), 'heading': heading}
 		choice = kodi_utils.select_dialog(network_list, **kwargs)

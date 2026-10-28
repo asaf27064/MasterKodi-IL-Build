@@ -206,6 +206,7 @@ class Menu(Episodes):
 		sort_type, category = 'unsorted', ls(params_get('name'))
 		mode = params_get('mode')
 		func = next((i for key, i in {
+			'last_episode': self._setup_last_episode,
 			'in_progress': self._setup_in_progress,
 			'next_episode': self._setup_next_episode,
 			'my_calendar': self._setup_my_calendar,
@@ -225,6 +226,10 @@ class Menu(Episodes):
 			index = next((i for i, x in labels if x in current_date), None)
 		else: index = False
 		if index: kodi_utils.focus_index(index)
+
+	def _setup_last_episode(self, params_get):
+		self.list_type = 'last_episode_pov'
+		self.list = ws.get_last_episodes(self.watched_indicators)
 
 	def _setup_in_progress(self, params_get):
 		self.list_type = 'in_progress'

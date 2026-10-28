@@ -23,7 +23,7 @@ class source(source_utils.SourceRegistry):
 		self.tvSearch_link = '/api/torrents/tv?imdbId=%s&seasonNum=%s'
 		self.min_seeders = 0
 
-	def _make_item(self, file, name, name_info, seeders, package=None):
+	def _make_item(self, file, name, name_info, seeders):
 		hash = file['hash']
 		url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
 
@@ -35,13 +35,11 @@ class source(source_utils.SourceRegistry):
 		except: dsize = 0
 		info = ' | '.join(info)
 
-		item = {
+		return {
 			'source': 'torrent', 'language': 'en', 'direct': False, 'debridonly': True,
 			'provider': 'dmm', 'hash': hash, 'url': url, 'name': name, 'name_info': name_info,
 			'quality': quality, 'info': info, 'size': dsize, 'seeders': seeders
 		}
-		if package is not None: item['package'] = package
-		return item
 
 	def sources(self, data, hostDict):
 		if not data: return []
@@ -82,8 +80,7 @@ class source(source_utils.SourceRegistry):
 
 		for file in files:
 			try:
-				name = file['title']
-				name = source_utils.clean_name(name)
+				name = source_utils.clean_name(file['title'])
 
 				if not source_utils.check_title(title, aliases, name, hdlr, year, years): continue
 				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
@@ -118,19 +115,18 @@ class source(source_utils.SourceRegistry):
 
 		for file in files:
 			try:
-				name = file['title']
-				name = source_utils.clean_name(name)
+				name = source_utils.clean_name(file['title'])
 
 				episode_start, episode_end = 0, 0
 				if not search_series:
 					if not bypass_filter:
-						valid, episode_start, episode_end = source_utils.filter_season_pack(title, aliases, year, season, name.replace('.(Archie.Bunker', ''))
+						valid, episode_start, episode_end = source_utils.filter_season_pack(title, aliases, year, season, name)
 						if not valid: continue
 					package = 'season'
 
 				elif search_series:
 					if not bypass_filter:
-						valid, last_season = source_utils.filter_show_pack(title, aliases, imdb, year, season, name.replace('.(Archie.Bunker', ''), total_seasons)
+						valid, last_season = source_utils.filter_show_pack(title, aliases, imdb, year, season, name, total_seasons)
 						if not valid: continue
 					else: last_season = total_seasons
 					package = 'show'
@@ -139,7 +135,8 @@ class source(source_utils.SourceRegistry):
 				if source_utils.remove_lang(name_info, check_foreign_audio): continue
 				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 
-				item = self._make_item(file, name, name_info, 0, package)
+				item = self._make_item(file, name, name_info, 0)
+				item['package'] = package
 				if search_series: item.update({'last_season': last_season})
 				elif episode_start: item.update({'episode_start': episode_start, 'episode_end': episode_end}) # for partial season packs
 				sources_append(item)

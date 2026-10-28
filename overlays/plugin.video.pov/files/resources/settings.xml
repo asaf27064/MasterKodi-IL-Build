@@ -14,30 +14,31 @@
 		<setting id="debug.enabled" label="Enable Debug" type="bool" default="false" />
 		<setting id="debug.location" label="Logging Location" type="enum" default="0" values="Kodi Log|Addon Log" enable="eq(-1,true)" visible="eq(-1,true)" />
 		<setting label="Test All Source Providers (Magneto)" type="action" action="RunPlugin(plugin://plugin.video.pov/?mode=healthTest)" />
-		<setting label="External Sources" type="lsep" />
-		<setting id="provider.animetosho" label="animetosho" type="bool" default="false" />
-		<setting id="provider.kickass2" label="kickass2" type="bool" default="false" />
-		<setting id="provider.knaben" label="knaben" type="bool" default="false" />
-		<setting id="provider.nyaa" label="nyaa" type="bool" default="false" />
-		<setting id="provider.piratebay" label="piratebay" type="bool" default="true" />
-		<setting id="provider.rutor" label="rutor" type="bool" default="false" />
-		<setting id="provider.torlock" label="torlock" type="bool" default="false" />
-		<setting id="provider.torrentdownload" label="torrentdownload" type="bool" default="false" />
-		<setting id="provider.torrentfunk" label="torrentfunk" type="bool" default="false" />
-		<setting id="provider.torrentgalaxy" label="torrentgalaxy" type="bool" default="false" />
-		<setting id="provider.ytsmx" label="ytsmx" type="bool" default="false" />
+		<setting label="Indexers" type="lsep" />
 		<setting id="provider.bitmagnet" label="bitmagnet" type="bool" default="false" />
 		<setting id="provider.comet" label="comet" type="bool" default="false" />
-			<setting id="comet.url" label="comet instance" type="enum" default="0" values="Goldy|Kuu-lection|Midnightignite" subsetting="true" visible="eq(-1,true)" />
+			<setting id="comet.url" label="comet instance" type="enum" default="0" values="comet.feels.legal|comet.forthewizards.uk|cometfortheweebs.midnightignite.me" subsetting="true" visible="eq(-1,true)" />
 		<setting id="provider.dmm" label="dmm" type="bool" default="false" />
 		<setting id="provider.mediafusion" label="mediafusion" type="bool" default="false" />
 		<setting id="provider.meteor" label="meteor" type="bool" default="false" />
 		<setting id="provider.torrentio" label="torrentio" type="bool" default="true" />
 		<setting id="provider.torrentsdb" label="torrentsdb" type="bool" default="false" />
 		<setting id="provider.torz" label="stremthru torz" type="bool" default="true" />
-			<setting id="torz.url" label="torz instance" type="enum" default="0" values="Munif|Kuu-lection|Midnightignite" subsetting="true" visible="eq(-1,true)" />
+			<setting id="torz.url" label="torz instance" type="enum" default="0" values="stremthru.13377001.xyz|stremthru.stremio.ru|stremthrufortheweebs.midnightignite.me" subsetting="true" visible="eq(-1,true)" />
 		<setting id="provider.zilean" label="zilean" type="bool" default="false" />
-			<setting id="zilean.url" label="zilean instance" type="enum" default="0" values="Kuu-lection|Midnightignite" subsetting="true" visible="eq(-1,true)" />
+			<setting id="zilean.url" label="zilean instance" type="enum" default="0" values="zileanfortheweebs.midnightignite.me|zilean.stremio.ru" subsetting="true" visible="eq(-1,true)" />
+		<setting label="Web Sources" type="lsep" />
+		<setting id="provider.animetosho" label="animetosho" type="bool" default="false" />
+		<setting id="provider.kickass2" label="kickass2" type="bool" default="false" />
+		<setting id="provider.knaben" label="knaben" type="bool" default="false" />
+		<setting id="provider.nyaa" label="nyaa" type="bool" default="false" />
+		<setting id="provider.piratebay" label="piratebay" type="bool" default="true" />
+		<setting id="provider.rutor" label="rutor" type="bool" default="false" />
+		<setting id="provider.therarbg" label="therarbg" type="bool" default="false" />
+		<setting id="provider.torlock" label="torlock" type="bool" default="false" />
+		<setting id="provider.torrentdownload" label="torrentdownload" type="bool" default="false" />
+		<setting id="provider.torrentfunk" label="torrentfunk" type="bool" default="false" />
+		<setting id="provider.torrentgalaxy" label="torrentgalaxy" type="bool" default="false" />
 	</category>
 	<!-- AIOStreams -->
 	<category label="AIOStreams">
@@ -293,7 +294,7 @@
 		<!-- Display -->
 		<setting label="Display" type="lsep" />
 		<setting id="results.sort_order" type="text" default="0" visible="false" />
-		<setting id="results.xml_style" label="Results Display" type="enum" default="0" values="List Default|WideList Default" />
+		<setting id="results.xml_style" label="Results Display" type="enum" default="0" values="List Default|WideList Default|InfoList Default" />
 		<setting id="torrent.display.uncached" label="Display Uncached Torrents" type="bool" default="false" />
 		<setting id="ignore_results_filter" label="Ignore All Filters When No Results Available" type="bool" default="true" />
 		<!-- Language -->

@@ -564,7 +564,7 @@ class SourceResults(BaseDialog):
 			choice = [i[1] for i in choice]
 			filtered_list = [i for i in self.item_list if all(x in i.getProperty('tikiskins.extra_info') for x in choice)]
 		elif main_choice == 'keyword_title':
-			keywords = dialog.input('Enter Keyword (Comma Separated for Multiple)')
+			keywords = dialog().input('Enter Keyword (Comma Separated for Multiple)')
 			if not keywords: return
 			keywords.replace(' ', '')
 			keywords = keywords.split(',')

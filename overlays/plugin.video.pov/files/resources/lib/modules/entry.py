@@ -33,6 +33,7 @@ POV_ROUTES = {
 	'build_tvshow_list': lambda p: _import('menus.tvshows', 'Menu')(p).run(),
 	'build_season_list': lambda p: _import('menus.seasons', 'Seasons')(p).run(),
 	'build_episode_list': lambda p: _import('menus.seasons', 'Episodes')(p).run(),
+	'build_last_episode': lambda p: _import('menus.episodes', 'Menu')(p).run(),
 	'build_in_progress_episode': lambda p: _import('menus.episodes', 'Menu')(p).run(),
 	'build_next_episode': lambda p: _import('menus.episodes', 'Menu')(p).run(),
 	########### KODIRDIL - one continue-watching row (resume + next episode) ###########

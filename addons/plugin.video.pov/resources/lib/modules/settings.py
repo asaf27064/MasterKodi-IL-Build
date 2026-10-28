@@ -236,14 +236,11 @@ def results_sort_order():
 	)[int(get_setting('results.sort_order', '1'))]
 
 def results_xml_style():
-	styles = {'0': 'list default', '1': 'widelist default'}
-	setting = get_setting('results.xml_style', '0')
-	if setting in styles: return styles[setting]
-	return styles['0']
+	return {'0': 'list default', '1': 'widelist default', '2': 'infolist default'}[get_setting('results.xml_style', '0')]
 
 def results_xml_window_number(window_style=None):
 	if not window_style: window_style = results_xml_style()
-	return {'list': 2000, 'widelist': 2002}[window_style.split()[0]]
+	return {'list': 2000, 'infolist': 2001, 'widelist': 2002}[window_style.split()[0]]
 
 def rpdb_api_key():
 	return get_setting('rpdb_api_key'), get_setting('rpdb_theme')

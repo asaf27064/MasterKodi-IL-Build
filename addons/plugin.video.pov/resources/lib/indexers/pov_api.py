@@ -1,6 +1,7 @@
 import sys
 import xbmcvfs
 
+files_path = 'special://home/addons/plugin.video.pov/lib/pov/'
 pov_path = xbmcvfs.translatePath('special://home/addons/plugin.video.pov/lib/')
 if pov_path not in sys.path: sys.path.insert(0, pov_path)
 

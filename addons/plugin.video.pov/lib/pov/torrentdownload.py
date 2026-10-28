@@ -20,6 +20,24 @@ class source:
 		self.search_link = '/search?q=%s'
 		self.min_seeders = 0
 
+	def _make_item(self, file, name, name_info, seeders):
+		hash = file['hash']
+		url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
+
+		quality, info = source_utils.get_release_quality(name_info, url)
+		try:
+			size = file['size']
+			dsize, isize = source_utils._size(size)
+			info.insert(0, isize)
+		except: dsize = 0
+		info = ' | '.join(info)
+
+		return {
+			'source': 'torrent', 'language': 'en', 'direct': False, 'debridonly': True,
+			'provider': 'torrentdownload', 'hash': hash, 'url': url, 'name': name, 'name_info': name_info,
+			'quality': quality, 'info': info, 'size': dsize, 'seeders': seeders
+		}
+
 	def get_sources(self, url, collector):
 		try:
 			results = client.session.request('get', url, headers=self.headers, timeout=7).text
@@ -41,26 +59,6 @@ class source:
 			collector.extend(files)
 		except:
 			source_utils.scraper_error('TORRENTDOWNLOAD')
-
-	def _make_item(self, file, name, name_info, seeders, package=None):
-		hash = file['hash']
-		url = 'magnet:?xt=urn:btih:%s&dn=%s' % (hash, name)
-
-		quality, info = source_utils.get_release_quality(name_info, url)
-		try:
-			size = file['size']
-			dsize, isize = source_utils._size(size)
-			info.insert(0, isize)
-		except: dsize = 0
-		info = ' | '.join(info)
-
-		item = {
-			'source': 'torrent', 'language': 'en', 'direct': False, 'debridonly': True,
-			'provider': 'torrentdownload', 'hash': hash, 'url': url, 'name': name, 'name_info': name_info,
-			'quality': quality, 'info': info, 'size': dsize, 'seeders': seeders
-		}
-		if package is not None: item['package'] = package
-		return item
 
 	def sources(self, data, hostDict):
 		if not data: return []
@@ -96,8 +94,7 @@ class source:
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 
-				name = file['title']
-				name = source_utils.clean_name(name)
+				name = source_utils.clean_name(file['title'])
 
 				if not source_utils.check_title(title, aliases, name, hdlr, year, years): continue
 				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
@@ -152,8 +149,7 @@ class source:
 					if self.min_seeders > seeders: continue
 				except: seeders = 0
 
-				name = file['title']
-				name = source_utils.clean_name(name)
+				name = source_utils.clean_name(file['title'])
 
 				episode_start, episode_end = 0, 0
 				if not search_series:
@@ -173,7 +169,8 @@ class source:
 				if source_utils.remove_lang(name_info, check_foreign_audio): continue
 				if undesirables and source_utils.remove_undesirables(name_info, undesirables): continue
 
-				item = self._make_item(file, name, name_info, seeders, package)
+				item = self._make_item(file, name, name_info, seeders)
+				item['package'] = package
 				if search_series: item.update({'last_season': last_season})
 				elif episode_start: item.update({'episode_start': episode_start, 'episode_end': episode_end}) # for partial season packs
 				sources_append(item)

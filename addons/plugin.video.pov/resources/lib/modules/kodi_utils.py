@@ -21,12 +21,15 @@ debridcache_db = 'special://profile/addon_data/plugin.video.pov/debridcache.db'
 external_db    = 'special://profile/addon_data/plugin.video.pov/providerscache.db'
 databases_path = 'special://profile/addon_data/plugin.video.pov/'
 internal_path  = 'special://home/addons/plugin.video.pov/resources/lib/debrids/'
-external_path  = 'special://home/addons/plugin.video.pov/lib/pov/'
 packages_path  = 'special://home/addons/packages/'
 
 def current_dbs():
 	return {'settings.xml', 'fenomcache.db', 'traktcache.db', 'mdblcache.db', 'watched.db',
 			'maincache.db', 'metacache.db', 'navigator.db', 'views.db', 'debridcache.db', 'providerscache.db'}
+
+def external_path():
+	from indexers.pov_api import files_path
+	return files_path
 
 def get_database(watched_indicators):
 	if watched_indicators == 1: return trakt_db

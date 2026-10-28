@@ -1,9 +1,10 @@
+  plugin.video.pov 6.10.16+ (POV) can be used directly as an external source
+  for other addons that are compatible with the original FenomScrapers.
 
   [COLOR dodgerblue][B]Version 6.10[/B][/COLOR]
-+ plugin.video.pov 6.10.16+ (POV) can be used directly as an external source
-  for other addons that are compatible with the original FenomScrapers.
 * Refactored to fix Kodi 22 Piers log warnings.
-+ Added torrentfunk, torrentgalaxy, animetosho.
++ Added Recently Watched Episodes to TV Shows menu, requires check for new items.
++ Added torrentfunk, torrentgalaxy, therargb, animetosho.
 * Changed subtitles, no api key needed.
 
   [COLOR dodgerblue][B]Version 6.09[/B][/COLOR]
