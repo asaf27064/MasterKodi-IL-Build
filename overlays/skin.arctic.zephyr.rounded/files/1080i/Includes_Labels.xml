@@ -1262,6 +1262,11 @@
         <value>$LOCALIZE[31259]</value>
     </variable>
 
+    <variable name="Label_Views_List_51x_Type_Navigation">
+        <value condition="Skin.HasSetting(51x.list.control.list)">$LOCALIZE[31258]</value>
+        <value>$LOCALIZE[31259]</value>
+    </variable>
+
     <variable name="Label_Views_Flix_524_Video_Type_Artwork">
         <value condition="Skin.HasSetting(show.view.524.poster.movies)">$LOCALIZE[20021]</value>
         <value>$LOCALIZE[20445]</value>
@@ -1344,8 +1349,9 @@
         <value>$VAR[Label_Duration_Time_Check]</value>
     </variable>
 
-    <variable name="Label_View_Card_58_515_Footer_Info">
+    <variable name="Label_View_Card_58_59_515_Footer_Info">
         <value condition="Container.Content(movies) + !ListItem.IsParentFolder + Control.IsVisible(58)">$VAR[Label_View_List_Year]$VAR[Label_Duration_Time_Check,‎  •  ‎,]$INFO[ListItem.Genre,‎  •  ‎,]</value>
+        <value condition="Container.Content(movies) + !ListItem.IsParentFolder + Control.IsVisible(59)">$VAR[Label_View_List_Year]$VAR[Label_Duration_Time_Check,‎  •  ‎,]$INFO[ListItem.Genre,‎  •  ‎,]</value>
         <value condition="Container.Content(tvshows) + !ListItem.IsParentFolder + Control.IsVisible(58)">$VAR[Label_View_List_Year]$INFO[ListItem.Genre,‎  •  ‎,]</value>
         <value condition="Container.Content(tvshows) + !ListItem.IsParentFolder">$VAR[Label_View_List_Year]$INFO[ListItem.Genre,‎  •  ‎,]</value>
         <value condition="Container.Content(seasons) + !ListItem.IsParentFolder">$VAR[Label_View_List_Year]$INFO[ListItem.Property(TotalEpisodes),‎  •  ‎, $LOCALIZE[20360]]</value>
@@ -2797,6 +2803,11 @@
         <value>$LOCALIZE[31596]</value>
     </variable>
 
+    <variable name="Label_Setting_Context_Menu">
+        <value condition="Skin.HasSetting(show.context.menu.onleft)">[B][UPPERCASE]$LOCALIZE[39162][/UPPERCASE][/B]</value>
+        <value>[B][UPPERCASE]$LOCALIZE[39164][/UPPERCASE][/B]</value>
+    </variable>
+
     <variable name="Label_Setting_Color_Marker_Views_List">
         <value condition="!Skin.HasSetting(enable.furniture.markers.view.list.monochrome)">$LOCALIZE[737]</value>
         <value>$LOCALIZE[19662]</value>
@@ -2814,16 +2825,15 @@
         <value>$LOCALIZE[31261]</value>
     </variable>
 
-    <variable name="Label_Setting_DiscArt_Video">
-        <value condition="Skin.HasSetting(home.video.disc.fallback.bluray)">$LOCALIZE[14234]</value>
-        <value condition="Skin.HasSetting(home.video.disc.fake.bluray)">$LOCALIZE[31346]</value>
-        <value>$LOCALIZE[31294]</value>
-    </variable>
-
     <variable name="Label_Setting_NowPlaying">
         <value condition="Skin.HasSetting(show.furniture.nowplaying.extended.home) + !Skin.HasSetting(hide.furniture.nowplaying.home)">$LOCALIZE[31021]</value>
         <value condition="Skin.HasSetting(hide.furniture.nowplaying.home)">$LOCALIZE[591]</value>
         <value>$LOCALIZE[16041]</value>
+    </variable>
+
+    <variable name="Label_Setting_Delay_Auto_Show_NowPlaying">
+        <value condition="!String.IsEmpty(Skin.String(Value_Delay_Auto_Show_NowPlaying))">$INFO[Skin.String(Value_Delay_Auto_Show_NowPlaying),, $LOCALIZE[31318]]</value>
+        <value>$LOCALIZE[591]</value>
     </variable>
 
     <variable name="Label_Setting_NowPlaying_Plot">

@@ -361,6 +361,10 @@ msgctxt "#31085"
 msgid "Show header info"
 msgstr "Show header"
 
+msgctxt "#31086"
+msgid "Context menu on"
+msgstr ""
+
 msgctxt "#31087"
 msgid "Show artist slideshow"
 msgstr "Show artist slideshow"
@@ -391,6 +395,10 @@ msgstr ""
 
 msgctxt "#31094"
 msgid "MPAA rating (media flags section)"
+msgstr ""
+
+msgctxt "#31095"
+msgid "Last logged in"
 msgstr ""
 
 msgctxt "#31096"
@@ -1758,7 +1766,7 @@ msgid "Rating stars"
 msgstr ""
 
 msgctxt "#31479"
-msgid "Auto show now playing info after 5 seconds delay if hidden"
+msgid "Auto show now playing info after"
 msgstr ""
 
 msgctxt "#31480"

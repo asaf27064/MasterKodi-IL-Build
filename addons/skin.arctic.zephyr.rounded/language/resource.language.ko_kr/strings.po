@@ -360,6 +360,10 @@ msgctxt "#31085"
 msgid "Show header info"
 msgstr "말머리 표시"
 
+msgctxt "#31086"
+msgid "Context menu on"
+msgstr ""
+
 msgctxt "#31087"
 msgid "Show artist slideshow"
 msgstr "아티스트 슬라이드 쇼 보기"
@@ -391,6 +395,10 @@ msgstr "별 등급(미디어 정보 섹션)"
 msgctxt "#31094"
 msgid "MPAA rating (media flags section)"
 msgstr "MPAA 등급(미디어 정보 섹션)"
+
+msgctxt "#31095"
+msgid "Last logged in"
+msgstr "마지막 로그인"
 
 msgctxt "#31096"
 msgid "Trakt"
@@ -1757,7 +1765,7 @@ msgid "Rating stars"
 msgstr ""
 
 msgctxt "#31479"
-msgid "Auto show now playing info after 5 seconds delay if hidden"
+msgid "Auto show now playing info after"
 msgstr ""
 
 msgctxt "#31480"

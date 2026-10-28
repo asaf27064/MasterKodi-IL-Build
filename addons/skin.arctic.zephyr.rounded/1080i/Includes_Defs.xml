@@ -3120,6 +3120,7 @@
         <!-- VIEWS - NOT FLIX -->
 
         <onclick>Skin.SetString(Value_Brightness_NoFlix,30)</onclick>
+        <onclick>Skin.SetBool(show.context.menu.onleft)</onclick>
 
         <!-- VIEW FLIX -->
 
@@ -3238,10 +3239,9 @@
         <!-- HOME NOWPLAYING -->
 
         <onclick>Skin.SetBool(show.nowplaying.video.home.flix)</onclick>
-        <!-- <onclick>Skin.Reset(enable.home.auto.show.nowplaying.extended)</onclick> -->
-
         <onclick>Skin.SetBool(show.furniture.nowplaying.extended.home)</onclick>
         <onclick>Skin.SetBool(enable.home.auto.show.nowplaying.extended)</onclick>
+        <onclick>Skin.SetString(Value_Delay_Auto_Show_NowPlaying,5)</onclick>
         <onclick>Skin.Reset(hide.home.menu.with.nowplaying.extended)</onclick>
 
         <onclick>Skin.SetBool(hide.home.nowplaying.extended.video.cd)</onclick>
@@ -3507,6 +3507,7 @@
         <!-- VIEW NOT FLIX -->
 
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(Value_Brightness_NoFlix,30)</onload>
+        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(show.context.menu.onleft)</onload>
 
         <!-- VIEW FLIX -->
 
@@ -3624,6 +3625,7 @@
 
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(show.furniture.nowplaying.extended.home)</onload>
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(enable.home.auto.show.nowplaying.extended)</onload>
+        <onload condition="!Skin.HasSetting(startup.init)">Skin.SetString(Value_Delay_Auto_Show_NowPlaying,5)</onload>
         <!-- <onload condition="!Skin.HasSetting(startup.init)">Skin.Reset(hide.home.menu.with.nowplaying.extended)</onload> -->
 
         <onload condition="!Skin.HasSetting(startup.init)">Skin.SetBool(hide.home.nowplaying.extended.video.cd)</onload>

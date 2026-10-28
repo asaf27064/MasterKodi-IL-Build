@@ -451,6 +451,32 @@
         </definition>
     </include>
 
+    <include name="Def_Layout_Action_On_Left_On_Right">
+        <include condition="!Skin.HasSetting(show.context.menu.onleft)">Def_View_Focus_Dialog_Menu_On_Right</include>
+        <onleft condition="!Skin.HasSetting(show.context.menu.onleft)">$PARAM[scrollid]</onleft>
+        <include condition="Skin.HasSetting(show.context.menu.onleft)">Def_View_Focus_Dialog_Menu_On_Left</include>
+        <onright condition="Skin.HasSetting(show.context.menu.onleft)">$PARAM[scrollid]</onright>
+    </include>
+
+    <include name="Def_Layout_Scrollbar_Vertical">
+        <control type="scrollbar" id="$PARAM[scrollid]">
+            <include content="Object_Scrollbar_Views_Vertical_On_Left" condition="!Skin.HasSetting(show.context.menu.onleft)">
+                <param name="scrollid" value="$PARAM[scrollid]" />
+                <param name="idlayout" value="$PARAM[idlayout]" />
+                <param name="centerleft" value="$PARAM[centerleft]" />
+                <param name="height" value="$PARAM[height]" />
+                <param name="top" value="$PARAM[top]" />
+            </include>
+            <include content="Object_Scrollbar_Views_Vertical_On_Right" condition="Skin.HasSetting(show.context.menu.onleft)">
+                <param name="scrollid" value="$PARAM[scrollid]" />
+                <param name="idlayout" value="$PARAM[idlayout]" />
+                <param name="centerright" value="$PARAM[centerright]" />
+                <param name="height" value="$PARAM[height]" />
+                <param name="top" value="$PARAM[top]" />
+            </include>
+        </control>
+    </include>
+
     <!-- VIEWS LAYOUT - PVR - CONTEXTE MENU - ICONS -->
 
     <include name="Def_Context_Menu_PVR_Icon">
@@ -1078,10 +1104,9 @@
     <include name="Def_Normal_Layout_Item">
         <param name="Banner" default="false" />
         <param name="Thumbnail" default="false" />
+        <param name="ThumbnailSmall" default="false" />
         <param name="Fanart" default="false" />
         <param name="FanartSmall" default="false" />
-        <param name="ThumbnailSmall" default="false" />
-        <param name="PosterFanartSmall" default="false" />
         <param name="Square" default="false" />
         <param name="SquareMiddle" default="false" />
         <param name="SquareSmall" default="false" />
@@ -1089,7 +1114,7 @@
         <param name="clearlogo" default="false" />
 
         <definition>
-            <itemlayout height="325" width="222" condition="![$PARAM[Banner] | $PARAM[Thumbnail] | $PARAM[Fanart] | $PARAM[FanartSmall] | $PARAM[ThumbnailSmall] | $PARAM[PosterFanartSmall] | $PARAM[Square] | $PARAM[SquareMiddle] | $PARAM[SquareSmall]]">
+            <itemlayout height="325" width="222" condition="![$PARAM[Banner] | $PARAM[Thumbnail] | $PARAM[Fanart] | $PARAM[FanartSmall] | $PARAM[ThumbnailSmall] | $PARAM[Square] | $PARAM[SquareMiddle] | $PARAM[SquareSmall]]">
                 <control type="group">
                     <width>222</width>
                     <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
@@ -1216,17 +1241,16 @@
     <include name="Def_Normal_Layout_Item_Focus">
         <param name="Banner" default="false" />
         <param name="Thumbnail" default="false" />
+        <param name="ThumbnailSmall" default="false" />
         <param name="Fanart" default="false" />
         <param name="FanartSmall" default="false" />
-        <param name="ThumbnailSmall" default="false" />
-        <param name="PosterFanartSmall" default="false" />
         <param name="Square" default="false" />
         <param name="SquareMiddle" default="false" />
         <param name="SquareSmall" default="false" />
         <param name="clearlogo" default="false" />
 
         <definition>
-            <focusedlayout height="325" width="222" condition="![$PARAM[Banner] | $PARAM[Thumbnail] | $PARAM[Fanart] | $PARAM[FanartSmall] | $PARAM[ThumbnailSmall] | $PARAM[PosterFanartSmall] | $PARAM[Square] | $PARAM[SquareMiddle] | $PARAM[SquareSmall]] | [$EXP[Home_Is_Horizontal_Clean] + !$PARAM[window_search]]">
+            <focusedlayout height="325" width="222" condition="![$PARAM[Banner] | $PARAM[Thumbnail] | $PARAM[Fanart] | $PARAM[FanartSmall] | $PARAM[ThumbnailSmall] | $PARAM[Square] | $PARAM[SquareMiddle] | $PARAM[SquareSmall]] | [$EXP[Home_Is_Horizontal_Clean] + !$PARAM[window_search]]">
                 <control type="group">
                     <width>222</width>
                     <include content="Def_Left" condition="$EXP[Home_Is_Horizontal] + !Skin.HasSetting(home.style.horizontal.clean) + !$PARAM[window_search]"><param name="left" value="70" /></include>
@@ -1574,17 +1598,19 @@
                 <left>View_Poster_Side</left>
                 <height>View_Poster_height</height>
 
+                <include content="Def_Layout_Action_On_Left_On_Right" >
+                    <param name="scrollid" value="161$PARAM[id]" />
+                </include>
+
                 <onup>$PARAM[id]</onup>
                 <ondown>$PARAM[id]</ondown>
-                <onleft>162$PARAM[id]</onleft>
-                <include>Def_View_Focus_Dialog_Menu_On_Right</include>
 
                 <onback>1$PARAM[id]</onback>
                 <onback>ClearProperty(WallMode,Home)</onback>
                 <onback>Container.SetViewMode($PARAM[onbackid])</onback>
 
                 <preloaditems>2</preloaditems>
-                <pagecontrol>162$PARAM[id]</pagecontrol>
+                <pagecontrol>161$PARAM[id]</pagecontrol>
                 <orientation>$PARAM[orientation]</orientation>
                 <focusposition>$PARAM[focusposition]</focusposition>
 
@@ -1616,12 +1642,10 @@
 
             <!-- SCROLLBAR -->
 
-            <control type="scrollbar" id="162$PARAM[id]">
-                <include content="Object_Scrollbar_Views_Vertical">
-                    <param name="scrollid" value="162$PARAM[id]" />
-                    <param name="idlayout" value="$PARAM[id]" />
-                </include>
-            </control>
+            <include content="Def_Layout_Scrollbar_Vertical" >
+                <param name="scrollid" value="161$PARAM[id]" />
+                <param name="idlayout" value="$PARAM[id]" />
+            </include>
         </definition>
     </include>
 
@@ -1643,10 +1667,12 @@
                 <right>View_Poster_Side</right>
                 <height>674</height>
 
+                <include content="Def_Layout_Action_On_Left_On_Right" >
+                    <param name="scrollid" value="162$PARAM[id]" />
+                </include>
+
                 <onup>$PARAM[id]</onup>
                 <ondown>$PARAM[id]</ondown>
-                <onleft>160$PARAM[id]</onleft>
-                <include>Def_View_Focus_Dialog_Menu_On_Right</include>
 
                 <onback>1$PARAM[id]</onback>
                 <onback>ClearProperty(WallMode,Home)</onback>
@@ -1654,7 +1680,7 @@
 
                 <preloaditems>2</preloaditems>
                 <orientation>vertical</orientation>
-                <pagecontrol>160$PARAM[id]</pagecontrol>
+                <pagecontrol>162$PARAM[id]</pagecontrol>
                 <focusposition>$PARAM[focusposition]</focusposition>
 
                 <viewtype label="$PARAM[viewtype_label]">list</viewtype>
@@ -1748,12 +1774,10 @@
 
             <!-- SCROLLBAR -->
 
-            <control type="scrollbar" id="160$PARAM[id]">
-                <include content="Object_Scrollbar_Views_Vertical">
-                    <param name="scrollid" value="160$PARAM[id]" />
-                    <param name="idlayout" value="$PARAM[id]" />
-                </include>
-            </control>
+            <include content="Def_Layout_Scrollbar_Vertical" >
+                <param name="scrollid" value="162$PARAM[id]" />
+                <param name="idlayout" value="$PARAM[id]" />
+            </include>
 
             <include content="Hidden_List_Artist_Album_Count" condition="!Skin.HasSetting(disable.all.hidden.list)"><param name="id" value="$PARAM[id]" /></include>
         </definition>
@@ -1778,10 +1802,12 @@
                 <width>1840</width>
                 <height>View_Poster_height</height>
 
+                <include content="Def_Layout_Action_On_Left_On_Right" >
+                    <param name="scrollid" value="163$PARAM[id]" />
+                </include>
+
                 <onup>$PARAM[id]</onup>
                 <ondown>$PARAM[id]</ondown>
-                <onleft>161$PARAM[id]</onleft>
-                <include>Def_View_Focus_Dialog_Menu_On_Right</include>
 
                 <onback>1$PARAM[id]</onback>
                 <onback>ClearProperty(WallMode,Home)</onback>
@@ -1789,7 +1815,7 @@
 
                 <preloaditems>2</preloaditems>
                 <orientation>vertical</orientation>
-                <pagecontrol>161$PARAM[id]</pagecontrol>
+                <pagecontrol>163$PARAM[id]</pagecontrol>
                 <focusposition>$PARAM[focusposition]</focusposition>
 
                 <viewtype label="$PARAM[viewtype_label]">list</viewtype>
@@ -1829,12 +1855,10 @@
 
             <!-- SCROLLBAR -->
 
-            <control type="scrollbar" id="161$PARAM[id]">
-                <include content="Object_Scrollbar_Views_Vertical">
-                    <param name="scrollid" value="161$PARAM[id]" />
-                    <param name="idlayout" value="$PARAM[id]" />
-                </include>
-            </control>
+            <include content="Def_Layout_Scrollbar_Vertical" >
+                <param name="scrollid" value="163$PARAM[id]" />
+                <param name="idlayout" value="$PARAM[id]" />
+            </include>
 
             <include content="Hidden_List_Artist_Album_Count" condition="!Skin.HasSetting(disable.all.hidden.list)"><param name="id" value="$PARAM[id]" /></include>
         </definition>
@@ -1858,10 +1882,12 @@
                 <right>View_Poster_Side</right>
                 <height>View_Poster_height</height>
 
+                <include content="Def_Layout_Action_On_Left_On_Right" >
+                    <param name="scrollid" value="164$PARAM[id]" />
+                </include>
+
                 <onup>$PARAM[id]</onup>
                 <ondown>$PARAM[id]</ondown>
-                <onleft>161$PARAM[id]</onleft>
-                <include>Def_View_Focus_Dialog_Menu_On_Right</include>
 
                 <onback>1$PARAM[id]</onback>
                 <onback>ClearProperty(WallMode,Home)</onback>
@@ -1869,7 +1895,7 @@
 
                 <preloaditems>2</preloaditems>
                 <orientation>vertical</orientation>
-                <pagecontrol>161$PARAM[id]</pagecontrol>
+                <pagecontrol>164$PARAM[id]</pagecontrol>
                 <focusposition>$PARAM[focusposition]</focusposition>
 
                 <viewtype label="$PARAM[viewtype_label]">list</viewtype>
@@ -1908,12 +1934,10 @@
 
             <!-- SCROLLBAR -->
 
-            <control type="scrollbar" id="161$PARAM[id]">
-                <include content="Object_Scrollbar_Views_Vertical">
-                    <param name="scrollid" value="161$PARAM[id]" />
-                    <param name="idlayout" value="$PARAM[id]" />
-                </include>
-            </control>
+            <include content="Def_Layout_Scrollbar_Vertical" >
+                <param name="scrollid" value="164$PARAM[id]" />
+                <param name="idlayout" value="$PARAM[id]" />
+            </include>
 
             <include content="Hidden_List_Artist_Album_Count" condition="!Skin.HasSetting(disable.all.hidden.list)"><param name="id" value="$PARAM[id]" /></include>
         </definition>
@@ -1937,10 +1961,12 @@
                 <width>View_Poster_Width</width>
                 <height>View_Poster_height</height>
 
+                <include content="Def_Layout_Action_On_Left_On_Right" >
+                    <param name="scrollid" value="165$PARAM[id]" />
+                </include>
+
                 <onup>$PARAM[id]</onup>
                 <ondown>$PARAM[id]</ondown>
-                <onleft>163$PARAM[id]</onleft>
-                <include>Def_View_Focus_Dialog_Menu_On_Right</include>
 
                 <onback>1$PARAM[id]</onback>
                 <onback>ClearProperty(WallMode,Home)</onback>
@@ -1948,7 +1974,7 @@
 
                 <preloaditems>2</preloaditems>
                 <orientation>vertical</orientation>
-                <pagecontrol>163$PARAM[id]</pagecontrol>
+                <pagecontrol>165$PARAM[id]</pagecontrol>
                 <focusposition>$PARAM[focusposition]</focusposition>
 
                 <viewtype label="$PARAM[viewtype_label]">list</viewtype>
@@ -2034,12 +2060,10 @@
 
             <!-- SCROLLBAR -->
 
-            <control type="scrollbar" id="163$PARAM[id]">
-                <include content="Object_Scrollbar_Views_Vertical">
-                    <param name="scrollid" value="163$PARAM[id]" />
-                    <param name="idlayout" value="$PARAM[id]" />
-                </include>
-            </control>
+            <include content="Def_Layout_Scrollbar_Vertical" >
+                <param name="scrollid" value="165$PARAM[id]" />
+                <param name="idlayout" value="$PARAM[id]" />
+            </include>
 
             <include content="Hidden_List_Artist_Album_Count" condition="!Skin.HasSetting(disable.all.hidden.list)"><param name="id" value="$PARAM[id]" /></include>
         </definition>
@@ -2061,10 +2085,12 @@
                 <width>View_Poster_Width</width>
                 <height>View_Poster_height</height>
 
+                <include content="Def_Layout_Action_On_Left_On_Right" >
+                    <param name="scrollid" value="166$PARAM[id]" />
+                </include>
+
                 <onup>$PARAM[id]</onup>
                 <ondown>$PARAM[id]</ondown>
-                <onleft>164$PARAM[id]</onleft>
-                <include>Def_View_Focus_Dialog_Menu_On_Right</include>
 
                 <onback>1$PARAM[id]</onback>
                 <onback>ClearProperty(WallMode,Home)</onback>
@@ -2072,7 +2098,7 @@
 
                 <preloaditems>2</preloaditems>
                 <orientation>vertical</orientation>
-                <pagecontrol>164$PARAM[id]</pagecontrol>
+                <pagecontrol>166$PARAM[id]</pagecontrol>
                 <focusposition>$PARAM[focusposition]</focusposition>
 
                 <viewtype label="$PARAM[viewtype_label]">list</viewtype>
@@ -2109,12 +2135,10 @@
 
             <!-- SCROLLBAR -->
 
-            <control type="scrollbar" id="164$PARAM[id]">
-                <include content="Object_Scrollbar_Views_Vertical">
-                    <param name="scrollid" value="164$PARAM[id]" />
-                    <param name="idlayout" value="$PARAM[id]" />
-                </include>
-            </control>
+            <include content="Def_Layout_Scrollbar_Vertical" >
+                <param name="scrollid" value="166$PARAM[id]" />
+                <param name="idlayout" value="$PARAM[id]" />
+            </include>
 
             <include content="Hidden_List_Artist_Album_Count" condition="!Skin.HasSetting(disable.all.hidden.list)"><param name="id" value="$PARAM[id]" /></include>
         </definition>
@@ -2136,10 +2160,12 @@
                 <width>1840</width>
                 <height>View_Poster_height</height>
 
+                <include content="Def_Layout_Action_On_Left_On_Right" >
+                    <param name="scrollid" value="167$PARAM[id]" />
+                </include>
+
                 <onup>$PARAM[id]</onup>
                 <ondown>$PARAM[id]</ondown>
-                <onleft>164$PARAM[id]</onleft>
-                <include>Def_View_Focus_Dialog_Menu_On_Right</include>
 
                 <onback>1$PARAM[id]</onback>
                 <onback>ClearProperty(WallMode,Home)</onback>
@@ -2147,7 +2173,7 @@
 
                 <preloaditems>2</preloaditems>
                 <orientation>vertical</orientation>
-                <pagecontrol>164$PARAM[id]</pagecontrol>
+                <pagecontrol>167$PARAM[id]</pagecontrol>
                 <focusposition>$PARAM[focusposition]</focusposition>
 
                 <viewtype label="$PARAM[viewtype_label]">list</viewtype>
@@ -2194,12 +2220,10 @@
 
             <!-- SCROLLBAR -->
 
-            <control type="scrollbar" id="164$PARAM[id]">
-                <include content="Object_Scrollbar_Views_Vertical">
-                    <param name="scrollid" value="164$PARAM[id]" />
-                    <param name="idlayout" value="$PARAM[id]" />
-                </include>
-            </control>
+            <include content="Def_Layout_Scrollbar_Vertical" >
+                <param name="scrollid" value="167$PARAM[id]" />
+                <param name="idlayout" value="$PARAM[id]" />
+            </include>
 
             <include content="Hidden_List_Artist_Album_Count" condition="!Skin.HasSetting(disable.all.hidden.list)"><param name="id" value="$PARAM[id]" /></include>
         </definition>

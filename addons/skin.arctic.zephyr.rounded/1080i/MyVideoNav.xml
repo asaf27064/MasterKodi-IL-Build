@@ -236,7 +236,7 @@
                 <control type="button" id="55551">
                     <include>Def_Dialog_Menu_Button_Title</include>
                     <label>31051</label>
-                    <visible>!Control.IsVisible(500) + !Control.IsVisible(58) + !Control.IsVisible(52) + !Control.IsVisible(547) + ![Control.IsVisible(557) + $EXP[IsYoutube]] + ![Control.IsVisible(555) + $EXP[IsYoutube]] + !Control.IsVisible(5218) + !Control.IsVisible(59)</visible>
+                    <visible>!Control.IsVisible(500) + !Control.IsVisible(58) + !Control.IsVisible(52) + !Control.IsVisible(547) + ![Control.IsVisible(557) + $EXP[IsYoutube]] + ![Control.IsVisible(555) + $EXP[IsYoutube]] + !Control.IsVisible(5218)</visible>
                 </control>
 
                 <!-- SHOW HEADER INFO -->
@@ -360,6 +360,9 @@
                     <visible>Control.IsVisible(511) | Control.IsVisible(512)</visible>
                     <onclick>SetProperty(reloadskin,1,Home)</onclick>
                 </control>
+
+                <!-- EXTENDED LIST -->
+
                 <control type="radiobutton" id="9028">
                     <include>Def_Dialog_Menu_Button_Focus_Select</include>
                     <label>31192</label>
@@ -384,6 +387,9 @@
                     <onclick>SetProperty(reloadskin,1,Home)</onclick>
                     <visible>Control.IsVisible(524)</visible>
                 </control>
+
+                <!-- VIEW 50 - HIDE POSTER -->
+
                 <control type="radiobutton" id="9030">
                     <include>Def_Dialog_Menu_Button_Focus_Select</include>
                     <label>31190</label>
@@ -392,14 +398,18 @@
                     <onclick>SetProperty(reloadskin,1,Home)</onclick>
                     <visible>Control.IsVisible(50)</visible>
                 </control>
+
+                <!-- VIEW LIST - HIDE RATING -->
+
                 <control type="radiobutton" id="9031">
                     <include>Def_Dialog_Menu_Button_Focus_Select</include>
                     <label>31453</label>
                     <selected>!Skin.HasSetting(hide.video.ratings)</selected>
                     <onclick>Skin.ToggleSetting(hide.video.ratings)</onclick>
-                    <visible>Control.IsVisible(50) | Control.IsVisible(57) | Control.IsVisible(56) | Control.IsVisible(524) | Control.IsVisible(516) | Control.IsVisible(550)</visible>
+                    <visible>Control.IsVisible(50) | Control.IsVisible(57) | Control.IsVisible(56) | Control.IsVisible(524) | Control.IsVisible(516) | Control.IsVisible(550) | [Control.IsVisible(511) + Skin.HasSetting(ListView511)] | [Control.IsVisible(512) + Skin.HasSetting(ListView511)]</visible>
                     <visible>!$EXP[IsYoutube]</visible>
                 </control>
+
                 <control type="radiobutton" id="9034" description="Info Wall (55)">
                     <include>Def_Dialog_Menu_Button_Focus_Select</include>
                     <label>31106</label>
@@ -494,8 +504,17 @@
                     <onclick>SetProperty(reloadskin,1,Home)</onclick>
                     <visible>Control.IsVisible(50) | Control.IsVisible(56) | Control.IsVisible(57)</visible>
                 </control>
+                <control type="button" id="9037" description="SELECT LISTTYPE">
+                    <include>Def_Dialog_Menu_Button_Focus_Select</include>
+                    <label>$LOCALIZE[31589]$LOCALIZE[31079]</label>
+                    <label2>$VAR[Label_Views_List_51x_Type_Navigation]</label2>
+                    <selected>Skin.HasSetting(51x.list.control.list)</selected>
+                    <onclick>Skin.ToggleSetting(51x.list.control.list)</onclick>
+                    <onclick>SetProperty(reloadskin,1,Home)</onclick>
+                    <visible>[Control.IsVisible(511) + Skin.HasSetting(ListView511)] | [Control.IsVisible(512) + Skin.HasSetting(ListView511)]</visible>
+                </control>
 
-                <!-- SHOW PLOT -->
+                <!-- VIEW 51 - SHOW PLOT -->
 
                 <control type="radiobutton" id="9044" description="Plot 51">
                     <include>Def_Dialog_Menu_Button_Focus_Select</include>
@@ -504,6 +523,19 @@
                     <onclick>Skin.ToggleSetting(51.showplot)</onclick>
                     <visible>Control.IsVisible(51) + !Skin.HasSetting(51bigwide.showinfo) + !Skin.HasSetting(51bigwide.showinfo.alternative)</visible>
                 </control>
+
+                <!-- VIEW 59 - SHOW EXTENDED INFOS -->
+
+                <control type="radiobutton" id="9046" description="Plot 59">
+                    <include>Def_Dialog_Menu_Button_Focus_Select</include>
+                    <label>31161</label>
+                    <selected>Skin.HasSetting(59.show.info)</selected>
+                    <onclick>Skin.ToggleSetting(59.show.info)</onclick>
+                    <visible>Control.IsVisible(59)</visible>
+                </control>
+
+                <!-- VIEW 509 - SHOW CLEARLOGO / TITLE -->
+
                 <control type="radiobutton" id="9049">
                     <include>Def_Dialog_Menu_Button_Focus_Select</include>
                     <label>31414</label>
@@ -512,13 +544,9 @@
                     <onclick>SetProperty(reloadskin,1,Home)</onclick>
                     <visible>Control.IsVisible(509)</visible>
                 </control>
-                <control type="radiobutton" id="9045">
-                    <include>Def_Dialog_Menu_Button_Focus_Select</include>
-                    <label>31452</label>
-                    <selected>Skin.HasSetting(show.view.519.clearart)</selected>
-                    <onclick>Skin.ToggleSetting(show.view.519.clearart)</onclick>
-                    <visible>Control.IsVisible(519)</visible>
-                </control>
+
+                <!-- VIEW 509 - SHOW POSTER / FANART -->
+
                 <control type="radiobutton" id="9047">
                     <include>Def_Dialog_Menu_Button_Focus_Select</include>
                     <label>31049</label>
@@ -527,7 +555,17 @@
                     <visible>Control.IsVisible(509)</visible>
                 </control>
 
-                <!-- ARTWORK TYPE -->
+                <!-- VIEW 519 - SHOW CLEARART -->
+
+                <control type="radiobutton" id="9045">
+                    <include>Def_Dialog_Menu_Button_Focus_Select</include>
+                    <label>31452</label>
+                    <selected>Skin.HasSetting(show.view.519.clearart)</selected>
+                    <onclick>Skin.ToggleSetting(show.view.519.clearart)</onclick>
+                    <visible>Control.IsVisible(519)</visible>
+                </control>
+
+                <!-- VIEW 524 - ARTWORK TYPE -->
 
                 <control type="button" id="90338" description="No Wrap">
                     <include>Def_Dialog_Menu_Button_Focus_Select</include>
@@ -538,6 +576,9 @@
                     <onclick>SetProperty(reloadskin,1,Home)</onclick>
                     <visible>Control.IsVisible(524)</visible>
                 </control>
+
+                <!-- EPISODES - FANART / THUMBNAIL -->
+
                 <control type="radiobutton" id="90334" description="No Wrap">
                     <include>Def_Dialog_Menu_Button_Focus_Select</include>
                     <label>$LOCALIZE[31473]</label>
@@ -582,7 +623,7 @@
                     <visible>Skin.HasSetting(dont.use.landscape.movies)</visible>
                     <visible>!Container.Content(artists)</visible>
                     <visible>Container.Content(movies) | Container.Content(videoversions) | Container.Content(musicvideos)</visible>
-                    <visible>Control.IsVisible(55) | Control.IsVisible(56) | Control.IsVisible(57) | [Control.IsVisible(509) + Skin.HasSetting(509fanart)] | Control.IsVisible(515) | Control.IsVisible(522) | [Control.IsVisible(524) + !Skin.HasSetting(show.view.524.poster.movies)] | Control.IsVisible(555) | Control.IsVisible(557)</visible>
+                    <visible>[Control.IsVisible(55) + Skin.HasSetting(55wall.showinfo)] | Control.IsVisible(56) | Control.IsVisible(57) | [Control.IsVisible(509) + Skin.HasSetting(509fanart)] | Control.IsVisible(515) | Control.IsVisible(522) | [Control.IsVisible(524) + !Skin.HasSetting(show.view.524.poster.movies)] | Control.IsVisible(555) | Control.IsVisible(557)</visible>
                 </control>
 
                 <control type="radiobutton" id="9050">
@@ -620,7 +661,7 @@
                     <label>$LOCALIZE[31356]</label>
                     <selected>!Skin.HasSetting(hide.markers)</selected>
                     <onclick>Skin.ToggleSetting(hide.markers)</onclick>
-                    <visible>Control.IsVisible(50) | Control.IsVisible(57) | Control.IsVisible(56) | Control.IsVisible(524) | Control.IsVisible(516) | Control.IsVisible(550)</visible>
+                    <visible>Control.IsVisible(50) | Control.IsVisible(57) | Control.IsVisible(56) | Control.IsVisible(524) | Control.IsVisible(516) | Control.IsVisible(550) | [Control.IsVisible(511) + Skin.HasSetting(ListView511)] | [Control.IsVisible(512) + Skin.HasSetting(ListView511)]</visible>
                 </control>
 
                 <!-- MEDIA STATUS - COLOR / BW -->
