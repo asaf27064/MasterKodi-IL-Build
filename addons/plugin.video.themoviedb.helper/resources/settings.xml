@@ -401,22 +401,22 @@
                 </setting>
             </group>
             <group id="2" label="32422">
-                <setting id="mdblist_apikey" type="string" label="32423" help="">
+                <setting id="mdblist_settings" type="action" label="10004" help="">
                     <level>0</level>
+                    <control type="button" format="action">
+                        <close>true</close>
+                        <data>RunScript(plugin.video.themoviedb.helper,open_sync_provider_settings,addon_id=script.module.tmdbhelper.sync.mdblist)</data>
+                    </control>
+                </setting>
+                <!-- Retained only so Kodi can read and clear pre-module keys. -->
+                <setting id="mdblist_apikey" type="string" label="32423" help="">
+                    <level>4</level>
                     <default/>
                     <constraints>
                         <allowempty>true</allowempty>
                     </constraints>
-                    <control type="edit" format="string">
-                        <heading>32423</heading>
-                    </control>
-                </setting>
-                <setting id="mdblist_apikey_access" type="boolean" label="32483" help="" parent="mdblist_apikey">
-                    <level>0</level>
-                    <default>false</default>
-                    <control type="toggle"/>
+                    <control type="edit" format="string"/>
                     <visible>false</visible>
-                    <enable>false</enable>
                 </setting>
             </group>
             <group id="3" label="32124">
@@ -661,6 +661,30 @@
                     </control>
                 </setting>
             </group>
+            <group id="3" label="32028">
+                <setting id="ratings_providers" type="action" label="32411" help="32582">
+                    <level>0</level>
+                    <data>RunScript(plugin.video.themoviedb.helper,configure_ratings_providers,return_settings=true)</data>
+                    <control type="button" format="action">
+                        <close>true</close>
+                    </control>
+                </setting>
+                <setting id="ratings_provider_order" type="action" label="32591" help="32592">
+                    <level>0</level>
+                    <data>RunScript(plugin.video.themoviedb.helper,configure_ratings_provider_order,return_settings=true)</data>
+                    <control type="button" format="action">
+                        <close>true</close>
+                    </control>
+                </setting>
+                <setting id="ratings_provider_configuration" type="string" label="32581" help="">
+                    <level>0</level>
+                    <default></default>
+                    <constraints><allowempty>true</allowempty></constraints>
+                    <control type="edit" format="string"/>
+                    <visible>false</visible>
+                    <enable>false</enable>
+                </setting>
+            </group>
         </category>
         <category id="players" label="32014" help="">
             <group id="1" label="32033">
@@ -701,6 +725,18 @@
                 </setting>
             </group>
             <group id="2" label="32329">
+                <setting id="player_episode_groups" type="string" label="32593" help="32597">
+                    <level>0</level>
+                    <default>default</default>
+                    <constraints>
+                        <options>
+                            <option label="32594">default</option>
+                            <option label="32595">select</option>
+                            <option label="32596">group</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
                 <setting id="combined_players" type="boolean" label="32415" help="">
                     <level>0</level>
                     <default>True</default>

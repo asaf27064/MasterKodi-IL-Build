@@ -16,6 +16,7 @@ Provider addons follow this layout:
 addon.xml
 LICENSE.txt
 resources/
+    script.py               # opens this provider's configuration in TMDbHelper
     icon.png                # provider icon
     fanart.jpg
     lib/
@@ -27,9 +28,23 @@ resources/
             sync/
 ```
 
-The `xbmc.python.module` extension declares `resources/lib` as its library.
-Artwork is declared in the metadata extension's `assets` element. Package only
-the individual provider folder when distributing either addon.
+Declare `xbmc.python.script` with library `resources/script.py` before the
+`xbmc.python.module` extension, which retains `resources/lib` as its library.
+Kodi uses the first extension as the main type. The script main type makes
+providers available under Program add-ons and prevents Kodi from classifying
+these independently installed providers as orphaned dependency modules.
+The module extension remains available to provider discovery and loading.
+Keep the existing addon ID and the dependency on TMDbHelper; core must not add
+reverse dependencies on providers.
+
+The script entry point calls
+`RunScript(plugin.video.themoviedb.helper,configure_sync_provider,addon_id=<addon_id>)`
+through `xbmc.executebuiltin`. The core route delegates to
+`SyncProviderOnboarding(addon_id).configure()`, reusing the Default, Cancel,
+and Custom configuration flow. Running a provider does not change selections
+until the user confirms. Providers using this route require TMDbHelper 6.19.3
+or later. Artwork is declared in the metadata extension's `assets` element.
+Package only the individual provider folder when distributing an addon.
 
 Providers declare:
 
@@ -38,10 +53,43 @@ Providers declare:
   including class factories derived from DataType. Each declares a non-empty
   `method` string so invalidation can identify its activity timestamps.
 - `action_classes`: action names from `ACTION_FEATURES` to action classes.
+- `service_sync_classes`: optional account-data sync registrations independent of
+  provider selections. `SyncRatings` and `SyncFavorites` inherit ServiceDataType
+  and declare a non-empty cache `method`, like other sync classes. They receive
+  the same `(syncdata, item_type, provider)` constructor arguments. Their optional
+  `invalidate_cache(provider)` class method clears module-owned service caches.
+  Registering these exposes `service_sync`, without adding provider selectors.
+- `service_action_classes`: optional independent service action names mapped to
+  callable action classes. Names start with the provider ID and must be unique
+  across providers and core service actions. This exposes `service_actions`.
+  Every authorized provider contributes these actions regardless of sync selections.
+  The dispatcher assigns `sync_provider` and the caller's `syncdata` before
+  accessing any action properties.
+- `migrate_settings()`: optional migration hook called under the loader lock after
+  validation and addon-ID assignment, before the provider is returned or its API
+  client is constructed. The default is a no-op for existing providers.
 - `getter_classes`: `movies_to_watch`, `shows_to_watch`, and `shows_in_progress`
   getters for watched/progress list behaviour. All three are required when the
   provider declares the watched capability; every getter must be callable.
+- `ratings_classes`: optional media-type names (`movie`, `tvshow`, `season`,
+  `episode`) mapped to RatingsSupplier subclasses. Each implements
+  `get_ratings()`; registering any supplies the independent `ratings` capability.
+- `imdb_top250_classes`: optional `movie` / `tvshow` names mapped to
+  IMDbTop250Supplier subclasses implementing `get_items()`. Each media type must
+  also have a ratings supplier. Registering any supplies the `imdb_top250`
+  capability; empty defaults preserve existing interface-version-3 providers.
+- `monitor_lists_class`: an optional MonitorListsSupplier subclass implementing
+  `get_lists()` and `get_list_items(list_slug)`. This supplies the independent
+  `monitor_lists` capability for library monitoring and list retrieval.
 - `scrobbler_class`: an optional ScrobbleRequest subclass for the scrobbling feature.
+- `directory_item_class`: an optional BaseDirItem subclass contributing a root
+  folder. Its `params['info']` must name one of the provider's `list_routes`.
+- `list_routes`: optional route names mapped to `module_name` / `import_attr`
+  dictionaries, using the same lazy named imports as core routes. Every name
+  starts with `<provider_id>_`; duplicate routes are rejected. The imported
+  objects are directory container classes with the existing `(handle,
+  paramstring, **params)` interface. Registering routes exposes the `lists`
+  capability. Empty defaults keep existing interface-version-3 providers valid.
 - `is_authorized()` and `get_last_activities()`: provider authentication and activity
   timestamps grouped by plural item type and activity key.
 
@@ -79,6 +127,8 @@ supports at least one requested feature. Loaded providers determine actual
 capabilities; selection rechecks those declarations after installing/enabling
 and before assigning a provider to a feature. Keep catalogue capabilities aligned
 with the corresponding provider declarations when support changes.
+Catalogue entries also declare `provider_id`, allowing unavailable providers'
+namespaced list routes to offer installation or enabling.
 Each `sync_provider_<feature>` setting stores an empty value for an unconfigured
 feature, `never` for an explicitly disabled feature, or the chosen provider ID.
 Empty settings keep associated directory lists visible for discovery and setup;
@@ -95,22 +145,23 @@ each provider as `addon_id`, so trust checks use catalogue addon IDs rather than
 provider-declared IDs or display names. List setup inherits the same confirmation.
 Item actions use the provider selected for
 the same feature. Unsupported synced-state actions are absent from Sync Options.
-Personal-list actions for every authorized service, Trakt comments, ratings, and
-favorites belong to core and are available independently of these selectors.
-Ratings and favorites sync directly through the authenticated Trakt API without
-requiring the Trakt provider addon. Their sync implementations, source-to-database
-mapping, and activity tracking live in `sync/trakt/`. `SyncData` dispatches these
-core sync types separately from provider types; provider registrations must not
-declare `SyncRatings`, `SyncFavorites`, or the `favorites` action. Favorites lists
-use Trakt authorization and never offer provider setup. Existing database columns,
-sorting, pagination, and manual ratings/favorites/all-data sync remain supported.
-Service rating lookups cache complete snapshots for at most twenty minutes,
-separately for each account token and media type. Each lookup checks that media
-type's Trakt `rated_at` activity timestamp and refreshes the snapshot when it
-changes. Successful writes invalidate that media type and its synced database
-values immediately; manual ratings or all-data sync clears every service rating
-snapshot. Empty snapshots are cached; failed or incomplete responses
-and snapshots without a valid activity timestamp are not.
+Trakt registers `traktrating` and `traktfavorites`; the existing `rating` and
+`favorites` script selectors remain compatibility aliases. MDbList retains its
+`mdblistuser` action. Personal ratings and favorites sync, record mapping, actions, and account rating
+snapshots belong to the Trakt module. They use `service_sync_classes` and
+`service_action_classes`; they do not depend on which provider is selected for
+watched data, watchlists, collection, or scrobbling. Disabled or unauthorized
+modules supply no service actions or sync data. Existing columns and activity
+identifiers are retained. Unavailable or unauthorized services leave cached
+values and activity timestamps intact. Normal sync resumes when the service is
+available again; manual invalidation remains available when a reset is needed.
+Public ratings are separate: Trakt supplies movies, shows, seasons, and episodes
+through `ratings_classes`, just like MDbList. The monitor uses the existing
+ratings-provider enablement and priority settings, with no direct Trakt fallback.
+Personal rating snapshots retain account/media-type isolation and their maximum
+twenty-minute lifetime. Activity changes and successful writes invalidate them;
+manual ratings or all-data sync invokes the module's cache invalidation hook.
+Empty snapshots are cached; failed or incomplete responses are not.
 List removal targets the service owning the displayed list; other services retain
 their add-to-list action. The `sync_trakt` script route aliases `sync_options`.
 
@@ -233,3 +284,158 @@ Native Kodi library playback retains Kodi's own watched/resume persistence;
 scrobbling another source writes to the matching library item only when Kodi is
 the selected scrobbler. See the standalone provider's README for identity matching,
 date limitations, and non-library tracking findings.
+
+
+## Provider list directories
+
+Directories are additive: all enabled providers may expose their own root folder,
+independently of history, watchlist, collection, and scrobbling selections. There
+is no single `sync_provider_lists` setting. Folder visibility and authorization
+belong to the provider's directory item and API layer.
+
+Providers own their menu items, list containers, properties, mappers, sort
+options, icons, and type-variant artwork selection. Reuse BaseDirItem and its
+item builder for menus, and ListDefault/ListStandard with
+`list_properties_class`, `configure_list_properties()`, and
+`get_items_finalised()` for lists. Properties retrieve entries through the API
+or appropriate database interfaces; mappers turn those entries into item
+dictionaries. Configure attributes before accessing cached properties.
+
+The MDbList module registers `mdblist_directory` and all existing `mdblist_*`
+list routes. Core resolves provider routes through the registry without
+per-list forwarding entries. If no route is found, a `<provider_id>_` prefix
+matching a trusted catalogue provider with the lists capability offers
+installation/enabling through Kodi. The dialog names the requested route and
+provider; successful setup retries that route without changing sync selections.
+An installed provider must declare the requested route or an invalid-route
+error is raised. Concurrent requests recheck provider availability and prompt
+generation under a mutex.
+Declining returns no directory items. The sorting script resolves the module's
+sorting container. Library monitoring uses its own supplier interface below,
+without constructing directory containers. The MDbList API client and
+rating-response mappings belong entirely to the module. Core does not construct
+or expose an MDbList API client.
+
+Trakt registers a single `trakt_directory` root. Grouped browsing, genres,
+calendar period menus, Random, and Discover live under that root. Core Movie,
+TV, Random, and details menus no longer inject Trakt entries. Existing `trakt_*`
+browsing URLs remain registered by the module. The nine legacy `random_*`
+Trakt URLs redirect to their `trakt_random_*` counterparts; obsolete `dir_*`
+Trakt URLs have no reroutes. Directory routing and sorting use the registry.
+Shared Trakt API transport and calendar support remain in core for the local
+library calendar. Its concrete local subclass does not import the optional
+provider; the Trakt module subclasses the same calendar support.
+
+## Ratings suppliers
+
+In Sync settings, the Ratings group contains Providers and Priority. Providers
+uses a multiselect to enable/disable installed suppliers. Priority uses select
+dialogs to choose a provider and move it up/down. Save applies the order;
+Cancel leaves it unchanged. Each control preserves the other's configuration.
+Enabled Kodi modules with the ratings capability appear independently of
+sync-provider selections.
+New suppliers default to enabled and follow saved entries in alphabetical order;
+unavailable providers' saved order and disabled state are retained.
+
+The hidden `ratings_provider_configuration` setting stores a JSON object with
+`order` and `disabled` lists of provider IDs. It is separate from the
+single-provider sync selectors and does not invalidate any caches. Existing
+cached results remain until their normal
+expiry or manual deletion.
+
+Subclasses of `tmdbhelper.lib.sync.providers.ratings.RatingsSupplier` receive
+`provider`, `tmdb_type`, `tmdb_id`, `imdb_id`, `season`, and `episode` before the
+cached `.ratings` property is accessed. They return a dictionary using existing
+ratings-table fields and their existing raw formats (for example, integer
+ratings on a 0-100 scale). The supplier owns authorization, API calls, and source
+mapping; it must return `{}` for an unavailable API. It must not read or write
+the item-details database. No new table fields or migrations are required.
+
+RatingsDict and its season/episode subclasses instantiate only enabled suppliers
+registered for their media type. Retrieval runs in parallel, while merging uses
+the configured order, with the first provider winning overlapping non-missing
+fields. `None` and empty strings are missing; zero ratings and vote counts are
+valid. Lower providers fill missing fields.
+
+Provider results occupy the former MDbList position in `rating_attribs`: after
+OMDb and before direct Trakt/TMDb sources. Existing built-in precedence and IMDb
+Top 250 output format remain unchanged. MDbList's module supplies all four media
+types using its module-owned API client's rating methods; no MDbList-specific
+branch remains in the ratings dictionaries.
+
+## IMDb Top 250
+
+Subclasses of `tmdbhelper.lib.sync.providers.imdb_top250.IMDbTop250Supplier`
+receive `provider` and `tmdb_type` (`movie` or `tv`) before the cached `.items`
+property is accessed. `get_items()` returns normalized dictionaries with `rank`,
+`tmdb_type`, `tmdb_id`, `title`, `year`, and `slug`, ordered by rank. The supplier
+owns API requests, authorization where required, and source mapping. It returns
+an empty list when no data is available; malformed data and programming errors
+must not be hidden. Suppliers do not access the query database.
+
+The `IMDbTop250` helper uses the existing ratings priority and enabled-provider
+settings for the requested media type. It skips providers without the matching
+Top 250 supplier and requests each remaining supplier sequentially until one
+returns a non-empty list. Results from different providers are not merged.
+There is no separate Top 250 selector or automatic provider installation.
+
+`FindQueriesDatabaseIMDbTop250` converts those records into the existing query
+table's columns and owns cache reads and writes. Schema, expiry, output-key
+selection, and ratings consumers are unchanged. Provider priority changes take
+effect on the next cache refresh, as with ratings. Without an available supplier,
+an uncached lookup returns no result and does not write an empty cache entry.
+
+The Trakt module registers movie and TV suppliers using the existing public
+Justin IMDb lists. These requests do not require account authorization.
+
+## Monitored lists
+
+An optional `monitor_lists_class` derives from
+`tmdbhelper.lib.sync.providers.monitor_lists.MonitorListsSupplier` and receives
+its provider before any cached properties are accessed. The registry exposes
+one cached `monitor_list_suppliers` tuple per context. These suppliers are
+independent of watched, watchlist, scrobbling, and ratings selections.
+
+`get_lists()` supplies the cached `.lists` result: entries with `label` and
+`params` containing string `list_slug` and `user_slug` values. The default
+`user_slug` is `__api_<provider_id>__`. MDbList therefore keeps the existing
+`__api_mdblist__` identifier and numeric list IDs stored in `monitor_userlist`
+and `monitor_userslug`. No migration or new setting is required. MDbList list
+labels remain `MDbList: <name>` and use a module-owned ItemMapper.
+
+`get_list_items(list_slug)` returns the normalized records expected by
+LibraryBuilderUserList: each has `type` (`movie` or `show`) and a matching
+`movie`/`show` dictionary containing `title` and `ids` (`tmdb` and `imdb`).
+The module owns API requests and normalization. MDbList retains its existing
+separate movies/shows response handling and incomplete-record filtering.
+Unauthorized suppliers return no available lists or contents. Suppliers must
+not open settings, prompt for installation, or perform library/database writes.
+
+MonitorUserLists obtains all lists from suppliers. LibraryBuilderUserList
+retrieves every list through the same registry/supplier interface. Trakt owns
+watchlist, owned-list, liked-list enumeration, and paginated content retrieval.
+Its reserved user identifier is `__api_trakt__`; its list identifier encodes the
+original user and list slugs as a JSON pair. An optional supplier method,
+`get_legacy_list_slug(user_slug, list_slug)`, translates old references; the base
+returns None. Trakt translates the historical unreserved user/list slug pairs,
+so existing saved selections and direct library-addition paths keep working. An unavailable
+provider returns no items; it never falls back to a Trakt request or setup
+prompt. Reading or updating lists does not rewrite saved monitoring selections.
+Core retains limits, confirmation, progress, library creation, and tagging.
+The tagging subclass and manual list-addition script inherit the same request
+dispatch. No database table definitions or cache invalidation are changed.
+
+## Provider credentials and migration
+
+MDbList stores its API key in its own addon settings as `apikey`. The core API
+settings page opens the module's settings through `open_sync_provider_settings`,
+using the existing install/enable flow when needed. This does not select a sync
+provider. All MDBList requests require the module to be installed and enabled.
+
+The module's `migrate_settings()` hook checks core's hidden legacy
+`mdblist_apikey` setting whenever the provider is loaded, including discovery and
+installation. It copies the key only if the module has no key, reads back the
+destination to verify persistence, and then clears the core value. An existing
+module key takes precedence. An empty legacy value makes subsequent loads a
+no-op; failed writes preserve the source for retry. The hidden declaration is
+retained solely so Kodi can still retrieve values from older installations.

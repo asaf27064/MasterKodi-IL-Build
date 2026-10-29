@@ -66,37 +66,11 @@ class BaseDirItemMainSync(BaseDirItemMainMovie):
     art_icon = 'resources/icons/sync/default.png'
 
 
-class BaseDirItemMainTrakt(BaseDirItemMainMovie):
-    priority = 180
-    label = 'Trakt'
-    params = {'info': 'dir_trakt'}
-    art_icon = 'resources/icons/trakt/trakt.png'
-
-
-class BaseDirItemMainTraktDiscover(BaseDirItemMainMovie):
-    priority = 185
-    label = 'Trakt Discover'
-    params = {'info': 'dir_trakt_discover'}
-    art_icon = 'resources/icons/trakt/trakt.png'
-
-
 class BaseDirItemMainTVDb(BaseDirItemMainMovie):
     priority = 190
     label = 'TVDb'
     params = {'info': 'dir_tvdb'}
     art_icon = 'resources/icons/tvdb/tvdb.png'
-
-
-class BaseDirItemMainMDbList(BaseDirItemMainMovie):
-    priority = 200
-    label = 'MDbList'
-    params = {'info': 'dir_mdblist'}
-    art_icon = 'resources/icons/mdblist/mdblist.png'
-
-    @property
-    def enabled(self):
-        from tmdbhelper.lib.addon.plugin import get_setting
-        return bool(get_setting('mdblist_apikey', 'str'))
 
 
 class BaseDirItemMainGemini(BaseDirItemMainMovie):

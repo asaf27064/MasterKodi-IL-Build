@@ -35,11 +35,6 @@ class CommonContainerAPIs():
         return TVDb()
 
     @cached_property
-    def mdblist_api(self):
-        from tmdbhelper.lib.api.mdblist.api import MDbListAPI
-        return MDbListAPI()
-
-    @cached_property
     def omdb_api(self):
         from tmdbhelper.lib.api.omdb.api import OMDb
         from tmdbhelper.lib.addon.plugin import get_setting
@@ -114,7 +109,6 @@ class CommonRatingsAPIs(CommonContainerAPIs):
         return info
 
     def configure_sync(self, sync, season=None, episode=None):
-        sync.common_apis.mdblist_api = self.mdblist_api
         sync.common_apis.trakt_api = self.trakt_api
         sync.common_apis.tmdb_api = self.tmdb_api
         sync.common_apis.omdb_api = self.omdb_api
