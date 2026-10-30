@@ -5,6 +5,7 @@
 DIRECTORY_ICON_VARIANTS = {
     'resources/icons/sync/calendar.png': ('tv',),
     'resources/icons/sync/collection.png': ('movie', 'tv', 'both'),
+    'resources/icons/sync/currentlywatching.png': ('movie', 'tv', 'both'),
     'resources/icons/sync/dropped.png': ('tv',),
     'resources/icons/sync/inprogress.png': ('movie', 'tv'),
     'resources/icons/sync/mostwatched.png': ('movie', 'tv', 'episode'),
@@ -12,7 +13,7 @@ DIRECTORY_ICON_VARIANTS = {
     'resources/icons/sync/recommended-mostwatched.png': ('movie', 'tv'),
     'resources/icons/sync/recommended.png': ('movie', 'tv'),
     'resources/icons/sync/towatch.png': ('movie', 'tv'),
-    'resources/icons/sync/up-next.png': ('tv',),
+    'resources/icons/sync/up-next.png': ('movie', 'tv'),
     'resources/icons/sync/watchlist-anticipated.png': ('movie', 'tv', 'season', 'episode', 'both'),
     'resources/icons/sync/watchlist-released.png': ('movie', 'tv', 'season', 'episode', 'both'),
     'resources/icons/sync/watchlist.png': ('movie', 'tv', 'season', 'episode', 'both'),

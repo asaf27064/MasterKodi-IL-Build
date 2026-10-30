@@ -46,6 +46,8 @@ class Script(object):
         # Context Menu
         'related_lists':
             lambda **kwargs: importmodule('tmdbhelper.lib.script.method.related_lists', 'related_lists')(**kwargs),
+        'drop_collection':
+            lambda **kwargs: importmodule('tmdbhelper.lib.script.method.collectiondrops', 'drop_collection')(**kwargs),
 
         # TMDb Utils
         'sync_tmdb':
@@ -77,7 +79,7 @@ class Script(object):
         'invalidate_trakt_sync':
             lambda **kwargs: importmodule('tmdbhelper.lib.script.method.sync', 'invalidate_sync')(**kwargs),
         'get_trakt_stats':
-            lambda **kwargs: importmodule('tmdbhelper.lib.script.method.trakt', 'get_stats')(**kwargs),
+            lambda **kwargs: importmodule('tmdbhelper.lib.script.stats', 'get_stats')(**kwargs),
         'authenticate_trakt':
             lambda **kwargs: importmodule('tmdbhelper.lib.script.method.trakt', 'authenticate_trakt')(**kwargs),
         'revoke_trakt':
@@ -168,8 +170,6 @@ class Script(object):
             lambda **kwargs: importmodule('tmdbhelper.lib.script.method.logging', 'log_request')(**kwargs),
         'recache_kodidb':
             lambda **kwargs: importmodule('tmdbhelper.lib.script.method.maintenance', 'recache_kodidb')(confirmation=True),
-        # 'build_awards':
-        #     lambda **kwargs: importmodule('tmdbhelper.lib.script.method.build_awards', 'build_awards')(**kwargs),
         'restart_service':
             lambda **kwargs: importmodule('tmdbhelper.lib.monitor.service', 'restart_service_monitor')(),
         'test_func':

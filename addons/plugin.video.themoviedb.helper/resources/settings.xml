@@ -247,6 +247,26 @@
                     <default>false</default>
                     <control type="toggle"/>
                 </setting>
+                <setting id="nextmovies_updates" type="boolean" label="32603" help="32604">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="nextmovies_daily_budget" type="integer" label="32605" help="32606">
+                    <level>2</level>
+                    <default>25</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <maximum>400</maximum>
+                        <step>1</step>
+                    </constraints>
+                    <control type="spinner" format="integer"/>
+                    <dependencies>
+                        <dependency type="enable">
+                            <condition setting="nextmovies_updates" operator="is">True</condition>
+                        </dependency>
+                    </dependencies>
+                </setting>
             </group>
         </category>
         <category id="library" label="14022" help="">
@@ -651,13 +671,22 @@
                         <data>RunScript(plugin.video.themoviedb.helper,select_sync_provider,capability=collection,return_settings=true)</data>
                     </control>
                 </setting>
-                <setting id="sync_provider_scrobbling" type="string" label="32138" help="32548">
+                <setting id="sync_provider_scrobbling" type="string" label="32138" help="32599">
                     <level>0</level>
                     <default></default>
                     <constraints><allowempty>true</allowempty></constraints>
                     <control type="button" format="action">
                         <close>true</close>
                         <data>RunScript(plugin.video.themoviedb.helper,select_sync_provider,capability=scrobbling,return_settings=true)</data>
+                    </control>
+                </setting>
+                <setting id="sync_provider_stats" type="string" label="32598" help="32548">
+                    <level>0</level>
+                    <default></default>
+                    <constraints><allowempty>true</allowempty></constraints>
+                    <control type="button" format="action">
+                        <close>true</close>
+                        <data>RunScript(plugin.video.themoviedb.helper,select_sync_provider,capability=stats,return_settings=true)</data>
                     </control>
                 </setting>
             </group>

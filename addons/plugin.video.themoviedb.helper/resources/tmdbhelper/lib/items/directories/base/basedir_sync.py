@@ -1,5 +1,6 @@
 from tmdbhelper.lib.items.directories.base.basedir_item import BaseDirItemAuthorised
 from tmdbhelper.lib.items.directories.base.item_sync_builder import BaseDirSyncItemBuilder
+from tmdbhelper.lib.items.directories.base.item_currentlywatching_builder import BaseDirCurrentlyWatchingItemBuilder
 from jurialmunkey.ftools import cached_property
 from tmdbhelper.lib.addon.plugin import get_localized
 from tmdbhelper.lib.sync.providers.selection import SyncProviderSetting
@@ -127,6 +128,31 @@ class BaseDirItemNextEpisodes(BaseDirItemOnDeckMovies):
     params = {'info': 'sync_nextepisodes'}
     art_icon = 'resources/icons/sync/up-next.png'
     group = 32196
+
+
+class BaseDirItemCurrentlyWatching(BaseDirItemNextEpisodes):
+    priority = 225
+    label_type = 'standard'
+    label_localized = 32600
+    types = ('movie', 'tv', )
+    params = {'info': 'sync_currentlywatching'}
+    sorting = False
+    art_icon = 'resources/icons/sync/currentlywatching.png'
+    item_builder = BaseDirCurrentlyWatchingItemBuilder
+
+
+class BaseDirItemNextMovies(BaseDirItemNextEpisodes):
+    priority = 221
+    label_localized = 32602
+    types = ('movie', )
+    params = {'info': 'sync_nextmovies'}
+    sorting = False
+
+
+class BaseDirItemCurrentlyWatchingMixed(BaseDirItemCurrentlyWatching):
+    priority = 226
+    types = ('both', )
+    art_icon = 'resources/icons/sync/currentlywatching-both.png'
 
 
 class BaseDirItemOnDeckUnWatchedEpisodes(BaseDirItemOnDeckMovies):

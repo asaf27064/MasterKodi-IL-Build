@@ -2882,3 +2882,48 @@ msgstr ""
 msgctxt "#32597"
 msgid "Choose which season and episode numbers to pass to players. Default always uses TMDb numbering. Select asks which episode group to use when groups are available. Group uses the current episode group's numbering when playback starts from a group, otherwise TMDb numbering. A player's episode_groups option overrides this setting."
 msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32598"
+msgid "Stats"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32599"
+msgid "Select the providers to scrobble playback to. Install or enable supported providers here, or clear all selections to disable scrobbling."
+msgstr ""
+
+#: /resources/tmdbhelper/lib/items/directories/base/basedir_sync.py
+msgctxt "#32600"
+msgid "Currently Watching"
+msgstr ""
+
+#: /resources/tmdbhelper/lib/items/directories/base/basedir_sync.py
+msgctxt "#32602"
+msgid "Your Next Movies"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32603"
+msgid "Update movie collections in the background"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32604"
+msgid "After Your Next Movies is first used, discover new collections daily and refresh older collections within the daily request limit. Bundled collection data is refreshed with addon updates."
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32605"
+msgid "Daily movie collection request limit"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32606"
+msgid "Maximum collection-detail requests per day, including retries. New collections take priority over the oldest overdue entries. Higher limits help if bundled data has not been refreshed for a long time."
+msgstr ""
+
+#: /resources/tmdbhelper/lib/items/directories/sync/mapper_nextmovies.py
+msgctxt "#32607"
+msgid "Drop collection"
+msgstr ""
