@@ -1,7 +1,7 @@
 from tmdbhelper.lib.api.contains import CommonContainerAPIs
 from jurialmunkey.ftools import cached_property
 from tmdbhelper.lib.items.listitem import ListItem
-from tmdbhelper.lib.addon.logger import TimerList, kodi_log
+from tmdbhelper.lib.addon.logger import kodi_log
 from tmdbhelper.lib.items.database.details.client import DetailsClient
 from tmdbhelper.lib.items.database.details.request import DetailsRequest
 
@@ -46,10 +46,16 @@ class ListItemConfig:
     def listitem(self):
         return ListItem(**self.item)
 
-    def get_configured_listitem(self, data):
+    @property
+    def sent_request(self):
+        """The details request, or None when the item is sent only for Kodi library matching."""
+        return self.request if self.is_cacheable else None
+
+    def get_configured_listitem(self, merged):
+        """Apply the details that the item detail service merged into this item's data."""
         if self.next_page and not self.parent.pagination:
             return
-        self.listitem.set_details(data, override=True, reverse_artwork=True) if data else None
+        self.listitem.set_merged_details(merged) if merged else None
         return self.listitem
 
     @cached_property
@@ -109,18 +115,22 @@ class ListItemBatch:
         self.items = [ListItemConfig(parent, item) for item in items]
 
     @cached_property
-    def requested_items(self):
-        return self.get_requested_items()
+    def sent_items(self):
+        return self.get_sent_items()
 
-    def get_requested_items(self):
-        return [item for item in self.items if item.is_cacheable]
+    def get_sent_items(self):
+        return [item for item in self.items if item.is_cacheable or self.is_kodi_item(item)]
+
+    def is_kodi_item(self, item):
+        """Items without cached details are still matched to the Kodi library when permitted."""
+        return self.parent.kodi_details and not item.next_page
 
     def get_configured_items(self):
-        with TimerList(
-                self.parent.timer_lists, ' - service',
-                log_threshold=0.001, logging=self.parent.log_timers):
-            data = self.parent.client.get_items([item.request for item in self.requested_items])
-        details = dict(zip(self.requested_items, data))
+        data = self.parent.client.get_items(
+            [item.sent_request for item in self.sent_items],
+            [item.listitem.get_merge_data() for item in self.sent_items],
+            kodi_details=self.parent.kodi_details)
+        details = dict(zip(self.sent_items, data))
         return [item.get_configured_listitem(details.get(item)) for item in self.items]
 
 
@@ -129,9 +139,9 @@ class ListItemDetails:
     cache_refresh = None
     cache_translations = False
     extendedinfo = False
+    kodi_details = False  # Permit Kodi library details; the service applies the user's setting
+    sync_details = True  # Permit synced play data; the service applies the user's setting
     parent_params = {}
-    timer_lists = {}
-    log_timers = False
 
     def __init__(self, common_apis=None):
         self.common_apis = common_apis or CommonContainerAPIs()
@@ -141,7 +151,14 @@ class ListItemDetails:
         return DetailsRequest.from_type(
             tmdb_type, tmdb_id, season, episode,
             cache_refresh=self.cache_refresh, cache_translations=self.cache_translations,
-            extendedinfo=self.extendedinfo, language=self.common_apis.tmdb_api.language)
+            extendedinfo=self.extendedinfo, language=self.common_apis.tmdb_api.language,
+            sync_details=self.sync_details)
+
+    def prepare(self, info=None, tmdb_type=None, **kwargs):
+        """Let the service start refreshing synced play data while the list is retrieved."""
+        if not self.sync_details:
+            return
+        self.client.prepare(info=info, tmdb_type=tmdb_type)
 
     def get_item(self, tmdb_type, tmdb_id, season=None, episode=None):
         if not tmdb_id:

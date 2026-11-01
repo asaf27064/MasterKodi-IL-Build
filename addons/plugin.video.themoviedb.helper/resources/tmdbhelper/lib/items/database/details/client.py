@@ -18,12 +18,12 @@ class DetailsClient:
         self.location = ServiceLocation()
         self.version = get_version()
 
-    def exchange(self, endpoint, items=None):
+    def exchange(self, endpoint, items=None, kodi_details=False, prepare=None):
         with socket.create_connection(('127.0.0.1', endpoint['port']), timeout=2) as connection:
             connection.settimeout(5)
             send_message(connection, {
                 'version': PROTOCOL_VERSION, 'token': endpoint['token'],
-                'items': items,
+                'items': items, 'kodi_details': kodi_details, 'prepare': prepare,
             })
             connection.settimeout(0.25)
             response = receive_message(
@@ -93,29 +93,52 @@ class DetailsClient:
             return endpoint
         return self.get_endpoint(failed_endpoint=endpoint)
 
-    def get_batch_items(self, requests):
-        items = [request.as_dict() for request in requests]
+    def get_batch_items(self, entries, kodi_details=False):
         endpoint = self.get_current_endpoint()
         try:
-            return self.exchange(endpoint, items)
+            return self.exchange(endpoint, entries, kodi_details)
         except (OSError, DetailsServiceUnavailable):
             if self.monitor.abortRequested():
                 raise
-        return self.exchange(self.get_retry_endpoint(endpoint), items)
+        return self.exchange(self.get_retry_endpoint(endpoint), entries, kodi_details)
 
-    def get_batch(self, requests):
+    def get_batch(self, entries, kodi_details=False):
         try:
-            return self.get_batch_items(requests)
+            return self.get_batch_items(entries, kodi_details)
         except (OSError, DetailsServiceError) as exc:
             kodi_log(f'Item detail service request failed: {exc}', 1)
-            return [None for _ in requests]
+            return [None for _ in entries]
 
-    def get_items(self, requests):
+    @staticmethod
+    def get_entries(requests, items=None):
+        """Pair each request with the list item data to merge its details into.
+        Requests without list item data are answered with the details alone.
+        A None request sends list item data for Kodi library matching only."""
+        items = items or [None for _ in requests]
+        return [
+            {'request': request.as_dict() if request else None, 'item': item}
+            for request, item in zip(requests, items)
+        ]
+
+    def get_items(self, requests, items=None, kodi_details=False):
+        entries = self.get_entries(requests, items)
         return [
             item
-            for offset in range(0, len(requests), MAX_REQUEST_ITEMS)
-            for item in self.get_batch(requests[offset:offset + MAX_REQUEST_ITEMS])
+            for offset in range(0, len(entries), MAX_REQUEST_ITEMS)
+            for item in self.get_batch(entries[offset:offset + MAX_REQUEST_ITEMS], kodi_details)
         ]
 
     def get_item(self, request):
         return self.get_items([request])[0]
+
+    def prepare(self, info=None, tmdb_type=None):
+        """Ask a running service to start refreshing synced play data while the list is
+        retrieved. A stopped service is not started here so the list is not held up; the
+        item details request refreshes the data instead."""
+        endpoint = self.location.endpoint
+        if not self.is_current(endpoint):
+            return
+        try:
+            self.exchange(endpoint, prepare={'info': info, 'tmdb_type': tmdb_type})
+        except (OSError, DetailsServiceError) as exc:
+            kodi_log(f'Item detail sync refresh was not started early: {exc}', 1)
