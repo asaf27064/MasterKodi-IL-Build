@@ -154,6 +154,11 @@ Providers declare:
   and `delete_list(list_slug)`. It receives the provider in its constructor and
   supplies the independent `list_actions` capability. The `None` default keeps
   providers without list actions valid. See [List actions](#list-actions).
+- `identifier_resolver_class`: an optional IdentifierResolver subclass implementing
+  `get_ids(tmdb_type, tmdb_id, season=None, episode=None)`. It receives the provider
+  and supplies the `identifiers` capability. The `None` default preserves existing
+  providers. This optional interface requires core 6.20.4; interface version 4
+  remains valid. See [External identifiers](#external-identifiers).
 - `scrobbler_class`: an optional ScrobbleRequest subclass for the scrobbling feature.
   Core calls `scrobble(method)`, which returns a `ScrobbleResult`. Scrobblers using
   the inherited `scrobble()` implement `get_scrobbler_item()` and
@@ -312,9 +317,13 @@ Directory watched/playback pre-sync reaches this cleanup even when the selected
 provider is unavailable; cached item-details reads remain free of provider queries.
 
 There are no built-in fallback sync providers, old setting aliases, or automatic
-sync selections. Opening an unconfigured provider sync list or a list with an unavailable
-selected provider offers setup, including from widgets. Installation and enabling
-use Kodi's built-in
+sync selections. Opening an unconfigured provider sync list offers setup, including
+from widgets. A list with a saved provider selection does not offer replacement
+setup when that provider is unavailable; its data is unavailable until the provider
+returns or the user changes the selection in settings. Combined lists can still use
+their other available selected providers. Provider-specific lists also skip
+installation prompts after the registry reports a provider load failure.
+Installation and enabling use Kodi's built-in
 `InstallAddon` and `EnableAddon` commands, followed by a fresh discovery check.
 Installations use the user's installed repositories; core does not download
 provider packages or add repositories.
@@ -536,7 +545,25 @@ Class names, route registrations, cache keys, and calendar date behavior are
 preserved. The shared `mapper_standard` classes and factory remain in core
 because MDbList also uses them. Core's `lists_calendar` retains episode stacking
 used by both Trakt and the local library calendar, with no provider import.
-Trakt API transport remains in core pending its separate migration.
+The Trakt module owns its API/authentication package in
+`tmdbhelper_sync_trakt.api`, including client ID configuration and its pagination
+limit. Its provider factory, discover dialog, and directory authorization helper
+use the module-owned classes. The client continues to inherit core's generic
+`NoCacheRequestAPI`.
+
+Trakt containers configure their client through the module's `TraktList` mixin.
+Its `TraktContainerAPIs` resolves a provider lazily through the registry and
+reuses that provider's API. Nested list enumeration, directory authorization,
+and Discover receive the same provider context before cached properties are
+accessed. Shared core lists and the shared Discover base have no Trakt client.
+Core no longer performs a Trakt-specific startup authorization request; the
+module validates and refreshes credentials when its API is needed.
+
+Core account entry points launch the module's account actions. The core Trakt
+API package, API-key configuration, pagination constant, and obsolete token
+permissions are removed. Service requests, credentials, and account behavior
+belong entirely to the module. Shared request and token-handler infrastructure
+remains in core.
 
 ### Trakt preferences
 
@@ -557,8 +584,62 @@ values intact. Only the module's preferences control its behavior afterward.
 The page multiplier (`pagemulti_trakt`, labelled **Other page multiplier**),
 calendar flattening, next-episode sorting, recommendation seed, and watched
 indicators remain core preferences because they serve shared functionality.
-Legacy Trakt names do not make those settings provider-owned. Credentials and
-authentication controls remain in core pending their separate migration.
+Legacy Trakt names do not make those settings provider-owned. The shared
+`seasons_upnext` preference no longer depends on the legacy Trakt token.
+
+### Trakt credentials
+
+The module owns the hidden `token` setting and its sign-in/sign-out controls.
+Account dialogs use module-local translations, while built-in Kodi labels
+continue to use the shared localization helper. Running the module without
+arguments retains the provider configuration flow; `action=authenticate` and
+`action=revoke` run its account actions and reuse core's invalidation interfaces.
+
+`TraktSettings.migrate_credentials()` has its own `credentials_migrated` marker,
+independent of preference migration. It copies the legacy core `trakt_token`
+once, preserving both non-empty module credentials and an explicitly configured
+empty token. Each setting write is verified before migration is marked complete.
+Failed writes can be retried; the legacy source is retained unchanged. Completion
+clears the old session authorization properties so they cannot override a
+preconfigured module account. Logout clears the module token without resetting
+the migration marker, so later loads do not import the legacy token again.
+
+Migration uses the same named mutex as token refresh. It runs through the loader
+hook and, for direct client construction, before authorization or refresh locks
+are acquired. `TraktTokenHandler` subclasses the generic `TokenHandler` and
+overrides only its settings access hooks. Core's shared token handler is unchanged.
+Core retains the hidden legacy credential setting as a migration source; its
+visible account controls are removed.
+
+Credential migration requires TMDbHelper 6.20.5 and Trakt module 1.2.4 or later
+to be updated together. TMDbHelper 6.20.6 and Trakt module 1.2.5 complete the
+diagnostics migration and core cleanup. The module's minimum core dependency
+remains 6.20.5, which provides all required interfaces. The provider interface
+remains version 4; no new shared provider contract is introduced.
+
+### Trakt diagnostics and artwork
+
+The module's Diagnostics settings expose request logging and authorization
+status. Its `diagnostics.py` owns request execution, response mapping, dialogs,
+and report files. Small diagnostic subclasses share report handling and vary
+the request or output mapping. `TraktDiagnosticFiles` inherits core's generic
+`FileUtils` with the module's profile as its output directory. A successful empty
+response is logged; failed or invalid responses do not produce a report.
+Authorization diagnostics report authorization, refresh-token presence and
+expiry without including access or refresh token values.
+
+The existing core `log_request=trakt`, `test_func=trakt_response`,
+`test_func=trakt_auth`, and `test_func=get_response_sync` commands remain forwarding
+entry points. Arguments are JSON-encoded and URL-quoted before being passed to
+the module script, so commas, Unicode and URL query strings remain intact.
+Unavailable modules cause no request, setup prompt or fallback to a core client.
+Core's TMDb logging and unrelated diagnostics retain their existing pipeline.
+
+Trakt artwork, including type variants, is shipped only in the module. Core's
+duplicate PNGs and its Trakt-only normal/type export definitions are removed;
+shared icon generation and the remaining core icon families retain their
+existing behavior. Shared directory mappers, calendar stacking, stats caching,
+library tagging and persisted compatibility names remain core responsibilities.
 
 ## Ratings suppliers
 
@@ -747,3 +828,41 @@ ratings, and scrobbling assignments. After Kodi confirms the module is disabled,
 those assignments are removed through the existing settings interfaces. Cancelling
 leaves the module and its configuration unchanged. Ratings cache contents retain
 their normal expiry behaviour, as with the ratings-provider selector.
+
+## External identifiers
+
+Core obtains TMDb, IMDb, and TVDb IDs through
+`FindQueriesDatabase.get_external_ids()`. It reads the item-details `unique_id`
+metadata first and caches TMDb external-ID responses in `ItemQueries.db`.
+Ratings use the parent show's IMDb ID for seasons and episodes. These readers
+never request full item details from the detail service.
+
+Episode-parent lookup reads cached episode relationships, then previously cached
+TMDb external-ID responses, then TMDb's find endpoint using an IMDb or TVDb ID.
+A bare TMDb episode ID with no cached relationship or external ID cannot be
+reversed; monitor callers retain their title/external-ID fallback.
+
+`tmdbhelper.lib.sync.providers.identifiers.IdentifierResolver` defines optional
+provider enrichment. `IdentifierResolvers` gathers IDs from enabled, loadable
+providers declaring `identifier_resolver_class`; the first nonempty value for a
+key wins. The resolver returns a dictionary of unique-ID keys and values, using
+`tvshow.` prefixes for parent-show IDs when enriching TV items. Public lookups
+need not require an authorized account. Providers retain ownership of requests,
+source mappings, and identifier caches. Network failures return no enrichment.
+
+Player configuration checks enabled templates for `{trakt}`, `{slug}`,
+`{eptrakt}`, or `{epslug}` before requesting provider enrichment. Existing item
+IDs and TMDb IDs take precedence; missing/disabled providers leave generic IDs
+available. Templates requiring provider-specific IDs need that provider.
+
+The Trakt module owns `TraktIdentifiers.db`, including per-record expiry and
+successful-query timestamps. A failed request leaves both unchanged; a successful
+empty response records its query expiry. On first use it copies unexpired legacy
+`trakt_id` rows from `ItemQueries.db`, preserving the source and recording a
+one-time migration marker. Episode and show slugs are stored separately. Core no
+longer owns the Trakt lookup or its cache. Updated provider callers use their own
+identifier client. A temporary `get_trakt_id()` compatibility method delegates to
+Trakt's resolver through its optional `get_id()` hook. When an enabled older
+module lacks that resolver, the method shows the existing update warning once
+per session and returns no result. It does not construct a Trakt API or cache.
+Other provider features and the interface version remain unchanged.
