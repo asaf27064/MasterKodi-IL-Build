@@ -4,8 +4,8 @@ from collections import deque
 from itertools import chain
 from sys import getsizeof
 from threading import local
-from tmdbhelper.lib.items.database.baseitem_factories.metadata import ItemMetadataCache
 from tmdbhelper.lib.items.database.details.backend import DetailsDatabase
+from tmdbhelper.lib.items.database.details.metadata import DetailsMetadataCache
 
 
 class DetailsWorkProfiler:
@@ -36,16 +36,10 @@ class DetailsWorkProfiler:
         return record.call(stage, func, *args)
 
 
-class ProfiledItemMetadataCache(ItemMetadataCache):
+class ProfiledItemMetadataCache(DetailsMetadataCache):
     def __init__(self, database, profiler):
         super().__init__(database)
         self.profiler = profiler
-
-    def get_version(self):
-        record = self.profiler.record
-        if record is None:
-            return super().get_version()
-        return record.call('metadata_validation', super().get_version)
 
     def get_entry(self, key):
         record = self.profiler.record
@@ -77,6 +71,19 @@ class ProfiledItemMetadataCache(ItemMetadataCache):
         if record is None:
             return super().copy_item(item)
         return record.call('metadata_copy', super().copy_item, item)
+
+    def discard_saved(self, factory):
+        record = self.profiler.record
+        if record is None:
+            return super().discard_saved(factory)
+        record.count(f'metadata_save_scope_{factory.metadata_save_scope}')
+        return record.call('metadata_discard', super().discard_saved, factory)
+
+    def discard_entry(self, key):
+        record = self.profiler.record
+        if record is not None:
+            record.count('metadata_discarded_entries')
+        super().discard_entry(key)
 
 
 class ProfiledDetailsDatabase(DetailsDatabase):

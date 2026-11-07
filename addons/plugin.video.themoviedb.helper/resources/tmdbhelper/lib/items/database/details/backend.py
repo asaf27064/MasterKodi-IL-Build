@@ -1,17 +1,26 @@
+import sqlite3
 from contextlib import contextmanager
-from jurialmunkey.ftools import cached_property
+from threading import Lock, local
+from jurialmunkey.ftools import cached_property, threaded_cached_property
 from tmdbhelper.lib.addon.plugin import get_setting
 from tmdbhelper.lib.files.dbfunc import DatabaseConnection
 from tmdbhelper.lib.items.database.baseitem_factories.factory import BaseItemFactory
-from tmdbhelper.lib.items.database.baseitem_factories.metadata import ItemMetadataCache
 from tmdbhelper.lib.items.database.database import ItemDetailsDatabase
 from tmdbhelper.lib.items.database.details.apis import DetailsAPIs
+from tmdbhelper.lib.items.database.details.metadata import DetailsMetadataCache
 
 
 class DetailsDatabase(ItemDetailsDatabase):
     def __init__(self):
         self._basefolder = get_setting('cache_location', 'str') or ''
         super().__init__()
+
+    def get_shared_database(self, read_only=False):
+        """Open a connection that one thread uses at a time and another thread may close."""
+        timeout = self._db_read_timeout if read_only else self._db_timeout
+        connection = sqlite3.connect(self._db_file, timeout=timeout, check_same_thread=False)
+        connection.row_factory = sqlite3.Row
+        return self.set_pragmas(connection)
 
     def database_execute(self, connection, query, data=None):
         # The coordinator must roll back and restart on database errors. Treating
@@ -32,6 +41,13 @@ class DetailsDatabase(ItemDetailsDatabase):
 class DetailsConnection(DatabaseConnection):
     """Own both the cursor and connection, including rollback on failed batches."""
 
+    @classmethod
+    def get_shared(cls, cache):
+        """Keep a connection open that one thread uses at a time and another thread may close."""
+        connection = cls(cache)
+        connection.open_connection = cache.get_shared_database().cursor()
+        return connection
+
     def close(self):
         if self.open_connection is None:
             return
@@ -51,6 +67,36 @@ class DetailsConnection(DatabaseConnection):
         finally:
             if not existing_connection:
                 self.close()
+
+
+class DetailsReaderConnections:
+    """Keep one open connection per reader thread, as DetailsAPIs keeps one API context."""
+
+    def __init__(self, cache):
+        self.cache = cache
+        self.local = local()
+        self.lock = Lock()
+        self.connections = set()
+
+    def get(self):
+        try:
+            return self.local.connection
+        except AttributeError:
+            pass
+        connection = self.local.connection = self.get_connection()
+        with self.lock:
+            self.connections.add(connection)
+        return connection
+
+    def get_connection(self):
+        return DetailsConnection.get_shared(self.cache)
+
+    def close(self):
+        """Close after the reader threads have stopped."""
+        with self.lock:
+            connections, self.connections = self.connections, set()
+        for connection in connections:
+            connection.close()
 
 
 class DetailsLookup:
@@ -115,25 +161,34 @@ class DetailsBackend:
     def connection(self):
         return DetailsConnection(self.cache)
 
-    @cached_property
-    def metadata_cache(self):
-        return ItemMetadataCache(self.cache)
+    @threaded_cached_property
+    def reader_connections(self):
+        return DetailsReaderConnections(self.cache)
 
-    @cached_property
+    @threaded_cached_property
+    def metadata_cache(self):
+        return DetailsMetadataCache(self.cache)
+
+    @threaded_cached_property
     def is_sync_enabled(self):
         """Settings changes restart the service, so the setting is read once."""
         from tmdbhelper.lib.sync.prepare import SyncPreparation
         return SyncPreparation.is_enabled()
 
-    def lookup(self, request, parent_data=None):
+    def lookup(self, request, parent_data=None, connection=None):
         return self.lookup_class(
             self.cache, request, self.apis.get(request.language),
-            self.connection, parent_data, sync_enabled=self.is_sync_enabled,
+            self.connection if connection is None else connection,
+            parent_data, sync_enabled=self.is_sync_enabled,
             metadata_cache=self.metadata_cache)
 
-    def read(self, request):
-        lookup = self.lookup(request)
+    def read(self, request, connection=None):
+        lookup = self.lookup(request, connection=connection)
         return lookup.get_cached_data()
+
+    def read_worker(self, request):
+        """Read on a reader thread through that thread's own connection."""
+        return self.read(request, self.reader_connections.get())
 
     def fetch(self, request, parent_data):
         lookup = self.lookup_class(
@@ -164,6 +219,7 @@ class DetailsBackend:
             except BaseException:
                 cursor.execute('ROLLBACK')
                 raise
+        self.metadata_cache.discard_saved(self.lookup(request).factory)
 
     def clear_user_art(self, request):
         lookup = self.lookup(request)
@@ -178,11 +234,15 @@ class DetailsBackend:
         return lookup.factory.get_lookup_fallback()
 
     def close(self):
+        # Reader threads have stopped before the backend closes.
+        self.close_created(('connection', 'reader_connections', 'metadata_cache', 'apis'))
+
+    def close_created(self, names):
+        """Close each created resource in order, even when an earlier close fails."""
+        if not names:
+            return
         try:
-            self.connection.close()
+            if names[0] in self.__dict__:
+                self.__dict__[names[0]].close()
         finally:
-            try:
-                if 'metadata_cache' in self.__dict__:
-                    self.metadata_cache.close()
-            finally:
-                self.apis.close()
+            self.close_created(names[1:])

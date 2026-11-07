@@ -58,6 +58,11 @@ class ContainerDirectoryCommon(CommonContainerAPIs):
         return boolean(self.params.get('widget', False))
 
     @cached_property
+    def is_plugin_widget(self):
+        # Internal callers, such as the recommendations window, build lists without a plugin handle.
+        return self.is_widget and self.handle != -1
+
+    @cached_property
     def is_cacheonly(self):
         return boolean(self.params.get('cacheonly', self.default_cacheonly))
 
@@ -126,14 +131,27 @@ class ContainerDirectoryCommon(CommonContainerAPIs):
 
     @cached_property
     def action_discovery(self):
-        return self.get_action_discovery()
+        with TimerList(self.timer_lists, '--disc', log_threshold=0, logging=self.log_timers):
+            return self.get_action_discovery()
 
     def get_action_discovery(self):
         from tmdbhelper.lib.script.actions.discovery import ActionDiscovery
         return ActionDiscovery(self.sync_playdata.syncdata)
 
+    @cached_property
+    def context_menu_config(self):
+        with TimerList(self.timer_lists, '--menu', log_threshold=0, logging=self.log_timers):
+            return self.get_context_menu_config()
+
+    def get_context_menu_config(self):
+        from tmdbhelper.lib.items.context import ContextMenuConfig
+        config = ContextMenuConfig(self)
+        config.items  # Read the settings once for the whole list
+        return config
+
     def get_item_finaliser(self, li):
-        li.action_discovery = self.action_discovery
+        # Items use action discovery only through the shared context menu config.
+        li.context_menu_config = self.context_menu_config
         return self.item_finaliser(self, li)
 
     def make_item(self, li):
@@ -247,6 +265,11 @@ class ContainerDirectoryCommon(CommonContainerAPIs):
         """
         return
 
+    def refresh_after_finish(self):
+        """ Abstract method to refresh data after the directory is returned to Kodi
+        """
+        return
+
     def get_directory_items(self):
         with TimerList(self.timer_lists, 'get_list', logging=self.log_timers):
             return self.get_items(**self.params)
@@ -286,6 +309,8 @@ class ContainerDirectoryCommon(CommonContainerAPIs):
 
         if self.container_refresh:
             executebuiltin('Container.Refresh')
+
+        self.refresh_after_finish()
 
 
 class ContainerDirectory(ContainerDirectoryCommon):
