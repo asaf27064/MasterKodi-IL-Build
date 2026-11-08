@@ -7,18 +7,21 @@ from secrets import token_hex
 from threading import RLock, current_thread
 from time import perf_counter
 from traceback import format_exc
-from jurialmunkey.ftools import cached_property, threaded_cached_property
+from jurialmunkey.ftools import cached_property
 from tmdbhelper.lib.addon.logger import kodi_log
 from tmdbhelper.lib.addon.tmdate import get_datetime_now
 from tmdbhelper.lib.files.futils import write_to_file
 from tmdbhelper.lib.items.database.details.backend import DetailsBackend
-from tmdbhelper.lib.items.database.details.coordinator import DetailsCoordinator
 from tmdbhelper.lib.items.database.details.protocol import DetailsServiceError, encode_message
 from tmdbhelper.lib.items.database.details.profiling_details import (
     DetailsMemoryEstimate, DetailsWorkProfiler, ProfiledDetailsDatabase, ProfiledItemMetadataCache,
 )
 from tmdbhelper.lib.items.database.details.profiling_factories import ProfiledDetailsLookup
-from tmdbhelper.lib.items.database.details.service import DetailsRequestHandler
+from tmdbhelper.lib.items.database.details.timing import (
+    DetailsBatchTimings,
+    TimedDetailsCoordinator,
+    TimedDetailsRequestHandler,
+)
 
 
 class DetailsTimings:
@@ -114,7 +117,7 @@ class DetailsItemProfile(DetailsTimings):
             }
 
 
-class DetailsBatchReport(DetailsTimings):
+class DetailsBatchReport(DetailsTimings, DetailsBatchTimings):
     folder = 'timer_report/item_details'
 
     def __init__(self, entries, message, started):
@@ -236,6 +239,8 @@ class DetailsBatchReport(DetailsTimings):
             'and metadata_save_scope_all saves invalidate every entry. Writes outside the service, such as ratings '
             'and synced play data, do not invalidate reuse; changes to item details outside it request invalidation. '
             'metadata_store includes sizing/eviction, and metadata_copy isolates returned containers.',
+            'stored_read times reading and decoding a stored copy after a memory miss; '
+            'stored_hits skip metadata_assembly, and stored_queued counts assembled copies queued for storage.',
             'fetch includes worker factory setup, provider/cache requests, source mapping and write-queue generation.',
             'commit includes the richer-cache recheck and transaction; '
             'write_operations counts queued callbacks, not SQL statements.',
@@ -303,9 +308,8 @@ class ProfiledDetailsBackend(DetailsBackend):
     def cache(self):
         return ProfiledDetailsDatabase(self.work_profiler)
 
-    @threaded_cached_property
-    def metadata_cache(self):
-        return ProfiledItemMetadataCache(self.cache, self.work_profiler)
+    def get_metadata_cache(self):
+        return ProfiledItemMetadataCache(self.cache, self.stored_metadata, self.work_profiler)
 
     def call(self, request, stage, func, *args):
         record = self.profiles.get(request)
@@ -366,7 +370,7 @@ class ProfiledDetailsBackend(DetailsBackend):
         return data
 
 
-class ProfiledDetailsCoordinator(DetailsCoordinator):
+class ProfiledDetailsCoordinator(TimedDetailsCoordinator):
     def __init__(self):
         self.profiles = DetailsProfileRegistry()
         super().__init__(backend_class=lambda: ProfiledDetailsBackend(self.profiles))
@@ -520,7 +524,7 @@ class ProfiledDetailsCoordinator(DetailsCoordinator):
         return record.call('commit_and_finish', super().commit_completed, job, future)
 
 
-class ProfiledDetailsRequestHandler(DetailsRequestHandler):
+class ProfiledDetailsRequestHandler(TimedDetailsRequestHandler):
     def handle(self):
         self.report = None
         self.started = perf_counter()
@@ -548,6 +552,10 @@ class ProfiledDetailsRequestHandler(DetailsRequestHandler):
         self.report.state = 'partial' if response['errors'] else 'ok'
         return response
 
+    def get_batch_timings(self):
+        """The batch report is the coordinator group, so it also holds the stage timings."""
+        return self.report
+
     def get_detail_results(self, entries):
         results = self.report.call('details', super().get_detail_results, entries)
         with self.report.measure('profile_details_size'):
@@ -558,7 +566,7 @@ class ProfiledDetailsRequestHandler(DetailsRequestHandler):
         return self.report.call('sync_wait', super().wait_for_sync, requests, deadline)
 
     def submit_requests(self, requests):
-        return self.report.call('submit', self.server.coordinator.submit, requests, group=self.report)
+        return self.report.call('submit', super().submit_requests, requests)
 
     def get_result(self, future, deadline):
         return self.report.call('result_wait', super().get_result, future, deadline)

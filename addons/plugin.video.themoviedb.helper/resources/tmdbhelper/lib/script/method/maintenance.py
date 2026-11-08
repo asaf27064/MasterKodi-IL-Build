@@ -146,10 +146,15 @@ class DatabaseMaintenance:
             return
         self.vacuum_schedule.set_next()
         from tmdbhelper.lib.addon.logger import TimerFunc
+        from tmdbhelper.lib.items.database.cleanup import ItemDetailsCleanup
         from tmdbhelper.lib.items.database.database import ItemDetailsDatabase
+        from tmdbhelper.lib.items.database.details.storedmetadata import DetailsStoredMetadata
         from tmdbhelper.lib.query.database.database import FindQueriesDatabase
         with TimerFunc('Vacuuming databases:', inline=True):
-            ItemDetailsDatabase().execute_sql("VACUUM")
+            item_details = ItemDetailsDatabase()
+            DetailsStoredMetadata(item_details).prune()
+            ItemDetailsCleanup(item_details).prune()
+            item_details.execute_sql("VACUUM")
             FindQueriesDatabase().execute_sql("VACUUM")
 
     def delete_legacy_folders(self, force=False):
