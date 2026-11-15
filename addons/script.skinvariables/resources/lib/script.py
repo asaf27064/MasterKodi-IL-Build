@@ -50,6 +50,8 @@ class Script(object):
             lambda **kwargs: importmodule('resources.lib.methods.settings', 'set_kodisetting')(**kwargs),
         'run_skinsettings':
             lambda **kwargs: importmodule('resources.lib.skinsettings.controller', 'run_skinsettings')(**kwargs),
+        'run_multisearch':
+            lambda **kwargs: importmodule('resources.lib.multisearch.controller', 'run_multisearch')(**kwargs),
         'add_skinstring_history':
             lambda **kwargs: importmodule('resources.lib.methods.history', 'add_skinstring_history')(**kwargs),
         'set_shortcut':
@@ -104,7 +106,10 @@ class Script(object):
     def router(self):
         if self.params.get('action') == 'buildviews':
             from resources.lib.viewtypes.controller import ViewTypes
-            return ViewTypes().update_xml(skinfolder=self.params.get('folder'), **self.params)
+            return ViewTypes(
+                selector=self.params.get('selector'),
+                group_mode=self.params.get('groups'),
+            ).update_xml(skinfolder=self.params.get('folder'), **self.params)
 
         if self.params.get('action') == 'buildtemplate':
             from resources.lib.shortcuts.template.controller import ShortcutsTemplate

@@ -522,3 +522,33 @@ msgstr ""
 msgctxt "#32098"
 msgid "Disable default user"
 msgstr ""
+
+#: /resources/lib/multisearch/filters.py
+msgctxt "#32099"
+msgid "Decade"
+msgstr ""
+
+#: /resources/lib/multisearch/window.py
+msgctxt "#32100"
+msgid "Any"
+msgstr ""
+
+#: /resources/lib/multisearch/discover.py
+msgctxt "#32101"
+msgid "Discover movies"
+msgstr ""
+
+#: /resources/lib/multisearch/discover.py
+msgctxt "#32102"
+msgid "Discover TV shows"
+msgstr ""
+
+#: /resources/lib/multisearch/filters.py
+msgctxt "#32103"
+msgid "Other"
+msgstr ""
+
+#: /resources/lib/multisearch/progress.py
+msgctxt "#32104"
+msgid "Searching \"{}\""
+msgstr ""
