@@ -8,6 +8,7 @@ from resources.lib.skinsettings.items import (
     SkinSettingsCategory,
     PROPERTY_PREFIX,
     SEARCH_PROPERTY_PREFIX,
+    get_label_text,
 )
 
 
@@ -15,7 +16,11 @@ SEARCH_KEY = 'SkinVariables.Search'
 SEARCH_EDIT_ID = -300000
 # Global search keeps the skin's edit template control where the skin placed it, including its id.
 PLACED_EDIT_ID = 12
+TAGS_BUTTON_ID = 17
+SCOPE_BUTTON_ID = 18
 QUERY_PROPERTY = f'{SEARCH_PROPERTY_PREFIX}.Query'
+TAG_PROPERTY = f'{SEARCH_PROPERTY_PREFIX}.Tag'
+SCOPE_PROPERTY = f'{SEARCH_PROPERTY_PREFIX}.Local'
 TOP_CONTROL_PROPERTY = f'{PROPERTY_PREFIX}.TopControlID'
 BOTTOM_CONTROL_PROPERTY = f'{PROPERTY_PREFIX}.BottomControlID'
 WINDOW_PROPERTY_REGEX = re.compile(r'\bWindow\.Property\(', re.IGNORECASE)
@@ -42,8 +47,21 @@ class SearchBase:
     def onchangecategory(self, window):
         pass
 
+    def onreturncategory(self, window):
+        pass
+
     def onchangeview(self, window):
         pass
+
+    def onchangesearch(self, window):
+        pass
+
+    def onchoosetag(self, window):
+        pass
+
+    def get_tag_settings(self, window, settings):
+        """Settings whose tags the tags button lists."""
+        return settings
 
 
 class SearchDisabled(SearchBase):
@@ -58,6 +76,18 @@ class SearchMode(SearchBase):
     @property
     def label(self):
         return str(self.meta.get('label', self.default_label))
+
+    @cached_property
+    def tags_buttons(self):
+        """Tags button placed by the skin when the search definition has tags."""
+        return self.get_tags_buttons()
+
+    def get_tags_buttons(self):
+        return [SearchTagsButton(self)] if 'tags' in self.meta else []
+
+    @property
+    def placed_items(self):
+        return self.tags_buttons
 
     def get_shown_condition(self, item):
         raise NotImplementedError
@@ -86,12 +116,18 @@ class SearchCategory(SearchEditControl, SearchMode, SkinSettingsCategory):
     def get_shown_condition(self, item):
         return f'[{item.category.condition}] | [{self.condition} + {item.match_condition}]'
 
+    def onchoosetag(self, window):
+        # Matching settings only show in the search category so choosing a tag selects it.
+        window.set_category(self.key)
+
 
 class LocalSearch(SearchMode):
     """Edit control at the top of every category that filters the settings of the selected category."""
 
     edit_control_id = SEARCH_EDIT_ID
-    inactive_condition = f'String.IsEmpty(Window.Property({QUERY_PROPERTY}))'
+    inactive_condition = (
+        f'String.IsEmpty(Window.Property({QUERY_PROPERTY})) + String.IsEmpty(Window.Property({TAG_PROPERTY}))'
+    )
 
     def __init__(self, meta):
         self.meta = meta
@@ -109,7 +145,7 @@ class LocalSearch(SearchMode):
 
     def onchangecategory(self, window):
         window.set_text(self.edit.control_id, '')
-        window.set_search('')
+        window.clear_search()
 
 
 class GlobalSearch(LocalSearch):
@@ -127,13 +163,145 @@ class GlobalSearch(LocalSearch):
 
     @property
     def placed_items(self):
-        return [self.edit]
+        return [self.edit] + super().placed_items
 
     def get_shown_condition(self, item):
         return f'[[{item.category.condition}] + [{self.inactive_condition}]] | [{item.match_condition}]'
 
+    def onreturncategory(self, window):
+        # Results replace the settings of the selected category so returning to it shows its settings again.
+        self.onchangecategory(window)
+
     def onchangeview(self, window):
         window.set_view_bounds()
+
+
+class SearchAllCategory(SkinSettingsCategory):
+    """Category listed first by the mixed search that shows the settings of every category."""
+
+    default_label = '$LOCALIZE[137]'
+
+    def __init__(self, meta):
+        super().__init__(SEARCH_KEY, meta, 0)
+
+    @property
+    def label(self):
+        return str(self.meta.get('label', self.default_label))
+
+
+class MixedSearchScope:
+    """Scope of the mixed search, stored as a window property value so the skin conditions can follow it."""
+
+    property_value = ''
+    toggle_value = ''
+
+    def __init__(self, search):
+        self.search = search
+
+    def get_tag_settings(self, window, settings):
+        raise NotImplementedError
+
+    def onchangesearch(self, window):
+        pass
+
+
+class MixedGlobalScope(MixedSearchScope):
+    """Searches every category. Entering a search or tag selects the search category to show the results."""
+
+    toggle_value = 'true'
+
+    def get_tag_settings(self, window, settings):
+        return settings
+
+    def onchangesearch(self, window):
+        if not window.settings_search.is_active:
+            return
+        window.set_category(self.search.search_category.key)
+
+
+class MixedLocalScope(MixedSearchScope):
+    """Filters the selected category. The search category still filters every category and keeps the search."""
+
+    property_value = 'true'
+
+    def get_tag_settings(self, window, settings):
+        return [
+            setting
+            for setting in settings
+            if window.category in (self.search.search_category.key, setting.category.key)
+        ]
+
+
+class MixedSearch(GlobalSearch):
+    """Edit control placed by the skin that searches every category from the search category.
+
+    The search category shows the settings of every category until a search or tag filters them. Other categories
+    show their own settings. By default a search or tag selects the search category to search every category. The
+    skin can place a scope button that toggles to filtering the selected category instead.
+    """
+
+    scope_classes = (MixedGlobalScope, MixedLocalScope)
+    local_condition = f'!String.IsEmpty(Window.Property({SCOPE_PROPERTY}))'
+    global_condition = f'String.IsEmpty(Window.Property({SCOPE_PROPERTY}))'
+
+    @cached_property
+    def search_category(self):
+        return SearchAllCategory(self.meta.get('category', {}))
+
+    @property
+    def categories(self):
+        return [self.search_category]
+
+    @cached_property
+    def scope_buttons(self):
+        """Scope button placed by the skin when the search definition has a scope."""
+        return self.get_scope_buttons()
+
+    def get_scope_buttons(self):
+        return [SearchScopeButton(self)] if 'scope' in self.meta else []
+
+    @property
+    def placed_items(self):
+        return super().placed_items + self.scope_buttons
+
+    @cached_property
+    def scopes(self):
+        return self.get_scopes()
+
+    def get_scopes(self):
+        return {scope_class.property_value: scope_class(self) for scope_class in self.scope_classes}
+
+    def get_scope(self, window):
+        return self.scopes[window.getProperty(SCOPE_PROPERTY)]
+
+    def toggle_scope(self, window):
+        window.setProperty(SCOPE_PROPERTY, self.get_scope(window).toggle_value)
+        self.onchangesearch(window)
+
+    def get_shown_condition(self, item):
+        results_condition = f'[{self.search_category.condition}] | [{item.category.condition} + {self.local_condition}]'
+        search_condition = f'[{self.inactive_condition}] | [{item.match_condition}]'
+        category_condition = f'[{item.category.condition}] + [{self.inactive_condition}]'
+        return f'[[{results_condition}] + [{search_condition}]] | [{category_condition}]'
+
+    def is_search_category(self, window):
+        return window.category == self.search_category.key
+
+    def onchangecategory(self, window):
+        # The search category shows the results so selecting it keeps the search.
+        if self.is_search_category(window):
+            return
+        super().onchangecategory(window)
+
+    def onreturncategory(self, window):
+        # Results show in the search category rather than replacing the selected category so the search is kept.
+        pass
+
+    def onchangesearch(self, window):
+        self.get_scope(window).onchangesearch(window)
+
+    def get_tag_settings(self, window, settings):
+        return self.get_scope(window).get_tag_settings(window, settings)
 
 
 class SearchEdit(SearchEditControl, DefinitionItem):
@@ -153,10 +321,52 @@ class SearchEdit(SearchEditControl, DefinitionItem):
         return self.search.label
 
 
+class SearchTagsButton(DefinitionItem):
+    """Button placed by the skin that lists the tags of the settings in view to filter the settings by tag."""
+
+    control_id_start = TAGS_BUTTON_ID
+    template = 'tags'
+    default_label = '$LOCALIZE[20459]'
+
+    def __init__(self, search):
+        super().__init__('tags', search.meta['tags'], 0, search)
+
+    @property
+    def label(self):
+        return str(self.meta.get('label', self.default_label))
+
+    def onclick(self, window):
+        window.choose_tag(self.label_text)
+
+
+class SearchScopeButton(DefinitionItem):
+    """Radiobutton placed by the skin that toggles the mixed search between every category and the selected one.
+
+    Selected while the search covers every category.
+    """
+
+    control_id_start = SCOPE_BUTTON_ID
+    template = 'scope'
+
+    def __init__(self, search):
+        super().__init__('scope', search.meta['scope'], 0, search)
+
+    @property
+    def search(self):
+        return self.parent
+
+    def get_overrides(self):
+        return super().get_overrides() + [('selected', self.search.global_condition, {})]
+
+    def onclick(self, window):
+        self.search.toggle_scope(window)
+
+
 SEARCH_MODES = {
     'category': SearchCategory,
     'local': LocalSearch,
     'global': GlobalSearch,
+    'mixed': MixedSearch,
 }
 
 
@@ -165,10 +375,11 @@ def get_search(meta):
 
 
 class SettingsSearch:
-    """Matches settings whose label, group label or description contain every search term."""
+    """Matches settings with the selected tag whose label, group label, description or tags contain every term."""
 
-    def __init__(self, query, groups, settings):
+    def __init__(self, query, tag, groups, settings):
         self.query = query
+        self.tag = tag
         self.groups = groups
         self.settings = settings
 
@@ -176,16 +387,26 @@ class SettingsSearch:
     def terms(self):
         return self.query.lower().split()
 
-    def is_match(self, setting):
+    @cached_property
+    def is_active(self):
+        return bool(self.terms or self.tag)
+
+    def is_tag_match(self, setting):
+        return not self.tag or self.tag in setting.tags
+
+    def is_terms_match(self, setting):
         search_text = setting.search_text
         return all(term in search_text for term in self.terms)
+
+    def is_match(self, setting):
+        return self.is_tag_match(setting) and self.is_terms_match(setting)
 
     @cached_property
     def matched_settings(self):
         return self.get_matched_settings()
 
     def get_matched_settings(self):
-        if not self.terms:
+        if not self.is_active:
             return []
         return [setting for setting in self.settings if self.is_match(setting)]
 
@@ -218,11 +439,15 @@ class SettingsSearch:
         return self.get_properties()
 
     def get_properties(self):
-        return {QUERY_PROPERTY: ' '.join(self.terms), **self.match_properties}
+        return {
+            QUERY_PROPERTY: ' '.join(self.terms),
+            TAG_PROPERTY: get_label_text(self.tag),
+            **self.match_properties,
+        }
 
 
-class SettingsViewBounds:
-    """Finds the first and last focusable settings in the current view. Evaluate after the view properties are set."""
+class SettingsVisibility:
+    """Evaluates the conditions of settings against the window. Evaluate after the view properties are set."""
 
     def __init__(self, settings, window_id):
         self.settings = settings
@@ -232,6 +457,13 @@ class SettingsViewBounds:
         # Kodi evaluates script conditions against the topmost modal dialog when one is open, such as the keyboard.
         return WINDOW_PROPERTY_REGEX.sub(f'Window({self.window_id}).Property(', condition)
 
+    def is_visible(self, condition):
+        return xbmc.getCondVisibility(self.get_window_condition(condition))
+
+
+class SettingsViewBounds(SettingsVisibility):
+    """Finds the first and last focusable settings in the current view."""
+
     @cached_property
     def focusable_ids(self):
         return self.get_focusable_ids()
@@ -240,7 +472,7 @@ class SettingsViewBounds:
         return [
             setting.control_id
             for setting in self.settings
-            if xbmc.getCondVisibility(self.get_window_condition(setting.focusable_condition))
+            if self.is_visible(setting.focusable_condition)
         ]
 
     @cached_property
@@ -250,3 +482,57 @@ class SettingsViewBounds:
     def get_properties(self):
         bounds = [str(self.focusable_ids[0]), str(self.focusable_ids[-1])] if self.focusable_ids else ['', '']
         return dict(zip((TOP_CONTROL_PROPERTY, BOTTOM_CONTROL_PROPERTY), bounds))
+
+
+class SettingsTags(SettingsVisibility):
+    """Tags to choose from with the tags button, sorted by label. Offers to clear the selected tag first.
+
+    Lists the tags of the given settings until search terms are entered, then the tags of those in view.
+    """
+
+    clear_label_id = 231
+
+    def __init__(self, search, settings, window_id):
+        super().__init__(settings, window_id)
+        self.search = search
+
+    @cached_property
+    def tag_settings(self):
+        return self.get_tag_settings()
+
+    def get_tag_settings(self):
+        if not self.search.terms:
+            return self.settings
+        return [setting for setting in self.settings if self.is_visible(setting.visible)]
+
+    @cached_property
+    def tags(self):
+        return self.get_tags()
+
+    def get_tags(self):
+        labels = {
+            tag: get_label_text(tag)
+            for setting in self.tag_settings
+            for tag in setting.tags
+        }
+        return sorted(labels.items(), key=lambda item: item[1].casefold())
+
+    @cached_property
+    def choices(self):
+        """Tags with their labels. An empty tag clears the selected tag."""
+        return self.get_choices()
+
+    def get_choices(self):
+        clear = [('', xbmc.getLocalizedString(self.clear_label_id))] if self.search.tag else []
+        return clear + self.tags
+
+    @property
+    def labels(self):
+        return [label for tag, label in self.choices]
+
+    @property
+    def preselect(self):
+        return next((position for position, (tag, label) in enumerate(self.choices) if tag == self.search.tag), -1)
+
+    def get_tag(self, position):
+        return self.choices[position][0]

@@ -77,6 +77,10 @@ class MultiSearch:
         self.current = self.get_request(text, callback)
         self.dispatcher.submit(self.current)
 
+    def delay_settle(self):
+        """Wait the settle delay again before the waiting searches start."""
+        self.dispatcher.delay_settle()
+
     def is_current(self, request):
         return request is self.current
 
@@ -87,3 +91,4 @@ class MultiSearch:
     def close(self):
         self.clear()
         self.dispatcher.stop()
+        self.sources.search_cache.stop()
