@@ -5,13 +5,13 @@ import colorsys
 import hashlib
 import random
 import re
-from xbmc import getCacheThumbName, skinHasImage, Monitor, sleep
-from tmdbhelper.lib.addon.plugin import get_infolabel, get_setting, get_condvisibility, ADDONDATA
+from xbmc import skinHasImage, Monitor
+from tmdbhelper.lib.addon.plugin import get_infolabel, get_condvisibility, IMAGECACHE
 from jurialmunkey.window import WindowPropertySetter
 from jurialmunkey.parser import try_int, try_float
 from tmdbhelper.lib.files.futils import make_path
 from tmdbhelper.lib.addon.thread import SafeThread
-import urllib.request as urllib
+from urllib.parse import quote
 from tmdbhelper.lib.addon.logger import kodi_log
 
 CROPIMAGE_SOURCE = "Art(artist.clearlogo)|Art(tvshow.clearlogo)|Art(clearlogo)"
@@ -79,7 +79,7 @@ def _add_corners(image, destination, radius=40, aa_factor=4):
     alpha.paste(circle.crop((radius, radius, diameter, diameter)), (w - radius, h - radius))
     image.putalpha(alpha)
 
-    _saveimage(image, destination)
+    _saveimage_png(image, destination)
     image.close()
 
 
@@ -109,92 +109,71 @@ def _add_tile(image, destination):
     image_flip = image_flip.transpose(Image.FLIP_TOP_BOTTOM)
     image_tile.paste(image_flip, (0, 0))
 
-    _saveimage(image_tile, destination)
+    _saveimage_jpeg(image_tile, destination)
 
     image_flip.close()
     image_tile.close()
 
 
-def _closeimage(image, targetfile=None):
-    image.close()
-    if not targetfile:
-        return
-    xbmcvfs.delete(targetfile)
+def _get_wrapped_image(image):
+    """ Wrap source in image:// so that opening it caches the source in Kodi's texture cache """
+    if image.startswith('image://'):
+        return image
+    return f'image://{quote(image, safe="")}/'
 
 
-def _openimage(image, targetpath, filename):
-    """ Open image helper with thanks to sualfred """
-    # some paths require unquoting to get a valid cached thumb hash
-    cached_image_path = urllib.unquote(image.replace('image://', ''))
-    if cached_image_path.endswith('/'):
-        cached_image_path = cached_image_path[:-1]
-
-    cached_files = []
-    for path in [getCacheThumbName(cached_image_path), getCacheThumbName(image)]:
-        cached_files.append(os.path.join('special://profile/Thumbnails/', path[0], path[:-4] + '.jpg'))
-        cached_files.append(os.path.join('special://profile/Thumbnails/', path[0], path[:-4] + '.png'))
-        cached_files.append(os.path.join('special://profile/Thumbnails/Video/', path[0], path))
-
-    for i in range(1, 4):
-        try:
-            ''' Try to get cached image at first
-            '''
-            for cache in cached_files:
-                if xbmcvfs.exists(cache):
-                    try:
-                        img = _imageopen(xbmcvfs.translatePath(cache))
-                        return (img, None)
-
-                    except Exception as error:
-                        kodi_log('Image error: Could not open cached image --> %s' % error, 2)
-
-            ''' Skin images will be tried to be accessed directly. For all other ones
-                the source will be copied to the addon_data folder to get access.
-            '''
-            if skinHasImage(image):
-                if '://' not in image and not os.path.isabs(image):
-                    image = os.path.join('special://skin/media/', image)
-
-                try:  # in case image is packed in textures.xbt
-                    img = _imageopen(xbmcvfs.translatePath(image))
-                    return (img, None)
-
-                except Exception:
-                    return ('', None)
-
-            else:
-                targetfile = os.path.join(targetpath, f'temp_{filename}')  # Use temp file to avoid Kodi writing early
-                if not xbmcvfs.exists(targetfile):
-                    xbmcvfs.copy(image, targetfile)
-
-                img = _imageopen(targetfile)
-                return (img, targetfile)
-
-        except Exception as error:
-            kodi_log('Image error: Could not get image for %s (try %d) -> %s' % (image, i, error), 2)
-            sleep(500)
-            pass
-
-    return ('', None)
+def _openimage(image):
+    """ Open skin images directly and all other images via Kodi's texture cache """
+    if not skinHasImage(image):
+        return _imageopen(_get_wrapped_image(image))
+    if '://' not in image and not os.path.isabs(image):
+        image = os.path.join('special://skin/media/', image)
+    return _imageopen(xbmcvfs.translatePath(image))
 
 
-def _saveimage(image, targetfile):
+def _get_crop_bbox(img):
+    """ Get bounding box of visible area for cropping """
+    if 'A' in img.getbands():
+        # Visible area is wherever alpha is non-zero
+        return img.getchannel('A').getbbox()
+    try:
+        # Errors with single channel L conversion to RGBa so catch exceptions
+        return img.convert('RGBa').getbbox()
+    except Exception:
+        # If we get a conversion error just try getting bounding box with current channel
+        # We'll probably be okay with single channel texture since Kodi now handles these better
+        return img.getbbox()
+
+
+def _saveimage(image, targetfile, image_format='PNG', **kwargs):
     """ Save image object to disk
     Uses flush() and os.fsync() to ensure file is written to disk before continuing
     Used to prevent Kodi from attempting to cache the image before writing is complete
     """
     with xbmcvfs.File(targetfile, 'wb') as f:
-        image.save(f, 'PNG')
+        image.save(f, image_format, **kwargs)
         # f.flush()
         # os.fsync(f)
 
 
+def _saveimage_jpeg(image, targetfile):
+    """ Save image object without alpha channel as JPEG for faster encoding and decoding """
+    _saveimage(image, targetfile, image_format='JPEG', quality=90)
+
+
+def _saveimage_png(image, targetfile):
+    """ Save image object as PNG with low compression for faster encoding """
+    _saveimage(image, targetfile, image_format='PNG', compress_level=1)
+
+
 class ImageFunctions(SafeThread, WindowPropertySetter):
-    save_path = f"{get_setting('image_location', 'str') or ADDONDATA}{{}}/"
+    save_path = f'{IMAGECACHE}{{}}/'
     blur_size = try_int(get_infolabel('Skin.String(TMDbHelper.Blur.Size)')) or 480
     crop_size = (800, 310)
     radius = try_int(get_infolabel('Skin.String(TMDbHelper.Blur.Radius)')) or 40
     corner = try_int(get_infolabel('Skin.String(TMDbHelper.Corner.Radius)')) or 20
+    blur_scale = max(1, min(4, radius // 10))  # Heavy blurs are processed at reduced size then scaled back up
+    blur_work_size = blur_size // blur_scale
 
     def __init__(self, method=None, artwork=None, is_thread=True, prefix='ListItem'):
         if is_thread:
@@ -205,22 +184,22 @@ class ImageFunctions(SafeThread, WindowPropertySetter):
         self.save_prop = None
         if method == 'blur':
             self.func = self.blur
-            self.save_path = make_path(self.save_path.format('blur_v3'))
+            self.save_path = make_path(self.save_path.format('blur'))
             self.save_prop = f'{prefix}.BlurImage'
             self.save_orig = True
         elif method == 'crop':
             self.func = self.crop
-            self.save_path = make_path(self.save_path.format('crop_v2'))
+            self.save_path = make_path(self.save_path.format('crop'))
             self.save_prop = f'{prefix}.CropImage'
             self.save_orig = True
         elif method == 'desaturate':
             self.func = self.desaturate
-            self.save_path = make_path(self.save_path.format('desaturate_v2'))
+            self.save_path = make_path(self.save_path.format('desaturate'))
             self.save_prop = f'{prefix}.DesaturateImage'
             self.save_orig = True
         elif method == 'colors':
             self.func = self.colors
-            self.save_path = make_path(self.save_path.format('colors_v2'))
+            self.save_path = make_path(self.save_path.format('colors'))
             self.save_prop = f'{prefix}.Colors'
 
     def run(self):
@@ -248,18 +227,11 @@ class ImageFunctions(SafeThread, WindowPropertySetter):
         destination = os.path.join(self.save_path, filename)
         try:
             if not xbmcvfs.exists(destination):  # Used to do os.utime(destination, None) on existing here
-                img, targetfile = _openimage(source, self.save_path, filename)
-                try:
-                    # Errors with single channel L conversion to RGBa so catch exceptions
-                    img_rgba = img.convert('RGBa')
-                    img = img.crop(img_rgba.getbbox())
-                except Exception:
-                    # If we get a conversion error just try getting bounding box with current channel
-                    # We'll probably be okay with single channel texture since Kodi now handles these better
-                    img = img.crop(img.getbbox())
+                img = _openimage(source)
+                img = img.crop(_get_crop_bbox(img))
                 img.thumbnail(self.crop_size)
-                _saveimage(img, destination)
-                _closeimage(img, targetfile)
+                _saveimage_png(img, destination)
+                img.close()
 
             return destination
 
@@ -275,11 +247,13 @@ class ImageFunctions(SafeThread, WindowPropertySetter):
         tile_destination = os.path.join(self.save_path, f'{filename}-tiled.jpg')
         try:
             if not xbmcvfs.exists(destination) or (diffuse_destination and not xbmcvfs.exists(diffuse_destination)):  # os.utime(destination, None)
-                img, targetfile = _openimage(source, self.save_path, filename)
-                img.thumbnail((self.blur_size, self.blur_size))
+                img = _openimage(source)
+                img.draft(None, (self.blur_work_size, self.blur_work_size))  # JPEG sources decode directly at reduced scale
+                img.thumbnail((self.blur_work_size, self.blur_work_size))
                 img = img.convert('RGB')
-                img = img.filter(ImageFilter.GaussianBlur(self.radius))
-                _saveimage(img, destination)
+                img = img.filter(ImageFilter.GaussianBlur(self.radius / self.blur_scale))
+                img = img.resize((img.width * self.blur_scale, img.height * self.blur_scale), Image.BILINEAR)
+                _saveimage_jpeg(img, destination)
 
                 if diffuse_destination:
                     _add_corners(img, diffuse_destination, radius=self.corner)
@@ -287,7 +261,7 @@ class ImageFunctions(SafeThread, WindowPropertySetter):
                 if tile_destination:
                     _add_tile(img, tile_destination)
 
-                _closeimage(img, targetfile)
+                img.close()
 
             return destination
 
@@ -300,10 +274,10 @@ class ImageFunctions(SafeThread, WindowPropertySetter):
         destination = os.path.join(self.save_path, filename)
         try:
             if not xbmcvfs.exists(destination):  # os.utime(destination, None)
-                img, targetfile = _openimage(source, self.save_path, filename)
+                img = _openimage(source)
                 img = img.convert('LA')
-                _saveimage(img, destination)
-                _closeimage(img, targetfile)
+                _saveimage_png(img, destination)
+                img.close()
 
             return destination
 
@@ -381,16 +355,15 @@ class ImageFunctions(SafeThread, WindowPropertySetter):
     def colors(self, source):
         filename = f'{md5hash(source)}.png'
         destination = self.save_path + filename
-        targetfile = None
 
         try:
             if xbmcvfs.exists(destination):  # os.utime(destination, None)
                 img = _imageopen(xbmcvfs.translatePath(destination))
             else:
-                img, targetfile = _openimage(source, self.save_path, filename)
+                img = _openimage(source)
                 img.thumbnail((128, 128))
                 img = img.convert('RGB')
-                _saveimage(img, destination)
+                _saveimage_png(img, destination)
 
             maincolor_rgb = self.get_maincolor(img)
             maincolor_hex = self.rgb_to_hex(*self.get_color_lumsat(*maincolor_rgb))
@@ -419,7 +392,7 @@ class ImageFunctions(SafeThread, WindowPropertySetter):
                     compcolor_propname, compcolor_propvalu, compcolor_hex, compcolor_propchek])
                 thread_compcolor.start()
 
-            _closeimage(img, targetfile)
+            img.close()
             return maincolor_hex
 
         except Exception as exc:
