@@ -24,7 +24,7 @@ class source:
 
 	def sources(self, data, hostDict):
 		sources = []
-		if not data: return sources
+		if not data or 'tvshowtitle' not in data: return sources    # episodes only
 		sources_append = sources.append
 		try:
 			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
@@ -92,7 +92,7 @@ class source:
 	def sources_packs(self, data, hostDict, search_series=False, total_seasons=None, bypass_filter=False):
 		sources = []
 		if search_series: return sources # eztz does not have showPacks
-		if not data: return sources
+		if not data or 'tvshowtitle' not in data: return sources    # episodes only
 		sources_append = sources.append
 		try:
 			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')
@@ -167,7 +167,7 @@ class source:
 		rather than accepting it as args, since it can be called from any
 		failure point above."""
 		sources = []
-		if not data: return sources
+		if not data or 'tvshowtitle' not in data: return sources    # episodes only
 		sources_append = sources.append
 		try:
 			title = data['tvshowtitle'].replace('&', 'and').replace('Special Victims Unit', 'SVU').replace('/', ' ').replace('$', 's')

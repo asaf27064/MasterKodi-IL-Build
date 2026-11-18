@@ -54,6 +54,7 @@ class source:
 		try:
 			url += '&dmmProblemKey=%s&solution=%s' % get_secret()
 			results = client.request(url, timeout=self.timeout)
+			if not results: return    # the site did not answer (client.request already logged why)
 			files = jsloads(results)['results']
 			self.files += files
 		except:

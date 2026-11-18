@@ -63,6 +63,13 @@ class SearchBase:
         """Settings whose tags the tags button lists."""
         return settings
 
+    def get_state_properties(self, window):
+        """Window properties of the search mode that a reloaded view restores."""
+        return {}
+
+    def onrestore(self, window):
+        pass
+
 
 class SearchDisabled(SearchBase):
     """Stands in for the search when the definition does not enable it."""
@@ -120,6 +127,9 @@ class SearchCategory(SearchEditControl, SearchMode, SkinSettingsCategory):
         # Matching settings only show in the search category so choosing a tag selects it.
         window.set_category(self.key)
 
+    def onrestore(self, window):
+        window.set_text(self.control_id, window.search_query)
+
 
 class LocalSearch(SearchMode):
     """Edit control at the top of every category that filters the settings of the selected category."""
@@ -127,6 +137,9 @@ class LocalSearch(SearchMode):
     edit_control_id = SEARCH_EDIT_ID
     inactive_condition = (
         f'String.IsEmpty(Window.Property({QUERY_PROPERTY})) + String.IsEmpty(Window.Property({TAG_PROPERTY}))'
+    )
+    active_condition = (
+        f'!String.IsEmpty(Window.Property({QUERY_PROPERTY})) | !String.IsEmpty(Window.Property({TAG_PROPERTY}))'
     )
 
     def __init__(self, meta):
@@ -146,6 +159,9 @@ class LocalSearch(SearchMode):
     def onchangecategory(self, window):
         window.set_text(self.edit.control_id, '')
         window.clear_search()
+
+    def onrestore(self, window):
+        window.set_text(self.edit.control_id, window.search_query)
 
 
 class GlobalSearch(LocalSearch):
@@ -187,6 +203,24 @@ class SearchAllCategory(SkinSettingsCategory):
     @property
     def label(self):
         return str(self.meta.get('label', self.default_label))
+
+
+class SearchActiveCategory(SearchAllCategory):
+    """Search category hidden until a search or tag is active. Stays shown while selected so the view keeps it."""
+
+    def __init__(self, meta, search):
+        super().__init__(meta)
+        self.search = search
+
+    @cached_property
+    def visible(self):
+        return self.get_visible()
+
+    def get_visible(self):
+        return f'[{self.search.active_condition}] | [{self.condition}]'
+
+    def get_overrides(self):
+        return super().get_overrides() + [('visible', self.visible, {})]
 
 
 class MixedSearchScope:
@@ -246,7 +280,13 @@ class MixedSearch(GlobalSearch):
 
     @cached_property
     def search_category(self):
-        return SearchAllCategory(self.meta.get('category', {}))
+        return self.get_search_category()
+
+    def get_search_category(self):
+        meta = self.meta.get('category', {})
+        if meta.get('autohide'):
+            return SearchActiveCategory(meta, self)
+        return SearchAllCategory(meta)
 
     @property
     def categories(self):
@@ -302,6 +342,9 @@ class MixedSearch(GlobalSearch):
 
     def get_tag_settings(self, window, settings):
         return self.get_scope(window).get_tag_settings(window, settings)
+
+    def get_state_properties(self, window):
+        return {SCOPE_PROPERTY: window.getProperty(SCOPE_PROPERTY)}
 
 
 class SearchEdit(SearchEditControl, DefinitionItem):
