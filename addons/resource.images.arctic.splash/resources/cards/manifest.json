@@ -1,0 +1,518 @@
+{
+  "version": 2,
+  "dimensions": [
+    1280,
+    720
+  ],
+  "source": "https://kodi.wiki/view/Weather_addons#Weather_Codes",
+  "generator": "built-in imagegen",
+  "styleReference": "Approved flat-left hillside test and the earlier Arctic Splash weather paintings, including the Fuji spring cherry blossoms.",
+  "prompt": "Paint a continuous Japanese anime weather scene with crisp terrain and cloud silhouettes, concentrating landmarks and detail on the right and lower right. Use a single opaque background color through the full height of the left 20 to 25 percent of the frame.",
+  "cards": [
+    {
+      "code": "0",
+      "condition": "tornado",
+      "scene": "Japanese rural plain with a torii gate and distant low farmhouse roofs",
+      "weather": "A clearly visible dark funnel cloud descends from a rotating storm cloud to the distant field, strong gusts bending grasses and windblown leaves. Ominous daylight, no destruction.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "0.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#546e93"
+    },
+    {
+      "code": "1",
+      "condition": "tropical storm",
+      "scene": "Okinawan coastal village lane with red tiled roofs, stone walls and subtropical trees",
+      "weather": "Torrential diagonal tropical rain, heavily wind-bent palms, dense low storm clouds and overflowing gutters.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "1.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#3a5781"
+    },
+    {
+      "code": "2",
+      "condition": "hurricane",
+      "scene": "Japanese Pacific coast seen from an elevated shrine path, offshore islands and fishing port below",
+      "weather": "An immense swirling storm cloud mass, exceptionally strong winds bending pines, huge white-capped waves and sheets of horizontal rain. Depict from sheltered elevated land.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "2.jpg",
+      "flatLeftPixels": 288,
+      "flatLeftColor": "#415c79"
+    },
+    {
+      "code": "3",
+      "condition": "severe thunderstorms",
+      "scene": "mountain temple pagoda above a steep Japanese valley",
+      "weather": "Multiple bright branching lightning bolts dominate a towering black thundercloud, violent heavy rain curtains and windswept pines, dramatic dark storm daylight.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "3.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#2d326c"
+    },
+    {
+      "code": "4",
+      "condition": "thunderstorms",
+      "scene": "Tokyo side street with lantern-lit shopfronts and distant modern buildings",
+      "weather": "A prominent branching lightning bolt overhead, heavy storm clouds and rain streaks, wet reflective pavement under warm shop lighting.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "artDirection": "Use subdued blue-grey evening light, a traditional cafe with amber shop windows at bottom right, and crisp painted rain over the shop and darker clouds. Keep the left edge defined even during the storm.",
+      "file": "4.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#243d5c"
+    },
+    {
+      "code": "5",
+      "condition": "mixed rain and snow",
+      "scene": "Japanese mountain onsen village with a little wooden bridge",
+      "weather": "Visible wet rain streaks AND broad falling snowflakes simultaneously; slushy bridge planks, melting snow on roofs, cold grey daylight.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "5.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#748aaf"
+    },
+    {
+      "code": "6",
+      "condition": "mixed rain and sleet",
+      "scene": "Kyoto narrow canal beside wooden machiya houses",
+      "weather": "Slanting liquid rain mixed with clearly visible tiny translucent ice pellets, wet rippled canal and ice-speckled paving, cold overcast daylight.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "6.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#607a9f"
+    },
+    {
+      "code": "7",
+      "condition": "mixed snow and sleet",
+      "scene": "high mountain shrine approach with red torii gates",
+      "weather": "Soft irregular snowflakes mixed with distinct smaller hard ice pellets, crunchy icy path and lightly snow-capped shrine roofs, wintry grey light.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "7.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#829ec6"
+    },
+    {
+      "code": "8",
+      "condition": "freezing drizzle",
+      "scene": "quiet Japanese garden with a stone lantern and delicate maple branches",
+      "weather": "Fine sparse drizzle visibly freezing onto bare branches as a smooth clear ice glaze, tiny icicles on stone lantern, thin glassy ice on stepping stones, soft grey daylight.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "8.jpg",
+      "flatLeftPixels": 304,
+      "flatLeftColor": "#a6b3c6"
+    },
+    {
+      "code": "9",
+      "condition": "drizzle",
+      "scene": "old Kyoto residential lane with green potted plants and wooden houses",
+      "weather": "Very fine gentle rain throughout the scene, tiny pavement ripples and moist softly reflective stones, muted overcast daylight, no heavy downpour.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "9.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#7e95b4"
+    },
+    {
+      "code": "10",
+      "condition": "freezing rain",
+      "scene": "Japanese lakeside shrine with a red bridge and winter trees",
+      "weather": "Clearly visible sustained rain falling onto frozen surfaces; thick transparent ice coating branches and red bridge rails, hanging icicles, glassy slick steps and icy lakeshore.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "10.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#566987"
+    },
+    {
+      "code": "11",
+      "condition": "showers",
+      "scene": "Tokyo shopping alley with glowing paper lanterns and traditional wooden storefronts",
+      "weather": "A distinct active rain shower, visible rain streaks and puddle splashes, blue-grey broken clouds overhead, warm golden reflections on wet pavement.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "11.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#2e5691"
+    },
+    {
+      "code": "12",
+      "condition": "showers",
+      "scene": "rainy hydrangea-lined stone steps leading to a Kamakura temple",
+      "weather": "Fresh vigorous rain shower, wet hydrangeas and running water down steps, crisp visible rain streaks and a dense overhead shower cloud.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "artDirection": "Make the wet hydrangea clusters substantial and complex at lower right, with cool teal and violet natural accents.",
+      "file": "12.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#7292b9"
+    },
+    {
+      "code": "13",
+      "condition": "snow flurries",
+      "scene": "Kyoto pagoda seen down a quiet wooden residential lane",
+      "weather": "Sparse light drifting snowflakes in the air, only a delicate dusting on eaves, ground mostly visible and dry, pale cold daylight.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "13.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#98bcf6"
+    },
+    {
+      "code": "14",
+      "condition": "light snow showers",
+      "scene": "Japanese garden pond and arched bridge beneath sculptural pines",
+      "weather": "Gentle intermittent falling snow, small modest snow cloud above, light snow accumulation on bridge and pines, bright cold gaps in cloud.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "14.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#8cb2df"
+    },
+    {
+      "code": "15",
+      "condition": "blowing snow",
+      "scene": "Hokkaido countryside lane with red-roofed wooden houses",
+      "weather": "Strong wind carries abundant loose snow horizontally in low streaking plumes across a snow-covered path; bent grasses and wind-swept drifts, reduced visibility.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "15.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#7896ba"
+    },
+    {
+      "code": "16",
+      "condition": "snow",
+      "scene": "traditional Japanese mountain village with steep thatched roofs",
+      "weather": "Steady moderate snowfall with clear large flakes across all depths, soft white snow covering roofs and lane, calm winter atmosphere, overcast light.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "artDirection": "Give the snow real thickness and small clean flakes over the roofs and pines on the right, with an empty but clearly painted frozen field on the left.",
+      "file": "16.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#8caacc"
+    },
+    {
+      "code": "17",
+      "condition": "hail",
+      "scene": "Japanese countryside shrine courtyard with dark stone paving and a cedar tree",
+      "weather": "Clearly depict HARD ROUND WHITE HAILSTONES falling, bouncing and collecting as distinct small spherical pellets on dark wet paving; dramatic cold storm cloud, no snowflakes.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "17.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#556682"
+    },
+    {
+      "code": "18",
+      "condition": "sleet",
+      "scene": "Tokyo residential side street with a small local shrine and bare trees",
+      "weather": "Dense tiny semi-translucent ice pellets falling diagonally and collecting as granular slush on dark road edges, cold steel-grey sky, no fluffy snow.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "18.jpg",
+      "flatLeftPixels": 304,
+      "flatLeftColor": "#576e8d"
+    },
+    {
+      "code": "19",
+      "condition": "dust",
+      "scene": "rural Japanese farm road through dry fields toward distant hills and a small shrine",
+      "weather": "Visible swirling ochre-brown dust blown across the road and farmland, dusty airborne particles and reduced hill visibility, warm dry stormy light.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "19.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#d18345"
+    },
+    {
+      "code": "20",
+      "condition": "foggy",
+      "scene": "mountain forest path through tall Japanese cedars toward a small shrine gate",
+      "weather": "Dense cool white fog obscures the distance in layered banks, cedar trunks disappear into mist, wet mossy stepping stones, very limited visibility.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "artDirection": "Depict low-visibility fog as actual, defined overlapping banks in the landscape, with crisp nearby ground and a darker cedar, lantern and gate on the right getting progressively obscured by depth. There is no image-processing blur.",
+      "file": "20.jpg",
+      "flatLeftPixels": 304,
+      "flatLeftColor": "#96aaab"
+    },
+    {
+      "code": "21",
+      "condition": "haze",
+      "scene": "Mount Fuji beyond a Japanese lakeside town and cherry blossom branches",
+      "weather": "Soft warm atmospheric haze greatly desaturates distant Fuji and the far shore, diffused muted sun with gentle peach-grey sky, near buildings remain clearer; dry air, no fog banks.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "artDirection": "Place fine spring blossom clusters over the scene from the right only. Haze is a warm change in value on distant scenery with coherent outlines, particularly the right-side Fuji silhouette. Keep the near water crisp.",
+      "file": "21.jpg",
+      "flatLeftPixels": 280,
+      "flatLeftColor": "#ebac9a"
+    },
+    {
+      "code": "22",
+      "condition": "smoky",
+      "scene": "Japanese hillside temple overlooking a wooded valley",
+      "weather": "Distinct blue-grey and brown smoke plumes drift across the valley from a distant unseen source, darken the air and veil a dull orange sun; visible airborne smoke layers, no foreground fire.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "22.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#817c83"
+    },
+    {
+      "code": "23",
+      "condition": "blustery",
+      "scene": "autumn maple-lined approach to a Kyoto shrine",
+      "weather": "Abrupt strong gusts sweep many orange maple leaves diagonally across path and sky, trees visibly lean and banner fabric snaps; fast heavy patchy grey clouds.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "23.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#375b8d"
+    },
+    {
+      "code": "24",
+      "condition": "windy",
+      "scene": "Japanese coastal headland with a red torii, windswept coastal pines and autumn grasses",
+      "weather": "Dry strong wind bends the pines and grasses and drives whitecaps and spray into the rocks beneath stretched broken clouds.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "24.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#006bdd"
+    },
+    {
+      "code": "25",
+      "condition": "cold",
+      "scene": "Japanese winter lakeside with reeds, stone lantern and distant Mount Fuji",
+      "weather": "Bitter cold still air, heavy white hoarfrost on reeds and bare branches, frozen pond edges and pale icy-blue sky; no falling snow and no rain.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "25.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#6eb4fa"
+    },
+    {
+      "code": "26",
+      "condition": "cloudy",
+      "scene": "Japanese upland tea terraces and a timber farmhouse beside a cedar grove",
+      "weather": "Continuous grey overcast over diffuse cool daylight with no precipitation.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "26.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#a2a9b9"
+    },
+    {
+      "code": "27",
+      "condition": "mostly cloudy (night)",
+      "scene": "Kyoto pagoda above lantern-lit traditional rooftops at night",
+      "weather": "Nighttime: most of sky covered by dark blue-grey clouds with just a small gap revealing a crescent moon and a few stars. Warm lantern light, no sun, no rain.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "27.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#12244c"
+    },
+    {
+      "code": "28",
+      "condition": "mostly cloudy (day)",
+      "scene": "cherry blossom-lined riverside with a red Japanese arched bridge",
+      "weather": "Daytime: sky is about eighty percent covered by substantial grey-white clouds, only small blue openings and subdued diffused sunlight; no rain.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "artDirection": "Use the branch and blossoms from the Fuji reference as a visual motif. Show a large mostly cloudy cover with only small blue openings. Pink cherry sprays and red bridge occupy the right.",
+      "file": "28.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#778eb0"
+    },
+    {
+      "code": "29",
+      "condition": "partly cloudy (night)",
+      "scene": "Japanese lakeside shrine and red torii reflected in still water",
+      "weather": "Nighttime: separated silver-edged clouds cover about half the deep indigo sky, bright moon and stars clearly visible in broad gaps, moonlit water and warm shrine light.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "29.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#051a51"
+    },
+    {
+      "code": "30",
+      "condition": "partly cloudy (day)",
+      "scene": "spring cherry blossom path along a Kyoto canal and tiled roofs",
+      "weather": "Daytime: large separated fluffy white cumulus clouds with broad vivid blue gaps, patches of warm sunlight and soft shade, fresh pink blossom and green foliage.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "artDirection": "Bring a visibly blooming cherry at the lower right, with individually painted pink and white petal clusters, a tiled house and small highlights in the water.",
+      "file": "30.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#4197e4"
+    },
+    {
+      "code": "31",
+      "condition": "clear (night)",
+      "scene": "Traditional townhouses and a willow along a Japanese canal",
+      "weather": "Cloudless indigo night with crisp stars, a crescent moon and warm windows reflecting in the still water.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "31.jpg",
+      "flatLeftPixels": 304,
+      "flatLeftColor": "#112444"
+    },
+    {
+      "code": "32",
+      "condition": "sunny",
+      "scene": "Mount Fuji above a blue spring lake, a distant pagoda, and pink cherry blossoms framing the right shore.",
+      "weather": "Bright clear spring sunlight, blue sky and clearly legible Fuji and lake, with sparse tiny cloud wisps near the mountain.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "artDirection": "Use the actual Fuji splash artwork's signature spring scene as the main style and motif reference: muscular dark cherry branches, blush-pink flower clusters, blue lake reflections, fresh pine slopes and snowy Fuji. Move Fuji to the right of center and put the prominent croppings of cherry branches and rocks at the right and lower-right only. A small clear warm sun and nearly cloudless clear blue spring sky. Keep left edge of sky, distant shore, and blue water distinctly painted, as in a deep focus landscape.",
+      "file": "32.jpg",
+      "flatLeftPixels": 304,
+      "flatLeftColor": "#4399e4"
+    },
+    {
+      "code": "33",
+      "condition": "fair (night)",
+      "scene": "Tokyo backstreet with warm lanterns, wooden houses and distant city towers",
+      "weather": "Pleasant fair night, deep blue starry sky mostly clear with one or two very small wispy clouds, a delicate moon, dry pavement and warm golden windows. No rain.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "33.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#071d57"
+    },
+    {
+      "code": "34",
+      "condition": "fair (day)",
+      "scene": "traditional Kyoto temple garden with pink cherry blossoms and a stone lantern",
+      "weather": "Pleasant soft sunny daytime, mostly clear pale blue sky with a few delicate wisps, gentle warm light, calm spring atmosphere, no rain.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "artDirection": "Show delicate sunlit pink Sakura bouquets above the stone lantern and temple edge at lower right, with only thin wispy clouds.",
+      "file": "34.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#84bbfc"
+    },
+    {
+      "code": "35",
+      "condition": "mixed rain and hail",
+      "scene": "Japanese temple entrance with a red gate, dark stone steps and maples",
+      "weather": "Both heavy rain streaks and distinct ROUND WHITE HAIL PELLETS visibly falling and bouncing on wet steps, small hailstones accumulating at edges, dark storm cloud. No fluffy snowflakes.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "35.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#4b6b91"
+    },
+    {
+      "code": "36",
+      "condition": "hot",
+      "scene": "Japanese summer lane with a sunlit shrine, bamboo fence and brilliant green trees",
+      "weather": "Intense hot summer sunshine, high blazing sun, heat shimmer distorting distant roofs and road, hard short shadows, saturated warm golden light and deep blue nearly cloudless sky; dry ground.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "36.jpg",
+      "artDirection": "Keep the sun high over the right-hand shrine, with clear sky and open dry ground extending to the left edge.",
+      "flatLeftPixels": 280,
+      "flatLeftColor": "#529de0"
+    },
+    {
+      "code": "37",
+      "condition": "isolated thunderstorms",
+      "scene": "Mount Fuji viewed across bright green rice paddies with a rural shrine",
+      "weather": "One isolated towering dark thundercloud over a single distant hill with one visible lightning bolt and localized rain shaft; rest of the daytime sky remains blue and sunlit.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "37.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#64b4fd"
+    },
+    {
+      "code": "38",
+      "condition": "scattered thunderstorms",
+      "scene": "Japanese mountain valley with a red pagoda and layered forest ridges",
+      "weather": "Several separated dark thundercloud cells scattered across the broad sky, two distant lightning bolts over different ridges with separate rain shafts, blue daylight openings between storm cells.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "38.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#3e99f4"
+    },
+    {
+      "code": "39",
+      "condition": "scattered thunderstorms",
+      "scene": "Japanese fishing harbor with wooden boats, tiled houses and a coastal shrine",
+      "weather": "Scattered active thunderstorm cells above the sea, spaced lightning and localized distant rain curtains alternating with open sky, moody late-afternoon light reflected in harbor water.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "39.jpg",
+      "flatLeftPixels": 304,
+      "flatLeftColor": "#4f6690"
+    },
+    {
+      "code": "40",
+      "condition": "scattered showers",
+      "scene": "Japanese tea terraces and a small mountain village",
+      "weather": "Separate soft grey shower clouds with clearly visible localized rain shafts over different distant hills, broad sunny blue gaps and some near foreground sunlight, NO lightning.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "40.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#64b7fd"
+    },
+    {
+      "code": "41",
+      "condition": "heavy snow",
+      "scene": "remote Japanese mountain temple and a tall tiered pagoda among cedars",
+      "weather": "Dense heavy snowfall with abundant large flakes at several depths, deep thick snow loads on roofs and trees, broad deep drifts covering the temple steps, muted cold daylight.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "41.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#7689a7"
+    },
+    {
+      "code": "42",
+      "condition": "scattered snow showers",
+      "scene": "Japanese alpine valley with wooden village roofs and distant peaks",
+      "weather": "Separated snow-shower clouds release localized curtains of snow across alternate peaks, some broad blue sky and bright sunlight gaps, sparse flakes near viewer and uneven light snow cover.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "42.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#50a2ee"
+    },
+    {
+      "code": "43",
+      "condition": "heavy snow",
+      "scene": "old Japanese onsen town with warm lantern-lit windows beside a little canal",
+      "weather": "Very heavy thick falling snow fills the scene, deep piled snow on rooftops and stone bridge rails, snowy lane and soft low visibility, blue twilight with amber windows.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "43.jpg",
+      "artDirection": "Ample heavy flakes in front of the warmly lit buildings and bridge. Smaller, lower-contrast distant flakes over the open canal at the left.",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#1a365e"
+    },
+    {
+      "code": "44",
+      "condition": "partly cloudy",
+      "scene": "Japanese red pagoda framed by cherry blossoms above a forested valley",
+      "weather": "Neutral daytime partly cloudy conditions: balanced scattered soft white cumulus clouds and large blue sky openings, sunlight alternating with cloud shade, no rain.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "artDirection": "Use a small vermilion pagoda up on the right and detailed hanging cherry blossoms on the right and lower right, with blue-sky openings between white clouds.",
+      "file": "44.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#2e92f0"
+    },
+    {
+      "code": "45",
+      "condition": "thundershowers",
+      "scene": "Kyoto temple courtyard with a red gate and stone lanterns",
+      "weather": "Active heavy shower with abundant visible rain streaks, a clear branching lightning flash behind temple roofs and dark thundercloud, wet flagstones reflect warm lanterns.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "artDirection": "Set the storm flash and reflective courtyard at the right, make the red gate recognizably different from the cafe-based thunderstorm scene.",
+      "file": "45.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#233e5c"
+    },
+    {
+      "code": "46",
+      "condition": "snow showers",
+      "scene": "Side-on view of vermilion torii gates along a curved trail on a Japanese cedar hillside, with a snow-covered meadow in the foreground.",
+      "weather": "An active passing snow shower with many distinct flakes and a localized low grey snow cloud overhead; lighter sky beyond, moderate fresh white coating on steps and roofs.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "46.jpg",
+      "artDirection": "Use small irregular painted dabs for the sparse flakes and show an active shower above the cedar trail.",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#88b6f4"
+    },
+    {
+      "code": "47",
+      "condition": "isolated thundershowers",
+      "scene": "Japanese coastal temple garden overlooking island-dotted sea",
+      "weather": "One isolated thunder-shower cloud over a single offshore island, visible lightning and a narrow rain curtain beneath it; nearby garden is dry with soft sunlight and the surrounding sky largely open.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "47.jpg",
+      "flatLeftPixels": 304,
+      "flatLeftColor": "#2b88e8"
+    },
+    {
+      "code": "na",
+      "condition": "not available",
+      "scene": "timeless Japanese garden with a small wooden pavilion, koi pond, stone lantern and a distant mountain",
+      "weather": "Quiet neutral soft daylight with pale blue-grey sky and a few gentle clouds; balanced calm atmosphere without a pronounced weather event. No question mark, no text or symbols.",
+      "composition": "A solid full-height color field on the left, with the illustrated terrain and weather across the center, lower edge and right.",
+      "file": "na.jpg",
+      "flatLeftPixels": 256,
+      "flatLeftColor": "#a9c0e2"
+    }
+  ],
+  "sourceSet": "weather-splash-flat-left"
+}
