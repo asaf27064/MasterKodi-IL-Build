@@ -1,3 +1,12 @@
+[COLORcyan] VERSION 1.6.8[/COLOR]
+
+
+[COLOR=gold] What's New[/COLOR]
+
+• Russian and other foreign releases are now marked even when their name looks English, so Gears can leave them out.
+
+
+━━━━━━━━━━━━━━━━━━━━
 [COLORcyan] VERSION 1.6.6[/COLOR]
 
 

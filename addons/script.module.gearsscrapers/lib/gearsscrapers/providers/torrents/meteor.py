@@ -65,7 +65,7 @@ class source:
 				file_title = file['description'].split('\n')
 				file_info = [x for x in file_title if _INFO.match(x)][0]
 
-				name = source_utils.clean_name(file_title[0])
+				name = source_utils.tag_foreign(source_utils.clean_name(file_title[0]), hash, file_title)
 
 				if not source_utils.check_title(title, aliases, name.replace('.(Archie.Bunker', ''), hdlr, year): continue
 				name_info = source_utils.info_from_name(name, title, year, hdlr, episode_title)
@@ -121,7 +121,7 @@ class source:
 				file_title = file['description'].split('\n')
 				file_info = [x for x in file_title if _INFO.match(x)][0]
 
-				name = source_utils.clean_name(file_title[0])
+				name = source_utils.tag_foreign(source_utils.clean_name(file_title[0]), hash, file_title)
 
 				episode_start, episode_end = 0, 0
 				if not search_series:

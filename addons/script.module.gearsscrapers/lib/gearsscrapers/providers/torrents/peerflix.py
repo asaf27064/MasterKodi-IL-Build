@@ -79,7 +79,7 @@ class source:
 				hash = (file.get('infoHash') or '').lower()
 				if not hash: continue
 				desc = file.get('description') or file.get('name') or ''
-				name = source_utils.clean_name(desc.split('\n')[0].strip())
+				name = source_utils.tag_foreign(source_utils.clean_name(desc.split('\n')[0].strip()), hash, desc.split('\n'))
 				if not name: continue
 
 				if not source_utils.check_title(title, aliases, name, hdlr, year): continue
@@ -128,7 +128,7 @@ class source:
 				hash = (file.get('infoHash') or '').lower()
 				if not hash: continue
 				desc = file.get('description') or file.get('name') or ''
-				name = source_utils.clean_name(desc.split('\n')[0].strip())
+				name = source_utils.tag_foreign(source_utils.clean_name(desc.split('\n')[0].strip()), hash, desc.split('\n'))
 				if not name: continue
 
 				episode_start, episode_end = 0, 0

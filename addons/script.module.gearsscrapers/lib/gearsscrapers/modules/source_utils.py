@@ -3,10 +3,12 @@
 """
 
 import re
+from os import makedirs
 from string import printable
+from threading import Lock
 from gearsscrapers.modules import cleantitle
 from gearsscrapers.modules.undesirables import Undesirables
-from gearsscrapers.modules.control import homeWindow, setting as getSetting, setSetting
+from gearsscrapers.modules.control import homeWindow, setting as getSetting, setSetting, dataPath, joinPath
 
 
 RES_4K = ('2160', '216o', '.4k', 'ultrahd', 'ultra.hd', '.uhd.')
@@ -554,7 +556,65 @@ def release_title_format(release_title):
 		log_utils.error()
 		return release_title
 
+# Release names are reduced to plain ASCII, which throws away the proof that a release is Russian (or other foreign
+# language). It is kept two ways for the Gears English-only filter: a mark on the name, and a saved list of hashes
+# (another provider can return the same torrent under an English-looking file name).
+FOREIGN_MARK = 'NONENG'
+FOREIGN_SCRIPT = re.compile('[Ͱ-ϿЀ-ԯ֐-ۿऀ-෿฀-๿぀-ヿ㐀-鿿가-힯]{2}')
+FLAG = re.compile('[\U0001F1E6-\U0001F1FF]{2}')
+ENGLISH_FLAGS = ('\U0001F1EC\U0001F1E7', '\U0001F1FA\U0001F1F8') # GB, US
+_foreign_hashes = None
+_foreign_lock = Lock()
+
+def has_foreign_flag(lines):
+	for line in lines:
+		if line.lstrip().startswith('\U0001F4AC') or 'multi subs' in line.lower(): continue # subtitle languages, not audio
+		if any(flag not in ENGLISH_FLAGS for flag in FLAG.findall(line)): return True
+	return False
+
+def mark_foreign(name):
+	if not name or name.endswith(FOREIGN_MARK): return name
+	return '%s.%s' % (name, FOREIGN_MARK)
+
+def remember_foreign_hash(info_hash):
+	global _foreign_hashes
+	try:
+		info_hash = str(info_hash).lower()
+		if len(info_hash) != 40: return
+		with _foreign_lock:
+			path = joinPath(dataPath, 'foreign_hashes.txt')
+			if _foreign_hashes is None:
+				try:
+					with open(path, 'r') as f: _foreign_hashes = set(f.read().split())
+				except: _foreign_hashes = set()
+			if info_hash in _foreign_hashes: return
+			_foreign_hashes.add(info_hash)
+			try: makedirs(dataPath, exist_ok=True)
+			except: pass
+			with open(path, 'a') as f: f.write(info_hash + '\n')
+	except:
+		from gearsscrapers.modules import log_utils
+		log_utils.error()
+
+def tag_foreign(name, info_hash, raw_lines):
+	"""name: the cleaned release name. raw_lines: every line the provider sent for this file."""
+	try:
+		if FOREIGN_SCRIPT.search('\n'.join(raw_lines)) or has_foreign_flag(raw_lines) or name.endswith(FOREIGN_MARK):
+			remember_foreign_hash(info_hash)
+			return mark_foreign(name)
+	except:
+		from gearsscrapers.modules import log_utils
+		log_utils.error()
+	return name
+
 def clean_name(release_title):
+	try:
+		foreign = bool(FOREIGN_SCRIPT.search(re.sub(r'【.*?】', '', release_title)))
+	except: foreign = False
+	cleaned = _clean_name(release_title)
+	return mark_foreign(cleaned) if foreign else cleaned
+
+def _clean_name(release_title):
 	try:
 		release_title = re.sub(r'【.*?】', '', release_title)
 		release_title = strip_non_ascii_and_unprintable(release_title).lstrip('+.-:/ ').replace(' ', '.')
